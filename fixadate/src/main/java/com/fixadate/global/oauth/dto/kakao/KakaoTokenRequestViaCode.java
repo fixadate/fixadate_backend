@@ -1,4 +1,4 @@
-package com.fixadate.domain.oauth.dto.kakao;
+package com.fixadate.global.oauth.dto.kakao;
 
 import lombok.Builder;
 import lombok.Data;

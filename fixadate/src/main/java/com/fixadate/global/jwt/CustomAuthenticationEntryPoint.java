@@ -1,4 +1,4 @@
-package com.fixadate.domain.jwt;
+package com.fixadate.global.jwt;
 
 public class CustomAuthenticationEntryPoint {
 }

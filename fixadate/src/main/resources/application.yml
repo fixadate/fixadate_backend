@@ -1,1 +1,80 @@
-database:
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+        default-page-size: 5
+
+  datasource:
+    url: jdbc:h2:mem:fixadate
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        #        show_sql: true
+        format_sql: true
+
+logging:
+  level:
+    #        root: debug
+    org.springframework.security: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
+
+server:
+  error:
+    include-exception: true
+    include-message: always
+
+google:
+  client:
+    #        id: 120890874732-3tkosm3v7hnrilbc8gpl9cag6l1vgi27.apps.googleusercontent.com
+    #        pw: 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
+    id: 120890874732-gbu01labf2gh9id7hkauropgeuubjpun.apps.googleusercontent.com
+    pw: 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
+    redirect_uri: "http://localhost:3000/googleafterlogin"
+
+naver:
+  client:
+    id: diax5Uwvc73h94XdCnAk
+    pw: WnChNRdoJa
+    redirect_uri: "http://localhost:3000/naverafterlogin"
+
+
+kakao:
+  client:
+    id: b9e9de17f5e2e7a201fefcccf6138c0f
+    #        pw:
+    redirect_uri: "http://localhost:3000/kakaoafterlogin"
+
+#apple:
+#    client:
+#        id:
+#        pw:
+
+randNick:
+  adjs: '갓 구운, 뜨거운, 타버린, 식어버린, 녹아버린, 갓 나온, 한 입 베어 문, 떨어트린, 우유에 찍은, 물에 빠진, 슬퍼하는, 기뻐하는, 춤추는, 울고 있는, 기분 좋은, 기분 나쁜, 미끄러진, 배고픈, 무언가 잘못된, 배부른'
+  nouns: '고로케, 핫도그, 소보루빵, 단팥빵, 크루아상, 바게뜨, 프레펠, 붕어빵, 카스테라, 호빵, 계란빵, 도라야끼, 도넛, 휘낭시에, 소금빵, 팬케이크, 잉글리쉬 머핀, 베이글, 토스트, 부시맨브레드'
+
+jwt:
+  #    secret: 2314567890789654367897087689578467356425376847950865794638497
+  access:
+    #        expiration: 3600
+    header: Authorization
+
+  refresh:
+    #        expiration: 1209600
+    header: Authorization-refresh
+
+NO_CHECK_URL: "/login"

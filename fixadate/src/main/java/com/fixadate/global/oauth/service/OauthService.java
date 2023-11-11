@@ -1,11 +1,9 @@
-package com.fixadate.domain.oauth.service;
+package com.fixadate.global.oauth.service;
 
-import com.fixadate.domain.oauth.dto.kakao.KakaoInfoResponse;
-import com.fixadate.domain.oauth.dto.kakao.KakaoTokenRequestViaCode;
-import com.fixadate.domain.oauth.dto.kakao.KakaoTokenResponse;
-import lombok.AllArgsConstructor;
+import com.fixadate.global.oauth.dto.kakao.KakaoInfoResponse;
+import com.fixadate.global.oauth.dto.kakao.KakaoTokenRequestViaCode;
+import com.fixadate.global.oauth.dto.kakao.KakaoTokenResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

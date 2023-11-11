@@ -1,8 +1,8 @@
-package com.fixadate.domain.oauth.controller;
+package com.fixadate.global.oauth.controller;
 
-import com.fixadate.domain.oauth.dto.kakao.KakaoInfoResponse;
-import com.fixadate.domain.oauth.dto.kakao.KakaoTokenResponse;
-import com.fixadate.domain.oauth.service.OauthService;
+import com.fixadate.global.oauth.dto.kakao.KakaoInfoResponse;
+import com.fixadate.global.oauth.dto.kakao.KakaoTokenResponse;
+import com.fixadate.global.oauth.service.OauthService;
 
 import lombok.RequiredArgsConstructor;
 
