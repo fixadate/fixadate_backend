@@ -8,16 +8,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
-
-//import com.fixadate.fixadate.Adate.entity.Adate;
-//import com.fixadate.fixadate.global.entity.BaseTimeEntity;
-//import com.fixadate.fixadate.member.dto.MemberEditor;
-//import com.fixadate.fixadate.memberTeam.entity.MemberTeam;
-
-//import java.util.ArrayList;
-//import java.util.List;
 
 
 @Entity
@@ -26,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Transactional
-public class Member extends BaseTimeEntity {
+public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,41 +41,46 @@ public class Member extends BaseTimeEntity {
     private Boolean gender; //boolean to selection
     private String profession;
     private String signatureColor;
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-//    List<MemberTeam> memberTeamList = new ArrayList<>();
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-//    List<Adate> adateList = new ArrayList<>();
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return authorities;
+    }
 
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
-//    public MemberEditor.MemberEditorBuilder toEditor() {
-//        return MemberEditor.builder()
-//                .name(name)
-//                .refreshToken(refreshToken)
-//                .oauthId(oauthId)
-//                .oauthPlatform(oauthPlatform)
-//                .profileImg(profileImg)
-//                .nickname(nickname)
-//                .birth(birth)
-//                .gender(gender)
-//                .profession(profession)
-//                .signatureColor(signatureColor);
-//    }
-//
-//
-//    public void edit(MemberEditor memberEditor) {
-//        name = memberEditor.getName();
-//        refreshToken = memberEditor.getRefreshToken();
-//        oauthId = memberEditor.getOauthId();
-//        oauthPlatform = memberEditor.getOauthPlatform();
-//        profileImg = memberEditor.getProfileImg();
-//        nickname = memberEditor.getNickname();
-//        birth = memberEditor.getBirth();
-//        gender = memberEditor.getGender();
-//        profession = memberEditor.getProfession();
-//        signatureColor = memberEditor.getSignatureColor();
-//
-//    }
+    @Override
+    public String getUsername() { //memberPrincipal에서 getUsername을 통해 snsId를 얻을 수 있게 함
+        return null;
+    }
 
+    public String getOauthId() {
+        return oauthId;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
 
