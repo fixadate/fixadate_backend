@@ -38,7 +38,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String profileImg;
     private String nickname;
     private Integer birth;
-    private Boolean gender; //boolean to selection
+    private String gender; //boolean to selection
     private String profession;
     private String signatureColor;
 
