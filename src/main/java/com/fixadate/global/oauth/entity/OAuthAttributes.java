@@ -23,11 +23,12 @@ public class OAuthAttributes {
     private String birthday;
     private String oAuthProvider;
     private String profileImage;
+    private String nickname;
 
     @Builder
     public OAuthAttributes(String oauthId, Map<String, Object> attributes, String nameAttributesKey,
                            String email, String gender, int age, String birthday, String oAuthProvider,
-                           String profileImage) {
+                           String profileImage, String nickname) {
         this.gender = gender;
         this.age = age;
         this.birthday = birthday;
@@ -37,6 +38,7 @@ public class OAuthAttributes {
         this.email = email;
         this.oAuthProvider = oAuthProvider;
         this.profileImage = profileImage;
+        this.nickname = nickname;
     }
 
     public static OAuthAttributes of(String socialName, Map<String, Object> attributes) {
@@ -63,10 +65,11 @@ public class OAuthAttributes {
         log.info(attributes.toString());
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-//        Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
+        Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
 
         return OAuthAttributes.builder()
                 .oauthId(oauthId)
+                .nickname(String.valueOf(kakaoProfile.get(NICK_NAME)))
                 .gender(String.valueOf(kakaoAccount.get("gender")))
                 .birthday(String.valueOf(kakaoAccount.get("birthday")))
                 .profileImage(String.valueOf(kakaoAccount.get("profile_image")))
@@ -83,6 +86,7 @@ public class OAuthAttributes {
          */
         return Member.builder()
                 .birth(Integer.parseInt(birthday))
+                .nickname(nickname)
                 .gender(gender)
                 .oauthPlatform(oAuthProvider)
                 .oauthId(oauthId)
