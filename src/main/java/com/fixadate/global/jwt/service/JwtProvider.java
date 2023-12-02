@@ -29,9 +29,9 @@ public class JwtProvider {
     private final MemberRepository memberRepository;
     @Value("${jwt.secret}")
     private String secret;
-    @Value("${jwt.accessToken.expiration-period")
+    @Value("${jwt.accessToken.expiration-period}")
     private int accesesTokenexpirationPeriod;
-    @Value("${jwt.refreshToken.expiration-period")
+    @Value("${jwt.refreshToken.expiration-period}")
     private int refreshTokenexpirationPeriod;
 
     private Key key;
