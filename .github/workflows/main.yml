@@ -25,7 +25,7 @@ jobs:
       - name: Set YML
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.fixadate_credentials }}" | base64 --decode > src/main/resources/application.yml
+          echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
           find src
 
       - name: Build with Gradle
