@@ -49,13 +49,13 @@ jobs:
           aws-region: ap-northeast-2
       
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://fixadate_bucket/fixadate/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://fixadate-bucket/fixadate/$GITHUB_SHA.zip
 
       - name: Code Deploy To EC2 instance
         run: aws deploy create-deployment 
                 --application-name fixadate
                 --deployment-config-name CodeDeployDefault.AllAtOnce
                 --deployment-group-name fixadate_codedeploy_group
-                --s3-location bucket=fixadate_bucket,bundleType=zip,key=fixadate/$GITHUB_SHA.zip
+                --s3-location bucket=fixadate-bucket,bundleType=zip,key=fixadate/$GITHUB_SHA.zip
 
 
