@@ -19,13 +19,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends SecurityConfigurerAdapter {
     private final JwtProvider jwtProvider;
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     @Bean
@@ -36,6 +36,8 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
                 .csrf()
                 .disable()
                 .logout()
+                .disable()
+                .httpBasic()
                 .disable()
 
                 .sessionManagement()
@@ -50,8 +52,7 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests()
-                .requestMatchers("/").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().permitAll();
 
 //        http
 //                .oauth2Login()

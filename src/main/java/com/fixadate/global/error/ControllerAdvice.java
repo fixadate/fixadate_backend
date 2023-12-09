@@ -1,6 +1,7 @@
 package com.fixadate.global.error;
 
 import com.fixadate.domain.member.exception.MemberNotFoundException;
+import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.jwt.exception.TokenException;
 import com.fixadate.global.jwt.exception.TokenExpiredException;
 import com.fixadate.global.jwt.exception.TokenUnsupportedException;
@@ -26,6 +27,14 @@ public class ControllerAdvice {
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(errorResponse);
+    }
+    @ExceptionHandler({
+            MemberSigninException.class
+    })
+    public ResponseEntity<ErrorResponse> handleUnAuthorizedRequest(final RuntimeException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(errorResponse);
     }
 }
