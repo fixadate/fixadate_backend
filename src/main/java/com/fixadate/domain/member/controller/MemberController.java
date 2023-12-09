@@ -1,6 +1,7 @@
 package com.fixadate.domain.member.controller;
 
 import com.fixadate.domain.member.dto.request.AdateColorNameRequestDto;
+import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.jwt.MemberPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,11 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member/regist/color")
-    @Transactional
     public ResponseEntity<String> registAdateColorAndName(
             @RequestBody @Validated AdateColorNameRequestDto adateColorNameRequestDto,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        memberService.saveAdateColorAndName(adateColorNameRequestDto, memberPrincipal.getMember());
+        Member member = memberService.getMemberWithAdateColorTypes(memberPrincipal.getMember().getId());
+        memberService.saveAdateColorAndName(adateColorNameRequestDto, member);
         return ResponseEntity.ok("color&name 등록 완료");
     }
 }
