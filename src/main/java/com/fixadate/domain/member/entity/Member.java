@@ -1,9 +1,13 @@
 package com.fixadate.domain.member.entity;
 
+import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.global.entity.BaseTimeEntity;
 
 import com.fixadate.global.oauth.entity.OAuthProvider;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,9 +15,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,7 +43,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String oauthId;
     @Enumerated(EnumType.STRING)
     private OAuthProvider oauthPlatform;
-    private String refreshToken;
     private String name;
     private String profileImg;
     private String nickname;
@@ -44,6 +50,13 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String gender; //boolean to selection
     private String profession;
     private String signatureColor;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<Adate> adates = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "aDateColorTypes", joinColumns = @JoinColumn(name = "member_id"))
+    private Map<String, String> adateColorTypes;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -84,6 +97,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    public void registADateColorType(String color, String name) {
+        this.adateColorTypes.put(name, color);
     }
 }
 
