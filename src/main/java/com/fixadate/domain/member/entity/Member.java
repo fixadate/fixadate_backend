@@ -2,8 +2,11 @@ package com.fixadate.domain.member.entity;
 
 import com.fixadate.global.entity.BaseTimeEntity;
 
+import com.fixadate.global.oauth.entity.OAuthProvider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,9 +33,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "memberId")
     private Long id;
-    @Column(unique = true, nullable = false)
     private String oauthId;
-    private String oauthPlatform;
+    @Enumerated(EnumType.STRING)
+    private OAuthProvider oauthPlatform;
     private String refreshToken;
     private String name;
     private String profileImg;
