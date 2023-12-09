@@ -9,7 +9,7 @@ public class MemberPrincipal extends User implements Serializable {
     private final Member member;
 
     public MemberPrincipal(Member member) {
-        super(member.getOauthId(), member.getPassword(),
+        super(member.getOauthId(), member.getUsername(),
                 member.getAuthorities());
         this.member = member;
     }

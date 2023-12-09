@@ -1,19 +1,28 @@
 package com.fixadate.domain.member.entity;
 
+import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.global.entity.BaseTimeEntity;
 
 import com.fixadate.global.oauth.entity.OAuthProvider;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,7 +45,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String oauthId;
     @Enumerated(EnumType.STRING)
     private OAuthProvider oauthPlatform;
-    private String refreshToken;
     private String name;
     private String profileImg;
     private String nickname;
@@ -44,6 +52,13 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String gender; //boolean to selection
     private String profession;
     private String signatureColor;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Adate> adates = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "aDateColorTypes", joinColumns = @JoinColumn(name = "member_id"))
+    private Map<String, String> adateColorTypes = new HashMap<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -59,7 +74,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @Override
     public String getUsername() { //memberPrincipal에서 getUsername을 통해 snsId를 얻을 수 있게 함
-        return null;
+        return name;
     }
 
     public String getOauthId() {
