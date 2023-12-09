@@ -2,6 +2,7 @@ package com.fixadate.domain.member.service;
 
 import com.fixadate.domain.member.dto.request.AdateColorNameRequestDto;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.exception.AdateColorTypeNameDuplicatedException;
 import com.fixadate.domain.member.exception.UnknownMemberException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -34,9 +35,18 @@ public class MemberService implements UserDetailsService {
     @Transactional
     public void saveAdateColorAndName(AdateColorNameRequestDto adateColorNameRequestDto, Member member) {
         Map<String, String> adateColorTypes = member.getAdateColorTypes();
-        adateColorTypes.put(adateColorNameRequestDto.getColor(), adateColorNameRequestDto.getName());
+        validateAdateColorNameUniqueness(adateColorNameRequestDto.getName(), member);
+        adateColorTypes.put(adateColorNameRequestDto.getName(), adateColorNameRequestDto.getColor());
         memberRepository.save(member);
     }
+
+    private void validateAdateColorNameUniqueness(String name, Member member) {
+        Map<String, String> adateColorTypes = member.getAdateColorTypes();
+        if (adateColorTypes.containsKey(name)) {
+            throw new AdateColorTypeNameDuplicatedException();
+        }
+    }
+
     @Transactional
     public Member getMemberWithAdateColorTypes(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(

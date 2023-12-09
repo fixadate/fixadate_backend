@@ -1,5 +1,6 @@
 package com.fixadate.global.error;
 
+import com.fixadate.domain.member.exception.AdateColorTypeNameDuplicatedException;
 import com.fixadate.domain.member.exception.UnknownMemberException;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
@@ -26,7 +27,8 @@ public class ControllerAdvice {
     @ExceptionHandler({
             TokenExpiredException.class,
             TokenUnsupportedException.class,
-            TokenException.class
+            TokenException.class,
+            AdateColorTypeNameDuplicatedException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

@@ -23,6 +23,7 @@ public class MemberController {
     public ResponseEntity<String> registAdateColorAndName(
             @RequestBody @Validated AdateColorNameRequestDto adateColorNameRequestDto,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+
         Member member = memberService.getMemberWithAdateColorTypes(memberPrincipal.getMember().getId());
         memberService.saveAdateColorAndName(adateColorNameRequestDto, member);
         return ResponseEntity.ok("color&name 등록 완료");
