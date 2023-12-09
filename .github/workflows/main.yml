@@ -12,6 +12,12 @@ on:
       - '**/application*.yml'
       - '**.sql'
 
+env:
+  PROJECT_NAME: fixadate
+  BUCKET_NAME: fixadate-bucket
+  CODE_DEPLOY_APP_NAME: fixadate
+  DEPLOYMENT_GROUP_NAME: fixadate_codedeploy_group
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -49,13 +55,12 @@ jobs:
           aws-region: ap-northeast-2
       
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://fixadate-bucket/fixadate/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
 
       - name: Code Deploy To EC2 instance
         run: aws deploy create-deployment 
-                --application-name fixadate
+                --application-name $CODE_DEPLOY_APP_NAME 
                 --deployment-config-name CodeDeployDefault.AllAtOnce
-                --deployment-group-name fixadate_codedeploy_group
-                --s3-location bucket=fixadate-bucket,bundleType=zip,key=fixadate/$GITHUB_SHA.zip
-
+                --deployment-group-name $DEPLOYMENT_GROUP_NAME 
+                --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
 
