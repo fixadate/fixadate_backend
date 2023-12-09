@@ -2,14 +2,14 @@ version: 0.0
 os: linux
 
 files:
-	- source: /
-	  destination: /home/ubuntu/fixadate
+  - source: /
+    destination: /home/ubuntu/fixadate
 permissions:
-	- object: /home/ubuntu/fixadate/
-	  owner: ubuntu
-	  group: ubuntu
+  - object: /home/ubuntu/fixadate/
+    owner: ubuntu
+    group: ubuntu
 hooks:
-	AfterInstall:
-		- location: scripts/deploy.sh
-		  timeout: 120
-		  runas: ubuntu
+  AfterInstall:
+    - location: scripts/deploy.sh
+      timeout: 120
+      runas: ubuntu
