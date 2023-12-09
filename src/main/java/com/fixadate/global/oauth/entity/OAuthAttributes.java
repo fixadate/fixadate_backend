@@ -21,13 +21,13 @@ public class OAuthAttributes {
     private String gender;
     private int age;
     private String birthday;
-    private String oAuthProvider;
+    private OAuthProvider oAuthProvider;
     private String profileImage;
     private String nickname;
 
     @Builder
     public OAuthAttributes(String oauthId, Map<String, Object> attributes, String nameAttributesKey,
-                           String email, String gender, int age, String birthday, String oAuthProvider,
+                           String email, String gender, int age, String birthday, OAuthProvider oAuthProvider,
                            String profileImage, String nickname) {
         this.gender = gender;
         this.age = age;
@@ -54,7 +54,7 @@ public class OAuthAttributes {
         return OAuthAttributes.builder()
                 .oauthId(String.valueOf(attributes.get(GOOGLE_OAUTH_ID)))
                 .email(String.valueOf(attributes.get(EMAIL)))
-                .oAuthProvider(OAuthProvider.Google.getProvider())
+                .oAuthProvider(OAuthProvider.Google)
                 .attributes(attributes)
                 .nameAttributesKey(userNameAttributeName)
                 .build();
@@ -74,7 +74,7 @@ public class OAuthAttributes {
                 .birthday(String.valueOf(kakaoAccount.get("birthday")))
                 .profileImage(String.valueOf(kakaoAccount.get("profile_image")))
                 .email(String.valueOf(kakaoAccount.get(EMAIL)))
-                .oAuthProvider(OAuthProvider.Kakao.getProvider())
+                .oAuthProvider(OAuthProvider.Kakao)
                 .nameAttributesKey(userNameAttributeName)
                 .attributes(attributes)
                 .build();
