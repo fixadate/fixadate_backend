@@ -1,9 +1,11 @@
 package com.fixadate.global.auth.controller;
 
+import static com.fixadate.global.oauth.ConstantValue.ACCESS_TOKEN;
 import static com.fixadate.global.oauth.ConstantValue.REFRESH_TOKEN;
 
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequestDto;
+import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.global.jwt.service.JwtProvider;
@@ -37,8 +39,16 @@ public class AuthController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
-        httpHeaders.add("accessToken", accessToken);
+        httpHeaders.add(ACCESS_TOKEN, accessToken);
         return new ResponseEntity<>(httpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("/auth/additional/member")
+    public ResponseEntity<?> AdditionalRegistMember(
+            @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
+        authService.registMember(memberRegistRequestDto);
+
+        return ResponseEntity.ok(memberRegistRequestDto);
     }
 
     private Cookie createHttpOnlyCookie(String refreshToken) {

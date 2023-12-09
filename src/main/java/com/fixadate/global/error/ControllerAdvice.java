@@ -1,7 +1,8 @@
 package com.fixadate.global.error;
 
-import com.fixadate.domain.member.exception.MemberNotFoundException;
+import com.fixadate.domain.member.exception.UnknownMemberException;
 import com.fixadate.global.auth.exception.MemberSigninException;
+import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
 import com.fixadate.global.jwt.exception.TokenException;
 import com.fixadate.global.jwt.exception.TokenExpiredException;
 import com.fixadate.global.jwt.exception.TokenUnsupportedException;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ControllerAdvice {
-    @ExceptionHandler(MemberNotFoundException.class)
+    @ExceptionHandler({
+            UnknownMemberException.class,
+            UnknownOAuthPlatformException.class
+    })
     public ResponseEntity<ErrorResponse> handleNotFound(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

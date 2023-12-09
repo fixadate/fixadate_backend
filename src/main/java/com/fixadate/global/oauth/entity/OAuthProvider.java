@@ -3,7 +3,8 @@ package com.fixadate.global.oauth.entity;
 public enum OAuthProvider {
     Naver("NAVER"),
     Kakao("KAKAO"),
-    Google("GOOGLE");
+    Google("GOOGLE"),
+    Apple("APPLE");
     private final String provider;
 
     OAuthProvider(String provider) {

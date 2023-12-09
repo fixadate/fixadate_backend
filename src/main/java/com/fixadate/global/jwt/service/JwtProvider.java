@@ -1,7 +1,7 @@
 package com.fixadate.global.jwt.service;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.exception.MemberNotFoundException;
+import com.fixadate.domain.member.exception.UnknownMemberException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.exception.TokenException;
@@ -90,7 +90,7 @@ public class JwtProvider {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         String oauthId = getOauthIdFromToken(token);
-        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(() -> new MemberNotFoundException());
+        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(() -> new UnknownMemberException());
         MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
     }
