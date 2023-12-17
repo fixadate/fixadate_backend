@@ -1,10 +1,8 @@
 package com.fixadate.domain.adate.entity;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.entity.BaseTimeEntity;
-import jakarta.persistence.CollectionTable;
+import com.fixadate.global.auth.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

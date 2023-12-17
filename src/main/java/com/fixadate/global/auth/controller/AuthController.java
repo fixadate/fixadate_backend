@@ -48,7 +48,8 @@ public class AuthController {
             @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
         authService.registMember(memberRegistRequestDto);
 
-        return ResponseEntity.ok(memberRegistRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("member 등록 완료");
     }
 
     private Cookie createHttpOnlyCookie(String refreshToken) {

@@ -1,4 +1,4 @@
-package com.fixadate.global.entity;
+package com.fixadate.global.auth.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
