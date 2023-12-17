@@ -1,7 +1,7 @@
 package com.fixadate.domain.member.entity;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.global.entity.BaseTimeEntity;
+import com.fixadate.global.auth.entity.BaseTimeEntity;
 
 import com.fixadate.global.oauth.entity.OAuthProvider;
 import jakarta.persistence.CascadeType;

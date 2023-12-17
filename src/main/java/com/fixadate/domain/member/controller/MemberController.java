@@ -6,6 +6,7 @@ import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.jwt.MemberPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ public class MemberController {
 
         Member member = memberService.getMemberWithAdateColorTypes(memberPrincipal.getMember().getId());
         memberService.saveAdateColorAndName(adateColorNameRequestDto, member);
-        return ResponseEntity.ok("color&name 등록 완료");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("color 등록 완료");
     }
 }
