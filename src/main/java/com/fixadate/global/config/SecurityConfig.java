@@ -28,6 +28,7 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
     private final JwtProvider jwtProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -52,14 +53,10 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests()
-                .anyRequest().permitAll();
+                .anyRequest().permitAll()
+                .and()
+                .oauth2Client();
 
-//        http
-//                .oauth2Login()
-//                .successHandler(new OAuth2MemberSuccessHandler(jwtProvider))
-//                .failureHandler(new OAuth2MemberFailureHandler())
-//                .userInfoEndpoint()
-//                .userService(customOAuth2UserService);
         return http.build();
     }
 }

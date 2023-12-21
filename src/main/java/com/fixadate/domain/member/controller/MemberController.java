@@ -31,18 +31,18 @@ public class MemberController {
     private String randomNouns;
 
     @PostMapping("/member/regist/color")
-    public ResponseEntity<String> registAdateColorAndName(
+    public ResponseEntity<Void> registAdateColorAndName(
             @RequestBody @Validated AdateColorNameRequestDto adateColorNameRequestDto,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 
         Member member = memberService.getMemberWithAdateColorTypes(memberPrincipal.getMember().getId());
         memberService.saveAdateColorAndName(adateColorNameRequestDto, member);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body("color 등록 완료");
+                .build();
     }
 
     @PostMapping("/member/random/nickname")
-    public ResponseEntity<?> getRandomNickname() {
+    public ResponseEntity<String> getRandomNickname() {
         List<String> adjs = List.of(randomAdjs.split(","));
         List<String> nouns = List.of(randomNouns.split(","));
 
