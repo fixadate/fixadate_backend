@@ -12,67 +12,69 @@ import java.io.IOException;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
+@Component
 @Slf4j
 public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private final JwtProvider jwtProvider;
+    private final OAuth2AuthorizedClientService authorizedClientService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String oAuthId = getOAuthIdFromOAuth2User(oAuth2User);
-        redirect(request, response, oAuthId);
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+
+            // OAuth2AuthorizedClient를 통해 사용자의 클라이언트 정보 가져오기
+            OAuth2AuthorizedClient authorizedClient = getAuthorizedClient(oauthToken);
+            OAuth2AccessToken oAuth2AccessToken = authorizedClient.getAccessToken();
+
+            log.info(authorizedClient.getAccessToken().getTokenValue());
+
+            redirect(request, response, oAuth2AccessToken);
+        }
     }
 
-    private String getOAuthIdFromOAuth2User(OAuth2User oAuth2User) {
-        String oauthId = oAuth2User.getName();
-        if (oauthId.contains("id=")) {
-            // kakao, google과 다르게 naver는 getName에 json으로 값들을 보내기 때문에 처리 과정이 필요함
-            return oauthId.lines()
-                    .filter(line -> line.contains("id="))
-                    .map(line -> line.substring(line.indexOf("id=") + 3, line.indexOf(",", line.indexOf("id="))))
-                    .findFirst()
-                    .orElse(oauthId.substring(oauthId.indexOf("id=") + 3));
-        }
-        return oauthId;
+    // OAuth2AuthorizedClient 가져오기
+    private OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken oauthToken) {
+        String clientRegistrationId = oauthToken.getAuthorizedClientRegistrationId();
+        OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+                clientRegistrationId, oauthToken.getName());
+        return authorizedClient;
     }
 
 
     private void redirect(HttpServletRequest request, HttpServletResponse response,
-                          String oAuthId) throws IOException {
-        String accessToken = jwtProvider.createAccessToken(oAuthId);  // Access Token 생성
-        String refreshToken = jwtProvider.createRefreshToken(oAuthId);   // Refresh Token 생성
-        Cookie cookie = createHttpOnlyCookie(refreshToken);
+                          OAuth2AccessToken oAuth2AccessToken)
+            throws IOException {
+        String uri = createURI(oAuth2AccessToken).toString(); // Access Token과 Refresh Token을 포함한 URL을 생성
 
-        response.addHeader(ACCESS_TOKEN, accessToken);
-        response.addCookie(cookie);
-        String uri = createURI().toString(); // Access Token과 Refresh Token을 포함한 URL을 생성
-
-        log.info(accessToken);
-        log.info(refreshToken);
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
 
-    private Cookie createHttpOnlyCookie(String refreshToken) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
 
     // Redirect URI 생성. JWT를 쿼리 파라미터로 담아 전달한다.
-    private URI createURI() {
+    private URI createURI(OAuth2AccessToken oAuth2AccessToken) {
         return UriComponentsBuilder
                 .newInstance()
                 .scheme("http")
                 .host("localhost")
-                .path("")
+                .port(8080)
+                .path("/googleCalendar")
+                .queryParam("accessToken", oAuth2AccessToken.getTokenValue())
                 .build()
                 .toUri();
     }

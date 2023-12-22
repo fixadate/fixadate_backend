@@ -19,12 +19,15 @@ configurations {
 
 repositories {
 	mavenCentral()
+	google()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.security:spring-security-oauth2-client'
+	implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.4.RELEASE'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -41,6 +44,11 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // 데이터 유효성 검사
+
+	// google api
+	implementation 'com.google.apis:google-api-services-calendar:v3-rev20231123-2.0.0'
+	implementation 'com.google.api-client:google-api-client:1.31.3'
+	implementation group: 'com.google.api-client', name: 'google-api-client-jackson2', version: '1.20.0'
 }
 
 tasks.named('test') {
