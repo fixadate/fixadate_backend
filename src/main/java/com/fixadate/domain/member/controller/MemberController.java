@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,7 +42,7 @@ public class MemberController {
                 .build();
     }
 
-    @PostMapping("/member/random/nickname")
+    @GetMapping("/member/random/nickname")
     public ResponseEntity<String> getRandomNickname() {
         List<String> adjs = List.of(randomAdjs.split(","));
         List<String> nouns = List.of(randomNouns.split(","));
