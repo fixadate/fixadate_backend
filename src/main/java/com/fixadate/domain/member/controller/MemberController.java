@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,18 +32,18 @@ public class MemberController {
     private String randomNouns;
 
     @PostMapping("/member/regist/color")
-    public ResponseEntity<String> registAdateColorAndName(
+    public ResponseEntity<Void> registAdateColorAndName(
             @RequestBody @Validated AdateColorNameRequestDto adateColorNameRequestDto,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 
         Member member = memberService.getMemberWithAdateColorTypes(memberPrincipal.getMember().getId());
         memberService.saveAdateColorAndName(adateColorNameRequestDto, member);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body("color 등록 완료");
+                .build();
     }
 
-    @PostMapping("/member/random/nickname")
-    public ResponseEntity<?> getRandomNickname() {
+    @GetMapping("/member/random/nickname")
+    public ResponseEntity<String> getRandomNickname() {
         List<String> adjs = List.of(randomAdjs.split(","));
         List<String> nouns = List.of(randomNouns.split(","));
 

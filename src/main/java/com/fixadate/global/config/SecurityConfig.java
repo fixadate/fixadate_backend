@@ -7,9 +7,6 @@ import com.fixadate.global.jwt.filter.JwtAuthenticationFilter;
 import com.fixadate.global.jwt.service.JwtProvider;
 import com.fixadate.global.oauth.handler.OAuth2MemberFailureHandler;
 import com.fixadate.global.oauth.handler.OAuth2MemberSuccessHandler;
-import com.fixadate.global.oauth.service.CustomOAuth2UserService;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +25,8 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
     private final JwtProvider jwtProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final OAuth2MemberSuccessHandler oAuth2MemberSuccessHandler;
+    private final OAuth2MemberFailureHandler oAuth2MemberFailureHandler;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -52,14 +51,12 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests()
-                .anyRequest().permitAll();
+                .anyRequest().permitAll()
+                .and()
+                .oauth2Login()
+                .successHandler(oAuth2MemberSuccessHandler)
+                .failureHandler(oAuth2MemberFailureHandler);
 
-//        http
-//                .oauth2Login()
-//                .successHandler(new OAuth2MemberSuccessHandler(jwtProvider))
-//                .failureHandler(new OAuth2MemberFailureHandler())
-//                .userInfoEndpoint()
-//                .userService(customOAuth2UserService);
         return http.build();
     }
 }

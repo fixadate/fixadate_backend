@@ -26,7 +26,7 @@ public class AuthController {
     private final AuthService authService;
     private final JwtProvider jwtProvider;
     @PostMapping("/auth/member")
-    public ResponseEntity<?> registMember(@RequestBody @Validated MemberOAuthRequestDto memberOAuthRequestDto) {
+    public ResponseEntity<Void> registMember(@RequestBody @Validated MemberOAuthRequestDto memberOAuthRequestDto) {
         String oauthId = memberOAuthRequestDto.getOauthId();
         Optional<Member> memberOptional = authService.findMemberByOAuthId(oauthId);
         if (memberOptional.isEmpty()) {
@@ -44,12 +44,12 @@ public class AuthController {
     }
 
     @PostMapping("/auth/additional/member")
-    public ResponseEntity<?> AdditionalRegistMember(
+    public ResponseEntity<Void> AdditionalRegistMember(
             @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
         authService.registMember(memberRegistRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body("member 등록 완료");
+                .build();
     }
 
     private Cookie createHttpOnlyCookie(String refreshToken) {
