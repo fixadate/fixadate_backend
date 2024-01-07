@@ -42,7 +42,6 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
             OAuth2AuthorizedClient authorizedClient = getAuthorizedClient(oauthToken);
             OAuth2AccessToken oAuth2AccessToken = authorizedClient.getAccessToken();
 
-            log.info(authorizedClient.getAccessToken().getTokenValue());
 
             redirect(request, response, oAuth2AccessToken);
         }
@@ -73,7 +72,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .scheme("http")
                 .host("localhost")
                 .port(8080)
-                .path("/googleCalendar")
+                .path("/hello")
                 .queryParam("accessToken", oAuth2AccessToken.getTokenValue())
                 .build()
                 .toUri();
