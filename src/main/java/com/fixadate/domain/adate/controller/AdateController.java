@@ -1,9 +1,11 @@
 package com.fixadate.domain.adate.controller;
 
+import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.service.AdateService;
 import com.google.api.services.calendar.model.Event;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.ParseException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,10 +35,11 @@ public class AdateController {
     private final AdateService adateService;
 
     @GetMapping("/googleCalendar")
-    public ResponseEntity<List<Event>> getEvents(@RequestParam(value = "accessToken", required = true) String token)
-            throws IOException, GeneralSecurityException {
+    public ResponseEntity<List<Event>> getEvents(@RequestParam(value = "accessToken", required = true) String token,
+                                                 @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest)
+            throws IOException, GeneralSecurityException, ParseException {
         DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(token);
-        List<Event> events = adateService.listEvents(oAuth2AccessToken);
+        List<Event> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest);
         return ResponseEntity.ok(events);
     }
 }
