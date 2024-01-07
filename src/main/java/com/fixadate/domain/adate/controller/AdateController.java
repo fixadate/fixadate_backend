@@ -1,6 +1,7 @@
 package com.fixadate.domain.adate.controller;
 
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
+import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.service.AdateService;
 import com.google.api.services.calendar.model.Event;
 import java.io.IOException;
@@ -35,11 +36,11 @@ public class AdateController {
     private final AdateService adateService;
 
     @GetMapping("/googleCalendar")
-    public ResponseEntity<List<Event>> getEvents(@RequestParam(value = "accessToken", required = true) String token,
+    public ResponseEntity<List<GoogleCalendarEventResponse>> getEvents(@RequestParam(value = "accessToken", required = true) String token,
                                                  @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest)
             throws IOException, GeneralSecurityException, ParseException {
         DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(token);
-        List<Event> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest);
+        List<GoogleCalendarEventResponse> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest);
         return ResponseEntity.ok(events);
     }
 }

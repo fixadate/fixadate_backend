@@ -1,11 +1,13 @@
 package com.fixadate.domain.adate.service;
 
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
+import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.global.config.GoogleApiConfig;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import java.text.ParseException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
@@ -22,7 +24,7 @@ import java.util.List;
 public class AdateService {
     private final GoogleApiConfig googleApiConfig;
 
-    public List<Event> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
+    public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
                                   GoogleCalendarTimeRequest googleCalendarTimeRequest)
             throws IOException, GeneralSecurityException, ParseException {
         Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
@@ -37,6 +39,12 @@ public class AdateService {
                 .setOauthToken(oauth2AccessToken.getValue())
                 .execute();
 
-        return events.getItems();
+        return getEventResponse(events.getItems());
+    }
+
+    public List<GoogleCalendarEventResponse> getEventResponse(List<Event> events) {
+        return events.stream()
+                .map(GoogleCalendarEventResponse::of)
+                .collect(Collectors.toList());
     }
 }
