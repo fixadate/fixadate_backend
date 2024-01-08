@@ -40,7 +40,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "memberId")
     private Long id;
     private String oauthId;
     @Enumerated(EnumType.STRING)
