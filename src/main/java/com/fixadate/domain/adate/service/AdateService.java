@@ -1,12 +1,18 @@
 package com.fixadate.domain.adate.service;
 
+import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
+import com.fixadate.domain.adate.dto.request.NewAdateRequest;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
+import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.config.GoogleApiConfig;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import java.text.ParseException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +29,10 @@ import java.util.List;
 @Slf4j
 public class AdateService {
     private final GoogleApiConfig googleApiConfig;
+    private final AdateRepository adateRepository;
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
-                                  GoogleCalendarTimeRequest googleCalendarTimeRequest)
+                                                        GoogleCalendarTimeRequest googleCalendarTimeRequest)
             throws IOException, GeneralSecurityException, ParseException {
         Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
 
@@ -46,5 +53,32 @@ public class AdateService {
         return events.stream()
                 .map(GoogleCalendarEventResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public void registAdateEvent(List<GoogleCalendarRegistRequest> googleCalendarRegistRequests, Member member) {
+
+        for (GoogleCalendarRegistRequest googleCalendarRegistRequest : googleCalendarRegistRequests) {
+            String calendarId = googleCalendarRegistRequest.getCalendarId();
+            if (checkCalendarIdExists(calendarId)) {
+                Adate adate = getAdateFromRepository(calendarId).get();
+                if (adate.getVersion().equals(googleCalendarRegistRequest.getVersion())) {
+                    continue;
+                } else {
+                    Adate updateAdate = NewAdateRequest.toEntity(adate, googleCalendarRegistRequest);
+                    adateRepository.save(updateAdate);
+                }
+            } else {
+                Adate adate = googleCalendarRegistRequest.toEntity(member);
+                adateRepository.save(adate);
+            }
+        }
+    }
+
+    private boolean checkCalendarIdExists(String calendarId) {
+        return getAdateFromRepository(calendarId).isPresent();
+    }
+
+    private Optional<Adate> getAdateFromRepository(String calendarId) {
+        return adateRepository.findAdateByCalendarId(calendarId);
     }
 }
