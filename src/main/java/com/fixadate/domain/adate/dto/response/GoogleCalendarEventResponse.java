@@ -38,7 +38,7 @@ public class GoogleCalendarEventResponse {
     @Column(nullable = false)
     private LocalDateTime version;
     private String recurringEventId;
-    private String ifAllDay;
+    private boolean ifAllDay;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -54,7 +54,7 @@ public class GoogleCalendarEventResponse {
                 .description(event.getDescription())
                 .version(getLocalDateTimeFromDateTime(event.getUpdated()))
                 .recurringEventId(event.getRecurringEventId())
-                .ifAllDay(event.getTransparency())
+                .ifAllDay(getIfAllDayFromGetTransparency(event.getTransparency()))
                 .startDate(getLocalDateFromEventDateTime(event.getStart()))
                 .endDate(getLocalDateFromEventDateTime(event.getEnd()))
                 .build();
@@ -91,5 +91,9 @@ public class GoogleCalendarEventResponse {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static boolean getIfAllDayFromGetTransparency(String transparency) {
+        return transparency != null && transparency.equals("transparent");
     }
 }
