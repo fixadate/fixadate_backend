@@ -8,8 +8,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,30 +22,37 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+/*
+calendarId를 통해 조회를 한 뒤, version을 비교하므로 자주 조회를 하고, 동일한 값이 없는 calendarId를 index로 정했다.
+ */
+@Table(indexes = @Index(name = "calendar_id", columnList = "calendarId", unique = true))
 public class Adate extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
     private String title;
-    @Column
+    @Column(length = 500)
     private String notes;
-    @Column
+    @Column(length = 300)
     private String location;
-    @Column
     private Boolean ifAllDay;
-    @Column
     private Date startsWhen;
-    @Column
     private Date endsWhen;
-    @Column
     private Date alertWhen;
-    @Column
     private Date repeatFreq;
-    @Column
     private String color;
-    @Column
     private String adateName;
+
+    /*
+    google calendar
+     */
+    @Column(unique = true)
+    private String calendarId;
+    private String reminders;
+    private LocalDateTime version;
+    private LocalDateTime created;
+    private String recurringEventId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
