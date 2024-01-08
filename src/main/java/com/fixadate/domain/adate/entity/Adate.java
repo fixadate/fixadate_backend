@@ -12,16 +12,19 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 /*
 calendarId를 통해 조회를 한 뒤, version을 비교하므로 자주 조회를 하고, 동일한 값이 없는 calendarId를 index로 정했다.
  */
@@ -36,17 +39,21 @@ public class Adate extends BaseTimeEntity {
     private String notes;
     @Column(length = 300)
     private String location;
-    private Boolean ifAllDay;
-    private Date startsWhen;
-    private Date endsWhen;
+
     private Date alertWhen;
     private Date repeatFreq;
     private String color;
     private String adateName;
 
     /*
-    google calendar
+    calendar OPEN API
      */
+    private Boolean ifAllDay;
+
+    private LocalDateTime startsWhen;
+    private LocalDateTime endsWhen;
+    private LocalDate startDate;
+    private LocalDate endDate;
     @Column(unique = true)
     private String calendarId;
     private String reminders;
