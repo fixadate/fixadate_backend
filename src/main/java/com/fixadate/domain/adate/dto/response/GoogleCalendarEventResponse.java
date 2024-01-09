@@ -41,6 +41,7 @@ public class GoogleCalendarEventResponse {
     private boolean ifAllDay;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String status;
 
     public static GoogleCalendarEventResponse of(Event event) {
         return GoogleCalendarEventResponse.builder()
@@ -57,6 +58,7 @@ public class GoogleCalendarEventResponse {
                 .ifAllDay(getIfAllDayFromGetTransparency(event.getTransparency()))
                 .startDate(getLocalDateFromEventDateTime(event.getStart()))
                 .endDate(getLocalDateFromEventDateTime(event.getEnd()))
+                .status(event.getStatus())
                 .build();
     }
 

@@ -39,6 +39,7 @@ public class GoogleCalendarRegistRequest {
     private LocalDateTime version;
     private LocalDateTime created;
     private String recurringEventId;
+    private String status;
 
     public Adate toEntity(Member member) {
         return Adate.builder()
@@ -59,6 +60,7 @@ public class GoogleCalendarRegistRequest {
                 .version(version)
                 .created(created)
                 .recurringEventId(recurringEventId)
+                .status(status)
                 .member(member)
                 .build();
     }
