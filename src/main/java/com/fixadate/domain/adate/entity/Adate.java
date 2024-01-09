@@ -60,6 +60,7 @@ public class Adate extends BaseTimeEntity {
     private LocalDateTime version;
     private LocalDateTime created;
     private String recurringEventId;
+    private String status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

@@ -5,6 +5,7 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.request.NewAdateRequest;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.exception.EventNotExistException;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.config.GoogleApiConfig;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +46,7 @@ public class AdateService {
                 .setTimeMin(googleCalendarTimeRequest.getDateTimes().get(1))
                 .setSingleEvents(true)
                 .setOauthToken(oauth2AccessToken.getValue())
+                .setShowDeleted(true)
                 .execute();
 
         return getEventResponse(events.getItems());
@@ -55,30 +58,44 @@ public class AdateService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void registAdateEvent(List<GoogleCalendarRegistRequest> googleCalendarRegistRequests, Member member) {
-
         for (GoogleCalendarRegistRequest googleCalendarRegistRequest : googleCalendarRegistRequests) {
             String calendarId = googleCalendarRegistRequest.getCalendarId();
-            if (checkCalendarIdExists(calendarId)) {
-                Adate adate = getAdateFromRepository(calendarId).get();
-                if (adate.getVersion().equals(googleCalendarRegistRequest.getVersion())) {
-                    continue;
-                } else {
-                    Adate updateAdate = NewAdateRequest.toEntity(adate, googleCalendarRegistRequest);
-                    adateRepository.save(updateAdate);
-                }
+
+            if ("cancelled".equals(googleCalendarRegistRequest.getStatus())) {
+                log.info("delete!!!");
+                deleteAdateIfExists(calendarId);
             } else {
-                Adate adate = googleCalendarRegistRequest.toEntity(member);
-                adateRepository.save(adate);
+                processAdate(googleCalendarRegistRequest, calendarId, member);
             }
         }
     }
 
-    private boolean checkCalendarIdExists(String calendarId) {
-        return getAdateFromRepository(calendarId).isPresent();
+    private void deleteAdateIfExists(String calendarId) {
+        adateRepository.delete(getAdateFromRepository(calendarId));
     }
 
-    private Optional<Adate> getAdateFromRepository(String calendarId) {
-        return adateRepository.findAdateByCalendarId(calendarId);
+    private void processAdate(GoogleCalendarRegistRequest googleCalendarRegistRequest, String calendarId, Member member) {
+        if (checkCalendarIdExists(calendarId)) {
+            Adate adate = getAdateFromRepository(calendarId);
+            if (!adate.getVersion().equals(googleCalendarRegistRequest.getVersion())) {
+                Adate updateAdate = NewAdateRequest.toEntity(adate, googleCalendarRegistRequest);
+                adateRepository.save(updateAdate);
+            }
+        } else {
+            Adate adate = googleCalendarRegistRequest.toEntity(member);
+            adateRepository.save(adate);
+        }
     }
+
+    private boolean checkCalendarIdExists(String calendarId) {
+        return adateRepository.findAdateByCalendarId(calendarId).isPresent();
+    }
+
+    private Adate getAdateFromRepository(String calendarId) {
+        return adateRepository.findAdateByCalendarId(calendarId)
+                .orElseThrow(EventNotExistException::new);
+    }
+
 }

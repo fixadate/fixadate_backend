@@ -31,6 +31,7 @@ public class NewAdateRequest {
                 .version(googleCalendarRegistRequest.getVersion())
                 .created(googleCalendarRegistRequest.getCreated())
                 .recurringEventId(googleCalendarRegistRequest.getRecurringEventId())
+                .status(googleCalendarRegistRequest.getStatus())
                 .member(adate.getMember())
                 .build();
     }
