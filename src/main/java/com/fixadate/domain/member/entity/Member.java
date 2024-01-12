@@ -41,6 +41,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String oauthId;
     @Enumerated(EnumType.STRING)
     private OAuthProvider oauthPlatform;
