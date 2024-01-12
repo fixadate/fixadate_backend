@@ -24,6 +24,7 @@ public class AdateQueryRepository {
                 .where(adate.member.eq(member))
                 .where(adate.endsWhen.goe(startDateTime).
                         or(adate.startsWhen.loe(endDateTime)))
+                .orderBy(adate.startsWhen.asc())
                 .fetch();
     }
 }

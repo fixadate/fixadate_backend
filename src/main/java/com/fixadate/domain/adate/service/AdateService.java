@@ -102,6 +102,7 @@ public class AdateService {
                 .orElseThrow(EventNotExistException::new);
     }
 
+    @Transactional
     public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
         Adate adate = adateRegistRequest.toEntity(member);
         adateRepository.save(adate);
