@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.controller;
 
+import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
@@ -11,8 +12,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.List;
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,7 +47,15 @@ public class AdateController {
     @PostMapping("/calendar/google/additional")
     public ResponseEntity<Void> registEvents(@RequestBody List<GoogleCalendarRegistRequest> googleCalendarRegistRequest,
                                           @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        adateService.registAdateEvent(googleCalendarRegistRequest,memberPrincipal.getMember());
+        adateService.registGoogleEvent(googleCalendarRegistRequest,memberPrincipal.getMember());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/calendar")
+    public ResponseEntity<Void> registAdateEvent(@RequestBody AdateRegistRequest adateRegistRequest,
+                                                 @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        Member member = memberPrincipal.getMember();
+        adateService.registAdateEvent(adateRegistRequest, member);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

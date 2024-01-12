@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.service;
 
+import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.request.NewAdateRequest;
@@ -59,7 +60,7 @@ public class AdateService {
     }
 
     @Transactional
-    public void registAdateEvent(List<GoogleCalendarRegistRequest> googleCalendarRegistRequests, Member member) {
+    public void registGoogleEvent(List<GoogleCalendarRegistRequest> googleCalendarRegistRequests, Member member) {
         for (GoogleCalendarRegistRequest googleCalendarRegistRequest : googleCalendarRegistRequests) {
             String calendarId = googleCalendarRegistRequest.getCalendarId();
 
@@ -98,4 +99,8 @@ public class AdateService {
                 .orElseThrow(EventNotExistException::new);
     }
 
+    public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
+        Adate adate = adateRegistRequest.toEntity(member);
+        adateRepository.save(adate);
+    }
 }
