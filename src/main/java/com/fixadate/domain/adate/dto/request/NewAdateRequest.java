@@ -27,7 +27,7 @@ public class NewAdateRequest {
                 .startDate(googleCalendarRegistRequest.getStartDate())
                 .endDate(googleCalendarRegistRequest.getEndDate())
                 .calendarId(googleCalendarRegistRequest.getCalendarId())
-                .reminders(googleCalendarRegistRequest.getReminders())
+                .reminders(googleCalendarRegistRequest.isReminders())
                 .version(googleCalendarRegistRequest.getVersion())
                 .created(googleCalendarRegistRequest.getCreated())
                 .recurringEventId(googleCalendarRegistRequest.getRecurringEventId())

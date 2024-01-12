@@ -29,7 +29,7 @@ public class GoogleCalendarEventResponse {
     private LocalDateTime end;
     @Column(nullable = false)
     private String id;
-    private Reminders reminders;
+    private boolean reminders;
     @Column(nullable = false)
     private LocalDateTime start;
     private String location;
@@ -48,7 +48,7 @@ public class GoogleCalendarEventResponse {
                 .created(getLocalDateTimeFromDateTime(event.getCreated()))
                 .end(getLocalDateTimeFromEventDateTime(event.getEnd()))
                 .id(event.getId())
-                .reminders(event.getReminders())
+                .reminders(getRemindersDefaultValue(event.getReminders()))
                 .start(getLocalDateTimeFromEventDateTime(event.getStart()))
                 .location(event.getLocation())
                 .summary(event.getSummary())
@@ -97,5 +97,9 @@ public class GoogleCalendarEventResponse {
 
     private static boolean getIfAllDayFromGetTransparency(String transparency) {
         return transparency != null && transparency.equals("transparent");
+    }
+
+    private static boolean getRemindersDefaultValue(Reminders reminders) {
+        return reminders.getUseDefault();
     }
 }
