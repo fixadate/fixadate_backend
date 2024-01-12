@@ -35,7 +35,7 @@ public class GoogleCalendarRegistRequest {
      */
     @Column(unique = true)
     private String calendarId;
-    private String reminders;
+    private boolean reminders;
     private LocalDateTime version;
     private LocalDateTime created;
     private String recurringEventId;

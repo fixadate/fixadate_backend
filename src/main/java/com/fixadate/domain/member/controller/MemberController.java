@@ -31,7 +31,7 @@ public class MemberController {
     @Value("${randNick.nouns}")
     private String randomNouns;
 
-    @PostMapping("/member/regist/color")
+    @PostMapping("/member/color")
     public ResponseEntity<Void> registAdateColorAndName(
             @RequestBody @Validated AdateColorNameRequestDto adateColorNameRequestDto,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
