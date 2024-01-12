@@ -3,6 +3,7 @@ package com.fixadate.domain.adate.controller;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
+import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
@@ -11,6 +12,7 @@ import com.google.api.services.calendar.model.Event;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Getter;
@@ -57,6 +59,16 @@ public class AdateController {
         Member member = memberPrincipal.getMember();
         adateService.registAdateEvent(adateRegistRequest, member);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/calendar")
+    public ResponseEntity<List<AdateCalendarEventResponse>> getAdateCalendarEvents(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @RequestParam LocalDateTime startDateTime,
+            @RequestParam LocalDateTime endDateTime) {
+        return ResponseEntity.
+                ok()
+                .build();
     }
 }
 

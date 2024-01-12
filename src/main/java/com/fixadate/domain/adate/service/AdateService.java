@@ -4,9 +4,11 @@ import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.request.NewAdateRequest;
+import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.EventNotExistException;
+import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.config.GoogleApiConfig;
@@ -14,6 +16,7 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdateService {
     private final GoogleApiConfig googleApiConfig;
     private final AdateRepository adateRepository;
+    private final AdateQueryRepository adateQueryRepository;
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
                                                         GoogleCalendarTimeRequest googleCalendarTimeRequest)
@@ -65,7 +69,6 @@ public class AdateService {
             String calendarId = googleCalendarRegistRequest.getCalendarId();
 
             if ("cancelled".equals(googleCalendarRegistRequest.getStatus())) {
-                log.info("delete!!!");
                 deleteAdateIfExists(calendarId);
             } else {
                 processAdate(googleCalendarRegistRequest, calendarId, member);
@@ -102,5 +105,12 @@ public class AdateService {
     public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
         Adate adate = adateRegistRequest.toEntity(member);
         adateRepository.save(adate);
+    }
+
+    public List<Adate> getAdateCalendarEvents(Member member, LocalDateTime startDateTime,
+                                                                   LocalDateTime endDateTime) {
+        List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime)
+                .orElseThrow(() -> new RuntimeException());
+        return adates;
     }
 }
