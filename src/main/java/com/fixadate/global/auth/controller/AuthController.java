@@ -43,7 +43,7 @@ public class AuthController {
         return new ResponseEntity<>(httpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping("/auth/additional/member")
+    @PostMapping("/auth/member/additional")
     public ResponseEntity<Void> AdditionalRegistMember(
             @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
         authService.registMember(memberRegistRequestDto);
