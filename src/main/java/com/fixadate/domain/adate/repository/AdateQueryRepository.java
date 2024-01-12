@@ -18,12 +18,12 @@ import static com.fixadate.domain.adate.entity.QAdate.*;
 public class AdateQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public Optional<List<Adate>> findByDateRange(Member member, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return Optional.ofNullable(jpaQueryFactory
+    public List<Adate> findByDateRange(Member member, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return jpaQueryFactory
                 .selectFrom(adate)
                 .where(adate.member.eq(member))
-                .where(adate.endsWhen.goe(startDateTime))
-                .fetch());
+                .where(adate.endsWhen.goe(startDateTime).
+                        or(adate.startsWhen.loe(endDateTime)))
+                .fetch();
     }
-
 }

@@ -107,10 +107,15 @@ public class AdateService {
         adateRepository.save(adate);
     }
 
-    public List<Adate> getAdateCalendarEvents(Member member, LocalDateTime startDateTime,
+    public List<AdateCalendarEventResponse> getAdateCalendarEvents(Member member, LocalDateTime startDateTime,
                                                                    LocalDateTime endDateTime) {
-        List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime)
-                .orElseThrow(() -> new RuntimeException());
-        return adates;
+        List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
+        return getResponseDto(adates);
+    }
+
+    private List<AdateCalendarEventResponse> getResponseDto(List<Adate> adates) {
+        return adates.stream()
+                .map(AdateCalendarEventResponse::of)
+                .collect(Collectors.toList());
     }
 }

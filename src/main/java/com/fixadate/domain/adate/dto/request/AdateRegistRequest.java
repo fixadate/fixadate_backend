@@ -44,6 +44,7 @@ public class AdateRegistRequest {
                 .endsWhen(endsWhen)
                 .calendarId(generateRandomString(20))
                 .reminders(reminders)
+                .member(member)
                 .build();
     }
     public String generateRandomString(int length) {

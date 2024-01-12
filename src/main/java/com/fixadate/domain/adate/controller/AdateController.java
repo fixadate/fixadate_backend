@@ -66,9 +66,10 @@ public class AdateController {
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
             @RequestParam LocalDateTime startDateTime,
             @RequestParam LocalDateTime endDateTime) {
-        return ResponseEntity.
-                ok()
-                .build();
+        Member member = memberPrincipal.getMember();
+        List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
+                getAdateCalendarEvents(member, startDateTime, endDateTime);
+        return ResponseEntity.ok(adateCalendarEventResponses);
     }
 }
 
