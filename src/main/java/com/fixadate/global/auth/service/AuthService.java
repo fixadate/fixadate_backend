@@ -6,6 +6,7 @@ import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class AuthService {
         return memberRepository.findMemberByOauthId(oauthId);
     }
 
+    @Transactional
     public void registMember(MemberRegistRequestDto memberRegistRequestDto) {
         Member member = memberRegistRequestDto.of();
         memberRepository.save(member);

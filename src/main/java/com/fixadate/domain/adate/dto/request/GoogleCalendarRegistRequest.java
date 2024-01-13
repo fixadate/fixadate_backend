@@ -23,8 +23,6 @@ public class GoogleCalendarRegistRequest {
     private Boolean ifAllDay;
     private LocalDateTime startsWhen;
     private LocalDateTime endsWhen;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private Date alertWhen;
     private Date repeatFreq;
     private String color;
@@ -49,8 +47,6 @@ public class GoogleCalendarRegistRequest {
                 .ifAllDay(ifAllDay)
                 .startsWhen(startsWhen)
                 .endsWhen(endsWhen)
-                .startDate(startDate)
-                .endDate(endDate)
                 .alertWhen(alertWhen)
                 .repeatFreq(repeatFreq)
                 .color(color)

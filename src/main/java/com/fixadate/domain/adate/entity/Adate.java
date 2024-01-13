@@ -52,8 +52,6 @@ public class Adate extends BaseTimeEntity {
 
     private LocalDateTime startsWhen;
     private LocalDateTime endsWhen;
-    private LocalDate startDate;
-    private LocalDate endDate;
     @Column(unique = true)
     private String calendarId;
     private boolean reminders;

@@ -28,8 +28,6 @@ public class AdateRegistRequest {
     private Boolean ifAllDay;
     private LocalDateTime startsWhen;
     private LocalDateTime endsWhen;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private boolean reminders;
 
     public Adate toEntity(Member member) {
@@ -44,10 +42,9 @@ public class AdateRegistRequest {
                 .ifAllDay(ifAllDay)
                 .startsWhen(startsWhen)
                 .endsWhen(endsWhen)
-                .startDate(startDate)
-                .endDate(endDate)
                 .calendarId(generateRandomString(20))
                 .reminders(reminders)
+                .member(member)
                 .build();
     }
     public String generateRandomString(int length) {

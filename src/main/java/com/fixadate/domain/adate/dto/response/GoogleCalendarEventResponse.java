@@ -6,10 +6,8 @@ import com.google.api.services.calendar.model.Event.ExtendedProperties;
 import com.google.api.services.calendar.model.Event.Reminders;
 import com.google.api.services.calendar.model.EventDateTime;
 import jakarta.persistence.Column;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,25 +37,21 @@ public class GoogleCalendarEventResponse {
     private LocalDateTime version;
     private String recurringEventId;
     private boolean ifAllDay;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private String status;
 
     public static GoogleCalendarEventResponse of(Event event) {
         return GoogleCalendarEventResponse.builder()
-                .created(getLocalDateTimeFromDateTime(event.getCreated()))
-                .end(getLocalDateTimeFromEventDateTime(event.getEnd()))
                 .id(event.getId())
+                .created(getLocalDateTimeFromDateTime(event.getCreated()))
+                .end(getLocalDateTimeFromEventDateTime(event.getEnd(), false))
+                .start(getLocalDateTimeFromEventDateTime(event.getStart(), true))
                 .reminders(getRemindersDefaultValue(event.getReminders()))
-                .start(getLocalDateTimeFromEventDateTime(event.getStart()))
                 .location(event.getLocation())
                 .summary(event.getSummary())
                 .description(event.getDescription())
                 .version(getLocalDateTimeFromDateTime(event.getUpdated()))
                 .recurringEventId(event.getRecurringEventId())
                 .ifAllDay(getIfAllDayFromGetTransparency(event.getTransparency()))
-                .startDate(getLocalDateFromEventDateTime(event.getStart()))
-                .endDate(getLocalDateFromEventDateTime(event.getEnd()))
                 .status(event.getStatus())
                 .build();
     }
@@ -72,26 +66,15 @@ public class GoogleCalendarEventResponse {
         }
     }
 
-    private static LocalDateTime getLocalDateTimeFromEventDateTime(EventDateTime eventDateTime) {
-        try {
+    private static LocalDateTime getLocalDateTimeFromEventDateTime(EventDateTime eventDateTime, boolean d) {
+        if (eventDateTime.getDateTime() != null) {
             long eventTimeMilliseconds = eventDateTime.getDateTime().getValue();
             Instant instant = Instant.ofEpochMilli(eventTimeMilliseconds);
             return LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Seoul"));
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-
-    // FIXME: 2024-01-08 10일부터 11일까지 -> 10 to 12로 보임. 애플 캘린더는 10 to 11이면 구글 캘린더에서 endDate 하루 앞당기기
-    private static LocalDate getLocalDateFromEventDateTime(EventDateTime eventDateTime) {
-        try {
-            DateTime dateTime = eventDateTime.getDate();
-            log.info(dateTime.toString());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(dateTime.toStringRfc3339(), formatter);
-            return localDate;
-        } catch (Exception e) {
-            return null;
+        } else {
+            LocalDate eventDate = LocalDate.parse(eventDateTime.getDate().toStringRfc3339());
+            LocalTime timeToAdd = d ? LocalTime.MIN : LocalTime.MAX;
+            return eventDate.atTime(timeToAdd).atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
         }
     }
 

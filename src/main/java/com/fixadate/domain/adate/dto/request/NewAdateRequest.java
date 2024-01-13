@@ -24,8 +24,6 @@ public class NewAdateRequest {
                 .ifAllDay(googleCalendarRegistRequest.getIfAllDay())
                 .startsWhen(googleCalendarRegistRequest.getStartsWhen())
                 .endsWhen(googleCalendarRegistRequest.getEndsWhen())
-                .startDate(googleCalendarRegistRequest.getStartDate())
-                .endDate(googleCalendarRegistRequest.getEndDate())
                 .calendarId(googleCalendarRegistRequest.getCalendarId())
                 .reminders(googleCalendarRegistRequest.isReminders())
                 .version(googleCalendarRegistRequest.getVersion())
