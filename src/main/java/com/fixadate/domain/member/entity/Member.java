@@ -53,12 +53,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
     // 로그인 정보 식별 값, 프로필 사진, 필명, 이름, 성별, 생년월일, 이메일
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @Builder.Default
     private List<Adate> adates = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "aDateColorTypes", joinColumns = @JoinColumn(name = "member_id"))
-    @Builder.Default
     private Map<String, String> adateColorTypes = new HashMap<>();
 
     @Override
