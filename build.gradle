@@ -1,9 +1,3 @@
-buildscript {
-	ext {
-		queryDslVersion = "5.0.0"
-	}
-}
-
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.12'
@@ -16,13 +10,6 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '17'
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-	querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -61,7 +48,7 @@ dependencies {
 
 	//queryDsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
@@ -76,14 +63,15 @@ querydsl {
 	querydslSourcesDir = querydslDir
 }
 
-// Querydsl Q Class 생성 위치 지정
-tasks.withType(JavaCompile) {
-	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
-}
-
 // java source set 에 Querydsl Q Class 위치 추가
 sourceSets {
 	main.java.srcDirs += [ querydslDir ]
+}
+
+
+// Querydsl Q Class 생성 위치 지정
+tasks.withType(JavaCompile) {
+	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
 }
 
 // gradle clean 시, Q Class 디렉토리까지 삭제하도록 설정
@@ -102,4 +90,11 @@ compileQuerydsl{
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
 }
