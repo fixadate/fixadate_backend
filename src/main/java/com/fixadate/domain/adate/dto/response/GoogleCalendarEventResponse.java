@@ -9,51 +9,42 @@ import jakarta.persistence.Column;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Getter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Slf4j
-public class GoogleCalendarEventResponse {
-    @Column(nullable = false)
-    private LocalDateTime created;
-    @Column(nullable = false)
-    private LocalDateTime end;
-    @Column(nullable = false)
-    private String id;
-    private boolean reminders;
-    @Column(nullable = false)
-    private LocalDateTime start;
-    private String location;
-    private String summary;
-    private String description;
-    @Column(nullable = false)
-    private LocalDateTime version;
-    private String recurringEventId;
-    private boolean ifAllDay;
-    private String status;
+public record GoogleCalendarEventResponse(
+        @Column(nullable = false) LocalDateTime created,
+        @Column(nullable = false) LocalDateTime end,
+        @Column(nullable = false) String id,
+        boolean reminders,
+        @Column(nullable = false) LocalDateTime start,
+        String location,
+        String summary,
+        String description,
+        @Column(nullable = false) LocalDateTime version,
+        String recurringEventId,
+        boolean ifAllDay,
+        String status
+) {
 
     public static GoogleCalendarEventResponse of(Event event) {
-        return GoogleCalendarEventResponse.builder()
-                .id(event.getId())
-                .created(getLocalDateTimeFromDateTime(event.getCreated()))
-                .end(getLocalDateTimeFromEventDateTime(event.getEnd(), false))
-                .start(getLocalDateTimeFromEventDateTime(event.getStart(), true))
-                .reminders(getRemindersDefaultValue(event.getReminders()))
-                .location(event.getLocation())
-                .summary(event.getSummary())
-                .description(event.getDescription())
-                .version(getLocalDateTimeFromDateTime(event.getUpdated()))
-                .recurringEventId(event.getRecurringEventId())
-                .ifAllDay(getIfAllDayFromGetTransparency(event.getTransparency()))
-                .status(event.getStatus())
-                .build();
+        return new GoogleCalendarEventResponse(
+                getLocalDateTimeFromDateTime(event.getCreated()),
+                getLocalDateTimeFromEventDateTime(event.getEnd(), false),
+                event.getId(),
+                getRemindersDefaultValue(event.getReminders()),
+                getLocalDateTimeFromEventDateTime(event.getStart(), true),
+                event.getLocation(),
+                event.getSummary(),
+                event.getDescription(),
+                getLocalDateTimeFromDateTime(event.getUpdated()),
+                event.getRecurringEventId(),
+                getIfAllDayFromGetTransparency(event.getTransparency()),
+                event.getStatus()
+        );
     }
 
     private static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {

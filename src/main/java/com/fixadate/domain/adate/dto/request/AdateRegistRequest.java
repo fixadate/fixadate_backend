@@ -3,33 +3,24 @@ package com.fixadate.domain.adate.dto.request;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class AdateRegistRequest {
-    @Column(nullable = false)
-    private String title;
-    private String notes;
-    private String location;
-    private Date alertWhen;
-    private Date repeatFreq;
-    private String color;
-    private String adateName;
-
-    private Boolean ifAllDay;
-    private LocalDateTime startsWhen;
-    private LocalDateTime endsWhen;
-    private boolean reminders;
-
+public record AdateRegistRequest(
+        @Column(nullable = false) String title,
+        String notes,
+        String location,
+        Date alertWhen,
+        Date repeatFreq,
+        String color,
+        String adateName,
+        Boolean ifAllDay,
+        LocalDateTime startsWhen,
+        LocalDateTime endsWhen,
+        boolean reminders
+) {
     public Adate toEntity(Member member) {
         return Adate.builder()
                 .title(title)
@@ -47,7 +38,8 @@ public class AdateRegistRequest {
                 .member(member)
                 .build();
     }
-    public String generateRandomString(int length) {
+
+    private String generateRandomString(int length) {
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
         StringBuilder stringBuilder = new StringBuilder(length);

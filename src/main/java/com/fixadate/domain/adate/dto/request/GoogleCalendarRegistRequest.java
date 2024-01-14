@@ -3,42 +3,28 @@ package com.fixadate.domain.adate.dto.request;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 import jakarta.persistence.Column;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.Date;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class GoogleCalendarRegistRequest {
-    @Column(nullable = false)
-    private String title;
-    @Column(nullable = false, length = 500)
-    private String notes;
-    @Column(length = 300)
-    private String location;
-    private Boolean ifAllDay;
-    private LocalDateTime startsWhen;
-    private LocalDateTime endsWhen;
-    private Date alertWhen;
-    private Date repeatFreq;
-    private String color;
-    private String adateName;
-
-    /*
-    google calendar
-     */
-    @Column(unique = true)
-    private String calendarId;
-    private boolean reminders;
-    private LocalDateTime version;
-    private LocalDateTime created;
-    private String recurringEventId;
-    private String status;
-
+public record GoogleCalendarRegistRequest(
+        @Column(nullable = false) String title,
+        @Column(nullable = false, length = 500) String notes,
+        @Column(length = 300) String location,
+        Boolean ifAllDay,
+        LocalDateTime startsWhen,
+        LocalDateTime endsWhen,
+        Date alertWhen,
+        Date repeatFreq,
+        String color,
+        String adateName,
+        @Column(unique = true) String calendarId,
+        boolean reminders,
+        LocalDateTime version,
+        LocalDateTime created,
+        String recurringEventId,
+        String status
+) {
     public Adate toEntity(Member member) {
         return Adate.builder()
                 .title(title)

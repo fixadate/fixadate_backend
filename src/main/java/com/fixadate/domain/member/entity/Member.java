@@ -3,25 +3,14 @@ package com.fixadate.domain.member.entity;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.fixadate.global.oauth.entity.OAuthProvider;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,13 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Transactional
+@Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true))
 public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
     private String oauthId;
     @Enumerated(EnumType.STRING)
     private OAuthProvider oauthPlatform;
@@ -55,9 +43,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Adate> adates = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(name = "aDateColorTypes", joinColumns = @JoinColumn(name = "member_id"))
-    private Map<String, String> adateColorTypes = new HashMap<>();
+    @Embedded
+    private AdateColorTypes adateColorTypes = new AdateColorTypes();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

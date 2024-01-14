@@ -1,6 +1,7 @@
 package com.fixadate.domain.member.controller;
 
 import com.fixadate.domain.member.dto.request.AdateColorNameRequestDto;
+import com.fixadate.domain.member.dto.response.MemberColorResponse;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.jwt.MemberPrincipal;
@@ -40,6 +41,13 @@ public class MemberController {
         memberService.saveAdateColorAndName(adateColorNameRequestDto, member);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
+    }
+
+    @GetMapping("/member/color")
+    public ResponseEntity<List<MemberColorResponse>> getMemberColor(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        List<MemberColorResponse> memberColorResponses = memberService.getMemberColor(memberPrincipal.getMember().getId());
+        return ResponseEntity.ok(memberColorResponses);
     }
 
     @GetMapping("/member/random/nickname")

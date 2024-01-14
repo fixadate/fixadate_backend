@@ -1,5 +1,6 @@
 package com.fixadate.global.error;
 
+import com.fixadate.domain.adate.exception.GoogleAccessTokenExpiredException;
 import com.fixadate.domain.member.exception.AdateColorTypeNameDuplicatedException;
 import com.fixadate.domain.member.exception.UnknownMemberException;
 import com.fixadate.global.auth.exception.MemberSigninException;
@@ -12,11 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 @RestControllerAdvice
 public class ControllerAdvice {
     @ExceptionHandler({
             UnknownMemberException.class,
-            UnknownOAuthPlatformException.class
+            UnknownOAuthPlatformException.class,
+            SQLIntegrityConstraintViolationException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
@@ -28,7 +32,8 @@ public class ControllerAdvice {
             TokenExpiredException.class,
             TokenUnsupportedException.class,
             TokenException.class,
-            AdateColorTypeNameDuplicatedException.class
+            AdateColorTypeNameDuplicatedException.class,
+            GoogleAccessTokenExpiredException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
