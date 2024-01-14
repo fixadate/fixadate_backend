@@ -55,46 +55,22 @@ dependencies {
 	//aop
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
-// === Querydsl 빌드 옵션 (선택사항) ===
-def querydslDir = "src/main/generated"
-
-querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
-}
-
-// java source set 에 Querydsl Q Class 위치 추가
-sourceSets {
-	main.java.srcDirs += [ querydslDir ]
-}
-
-
-// Querydsl Q Class 생성 위치 지정
-tasks.withType(JavaCompile) {
-	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
-}
-
-// gradle clean 시, Q Class 디렉토리까지 삭제하도록 설정
-clean {
-	delete file(querydslDir)
-}
-
-compileQuerydsl{
-	options.annotationProcessorPath = configurations.querydsl
-}
-
-compileQuerydsl{
-	if(file(querydslDir).exists() )
-		delete(file(querydslDir))
-}
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-	querydsl.extendsFrom compileClasspath
+// === QueryDsl 빌드 옵션 (선택) ===
+def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+	main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(querydslDir)
+}
+
+clean.doLast {
+	file(querydslDir).deleteDir()
 }
