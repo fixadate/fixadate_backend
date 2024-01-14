@@ -6,6 +6,6 @@ public class AdateColorTypeNameDuplicatedException extends RuntimeException {
     }
 
     public AdateColorTypeNameDuplicatedException() {
-        this("이미 해당 name이 존재합니다.");
+        this("The name already exists.");
     }
 }
