@@ -95,6 +95,11 @@ compileQuerydsl{
 	options.annotationProcessorPath = configurations.querydsl
 }
 
+compileQuerydsl{
+	if(file(querydslDir).exists() )
+		delete(file(querydslDir))
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
