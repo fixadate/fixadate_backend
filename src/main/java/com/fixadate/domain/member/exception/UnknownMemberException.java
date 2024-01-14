@@ -6,6 +6,6 @@ public class UnknownMemberException extends RuntimeException {
     }
 
     public UnknownMemberException() {
-        this("member를 찾을 수 없습니다.");
+        this("The member does not exist in the database.");
     }
 }

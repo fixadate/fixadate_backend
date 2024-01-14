@@ -5,6 +5,6 @@ public class TokenUnsupportedException extends RuntimeException {
         super(message);
     }
     public TokenUnsupportedException() {
-        this("지원하지 않는 형식의 token입니다.");
+        this("Unsupported token format.");
     }
 }

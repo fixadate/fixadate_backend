@@ -6,6 +6,6 @@ public class TokenExpiredException extends RuntimeException{
     }
 
     public TokenExpiredException() {
-        this("Token이 만료되었습니다.");
+        this("The token has expired.");
     }
 }

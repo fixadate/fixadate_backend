@@ -5,6 +5,6 @@ public class MemberSigninException extends RuntimeException {
         super(message);
     }
     public MemberSigninException() {
-        this("db에 멤버가 존재하지 않습니다.");
+        this("The member does not exist in the database.");
     }
 }

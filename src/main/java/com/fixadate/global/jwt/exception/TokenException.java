@@ -6,6 +6,6 @@ public class TokenException extends RuntimeException {
     }
 
     public TokenException() {
-        this("Token 관련 로직에서 문제가 발생하였습니다.");
+        this("There is an issue with the token-related logic.");
     }
 }

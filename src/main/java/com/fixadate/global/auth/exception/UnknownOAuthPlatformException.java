@@ -6,6 +6,6 @@ public class UnknownOAuthPlatformException extends RuntimeException {
     }
 
     public UnknownOAuthPlatformException() {
-        this("존재하지 않는 OAuthPlatform입니다.");
+        this("The OAuth platform does not exist.");
     }
 }
