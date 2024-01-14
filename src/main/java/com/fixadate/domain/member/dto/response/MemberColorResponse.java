@@ -6,10 +6,5 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public class MemberColorResponse {
-    private String color;
-    private String adatename;
+public record MemberColorResponse(String color, String adatename) {
 }

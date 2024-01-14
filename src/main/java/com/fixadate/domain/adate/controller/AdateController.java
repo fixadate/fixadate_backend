@@ -5,9 +5,11 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
+import com.fixadate.domain.adate.exception.GoogleAccessTokenExpiredException;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.jwt.MemberPrincipal;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.calendar.model.Event;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -41,9 +43,13 @@ public class AdateController {
     public ResponseEntity<List<GoogleCalendarEventResponse>> getEvents(@RequestParam(value = "accessToken", required = true) String token,
                                                  @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest)
             throws IOException, GeneralSecurityException, ParseException {
-        DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(token);
-        List<GoogleCalendarEventResponse> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest);
-        return ResponseEntity.ok(events);
+        try {
+            DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(token);
+            List<GoogleCalendarEventResponse> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest);
+            return ResponseEntity.ok(events);
+        } catch (GoogleJsonResponseException e) {
+            throw new GoogleAccessTokenExpiredException();
+        }
     }
 
     @PostMapping("/calendar/google/additional")

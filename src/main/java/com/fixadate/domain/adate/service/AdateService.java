@@ -44,7 +44,7 @@ public class AdateService {
         Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
 
         Events events = calendarService.events().list("primary")
-                .setMaxResults(googleCalendarTimeRequest.getRange())
+                .setMaxResults(googleCalendarTimeRequest.range())
                 .setOrderBy("startTime")
                 .setShowDeleted(false)
                 .setTimeMax(googleCalendarTimeRequest.getDateTimes().get(0))
@@ -66,9 +66,9 @@ public class AdateService {
     @Transactional
     public void registGoogleEvent(List<GoogleCalendarRegistRequest> googleCalendarRegistRequests, Member member) {
         for (GoogleCalendarRegistRequest googleCalendarRegistRequest : googleCalendarRegistRequests) {
-            String calendarId = googleCalendarRegistRequest.getCalendarId();
+            String calendarId = googleCalendarRegistRequest.calendarId();
 
-            if ("cancelled".equals(googleCalendarRegistRequest.getStatus())) {
+            if ("cancelled".equals(googleCalendarRegistRequest.status())) {
                 deleteAdateIfExists(calendarId);
             } else {
                 processAdate(googleCalendarRegistRequest, calendarId, member);
@@ -83,7 +83,7 @@ public class AdateService {
     private void processAdate(GoogleCalendarRegistRequest googleCalendarRegistRequest, String calendarId, Member member) {
         if (checkCalendarIdExists(calendarId)) {
             Adate adate = getAdateFromRepository(calendarId);
-            if (!adate.getVersion().equals(googleCalendarRegistRequest.getVersion())) {
+            if (!adate.getVersion().equals(googleCalendarRegistRequest.version())) {
                 Adate updateAdate = NewAdateRequest.toEntity(adate, googleCalendarRegistRequest);
                 adateRepository.save(updateAdate);
             }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Embeddable
 @Getter
@@ -34,13 +35,10 @@ public class AdateColorTypes {
     public void getKeyAndValue() {
         adateColorTypes.forEach((key, value) -> {});
     }
-
     public List<MemberColorResponse> toMemberColorResponses() {
-        List<MemberColorResponse> memberColorResponses = new ArrayList<>();
-        for (Map.Entry<String, String> entry : adateColorTypes.entrySet()) {
-            MemberColorResponse colorResponse = new MemberColorResponse(entry.getValue(), entry.getKey());
-            memberColorResponses.add(colorResponse);
-        }
-        return memberColorResponses;
+        return adateColorTypes.entrySet().stream()
+                .map(entry -> new MemberColorResponse(entry.getValue(), entry.getKey()))
+                .collect(Collectors.toList());
     }
+
 }

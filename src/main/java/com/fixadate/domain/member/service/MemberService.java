@@ -40,8 +40,8 @@ public class MemberService implements UserDetailsService {
     @Transactional
     public void saveAdateColorAndName(AdateColorNameRequestDto adateColorNameRequestDto, Member member) {
         AdateColorTypes adateColorTypes = member.getAdateColorTypes();
-        validateAdateColorNameUniqueness(adateColorNameRequestDto.getName(), member);
-        adateColorTypes.addColor(adateColorNameRequestDto.getName(), adateColorNameRequestDto.getColor());
+        validateAdateColorNameUniqueness(adateColorNameRequestDto.name(), member);
+        adateColorTypes.addColor(adateColorNameRequestDto.name(), adateColorNameRequestDto.color());
         memberRepository.save(member);
     }
 

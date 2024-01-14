@@ -5,32 +5,18 @@ import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
 import com.fixadate.global.oauth.entity.OAuthProvider;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class MemberRegistRequestDto {
-    @NotBlank
-    private String oauthId;
-    @NotBlank
-    private String oauthPlatform;
-    @NotBlank
-    private String name;
-    @NotBlank
-    private String profileImg;
-    @NotBlank
-    private String nickname;
-    @NotNull
-    private Integer birth;
-    @NotBlank
-    private String gender; //boolean to selection
-    @NotBlank
-    private String profession;
-    @NotBlank
-    private String signatureColor;
+public record MemberRegistRequestDto(
+        @NotBlank String oauthId,
+        @NotBlank String oauthPlatform,
+        @NotBlank String name,
+        @NotBlank String profileImg,
+        @NotBlank String nickname,
+        @NotNull Integer birth,
+        @NotBlank String gender,
+        @NotBlank String profession,
+        @NotBlank String signatureColor
+) {
 
     public Member of() {
         return Member.builder()
@@ -53,5 +39,29 @@ public class MemberRegistRequestDto {
             case "apple" -> OAuthProvider.Apple;
             default -> throw new UnknownOAuthPlatformException();
         };
+    }
+
+    public static MemberRegistRequestDto create(
+            String oauthId,
+            String oauthPlatform,
+            String name,
+            String profileImg,
+            String nickname,
+            Integer birth,
+            String gender,
+            String profession,
+            String signatureColor
+    ) {
+        return new MemberRegistRequestDto(
+                oauthId,
+                oauthPlatform,
+                name,
+                profileImg,
+                nickname,
+                birth,
+                gender,
+                profession,
+                signatureColor
+        );
     }
 }
