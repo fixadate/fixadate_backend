@@ -1,16 +1,16 @@
 package com.fixadate.domain.member.service;
 
 import com.fixadate.domain.member.dto.request.AdateColorNameRequestDto;
+import com.fixadate.domain.member.dto.response.MemberColorResponse;
+import com.fixadate.domain.member.entity.AdateColorTypes;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.exception.AdateColorTypeNameDuplicatedException;
 import com.fixadate.domain.member.exception.UnknownMemberException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,15 +39,15 @@ public class MemberService implements UserDetailsService {
 
     @Transactional
     public void saveAdateColorAndName(AdateColorNameRequestDto adateColorNameRequestDto, Member member) {
-        Map<String, String> adateColorTypes = member.getAdateColorTypes();
+        AdateColorTypes adateColorTypes = member.getAdateColorTypes();
         validateAdateColorNameUniqueness(adateColorNameRequestDto.getName(), member);
-        adateColorTypes.put(adateColorNameRequestDto.getName(), adateColorNameRequestDto.getColor());
+        adateColorTypes.addColor(adateColorNameRequestDto.getName(), adateColorNameRequestDto.getColor());
         memberRepository.save(member);
     }
 
     private void validateAdateColorNameUniqueness(String name, Member member) {
-        Map<String, String> adateColorTypes = member.getAdateColorTypes();
-        if (adateColorTypes.containsKey(name)) {
+        AdateColorTypes adateColorTypes = member.getAdateColorTypes();
+        if (adateColorTypes.ifContainsKey(name)) {
             throw new AdateColorTypeNameDuplicatedException();
         }
     }
@@ -56,13 +56,19 @@ public class MemberService implements UserDetailsService {
     public Member getMemberWithAdateColorTypes(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new UnknownMemberException());
-        member.getAdateColorTypes().forEach((key, value) -> {
-        });
+        member.getAdateColorTypes().getKeyAndValue();
         return member;
     }
 
     public String getRandomNickname(List<String> strings) {
-
         return strings.get(random.nextInt(strings.size())).trim();
+    }
+
+    public List<MemberColorResponse> getMemberColor(Long memberId) {
+        Member member = getMemberWithAdateColorTypes(memberId);
+        AdateColorTypes adateColorTypes = member.getAdateColorTypes();
+        List<MemberColorResponse> memberColorResponses = adateColorTypes.toMemberColorResponses();
+
+        return memberColorResponses;
     }
 }
