@@ -11,6 +11,7 @@ import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.global.jwt.service.JwtProvider;
+import com.fixadate.global.s3.service.S3Service;
 import jakarta.servlet.http.Cookie;
 
 import java.net.URL;
@@ -30,6 +31,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final S3Service s3Service;
     private final JwtProvider jwtProvider;
 
     @PostMapping("/auth/member")
@@ -42,7 +44,7 @@ public class AuthController {
         String accessToken = jwtProvider.createAccessToken(oauthId);
         String refreshToken = jwtProvider.createRefreshToken(oauthId);
 
-        Cookie cookie = createHttpOnlyCookie(refreshToken);
+        Cookie cookie = authService.createHttpOnlyCooke(refreshToken);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -59,16 +61,9 @@ public class AuthController {
             @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
         authService.registMember(memberRegistRequestDto);
 
-        String url = authService.getPresignedUrlFromRequest(memberRegistRequestDto);
-
+        String url = s3Service.generatePresignedUrlForUpload(memberRegistRequestDto.profileImg(),
+                memberRegistRequestDto.contentType());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(url);
-    }
-
-    private Cookie createHttpOnlyCookie(String refreshToken) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        return cookie;
     }
 }
