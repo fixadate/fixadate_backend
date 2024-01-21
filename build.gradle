@@ -53,6 +53,11 @@ dependencies {
 
 	//aop
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	//s3
+	implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-s3', version: '3.1.0'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
+
 }
 
 tasks.named('test') {

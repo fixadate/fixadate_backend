@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -35,38 +36,34 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        if (authentication instanceof OAuth2AuthenticationToken) {
-            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-
+        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
             // OAuth2AuthorizedClient를 통해 사용자의 클라이언트 정보 가져오기
             OAuth2AuthorizedClient authorizedClient = getAuthorizedClient(oauthToken);
             OAuth2AccessToken oAuth2AccessToken = authorizedClient.getAccessToken();
-
-
-            redirect(request, response, oAuth2AccessToken);
+            OAuth2RefreshToken oAuth2RefreshToken = authorizedClient.getRefreshToken();
+            redirect(request, response, oAuth2AccessToken, oAuth2RefreshToken);
         }
     }
 
     // OAuth2AuthorizedClient 가져오기
     private OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken oauthToken) {
         String clientRegistrationId = oauthToken.getAuthorizedClientRegistrationId();
-        OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+        return authorizedClientService.loadAuthorizedClient(
                 clientRegistrationId, oauthToken.getName());
-        return authorizedClient;
     }
 
 
     private void redirect(HttpServletRequest request, HttpServletResponse response,
-                          OAuth2AccessToken oAuth2AccessToken)
+                          OAuth2AccessToken oAuth2AccessToken, OAuth2RefreshToken oAuth2RefreshToken)
             throws IOException {
-        String uri = createURI(oAuth2AccessToken).toString(); // Access Token과 Refresh Token을 포함한 URL을 생성
+        String uri = createURI(oAuth2AccessToken, oAuth2RefreshToken).toString(); // Access Token과 Refresh Token을 포함한 URL을 생성
 
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
 
 
     // Redirect URI 생성. JWT를 쿼리 파라미터로 담아 전달한다.
-    private URI createURI(OAuth2AccessToken oAuth2AccessToken) {
+    private URI createURI(OAuth2AccessToken oAuth2AccessToken, OAuth2RefreshToken oAuth2RefreshToken) {
         return UriComponentsBuilder
                 .newInstance()
                 .scheme("http")
@@ -74,6 +71,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .port(8080)
                 .path("/hello")
                 .queryParam("accessToken", oAuth2AccessToken.getTokenValue())
+                .queryParam("refreshToken", oAuth2RefreshToken.getTokenValue())
                 .build()
                 .toUri();
     }
