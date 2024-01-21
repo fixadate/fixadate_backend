@@ -30,6 +30,7 @@ public record MemberRegistRequestDto(
                 .gender(gender)
                 .profession(profession)
                 .signatureColor(signatureColor)
+                .profileImg(profileImg)
                 .build();
     }
 
