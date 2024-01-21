@@ -15,7 +15,8 @@ public record MemberRegistRequestDto(
         @NotNull Integer birth,
         @NotBlank String gender,
         @NotBlank String profession,
-        @NotBlank String signatureColor
+        @NotBlank String signatureColor,
+        @NotBlank String contentType
 ) {
 
     public Member of() {
@@ -39,29 +40,5 @@ public record MemberRegistRequestDto(
             case "apple" -> OAuthProvider.Apple;
             default -> throw new UnknownOAuthPlatformException();
         };
-    }
-
-    public static MemberRegistRequestDto create(
-            String oauthId,
-            String oauthPlatform,
-            String name,
-            String profileImg,
-            String nickname,
-            Integer birth,
-            String gender,
-            String profession,
-            String signatureColor
-    ) {
-        return new MemberRegistRequestDto(
-                oauthId,
-                oauthPlatform,
-                name,
-                profileImg,
-                nickname,
-                birth,
-                gender,
-                profession,
-                signatureColor
-        );
     }
 }
