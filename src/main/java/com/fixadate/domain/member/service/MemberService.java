@@ -29,14 +29,6 @@ public class MemberService implements UserDetailsService {
         return null;
     }
 
-    public void saveMember(Member member) {
-        memberRepository.save(member);
-    }
-
-    public Optional<Member> findMemberByOAuthId(String oAuthId) {
-        return memberRepository.findMemberByOauthId(oAuthId);
-    }
-
     @Transactional
     public void saveAdateColorAndName(AdateColorNameRequestDto adateColorNameRequestDto, Member member) {
         AdateColorTypes adateColorTypes = member.getAdateColorTypes();
@@ -55,7 +47,7 @@ public class MemberService implements UserDetailsService {
     @Transactional
     public Member getMemberWithAdateColorTypes(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new UnknownMemberException());
+                UnknownMemberException::new);
         member.getAdateColorTypes().getKeyAndValue();
         return member;
     }

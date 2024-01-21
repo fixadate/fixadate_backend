@@ -63,10 +63,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return name;
     }
 
-    public String getOauthId() {
-        return oauthId;
-    }
-
     @Override
     public boolean isAccountNonExpired() {
         return false;
