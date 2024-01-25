@@ -62,7 +62,12 @@ public class MemberController {
     }
 
     @GetMapping("/member/profile-img")
-    public ResponseEntity<String> getProfileImagePresignedurl(@RequestParam("filename") String filename) {
+    public ResponseEntity<String> getProfileImagePresignedUrl(@RequestParam("filename") String filename) {
         return ResponseEntity.ok(s3Service.generatePresignedUrlForDownload(filename));
+    }
+
+    @DeleteMapping("/member/del/profile-img")
+    public ResponseEntity<String> getProfileImageDeletePresignedUrl(@RequestParam("filename") String filename) {
+        return ResponseEntity.ok(s3Service.generatePresignedUrlForDelete(filename));
     }
 }
