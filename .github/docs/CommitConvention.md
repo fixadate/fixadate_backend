@@ -1,0 +1,23 @@
+**아이콘 목록:**
+
+- **🎨** `:art:` 코드의 구조/형태 개선 *(Improve structure / format of the code)*
+- **⚡️** `:zap:` 성능 개선 *(Improve performance)*
+- **🔥** `:fire:` 코드/파일 삭제 *(Remove code or files)*
+- **🐛** `:bug:` 버그 수정 *(Fix a bug)*
+- **✨** `:sparkles:` 새 기능 *(Introduce new features)*
+- **🩹** `:adhesive_bandage`: 단순한, critical하지 않은 이슈 수정
+- **📝** `:memo:` 문서 추가/수정 *(Add or update documentation)*
+- **✅** `:white_check_mark:` 테스트 추가/수정 *(Add or update tests)*
+- **🔒** `:lock:` 보안 이슈 수정 *(Fix security issues)*
+- **🔖** `:bookmark:` 릴리즈/버전 태그 *(Release / Version tags)*
+- **📌** `:pushpin:` 특정 버전 의존성 고정 *(Pin dependencies to specific versions)*
+- **♻️** `:recycle:` 코드 리팩토링 *(Refactor code)*
+- **➕** `:heavy_plus_sign:` 의존성 추가 *(Add a dependency)*
+- **➖** `:heavy_minus_sign:` 의존성 제거 *(Remove a dependency)*
+- **⏪** `:rewind:` 변경 내용 되돌리기 *(Revert changes)*
+- **🔀** `:twisted_rightwards_arrows:` 브랜치 합병 *(Merge branches)*
+- **🚚** `:truck:` 리소스 이동, 이름 변경 *(Move or rename resources, e.g., files paths routes)*
+- **💡** `:bulb:` 주석 추가/수정 *(Add or update comments in source code)*
+- **🗃** `:card_file_box:` 데이터베이스 관련 수정 *(Perform database-related changes)*
+- **🔊** `:loud_sound:` 로그 추가/수정 *(Add or update logs)*
+- **🙈** `:see_no_evil:` .gitignore 추가/수정 *(Add or update a .gitignore file)*
