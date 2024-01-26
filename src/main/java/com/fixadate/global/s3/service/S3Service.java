@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.DeleteObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -18,7 +20,6 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class S3Service {
     private final S3Presigner s3Presigner;
-    private final S3Client s3Client;
 
     @Value("${cloud.aws.bucket-name}")
     private String bucketName;
@@ -31,15 +32,11 @@ public class S3Service {
                 .contentType(contentType)
                 .build();
 
-        PutObjectPresignRequest presignRequest = getPresignRequest(putObjectRequest);
-        return s3Presigner.presignPutObject(presignRequest).url().toString();
-    }
-
-    private PutObjectPresignRequest getPresignRequest(PutObjectRequest putObjectRequest) {
-        return PutObjectPresignRequest.builder()
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(5))
                 .putObjectRequest(putObjectRequest)
                 .build();
+        return s3Presigner.presignPutObject(presignRequest).url().toString();
     }
 
     //download
@@ -55,5 +52,20 @@ public class S3Service {
                 .build();
 
         return s3Presigner.presignGetObject(presignRequest).url().toString();
+    }
+
+    //delete
+    public String generatePresignedUrlForDelete(String fileName) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+
+        DeleteObjectPresignRequest deleteRequest = DeleteObjectPresignRequest.builder()
+                .deleteObjectRequest(deleteObjectRequest)
+                .signatureDuration(Duration.ofMinutes(5))
+                .build();
+
+        return s3Presigner.presignDeleteObject(deleteRequest).url().toString();
     }
 }
