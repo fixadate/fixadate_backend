@@ -1,6 +1,7 @@
 package com.fixadate.global.error;
 
 import com.fixadate.domain.adate.exception.GoogleAccessTokenExpiredException;
+import com.fixadate.domain.invitation.exception.InvitationNotFountException;
 import com.fixadate.domain.member.exception.AdateColorTypeNameDuplicatedException;
 import com.fixadate.domain.member.exception.UnknownMemberException;
 import com.fixadate.global.auth.exception.MemberSigninException;
@@ -20,7 +21,8 @@ public class ControllerAdvice {
     @ExceptionHandler({
             UnknownMemberException.class,
             UnknownOAuthPlatformException.class,
-            SQLIntegrityConstraintViolationException.class
+            SQLIntegrityConstraintViolationException.class,
+            InvitationNotFountException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
