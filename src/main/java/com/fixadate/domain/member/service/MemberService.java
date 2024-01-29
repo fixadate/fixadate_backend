@@ -63,4 +63,8 @@ public class MemberService implements UserDetailsService {
 
         return memberColorResponses;
     }
+
+    public Member getMemberByEmail(String email) {
+        return memberRepository.findMemberByEmail(email).orElseThrow(UnknownMemberException::new);
+    }
 }

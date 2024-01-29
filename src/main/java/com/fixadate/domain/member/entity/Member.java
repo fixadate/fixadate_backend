@@ -34,8 +34,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String name;
     private String profileImg;
     private String nickname;
+    private String email;
     private Integer birth;
-    private String gender; //boolean to selection
+    private String gender;
     private String profession;
     private String signatureColor;
     // 로그인 정보 식별 값, 프로필 사진, 필명, 이름, 성별, 생년월일, 이메일

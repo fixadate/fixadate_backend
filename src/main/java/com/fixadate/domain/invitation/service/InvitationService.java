@@ -6,15 +6,12 @@ import com.fixadate.domain.invitation.entity.Invitation;
 import com.fixadate.domain.invitation.exception.InvitationNotFountException;
 import com.fixadate.domain.invitation.repository.InvitationRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.service.MemberService;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
