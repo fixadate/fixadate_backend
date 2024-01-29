@@ -1,42 +1,54 @@
 package com.fixadate.domain.invitation.service;
 
-import com.fixadate.domain.invitation.dto.request.InvitationRequest;
 import com.fixadate.domain.invitation.dto.response.InvitationResponse;
 import com.fixadate.domain.invitation.entity.Invitation;
 import com.fixadate.domain.invitation.exception.InvitationNotFountException;
 import com.fixadate.domain.invitation.repository.InvitationRepository;
-import com.fixadate.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class InvitationService {
     private final InvitationRepository invitationRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
 
-    public void registInvitation(Member inviter, InvitationRequest invitationRequest) {
-        invitationRepository.save(createInviation(inviter, invitationRequest));
+    public String registInvitation(Long teamId) {
+        Invitation invitation = createInvitation(teamId);
+        invitationRepository.save(invitation);
+        return invitation.getId();
     }
 
-    private Invitation createInviation(Member inviter, InvitationRequest invitationRequest) {
+    private Invitation createInvitation(Long teamId) {
         return Invitation.builder()
-                .inviter(inviter.getEmail())
-                .invitee(invitationRequest.getInviteeEmail())
-                .team(invitationRequest.getTeamId())
-                .expiration(3_600_000L)
+                .id(UUID.randomUUID().toString())
+                .teamId(teamId)
+                .expiration(getExpiration())
                 .build();
     }
 
-    public InvitationResponse getInvitationFromId(String id) {
-        Invitation invitations = invitationRepository.findById(id).orElseThrow(InvitationNotFountException::new);
-        List<Object> list = redisTemplate.opsForList().range("invitee:" + "kevin09288@daum.net", 0 ,-1);
-        log.info(list.size() + "몇 개?");
-        return InvitationResponse.of(invitations);
+    private Long getExpiration() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiration = now.plusDays(7).with(LocalTime.of(23, 59, 59));
+        return expiration.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+    }
+
+    public InvitationResponse getInvitationFromTeamId(Long teamId) {
+        Invitation invitation = invitationRepository.findByTeamId(teamId)
+                .orElseThrow(InvitationNotFountException::new);
+        return InvitationResponse.of(invitation);
+    }
+
+    public InvitationResponse getInvitationById(String invitationId) {
+        Invitation invitation = invitationRepository.findById(invitationId)
+                .orElseThrow(InvitationNotFountException::new);
+        log.info(invitation.getExpiration().toString());
+        return InvitationResponse.of(invitation);
     }
 }

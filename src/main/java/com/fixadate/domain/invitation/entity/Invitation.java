@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
+
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -15,17 +17,10 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @RedisHash(value = "invitation")
 public class Invitation {
-    //fixme : 초대수단(이메일 or 전화번호 or else)에 따라서 주석 수정하기
-    //초대하는 사람의 이메일
-    private String inviter;
-
-    //초대하려고 하는 팀
     @Id
-    private String team;
-
-    //초대받는 사람의 이메일
-    private String invitee;
-
+    private String id;
+    @Indexed
+    private Long teamId;
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long expiration;
 }
