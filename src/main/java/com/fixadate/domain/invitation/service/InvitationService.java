@@ -1,7 +1,7 @@
 package com.fixadate.domain.invitation.service;
 
-import com.fixadate.domain.invitation.dto.request.InvitationRequestDto;
-import com.fixadate.domain.invitation.dto.request.InvitationSpecifyRequestDto;
+import com.fixadate.domain.invitation.dto.request.InvitationRequest;
+import com.fixadate.domain.invitation.dto.request.InvitationSpecifyRequest;
 import com.fixadate.domain.invitation.dto.response.InvitationResponse;
 import com.fixadate.domain.invitation.entity.Invitation;
 import com.fixadate.domain.invitation.exception.InvitationNotFountException;
@@ -10,10 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +19,8 @@ import java.util.UUID;
 public class InvitationService {
     private final InvitationRepository invitationRepository;
 
-    public void registInvitation(InvitationRequestDto invitationRequestDto) {
-        Invitation invitation = invitationRequestDto.toEntity();
+    public void registInvitation(InvitationRequest invitationRequest) {
+        Invitation invitation = invitationRequest.toEntity();
         invitationRepository.save(invitation);
     }
 
@@ -39,8 +37,19 @@ public class InvitationService {
         return InvitationResponse.of(invitation);
     }
 
-    public void  inviteSpecifyMember(InvitationSpecifyRequestDto invitationSpecifyRequestDto) {
-        Invitation invitation = invitationSpecifyRequestDto.toEntity();
+    public void  inviteSpecifyMember(InvitationSpecifyRequest invitationSpecifyRequest) {
+        Invitation invitation = invitationSpecifyRequest.toEntity();
         invitationRepository.save(invitation);
+    }
+
+    public List<InvitationResponse> getInvitationResponseFromTeamId(Long teamId) {
+        List<Invitation> invitations = invitationRepository.findAllByTeamId(teamId);
+        return getResponseFromInvitation(invitations);
+    }
+
+    private List<InvitationResponse> getResponseFromInvitation(List<Invitation> invitations) {
+        return invitations.stream()
+                .map(InvitationResponse::of)
+                .collect(Collectors.toList());
     }
 }

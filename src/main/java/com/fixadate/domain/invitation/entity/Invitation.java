@@ -1,5 +1,6 @@
 package com.fixadate.domain.invitation.entity;
 
+import com.fixadate.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.data.redis.core.index.Indexed;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -23,7 +25,7 @@ public class Invitation {
     @Indexed
     private Long teamId;
 
-    private boolean isUserSpecify;
+    private boolean userSpecify;
 
     @Column(nullable = false)
     private String role;

@@ -4,11 +4,12 @@ import com.fixadate.domain.invitation.entity.Invitation;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface InvitationRepository extends CrudRepository<Invitation, String> {
     Optional<Invitation> findByTeamId(Long teamId);
 
-    Optional<Invitation> findById(String invitationId);
+    List<Invitation> findAllByTeamId(Long teamId);
 }

@@ -32,7 +32,6 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            TokenExpiredException.class,
             TokenUnsupportedException.class,
             TokenException.class,
             AdateColorTypeNameDuplicatedException.class,
@@ -44,6 +43,7 @@ public class ControllerAdvice {
                 .body(errorResponse);
     }
     @ExceptionHandler({
+            TokenExpiredException.class
     })
     public ResponseEntity<ErrorResponse> handleUnAuthorizedRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
