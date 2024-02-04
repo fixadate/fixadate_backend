@@ -20,16 +20,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
     private final S3Utils s3Utils;
     private final JwtProvider jwtProvider;
 
-    @PostMapping("/auth/member")
+    @PostMapping("/member")
     public ResponseEntity<Void> registMember(@RequestBody @Validated MemberOAuthRequestDto memberOAuthRequestDto) {
         String oauthId = memberOAuthRequestDto.oauthId();
         Optional<Member> memberOptional = authService.findMemberByOAuthId(oauthId);
@@ -51,7 +53,7 @@ public class AuthController {
     }
 
     @Transactional
-    @PostMapping("/auth/member/additional")
+    @PostMapping("/member/additional")
     public ResponseEntity<String> AdditionalRegistMember(
             @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
         authService.registMember(memberRegistRequestDto);

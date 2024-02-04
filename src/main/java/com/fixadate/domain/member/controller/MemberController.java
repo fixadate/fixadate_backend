@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/member")
 @Slf4j
 public class MemberController {
     private final MemberService memberService;
@@ -29,7 +30,7 @@ public class MemberController {
     @Value("${randNick.nouns}")
     private String randomNouns;
 
-    @PostMapping("/member/color")
+    @PostMapping("/color")
     public ResponseEntity<Void> registAdateColorAndName(
             @RequestBody @Validated AdateColorNameRequestDto adateColorNameRequestDto,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
@@ -40,14 +41,14 @@ public class MemberController {
                 .build();
     }
 
-    @GetMapping("/member/color")
+    @GetMapping("/color")
     public ResponseEntity<List<MemberColorResponse>> getMemberColor(
             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         List<MemberColorResponse> memberColorResponses = memberService.getMemberColor(memberPrincipal.getMember().getId());
         return ResponseEntity.ok(memberColorResponses);
     }
 
-    @GetMapping("/member/random/nickname")
+    @GetMapping("/nickname")
     public ResponseEntity<String> getRandomNickname() {
         List<String> adjs = List.of(randomAdjs.split(","));
         List<String> nouns = List.of(randomNouns.split(","));
@@ -58,12 +59,12 @@ public class MemberController {
         return ResponseEntity.ok(randomNickname);
     }
 
-    @GetMapping("/member/profile-img")
+    @GetMapping("/profile-img")
     public ResponseEntity<String> getProfileImagePresignedUrl(@RequestParam("filename") String filename) {
         return ResponseEntity.ok(s3Utils.generatePresignedUrlForDownload(filename));
     }
 
-    @DeleteMapping("/member/del/profile-img")
+    @DeleteMapping("/profile-img")
     public ResponseEntity<String> getProfileImageDeletePresignedUrl(@RequestParam("filename") String filename) {
         return ResponseEntity.ok(s3Utils.generatePresignedUrlForDelete(filename));
     }
