@@ -22,7 +22,8 @@ public class ControllerAdvice {
             UnknownMemberException.class,
             UnknownOAuthPlatformException.class,
             SQLIntegrityConstraintViolationException.class,
-            InvitationNotFountException.class
+            InvitationNotFountException.class,
+            MemberSigninException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
@@ -31,7 +32,6 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            TokenExpiredException.class,
             TokenUnsupportedException.class,
             TokenException.class,
             AdateColorTypeNameDuplicatedException.class,
@@ -43,7 +43,7 @@ public class ControllerAdvice {
                 .body(errorResponse);
     }
     @ExceptionHandler({
-            MemberSigninException.class
+            TokenExpiredException.class
     })
     public ResponseEntity<ErrorResponse> handleUnAuthorizedRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

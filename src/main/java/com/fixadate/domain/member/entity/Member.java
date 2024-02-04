@@ -34,7 +34,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String name;
     private String profileImg;
     private String nickname;
-    private String email;
     private Integer birth;
     private String gender;
     private String profession;

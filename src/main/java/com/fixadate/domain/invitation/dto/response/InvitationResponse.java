@@ -6,10 +6,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-public record InvitationResponse(String invitationId, Long teamId, LocalDateTime dateTime) {
+public record InvitationResponse(Long teamId, LocalDateTime dateTime, String memberName, String memberRole) {
 
     public static InvitationResponse of(Invitation invitation) {
-        return new InvitationResponse(invitation.getId(), invitation.getTeamId(), getLocalDateTime(invitation.getExpiration()));
+        return new InvitationResponse(invitation.getTeamId(),
+                getLocalDateTime(invitation.getExpiration()), invitation.getMemberName(), invitation.getRole());
     }
 
     private static LocalDateTime getLocalDateTime(Long milliseconds) {

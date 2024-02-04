@@ -33,7 +33,4 @@ public class OAuth2CustomUser implements OAuth2User, Serializable {
         return this.registrationId;
     }
 
-    public String getEmail() {
-        return null;
-    }
 }
