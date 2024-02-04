@@ -1,5 +1,6 @@
 package com.fixadate.domain.invitation.entity;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,10 +18,18 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @RedisHash(value = "invitation")
 public class Invitation {
-    @Id
+    @Id // random_invitaion_id
     private String id;
     @Indexed
     private Long teamId;
+
+    private boolean isUserSpecify;
+
+    @Column(nullable = false)
+    private String role;
+
+    private String memberName;
+
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long expiration;
 }
