@@ -33,7 +33,6 @@ public class InvitationService {
     public InvitationResponse getInvitationById(String invitationId) {
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(InvitationNotFountException::new);
-        log.info(invitation.getExpiration().toString());
         return InvitationResponse.of(invitation);
     }
 

@@ -15,14 +15,15 @@ public record InvitationSpecifyRequest(String memberName, String memberRole, Lon
                 .role(memberRole)
                 .teamId(teamId)
                 .userSpecify(true)
-                .expiration(getExpiration())
+                .expiration(604800L) // 7일
+                .expirationDate(getExpiration())
                 .memberName(memberName)
                 .build();
     }
 
-    private Long getExpiration() {
+    private LocalDateTime getExpiration() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expiration = now.plusDays(7);
-        return expiration.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+        return now.plusDays(7);
+//        return expiration.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
     }
 }
