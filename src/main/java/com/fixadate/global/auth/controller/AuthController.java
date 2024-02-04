@@ -1,20 +1,16 @@
 package com.fixadate.global.auth.controller;
 
 import static com.fixadate.global.oauth.ConstantValue.ACCESS_TOKEN;
-import static com.fixadate.global.oauth.ConstantValue.REFRESH_TOKEN;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequestDto;
 import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.global.jwt.service.JwtProvider;
-import com.fixadate.global.s3.service.S3Service;
+import com.fixadate.global.util.S3Utils;
 import jakarta.servlet.http.Cookie;
 
-import java.net.URL;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -25,13 +21,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final S3Service s3Service;
+    private final S3Utils s3Utils;
     private final JwtProvider jwtProvider;
 
     @PostMapping("/auth/member")
@@ -61,7 +56,7 @@ public class AuthController {
             @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
         authService.registMember(memberRegistRequestDto);
 
-        String url = s3Service.generatePresignedUrlForUpload(memberRegistRequestDto.profileImg(),
+        String url = s3Utils.generatePresignedUrlForUpload(memberRegistRequestDto.profileImg(),
                 memberRegistRequestDto.contentType());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(url);

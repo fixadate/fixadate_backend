@@ -6,17 +6,14 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.jwt.MemberPrincipal;
 import java.util.List;
-import java.util.Random;
 
-import com.fixadate.global.s3.service.S3Service;
+import com.fixadate.global.util.S3Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class MemberController {
     private final MemberService memberService;
-    private final S3Service s3Service;
+    private final S3Utils s3Utils;
 
     @Value("${randNick.adjs}")
     private String randomAdjs;
@@ -63,11 +60,11 @@ public class MemberController {
 
     @GetMapping("/member/profile-img")
     public ResponseEntity<String> getProfileImagePresignedUrl(@RequestParam("filename") String filename) {
-        return ResponseEntity.ok(s3Service.generatePresignedUrlForDownload(filename));
+        return ResponseEntity.ok(s3Utils.generatePresignedUrlForDownload(filename));
     }
 
     @DeleteMapping("/member/del/profile-img")
     public ResponseEntity<String> getProfileImageDeletePresignedUrl(@RequestParam("filename") String filename) {
-        return ResponseEntity.ok(s3Service.generatePresignedUrlForDelete(filename));
+        return ResponseEntity.ok(s3Utils.generatePresignedUrlForDelete(filename));
     }
 }

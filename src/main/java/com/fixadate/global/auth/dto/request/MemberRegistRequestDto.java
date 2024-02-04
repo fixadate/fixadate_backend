@@ -16,7 +16,8 @@ public record MemberRegistRequestDto(
         @NotBlank String gender,
         @NotBlank String profession,
         @NotBlank String signatureColor,
-        @NotBlank String contentType
+        @NotBlank String contentType,
+        @NotBlank String email
 ) {
 
     public Member of() {
@@ -31,6 +32,7 @@ public record MemberRegistRequestDto(
                 .profession(profession)
                 .signatureColor(signatureColor)
                 .profileImg(profileImg)
+                .email(email)
                 .build();
     }
 

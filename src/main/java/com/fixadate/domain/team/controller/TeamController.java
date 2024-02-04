@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequiredArgsConstructor
 public class TeamController {
+
     private final RedisTemplate<String, Object> redisTemplate;
     @GetMapping("/redistest")
     public String redisTest() {

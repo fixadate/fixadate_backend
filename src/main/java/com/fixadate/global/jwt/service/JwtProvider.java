@@ -90,7 +90,7 @@ public class JwtProvider {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         String oauthId = getOauthIdFromToken(token);
-        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(() -> new UnknownMemberException());
+        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(UnknownMemberException::new);
         MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
     }
