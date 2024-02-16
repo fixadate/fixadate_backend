@@ -1,7 +1,7 @@
 package com.fixadate.global.jwt.service;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.exception.UnknownMemberException;
+import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.exception.TokenException;
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtProvider {
     private final MemberRepository memberRepository;
     @Value("${jwt.secret}")
@@ -90,11 +92,10 @@ public class JwtProvider {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         String oauthId = getOauthIdFromToken(token);
-        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(UnknownMemberException::new);
+        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(TokenException::new);
         MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
     }
-
     private String getOauthIdFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret.getBytes())

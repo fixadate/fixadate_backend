@@ -5,7 +5,7 @@ import com.fixadate.domain.member.dto.response.MemberColorResponse;
 import com.fixadate.domain.member.entity.AdateColorTypes;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.exception.AdateColorTypeNameDuplicatedException;
-import com.fixadate.domain.member.exception.UnknownMemberException;
+import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 
@@ -47,7 +47,7 @@ public class MemberService implements UserDetailsService {
     @Transactional
     public Member getMemberWithAdateColorTypes(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
-                UnknownMemberException::new);
+                MemberNotFoundException::new);
         member.getAdateColorTypes().getKeyAndValue();
         return member;
     }
