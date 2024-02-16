@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig extends SecurityConfigurerAdapter {
+public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -50,8 +50,11 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeHttpRequests()
-                .anyRequest().permitAll()
+                .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**").permitAll()
+                .anyRequest().authenticated()
+
                 .and()
                 .oauth2Login()
                 .successHandler(oAuth2MemberSuccessHandler)

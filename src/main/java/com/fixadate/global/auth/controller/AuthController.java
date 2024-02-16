@@ -34,10 +34,7 @@ public class AuthController {
     @PostMapping("/member")
     public ResponseEntity<Void> registMember(@RequestBody @Validated MemberOAuthRequestDto memberOAuthRequestDto) {
         String oauthId = memberOAuthRequestDto.oauthId();
-        Optional<Member> memberOptional = authService.findMemberByOAuthId(oauthId);
-        if (memberOptional.isEmpty()) {
-            throw new MemberSigninException();
-        }
+        Member member = authService.findMemberByOAuthId(oauthId);
         String accessToken = jwtProvider.createAccessToken(oauthId);
         String refreshToken = jwtProvider.createRefreshToken(oauthId);
 

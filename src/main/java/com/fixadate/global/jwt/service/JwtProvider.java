@@ -7,10 +7,7 @@ import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.exception.TokenException;
 import com.fixadate.global.jwt.exception.TokenExpiredException;
 import com.fixadate.global.jwt.exception.TokenUnsupportedException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.time.LocalDateTime;
@@ -20,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
@@ -71,7 +67,7 @@ public class JwtProvider {
 
     private Date expiredAt(int expirationPeriod) {
         LocalDateTime now = LocalDateTime.now();
-        return Date.from(now.plusHours(expirationPeriod).atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(now.plusSeconds(expirationPeriod).atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public boolean validateToken(String token) {
@@ -81,13 +77,16 @@ public class JwtProvider {
                     .parseClaimsJws(token)
                     .getBody();
             return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException();
+            log.info("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            throw new TokenUnsupportedException();
-        } catch (Exception e) {
-            throw new TokenException();
+            log.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다.");
         }
+        return false;
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {

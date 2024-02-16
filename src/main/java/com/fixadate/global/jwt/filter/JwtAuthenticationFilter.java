@@ -16,6 +16,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
+
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String BEARER_TOKEN_PREFIX = "Bearer ";
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -34,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     private String retrieveToken(HttpServletRequest httpServletRequest) {
-        String bearerToken = httpServletRequest.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        String bearerToken = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TOKEN_PREFIX)) {
             return bearerToken.substring(7);
         }
         return null;

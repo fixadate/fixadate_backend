@@ -2,6 +2,7 @@ package com.fixadate.global.auth.service;
 
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 
@@ -25,8 +26,8 @@ import static com.fixadate.global.oauth.ConstantValue.REFRESH_TOKEN;
 public class AuthService {
     private final MemberRepository memberRepository;
 
-    public Optional<Member> findMemberByOAuthId(String oauthId) {
-        return memberRepository.findMemberByOauthId(oauthId);
+    public Member findMemberByOAuthId(String oauthId) {
+        return memberRepository.findMemberByOauthId(oauthId).orElseThrow(MemberNotFoundException::new);
     }
 
     @Transactional
