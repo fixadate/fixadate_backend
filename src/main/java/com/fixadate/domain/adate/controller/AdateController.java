@@ -5,6 +5,7 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
+import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.GoogleAccessTokenExpiredException;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
@@ -79,6 +80,12 @@ public class AdateController {
         List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
                 getAdateCalendarEvents(member, startDateTime, endDateTime);
         return ResponseEntity.ok(adateCalendarEventResponses);
+    }
+
+    @GetMapping("/member")
+    public ResponseEntity<List<Adate>> getAdatesByMemberName(@RequestParam String memberName) {
+        List<Adate> adates = adateService.getAdateResponseByMemberName(memberName);
+        return ResponseEntity.ok(adates);
     }
 }
 

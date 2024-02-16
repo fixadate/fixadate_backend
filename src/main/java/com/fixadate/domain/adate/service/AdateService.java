@@ -119,4 +119,8 @@ public class AdateService {
                 .map(AdateCalendarEventResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public List<Adate> getAdateResponseByMemberName(String memberName) {
+        return adateQueryRepository.findAdatesByMemberName(memberName);
+    }
 }
