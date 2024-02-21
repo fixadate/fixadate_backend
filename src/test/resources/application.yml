@@ -1,16 +1,58 @@
 spring:
-  datasource:
+  datasource :
     url: jdbc:h2:mem:test
+    driverClassName: org.h2.Driver
     username: sa
     password:
-    driver-class-name: org.h2.Driver
-
   jpa:
     hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-logging:
-  level:
-    org.hibernate.SQL: debug
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: hello
+            client-secret: hello
+            scope:
+              - hello
+              - hello
+
+      provider:
+        google:
+          authorization-uri: google
+          token-uri: google
+          user-info-uri: google
+          user-name-attribute: google
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+jwt:
+  accessToken:
+    expiration-period : 1000000
+  refreshToken:
+    expiration-period : 1000000
+  secret: "dfkjlkafdjkljkjdkljfkljdkfjkldsjfklwemkl"
+
+
+google:
+  api:
+    key: "123123123"
+
+randNick:
+  adjs: '용준, 용준'
+  nouns: '핫도그, 피자'
+
+cloud:
+  aws:
+    credentials:
+      access-key: 1234
+      secret-key: 12341234
+    region:
+      static: ap-northeast-2
+    bucket-name: 12341234
