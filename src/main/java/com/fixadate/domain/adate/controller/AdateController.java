@@ -56,7 +56,7 @@ public class AdateController {
         }
     }
 
-    @PostMapping("/google/additional")
+    @PostMapping("/google")
     public ResponseEntity<Void> registEvents(@RequestBody List<GoogleCalendarRegistRequest> googleCalendarRegistRequest,
                                              @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         adateService.registGoogleEvent(googleCalendarRegistRequest, memberPrincipal.getMember());
