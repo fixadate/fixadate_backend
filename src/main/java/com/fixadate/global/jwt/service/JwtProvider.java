@@ -79,19 +79,23 @@ public class JwtProvider {
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
+            throw new TokenException();
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
+            throw new TokenExpiredException();
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
+            throw new TokenUnsupportedException();
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
+            throw new TokenException();
         }
-        return false;
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         String oauthId = getOauthIdFromToken(token);
-        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(TokenException::new);
+        //fixme 20240221 token으로 member를 찾지 못 할때 예외처리 구현해야함.
+        Member member = memberRepository.findMemberByOauthId(oauthId).orElseThrow(MemberNotFoundException::new);
         MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
     }

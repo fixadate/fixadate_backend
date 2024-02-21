@@ -34,10 +34,8 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            TokenUnsupportedException.class,
             ColorTypeNameDuplicatedException.class,
             GoogleAccessTokenExpiredException.class,
-            TokenException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
@@ -46,7 +44,6 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            TokenExpiredException.class
     })
     public ResponseEntity<ErrorResponse> handleUnAuthorizedRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

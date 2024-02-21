@@ -35,8 +35,8 @@ public class AuthController {
     public ResponseEntity<Void> registMember(@RequestBody @Validated MemberOAuthRequestDto memberOAuthRequestDto) {
         String oauthId = memberOAuthRequestDto.oauthId();
         Member member = authService.findMemberByOAuthId(oauthId);
-        String accessToken = jwtProvider.createAccessToken(oauthId);
-        String refreshToken = jwtProvider.createRefreshToken(oauthId);
+        String accessToken = jwtProvider.createAccessToken(member.getOauthId());
+        String refreshToken = jwtProvider.createRefreshToken(member.getOauthId());
 
         Cookie cookie = authService.createHttpOnlyCooke(refreshToken);
 

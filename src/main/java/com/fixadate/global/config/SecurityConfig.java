@@ -3,6 +3,7 @@ package com.fixadate.global.config;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.jwt.CustomAuthenticationEntryPoint;
 import com.fixadate.global.jwt.JwtAccessDeniedHandler;
+import com.fixadate.global.jwt.filter.ExceptionHandlerFilter;
 import com.fixadate.global.jwt.filter.JwtAuthenticationFilter;
 import com.fixadate.global.jwt.service.JwtProvider;
 import com.fixadate.global.oauth.handler.OAuth2MemberFailureHandler;
@@ -50,16 +51,16 @@ public class SecurityConfig {
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
 
                 .authorizeHttpRequests()
-                .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**").permitAll()
+                .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**", "/", "/member/nickname", "/error").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
                 .oauth2Login()
                 .successHandler(oAuth2MemberSuccessHandler)
                 .failureHandler(oAuth2MemberFailureHandler);
-
         return http.build();
     }
 }
