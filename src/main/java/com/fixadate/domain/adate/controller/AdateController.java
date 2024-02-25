@@ -39,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 @RequestMapping("/calendar")
 @Slf4j
-public class AdateController {
+public class AdateController  {
     private final AdateService adateService;
 
     @GetMapping("/google")
