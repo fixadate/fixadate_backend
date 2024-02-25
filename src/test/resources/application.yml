@@ -8,7 +8,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
 
   security:
     oauth2:
@@ -32,6 +32,9 @@ spring:
     redis:
       host: localhost
       port: 6379
+  sql:
+    init:
+      mode: always
 jwt:
   accessToken:
     expiration-period : 1000000
