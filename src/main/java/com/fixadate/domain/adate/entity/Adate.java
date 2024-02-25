@@ -1,5 +1,7 @@
 package com.fixadate.domain.adate.entity;
 
+import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
+import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -25,9 +27,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-/*
-calendarId를 통해 조회를 한 뒤, version을 비교하므로 자주 조회를 하고, 동일한 값이 없는 calendarId를 index로 정했다.
- */
 @Table(indexes = @Index(name = "calendar_id", columnList = "calendarId", unique = true))
 public class Adate extends BaseTimeEntity {
     @Id
@@ -44,12 +43,7 @@ public class Adate extends BaseTimeEntity {
     private Date repeatFreq;
     private String color;
     private String adateName;
-
-    /*
-    calendar OPEN API
-     */
     private Boolean ifAllDay;
-
     private LocalDateTime startsWhen;
     private LocalDateTime endsWhen;
     @Column(unique = true)
@@ -60,7 +54,31 @@ public class Adate extends BaseTimeEntity {
     private String recurringEventId;
     private String status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @ManyToOne()
+    @JoinColumn(name = "colorType_id")
+    private ColorType colorType;
+
+    public void updateFrom(GoogleCalendarRegistRequest other) {
+        this.title = other.title();
+        this.notes = other.notes();
+        this.location = other.location();
+        this.alertWhen = other.alertWhen();
+        this.repeatFreq = other.repeatFreq();
+        this.color = other.color();
+        this.adateName = other.adateName();
+        this.ifAllDay = other.ifAllDay();
+        this.startsWhen = other.startsWhen();
+        this.endsWhen = other.endsWhen();
+        this.calendarId = other.calendarId();
+        this.reminders = other.reminders();
+        this.recurringEventId = other.recurringEventId();
+        this.status = other.status();
+    }
+    public void setColorType(ColorType colorType) {
+        this.colorType = colorType;
+    }
 }

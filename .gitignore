@@ -7,6 +7,7 @@ build/
 
 src/main/resources/
 src/main/generated/
+src/test/resources/
 ### STS ###
 .apt_generated
 .classpath

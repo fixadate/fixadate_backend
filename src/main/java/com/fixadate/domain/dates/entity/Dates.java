@@ -1,4 +1,4 @@
-package com.fixadate.domain.Dates.entity;
+package com.fixadate.domain.dates.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

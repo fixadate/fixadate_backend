@@ -3,31 +3,35 @@ package com.fixadate.domain.adate.service;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
-import com.fixadate.domain.adate.dto.request.NewAdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.EventNotExistException;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.colortype.entity.ColorType;
+import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
+import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.config.GoogleApiConfig;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -37,15 +41,19 @@ public class AdateService {
     private final GoogleApiConfig googleApiConfig;
     private final AdateRepository adateRepository;
     private final AdateQueryRepository adateQueryRepository;
+    private final ColorTypeRepository colorTypeRepository;
+    public static final String calendarId = "primary";
+    public static final String calendarOrderBy = "startTime";
+    public static final String calendarCancelStatus = "cancelled";
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
                                                         GoogleCalendarTimeRequest googleCalendarTimeRequest)
             throws IOException, GeneralSecurityException, ParseException {
         Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
 
-        Events events = calendarService.events().list("primary")
+        Events events = calendarService.events().list(calendarId)
                 .setMaxResults(googleCalendarTimeRequest.range())
-                .setOrderBy("startTime")
+                .setOrderBy(calendarOrderBy)
                 .setShowDeleted(false)
                 .setTimeMax(googleCalendarTimeRequest.getDateTimes().get(0))
                 .setTimeMin(googleCalendarTimeRequest.getDateTimes().get(1))
@@ -68,7 +76,7 @@ public class AdateService {
         for (GoogleCalendarRegistRequest googleCalendarRegistRequest : googleCalendarRegistRequests) {
             String calendarId = googleCalendarRegistRequest.calendarId();
 
-            if ("cancelled".equals(googleCalendarRegistRequest.status())) {
+            if (calendarCancelStatus.equals(googleCalendarRegistRequest.status())) {
                 deleteAdateIfExists(calendarId);
             } else {
                 processAdate(googleCalendarRegistRequest, calendarId, member);
@@ -80,15 +88,17 @@ public class AdateService {
         adateRepository.delete(getAdateFromRepository(calendarId));
     }
 
-    private void processAdate(GoogleCalendarRegistRequest googleCalendarRegistRequest, String calendarId, Member member) {
+    @Transactional
+    public void processAdate(GoogleCalendarRegistRequest googleCalendarRegistRequest, String calendarId, Member member) {
         if (checkCalendarIdExists(calendarId)) {
             Adate adate = getAdateFromRepository(calendarId);
             if (!adate.getVersion().equals(googleCalendarRegistRequest.version())) {
-                Adate updateAdate = NewAdateRequest.toEntity(adate, googleCalendarRegistRequest);
-                adateRepository.save(updateAdate);
+                adate.updateFrom(googleCalendarRegistRequest);
+                setAdateColorType(adate);
             }
         } else {
             Adate adate = googleCalendarRegistRequest.toEntity(member);
+            setAdateColorType(adate);
             adateRepository.save(adate);
         }
     }
@@ -105,7 +115,14 @@ public class AdateService {
     @Transactional
     public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
         Adate adate = adateRegistRequest.toEntity(member);
+        setAdateColorType(adate);
         adateRepository.save(adate);
+    }
+
+    public void setAdateColorType(Adate adate) {
+        ColorType colorType = colorTypeRepository.findColorTypeByColor(adate.getColor())
+                .orElseThrow(ColorTypeNotFoundException::new);
+        adate.setColorType(colorType);
     }
 
     public List<AdateCalendarEventResponse> getAdateCalendarEvents(Member member, LocalDateTime startDateTime,
@@ -118,5 +135,9 @@ public class AdateService {
         return adates.stream()
                 .map(AdateCalendarEventResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public List<Adate> getAdateResponseByMemberName(String memberName) {
+        return adateQueryRepository.findAdatesByMemberName(memberName);
     }
 }
