@@ -6,6 +6,6 @@ public class EventNotExistException extends RuntimeException {
     }
 
     public EventNotExistException() {
-        this("The event does not exist in the database.\"");
+        this("The event does not exist in the database.");
     }
 }

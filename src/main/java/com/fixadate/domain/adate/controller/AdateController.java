@@ -5,6 +5,7 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
+import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.GoogleAccessTokenExpiredException;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
@@ -36,11 +37,12 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/calendar")
 @Slf4j
 public class AdateController {
     private final AdateService adateService;
 
-    @GetMapping("/calendar/google")
+    @GetMapping("/google")
     public ResponseEntity<List<GoogleCalendarEventResponse>> getEvents(
             @RequestParam(value = "accessToken", required = true) String accessToken,
             @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest)
@@ -54,14 +56,14 @@ public class AdateController {
         }
     }
 
-    @PostMapping("/calendar/google/additional")
+    @PostMapping("/google")
     public ResponseEntity<Void> registEvents(@RequestBody List<GoogleCalendarRegistRequest> googleCalendarRegistRequest,
                                              @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         adateService.registGoogleEvent(googleCalendarRegistRequest, memberPrincipal.getMember());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/calendar")
+    @PostMapping()
     public ResponseEntity<Void> registAdateEvent(@RequestBody AdateRegistRequest adateRegistRequest,
                                                  @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         Member member = memberPrincipal.getMember();
@@ -69,7 +71,7 @@ public class AdateController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/calendar")
+    @GetMapping()
     public ResponseEntity<List<AdateCalendarEventResponse>> getAdateCalendarEvents(
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
             @RequestParam LocalDateTime startDateTime,
@@ -78,6 +80,12 @@ public class AdateController {
         List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
                 getAdateCalendarEvents(member, startDateTime, endDateTime);
         return ResponseEntity.ok(adateCalendarEventResponses);
+    }
+
+    @GetMapping("/member")
+    public ResponseEntity<List<Adate>> getAdatesByMemberName(@RequestParam String memberName) {
+        List<Adate> adates = adateService.getAdateResponseByMemberName(memberName);
+        return ResponseEntity.ok(adates);
     }
 }
 

@@ -5,7 +5,7 @@
 - **🔥** `:fire:` 코드/파일 삭제 *(Remove code or files)*
 - **🐛** `:bug:` 버그 수정 *(Fix a bug)*
 - **✨** `:sparkles:` 새 기능 *(Introduce new features)*
-- **🩹** `:adhesive_bandage`: 단순한, critical하지 않은 이슈 수정
+- **🩹** `:adhesive_bandage:`: 단순한, critical하지 않은 이슈 수정
 - **📝** `:memo:` 문서 추가/수정 *(Add or update documentation)*
 - **✅** `:white_check_mark:` 테스트 추가/수정 *(Add or update tests)*
 - **🔒** `:lock:` 보안 이슈 수정 *(Fix security issues)*

@@ -1,4 +1,4 @@
-package com.fixadate.domain.Dates.controller;
+package com.fixadate.domain.dates.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;

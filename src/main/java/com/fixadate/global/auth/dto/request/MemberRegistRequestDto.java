@@ -38,7 +38,7 @@ public record MemberRegistRequestDto(
         return switch (oauthPlatform.toLowerCase()) {
             case "kakao" -> OAuthProvider.Kakao;
             case "google" -> OAuthProvider.Google;
-            case "apple" -> OAuthProvider.Apple;
+            case "apple" -> OAuthProvider.apple;
             default -> throw new UnknownOAuthPlatformException();
         };
     }
