@@ -18,7 +18,6 @@ public class ControllerAdvice {
             MemberNotFoundException.class,
             UnknownOAuthPlatformException.class,
             InvitationNotFountException.class,
-            MemberSigninException.class,
             ColorTypeNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(final RuntimeException e) {
@@ -38,6 +37,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
+            MemberSigninException.class
     })
     public ResponseEntity<ErrorResponse> handleUnAuthorizedRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

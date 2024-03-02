@@ -19,9 +19,10 @@ import java.util.stream.Collectors;
 public class InvitationService {
     private final InvitationRepository invitationRepository;
 
-    public void registInvitation(InvitationRequest invitationRequest) {
+    public String registInvitation(InvitationRequest invitationRequest) {
         Invitation invitation = invitationRequest.toEntity();
         invitationRepository.save(invitation);
+        return invitation.getId();
     }
 
     public InvitationResponse getInvitationFromTeamId(Long teamId) {

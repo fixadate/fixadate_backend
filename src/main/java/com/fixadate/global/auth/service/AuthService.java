@@ -9,6 +9,7 @@ import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import java.time.Duration;
 import java.util.Optional;
 
+import com.fixadate.global.auth.exception.MemberSigninException;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     public Member findMemberByOAuthId(String oauthId) {
-        return memberRepository.findMemberByOauthId(oauthId).orElseThrow(MemberNotFoundException::new);
+        return memberRepository.findMemberByOauthId(oauthId).orElseThrow(MemberSigninException::new);
     }
 
     @Transactional
