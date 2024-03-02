@@ -1,17 +1,14 @@
 package com.fixadate.global.oauth.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum OAuthProvider {
-    Naver("NAVER"),
-    Kakao("KAKAO"),
-    Google("GOOGLE"),
-    apple("APPLE");
+    NAVER("NAVER"),
+    KAKAO("KAKAO"),
+    GOOGLE("GOOGLE"),
+    APPLE("APPLE");
     private final String provider;
-
-    OAuthProvider(String provider) {
-        this.provider = provider;
-    }
-
 }
