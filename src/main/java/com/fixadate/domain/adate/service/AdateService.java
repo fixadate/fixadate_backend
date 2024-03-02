@@ -28,7 +28,6 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,7 @@ public class AdateService {
     public List<GoogleCalendarEventResponse> getEventResponse(List<Event> events) {
         return events.stream()
                 .map(GoogleCalendarEventResponse::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -130,7 +129,7 @@ public class AdateService {
     private List<AdateCalendarEventResponse> getResponseDto(List<Adate> adates) {
         return adates.stream()
                 .map(AdateCalendarEventResponse::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Adate> getAdateResponseByMemberName(String memberName) {

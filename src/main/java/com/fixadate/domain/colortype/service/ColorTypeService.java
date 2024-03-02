@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class ColorTypeService {
     private List<ColorTypeResponse> createColorTypeResponsesWithColorTypes(List<ColorType> colorTypes) {
         return colorTypes.stream()
                 .map(ColorTypeResponse::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
