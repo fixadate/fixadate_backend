@@ -38,13 +38,12 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/calendar")
-@Slf4j
 public class AdateController {
     private final AdateService adateService;
 
     @GetMapping("/google")
     public ResponseEntity<List<GoogleCalendarEventResponse>> getEvents(
-            @RequestParam(value = "accessToken", required = true) String accessToken,
+            @RequestParam String accessToken,
             @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest)
             throws IOException, GeneralSecurityException, ParseException {
         try {

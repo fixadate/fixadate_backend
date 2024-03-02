@@ -15,24 +15,23 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/invitation")
-@Slf4j
 public class InvitationController {
     private final InvitationService invitationService;
 
     @PostMapping()
-    public ResponseEntity<Void> registInvitation(@RequestBody InvitationRequest invitationRequest) {
-        invitationService.registInvitation(invitationRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<String> registInvitation(@RequestBody InvitationRequest invitationRequest) {
+        String invitationId = invitationService.registInvitation(invitationRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(invitationId);
     }
 
     @GetMapping() // 초대 코드를 입력해서 초대에 응답하는 로직
-    public ResponseEntity<?> checkInvitationById(@RequestParam("id") String id) {
+    public ResponseEntity<?> checkInvitationById(@RequestParam String id) {
         return ResponseEntity.ok(invitationService.getInvitationById(id));
     }
 
     //중복 방지를 위해 이미 생성된 초대장이 있는지 조회하는 로직
     @GetMapping("/check")
-    public ResponseEntity<InvitationResponse> isInvitationExist(@RequestParam("teamId") Long datesId) {
+    public ResponseEntity<InvitationResponse> isInvitationExist(@RequestParam Long datesId) {
         return ResponseEntity.ok(invitationService.getInvitationFromTeamId(datesId));
     }
 
@@ -43,7 +42,7 @@ public class InvitationController {
     }
 
     @GetMapping("/specify")
-    public ResponseEntity<?> getSpecifyInvitationByTeamId(@RequestParam("teamId") Long teamId) {
+    public ResponseEntity<?> getSpecifyInvitationByTeamId(@RequestParam Long teamId) {
         List<InvitationResponse> responses = invitationService.getInvitationResponseFromTeamId(teamId);
         return ResponseEntity.ok(responses);
     }
