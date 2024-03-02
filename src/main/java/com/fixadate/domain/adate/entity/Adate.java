@@ -6,7 +6,6 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,9 +13,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,8 +36,8 @@ public class Adate extends BaseTimeEntity {
     @Column(length = 300)
     private String location;
 
-    private Date alertWhen;
-    private Date repeatFreq;
+    private LocalDateTime alertWhen;
+    private LocalDateTime repeatFreq;
     private String color;
     private String adateName;
     private Boolean ifAllDay;

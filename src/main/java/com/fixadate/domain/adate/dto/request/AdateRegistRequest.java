@@ -5,15 +5,14 @@ import com.fixadate.domain.member.entity.Member;
 import jakarta.persistence.Column;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Random;
 
 public record AdateRegistRequest(
         @Column(nullable = false) String title,
         String notes,
         String location,
-        Date alertWhen,
-        Date repeatFreq,
+        LocalDateTime alertWhen,
+        LocalDateTime repeatFreq,
         String color,
         String adateName,
         Boolean ifAllDay,
