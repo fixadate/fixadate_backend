@@ -12,7 +12,7 @@ public record MemberRegistRequestDto(
         @NotBlank String name,
         @NotBlank String profileImg,
         @NotBlank String nickname,
-        @NotNull Integer birth,
+        @NotBlank Integer birth,
         @NotBlank String gender,
         @NotBlank String profession,
         @NotBlank String signatureColor,

@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,14 +57,14 @@ public class AdateController {
     }
 
     @PostMapping("/google")
-    public ResponseEntity<Void> registEvents(@RequestBody List<GoogleCalendarRegistRequest> googleCalendarRegistRequest,
+    public ResponseEntity<Void> registEvents(@Valid @RequestBody List<GoogleCalendarRegistRequest> googleCalendarRegistRequest,
                                              @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         adateService.registGoogleEvent(googleCalendarRegistRequest, memberPrincipal.getMember());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping()
-    public ResponseEntity<Void> registAdateEvent(@RequestBody AdateRegistRequest adateRegistRequest,
+    public ResponseEntity<Void> registAdateEvent(@Valid @RequestBody AdateRegistRequest adateRegistRequest,
                                                  @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         Member member = memberPrincipal.getMember();
         adateService.registAdateEvent(adateRegistRequest, member);

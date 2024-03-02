@@ -12,6 +12,8 @@ import com.fixadate.global.util.S3Utils;
 import jakarta.servlet.http.Cookie;
 
 import java.util.Optional;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,7 +34,7 @@ public class AuthController {
     private final JwtProvider jwtProvider;
 
     @PostMapping("/member")
-    public ResponseEntity<Void> registMember(@RequestBody @Validated MemberOAuthRequestDto memberOAuthRequestDto) {
+    public ResponseEntity<Void> registMember(@Valid @RequestBody MemberOAuthRequestDto memberOAuthRequestDto) {
         String oauthId = memberOAuthRequestDto.oauthId();
         Member member = authService.findMemberByOAuthId(oauthId);
         String accessToken = jwtProvider.createAccessToken(member.getOauthId());
@@ -52,7 +54,7 @@ public class AuthController {
     @Transactional
     @PostMapping("/member/additional")
     public ResponseEntity<String> AdditionalRegistMember(
-            @RequestBody @Validated MemberRegistRequestDto memberRegistRequestDto) {
+            @Valid @RequestBody MemberRegistRequestDto memberRegistRequestDto) {
         authService.registMember(memberRegistRequestDto);
 
         String url = s3Utils.generatePresignedUrlForUpload(memberRegistRequestDto.profileImg(),

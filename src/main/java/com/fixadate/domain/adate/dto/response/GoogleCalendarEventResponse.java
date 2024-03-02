@@ -16,15 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 @Slf4j
 public record GoogleCalendarEventResponse(
-        @Column(nullable = false) LocalDateTime created,
-        @Column(nullable = false) LocalDateTime end,
-        @Column(nullable = false) String id,
+        LocalDateTime created,
+        LocalDateTime end,
+        String id,
         boolean reminders,
-        @Column(nullable = false) LocalDateTime start,
+        LocalDateTime start,
         String location,
         String summary,
         String description,
-        @Column(nullable = false) LocalDateTime version,
+        LocalDateTime version,
         String recurringEventId,
         boolean ifAllDay,
         String status

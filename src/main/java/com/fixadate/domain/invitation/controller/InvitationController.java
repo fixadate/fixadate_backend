@@ -4,6 +4,7 @@ import com.fixadate.domain.invitation.dto.request.InvitationRequest;
 import com.fixadate.domain.invitation.dto.request.InvitationSpecifyRequest;
 import com.fixadate.domain.invitation.dto.response.InvitationResponse;
 import com.fixadate.domain.invitation.service.InvitationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class InvitationController {
     private final InvitationService invitationService;
 
     @PostMapping()
-    public ResponseEntity<String> registInvitation(@RequestBody InvitationRequest invitationRequest) {
+    public ResponseEntity<String> registInvitation(@Valid @RequestBody InvitationRequest invitationRequest) {
         String invitationId = invitationService.registInvitation(invitationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(invitationId);
     }
@@ -36,7 +37,7 @@ public class InvitationController {
     }
 
     @PostMapping("/specify")
-    public ResponseEntity<?> inviteMemberToTeams(@RequestBody InvitationSpecifyRequest requestDto) {
+    public ResponseEntity<?> inviteMemberToTeams(@Valid @RequestBody InvitationSpecifyRequest requestDto) {
         invitationService.inviteSpecifyMember(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

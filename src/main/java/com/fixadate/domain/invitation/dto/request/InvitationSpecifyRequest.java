@@ -2,13 +2,17 @@ package com.fixadate.domain.invitation.dto.request;
 
 
 import com.fixadate.domain.invitation.entity.Invitation;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.UUID;
 
-public record InvitationSpecifyRequest(String memberName, String memberRole, Long teamId) {
+public record InvitationSpecifyRequest(
+        @NotBlank String memberName,
+        @NotBlank String memberRole,
+        @NotBlank Long teamId) {
     public Invitation toEntity() {
         return Invitation.builder()
                 .id(UUID.randomUUID().toString())
