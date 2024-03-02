@@ -2,33 +2,33 @@ package com.fixadate.domain.adate.dto.response;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.Event.ExtendedProperties;
 import com.google.api.services.calendar.model.Event.Reminders;
 import com.google.api.services.calendar.model.EventDateTime;
-import jakarta.persistence.Column;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 @Builder
 @Slf4j
 public record GoogleCalendarEventResponse(
-        @Column(nullable = false) LocalDateTime created,
-        @Column(nullable = false) LocalDateTime end,
-        @Column(nullable = false) String id,
+        LocalDateTime created,
+        LocalDateTime end,
+        String id,
         boolean reminders,
-        @Column(nullable = false) LocalDateTime start,
+        LocalDateTime start,
         String location,
         String summary,
         String description,
-        @Column(nullable = false) LocalDateTime version,
+        LocalDateTime version,
         String recurringEventId,
         boolean ifAllDay,
         String status
 ) {
+    static final String DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    static final String ASIA_ZONE_ID = "Asia/Seoul";
+    static final String TRANSPARENCY = "transparency";
 
     public static GoogleCalendarEventResponse of(Event event) {
         return new GoogleCalendarEventResponse(
@@ -49,7 +49,7 @@ public record GoogleCalendarEventResponse(
 
     private static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {
         try {
-            DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER);
             return LocalDateTime.parse(dateTime.toStringRfc3339(), f);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,16 +61,16 @@ public record GoogleCalendarEventResponse(
         if (eventDateTime.getDateTime() != null) {
             long eventTimeMilliseconds = eventDateTime.getDateTime().getValue();
             Instant instant = Instant.ofEpochMilli(eventTimeMilliseconds);
-            return LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Seoul"));
+            return LocalDateTime.ofInstant(instant, ZoneId.of(ASIA_ZONE_ID));
         } else {
             LocalDate eventDate = LocalDate.parse(eventDateTime.getDate().toStringRfc3339());
             LocalTime timeToAdd = d ? LocalTime.MIN : LocalTime.MAX;
-            return eventDate.atTime(timeToAdd).atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+            return eventDate.atTime(timeToAdd).atZone(ZoneId.of(ASIA_ZONE_ID)).toLocalDateTime();
         }
     }
 
     private static boolean getIfAllDayFromGetTransparency(String transparency) {
-        return transparency != null && transparency.equals("transparent");
+        return transparency != null && transparency.equals(TRANSPARENCY);
     }
 
     private static boolean getRemindersDefaultValue(Reminders reminders) {

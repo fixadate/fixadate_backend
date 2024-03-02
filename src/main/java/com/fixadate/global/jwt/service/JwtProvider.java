@@ -4,34 +4,34 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.jwt.MemberPrincipal;
-import com.fixadate.global.jwt.exception.TokenException;
-import com.fixadate.global.jwt.exception.TokenExpiredException;
-import com.fixadate.global.jwt.exception.TokenUnsupportedException;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Component;
+
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtProvider {
     private final MemberRepository memberRepository;
+    static final String OAUTH_ID = "oauthId";
     @Value("${jwt.secret}")
     private String secret;
     @Value("${jwt.accessToken.expiration-period}")
     private int accesesTokenexpirationPeriod;
     @Value("${jwt.refreshToken.expiration-period}")
     private int refreshTokenexpirationPeriod;
-
     private Key key;
 
     @PostConstruct
@@ -41,13 +41,13 @@ public class JwtProvider {
 
     public String createAccessToken(String oauthId) {
         Claims claims = Jwts.claims();
-        claims.put("oauthId", oauthId);
+        claims.put(OAUTH_ID, oauthId);
         return createToken(claims, accesesTokenexpirationPeriod);
     }
 
     public String createRefreshToken(String oauthId) {
         Claims claims = Jwts.claims();
-        claims.put("oauthId", oauthId);
+        claims.put(OAUTH_ID, oauthId);
         return createToken(claims, refreshTokenexpirationPeriod);
     }
 
@@ -71,25 +71,11 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(secret.getBytes())
-                    .parseClaimsJws(token)
-                    .getBody();
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
-            throw new TokenException();
-        } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
-            throw new TokenExpiredException();
-        } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
-            throw new TokenUnsupportedException();
-        } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
-            throw new TokenException();
-        }
+        Jwts.parser()
+                .setSigningKey(secret.getBytes())
+                .parseClaimsJws(token)
+                .getBody();
+        return true;
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
@@ -99,12 +85,13 @@ public class JwtProvider {
         MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
     }
+
     private String getOauthIdFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret.getBytes())
                 .parseClaimsJws(token)
                 .getBody()
-                .get("oauthId",
+                .get(OAUTH_ID,
                         String.class);
     }
 }

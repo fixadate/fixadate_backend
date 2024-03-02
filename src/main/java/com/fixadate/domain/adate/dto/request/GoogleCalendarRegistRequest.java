@@ -2,24 +2,25 @@ package com.fixadate.domain.adate.dto.request;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public record GoogleCalendarRegistRequest(
-        @Column(nullable = false) String title,
-        @Column(nullable = false, length = 500) String notes,
-        @Column(length = 300) String location,
-        Boolean ifAllDay,
+        @NotBlank String title,
+        String notes,
+        String location,
+        @NotNull boolean ifAllDay,
         LocalDateTime startsWhen,
         LocalDateTime endsWhen,
-        Date alertWhen,
-        Date repeatFreq,
+        LocalDateTime alertWhen,
+        LocalDateTime repeatFreq,
         String color,
         String adateName,
-        @Column(unique = true) String calendarId,
-        boolean reminders,
+        @NotEmpty String calendarId,
+        @NotNull boolean reminders,
         LocalDateTime version,
         LocalDateTime created,
         String recurringEventId,

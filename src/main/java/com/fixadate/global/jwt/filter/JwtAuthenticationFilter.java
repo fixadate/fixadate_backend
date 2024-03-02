@@ -5,7 +5,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_TOKEN_PREFIX = "Bearer ";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -30,8 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .setAuthentication(
                             jwtProvider.getAuthentication(jwt)
                     );
-        } else {
-            log.info("토큰이 없습니다. 익명 사용자로 처리합니다.");
         }
         filterChain.doFilter(request, response);
     }

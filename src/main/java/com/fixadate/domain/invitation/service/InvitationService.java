@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +18,10 @@ import java.util.stream.Collectors;
 public class InvitationService {
     private final InvitationRepository invitationRepository;
 
-    public void registInvitation(InvitationRequest invitationRequest) {
+    public String registInvitation(InvitationRequest invitationRequest) {
         Invitation invitation = invitationRequest.toEntity();
         invitationRepository.save(invitation);
+        return invitation.getId();
     }
 
     public InvitationResponse getInvitationFromTeamId(Long teamId) {
@@ -49,6 +49,6 @@ public class InvitationService {
     private List<InvitationResponse> getResponseFromInvitation(List<Invitation> invitations) {
         return invitations.stream()
                 .map(InvitationResponse::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

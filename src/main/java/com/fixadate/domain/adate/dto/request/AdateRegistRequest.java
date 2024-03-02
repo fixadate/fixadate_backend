@@ -3,20 +3,20 @@ package com.fixadate.domain.adate.dto.request;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Random;
 
 public record AdateRegistRequest(
-        @Column(nullable = false) String title,
+        @NotBlank(message = "Adate title cannot be blank") String title,
         String notes,
         String location,
-        Date alertWhen,
-        Date repeatFreq,
+        LocalDateTime alertWhen,
+        LocalDateTime repeatFreq,
         String color,
         String adateName,
-        Boolean ifAllDay,
+        boolean ifAllDay,
         LocalDateTime startsWhen,
         LocalDateTime endsWhen,
         boolean reminders
