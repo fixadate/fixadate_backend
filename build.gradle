@@ -17,26 +17,32 @@ repositories {
 }
 
 dependencies {
+	//spring
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.security:spring-security-oauth2-client'
-	implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.4.RELEASE'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	
+
+	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
+	//oauth & oauth-client
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.4.RELEASE'
+
+	//jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.10.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.10.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.10.5'
 
-	runtimeOnly 'com.mysql:mysql-connector-j'
-
+	//validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // 데이터 유효성 검사
 
 	// google api
@@ -54,15 +60,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
 	//s3
-	implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-s3', version: '3.1.0'
+	implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.1.0'
 	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	//test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'com.h2database:h2'
+
 }
 
 tasks.named('test') {
