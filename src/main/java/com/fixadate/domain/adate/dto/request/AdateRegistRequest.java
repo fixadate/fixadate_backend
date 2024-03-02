@@ -16,7 +16,7 @@ public record AdateRegistRequest(
         LocalDateTime repeatFreq,
         String color,
         String adateName,
-        Boolean ifAllDay,
+        boolean ifAllDay,
         LocalDateTime startsWhen,
         LocalDateTime endsWhen,
         boolean reminders

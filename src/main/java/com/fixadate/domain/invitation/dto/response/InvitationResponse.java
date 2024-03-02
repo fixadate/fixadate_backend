@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public record InvitationResponse(
-        Long teamId,
+        long teamId,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd / HH:mm", timezone = "Asia/Seoul")
         LocalDateTime dateTime,
         String memberName,

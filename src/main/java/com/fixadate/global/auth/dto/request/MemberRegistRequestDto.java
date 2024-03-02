@@ -12,7 +12,7 @@ public record MemberRegistRequestDto(
         @NotBlank String name,
         @NotBlank String profileImg,
         @NotBlank String nickname,
-        @NotBlank Integer birth,
+        @NotNull int birth,
         @NotBlank String gender,
         @NotBlank String profession,
         @NotBlank String signatureColor,
@@ -36,9 +36,9 @@ public record MemberRegistRequestDto(
 
     private OAuthProvider getOAuthProviderFromString(String oauthPlatform) {
         return switch (oauthPlatform.toLowerCase()) {
-            case "kakao" -> OAuthProvider.Kakao;
-            case "google" -> OAuthProvider.Google;
-            case "apple" -> OAuthProvider.apple;
+            case "kakao" -> OAuthProvider.KAKAO;
+            case "google" -> OAuthProvider.GOOGLE;
+            case "apple" -> OAuthProvider.APPLE;
             default -> throw new UnknownOAuthPlatformException();
         };
     }

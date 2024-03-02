@@ -1,6 +1,8 @@
 package com.fixadate.domain.adate.dto.request;
 
 import com.google.api.client.util.DateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,7 +11,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-public record GoogleCalendarTimeRequest(String timeMax, String timeMin, int range) {
+public record GoogleCalendarTimeRequest(
+        @NotBlank String timeMax,
+        @NotBlank String timeMin,
+        @NotNull int range) {
 
     public List<DateTime> getDateTimes() throws ParseException {
         List<DateTime> dateTimes = new ArrayList<>();

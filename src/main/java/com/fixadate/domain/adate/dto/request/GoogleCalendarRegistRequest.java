@@ -4,6 +4,8 @@ import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
@@ -12,15 +14,15 @@ public record GoogleCalendarRegistRequest(
         @NotBlank(message = "adate title cannot be blank") String title,
         String notes,
         String location,
-        Boolean ifAllDay,
+        @NotNull boolean ifAllDay,
         LocalDateTime startsWhen,
         LocalDateTime endsWhen,
         LocalDateTime alertWhen,
         LocalDateTime repeatFreq,
         String color,
         String adateName,
-        @Column(unique = true) String calendarId,
-        boolean reminders,
+        @NotEmpty String calendarId,
+        @NotNull boolean reminders,
         LocalDateTime version,
         LocalDateTime created,
         String recurringEventId,
