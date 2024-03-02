@@ -5,15 +5,14 @@ import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.fixadate.global.oauth.entity.OAuthProvider;
 import jakarta.persistence.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,22 +25,26 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String oauthId;
     @Enumerated(EnumType.STRING)
     private OAuthProvider oauthPlatform;
+    @Column(nullable = false)
     private String name;
     private String profileImg;
+    @Column(nullable = false)
     private String nickname;
     private Integer birth;
     private String gender;
     private String profession;
+    @Column(nullable = false)
     private String signatureColor;
     // 로그인 정보 식별 값, 프로필 사진, 필명, 이름, 성별, 생년월일, 이메일
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Adate> adates;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<ColorType> colorTypes;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -23,11 +23,11 @@ public class ColorType {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "colorType", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "colorType")
     private List<Adate> adates;
 
     public void updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest) {
