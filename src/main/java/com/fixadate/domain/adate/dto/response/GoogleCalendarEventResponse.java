@@ -52,6 +52,7 @@ public record GoogleCalendarEventResponse(
             DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER);
             return LocalDateTime.parse(dateTime.toStringRfc3339(), f);
         } catch (Exception e) {
+            //fixme 정보를 알려주는 log로 변경할 것
             e.printStackTrace();
             return null;
         }

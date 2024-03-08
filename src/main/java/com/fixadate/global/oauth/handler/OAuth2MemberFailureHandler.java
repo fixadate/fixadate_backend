@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,7 +32,7 @@ public class OAuth2MemberFailureHandler extends SimpleUrlAuthenticationFailureHa
             errorMessage = ErrorMessage;
         }
 
-        errorMessage = URLEncoder.encode(errorMessage, "UTF-8");
+        errorMessage = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
         setDefaultFailureUrl("/auth/login?error=true&exception=" + errorMessage);
         super.onAuthenticationFailure(request, response, exception);
     }
