@@ -6,65 +6,29 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.service.AdateService;
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.jwt.MemberPrincipal;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/calendar")
-public class AdateController {
-    private final AdateService adateService;
+@Tag(name = "AdateController", description = "AdateController 입니다.")
+public interface AdateController {
 
-    @GetMapping("/google")
-    public ResponseEntity<List<GoogleCalendarEventResponse>> getEvents(
-            @RequestParam String accessToken,
-            @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest) {
-        DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(accessToken);
-        List<GoogleCalendarEventResponse> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest);
-        return ResponseEntity.ok(events);
-    }
+    @Operation(summary = "이벤트 조회", description = "일정 기간의 Adate를 조회합니다.")
+    ResponseEntity<List<GoogleCalendarEventResponse>> getGoogleCalendarEvents(String accessToken, GoogleCalendarTimeRequest timeRequest);
 
-    @PostMapping("/google")
-    public ResponseEntity<Void> registEvents(@Valid @RequestBody List<GoogleCalendarRegistRequest> googleCalendarRegistRequest,
-                                             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        adateService.registGoogleEvent(googleCalendarRegistRequest, memberPrincipal.getMember());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+    @Operation(summary = "Google 캘린더 이벤트 등록", description = "Google 캘린더에 이벤트를 등록합니다.")
+    ResponseEntity<Void> registerGoogleCalendarEvents(List<GoogleCalendarRegistRequest> registRequest, MemberPrincipal memberPrincipal);
 
-    @PostMapping()
-    public ResponseEntity<Void> registAdateEvent(@Valid @RequestBody AdateRegistRequest adateRegistRequest,
-                                                 @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        Member member = memberPrincipal.getMember();
-        adateService.registAdateEvent(adateRegistRequest, member);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+    @Operation(summary = "Adate 이벤트 등록", description = "Adate 이벤트를 등록합니다.")
+    ResponseEntity<Void> registerAdateEvent(AdateRegistRequest adateRegistRequest, MemberPrincipal memberPrincipal);
 
-    @GetMapping()
-    public ResponseEntity<List<AdateCalendarEventResponse>> getAdateCalendarEvents(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
-            @RequestParam LocalDateTime startDateTime,
-            @RequestParam LocalDateTime endDateTime) {
-        Member member = memberPrincipal.getMember();
-        List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
-                getAdateCalendarEvents(member, startDateTime, endDateTime);
-        return ResponseEntity.ok(adateCalendarEventResponses);
-    }
+    @Operation(summary = "Adate 캘린더 이벤트 조회", description = "Adate 캘린더 이벤트를 조회합니다.")
+    ResponseEntity<List<AdateCalendarEventResponse>> getAdateCalendarEvents(MemberPrincipal memberPrincipal, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    @GetMapping("/member")
-    public ResponseEntity<List<Adate>> getAdatesByMemberName(@RequestParam String memberName) {
-        List<Adate> adates = adateService.getAdateResponseByMemberName(memberName);
-        return ResponseEntity.ok(adates);
-    }
+    @Operation(summary = "멤버별 Adate 조회", description = "멤버별 Adate를 조회합니다.")
+    ResponseEntity<List<Adate>> getAdatesByMemberName(String memberName);
 }
-
