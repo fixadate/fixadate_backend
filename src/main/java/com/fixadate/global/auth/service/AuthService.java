@@ -24,6 +24,7 @@ public class AuthService {
 
     @Transactional
     public void registMember(MemberRegistRequestDto memberRegistRequestDto) {
+        //fixme modelmapper 사용해서 구현해보기
         Member member = memberRegistRequestDto.of();
         memberRepository.save(member);
     }

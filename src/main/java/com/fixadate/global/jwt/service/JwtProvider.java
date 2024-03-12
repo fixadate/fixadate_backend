@@ -29,7 +29,7 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String secret;
     @Value("${jwt.accessToken.expiration-period}")
-    private int accesesTokenexpirationPeriod;
+    private long accesesTokenexpirationPeriod;
     @Value("${jwt.refreshToken.expiration-period}")
     private int refreshTokenexpirationPeriod;
     private Key key;
@@ -51,7 +51,7 @@ public class JwtProvider {
         return createToken(claims, refreshTokenexpirationPeriod);
     }
 
-    private String createToken(Claims claims, int expirationPeriod) {
+    private String createToken(Claims claims, long expirationPeriod) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(issuedAt())
@@ -65,7 +65,7 @@ public class JwtProvider {
         return Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    private Date expiredAt(int expirationPeriod) {
+    private Date expiredAt(long expirationPeriod) {
         LocalDateTime now = LocalDateTime.now();
         return Date.from(now.plusSeconds(expirationPeriod).atZone(ZoneId.systemDefault()).toInstant());
     }
@@ -86,7 +86,7 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
     }
 
-    private String getOauthIdFromToken(String token) {
+    public String getOauthIdFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret.getBytes())
                 .parseClaimsJws(token)
