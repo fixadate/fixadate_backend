@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.dto.request;
 
+import com.fixadate.domain.adate.exception.DateParseException;
 import com.google.api.client.util.DateTime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,24 +21,21 @@ public record GoogleCalendarTimeRequest(
     static final String DATE_TIME_FORMATTER = "yyyy-MM-dd-HH-mm-ss";
     static final String ASIA_ZONE_ID = "Asia/Seoul";
 
-    public List<DateTime> getDateTimes() throws ParseException {
+    public List<DateTime> getDateTimes() {
         List<DateTime> dateTimes = new ArrayList<>();
-        dateTimes.add(getDateTimeMFromTimeMax(timeMax));
-        dateTimes.add(getDateTimeMFromTimeMin(timeMin));
+        dateTimes.add(getDateTimeMFromTime(TIME_MAX_VALUE));
+        dateTimes.add(getDateTimeMFromTime(TIME_MIN_VALUE));
         return dateTimes;
     }
 
-    private DateTime getDateTimeMFromTimeMax(String timeMax) throws ParseException {
-        String time = timeMax.concat(TIME_MAX_VALUE);
-        SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMATTER);
-        Date date = format.parse(time);
-        return new DateTime(date, TimeZone.getTimeZone(ASIA_ZONE_ID));
-    }
-
-    private DateTime getDateTimeMFromTimeMin(String timeMin) throws ParseException {
-        String time = timeMin.concat(TIME_MIN_VALUE);
-        SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMATTER);
-        Date date = format.parse(time);
-        return new DateTime(date, TimeZone.getTimeZone(ASIA_ZONE_ID));
+    private DateTime getDateTimeMFromTime(String t) {
+        try {
+            String time = timeMax.concat(t);
+            SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMATTER);
+            Date date = format.parse(time);
+            return new DateTime(date, TimeZone.getTimeZone(ASIA_ZONE_ID));
+        } catch (ParseException e) {
+            throw new DateParseException();
+        }
     }
 }

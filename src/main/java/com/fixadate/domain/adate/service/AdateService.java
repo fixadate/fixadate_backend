@@ -6,7 +6,9 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.exception.EventNotExistException;
+import com.fixadate.domain.adate.exception.GoogleSecurityException;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.entity.ColorType;
@@ -25,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,22 +43,27 @@ public class AdateService {
     static final String CALENDAR_CANCELLED = "cancelled";
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
-                                                        GoogleCalendarTimeRequest googleCalendarTimeRequest)
-            throws IOException, GeneralSecurityException, ParseException {
-        Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
+                                                        GoogleCalendarTimeRequest googleCalendarTimeRequest) {
+        try {
+            Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
 
-        Events events = calendarService.events().list(CALENDAR_ID)
-                .setMaxResults(googleCalendarTimeRequest.range())
-                .setOrderBy(CALENDAR_ORDER_BY)
-                .setShowDeleted(false)
-                .setTimeMax(googleCalendarTimeRequest.getDateTimes().get(0))
-                .setTimeMin(googleCalendarTimeRequest.getDateTimes().get(1))
-                .setSingleEvents(true)
-                .setOauthToken(oauth2AccessToken.getValue())
-                .setShowDeleted(true)
-                .execute();
+            Events events = calendarService.events().list(CALENDAR_ID)
+                    .setMaxResults(googleCalendarTimeRequest.range())
+                    .setOrderBy(CALENDAR_ORDER_BY)
+                    .setShowDeleted(false)
+                    .setTimeMax(googleCalendarTimeRequest.getDateTimes().get(0))
+                    .setTimeMin(googleCalendarTimeRequest.getDateTimes().get(1))
+                    .setSingleEvents(true)
+                    .setOauthToken(oauth2AccessToken.getValue())
+                    .setShowDeleted(true)
+                    .execute();
 
-        return getEventResponse(events.getItems());
+            return getEventResponse(events.getItems());
+        } catch (IOException e) {
+            throw new AdateIOException(e);
+        } catch (GeneralSecurityException e) {
+            throw new GoogleSecurityException();
+        }
     }
 
     public List<GoogleCalendarEventResponse> getEventResponse(List<Event> events) {
