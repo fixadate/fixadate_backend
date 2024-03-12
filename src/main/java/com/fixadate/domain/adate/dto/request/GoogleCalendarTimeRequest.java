@@ -1,6 +1,9 @@
 package com.fixadate.domain.adate.dto.request;
 
+import com.fixadate.domain.adate.exception.DateParseException;
 import com.google.api.client.util.DateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,26 +12,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-public record GoogleCalendarTimeRequest(String timeMax, String timeMin, int range) {
+public record GoogleCalendarTimeRequest(
+        @NotBlank String timeMax,
+        @NotBlank String timeMin,
+        @NotNull int range) {
+    static final String TIME_MAX_VALUE = "-23-59-59";
+    static final String TIME_MIN_VALUE = "-00-00-00";
+    static final String DATE_TIME_FORMATTER = "yyyy-MM-dd-HH-mm-ss";
+    static final String ASIA_ZONE_ID = "Asia/Seoul";
 
-    public List<DateTime> getDateTimes() throws ParseException {
+    public List<DateTime> getDateTimes() {
         List<DateTime> dateTimes = new ArrayList<>();
-        dateTimes.add(getDateTimeMFromTimeMax(timeMax));
-        dateTimes.add(getDateTimeMFromTimeMin(timeMin));
+        dateTimes.add(getDateTimeMFromTime(TIME_MAX_VALUE));
+        dateTimes.add(getDateTimeMFromTime(TIME_MIN_VALUE));
         return dateTimes;
     }
 
-    private DateTime getDateTimeMFromTimeMax(String timeMax) throws ParseException {
-        String time = timeMax.concat("-23-59-59");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        Date date = format.parse(time);
-        return new DateTime(date, TimeZone.getTimeZone("Asia/Seoul"));
-    }
-
-    private DateTime getDateTimeMFromTimeMin(String timeMin) throws ParseException {
-        String time = timeMin.concat("-00-00-00");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        Date date = format.parse(time);
-        return new DateTime(date, TimeZone.getTimeZone("Asia/Seoul"));
+    private DateTime getDateTimeMFromTime(String t) {
+        try {
+            String time = timeMax.concat(t);
+            SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMATTER);
+            Date date = format.parse(time);
+            return new DateTime(date, TimeZone.getTimeZone(ASIA_ZONE_ID));
+        } catch (ParseException e) {
+            throw new DateParseException();
+        }
     }
 }

@@ -1,12 +1,8 @@
 package com.fixadate.global.config;
 
-import com.fixadate.domain.adate.exception.GoogleAccessTokenExpiredException;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.CommonGoogleClientRequestInitializer;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
@@ -14,16 +10,13 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.MemoryDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 
 @Configuration
 public class GoogleApiConfig {
@@ -36,6 +29,12 @@ public class GoogleApiConfig {
 
     @Value("${google.api.key}")
     private String apiKey;
+    static final String ACCESS_TYPE = "offline";
+    static final String USER_ID = "user";
+    static final String REQUEST_HEADER = "Bearer ";
+    static final String FIELD_NAME = "key";
+    static final String APPLICATION_NAME = "fixadate";
+
 
     @Bean
     public GoogleAuthorizationCodeFlow googleAuthorizationCodeFlow() throws GeneralSecurityException, IOException {
@@ -44,7 +43,7 @@ public class GoogleApiConfig {
         return new GoogleAuthorizationCodeFlow.Builder(httpTransport, JacksonFactory.getDefaultInstance(),
                 clientId, clientSecret, Collections.singleton(CalendarScopes.CALENDAR))
                 .setDataStoreFactory(new MemoryDataStoreFactory())
-                .setAccessType("offline")
+                .setAccessType(ACCESS_TYPE)
                 .build();
     }
 
@@ -53,11 +52,11 @@ public class GoogleApiConfig {
         HttpRequestInitializer initializer = new HttpRequestInitializer() {
             @Override
             public void initialize(com.google.api.client.http.HttpRequest request) throws IOException {
-                Credential credential = flow.loadCredential("user");
+                Credential credential = flow.loadCredential(USER_ID);
                 if (credential != null) {
-                    request.getHeaders().setAuthorization("Bearer " + credential.getAccessToken());
+                    request.getHeaders().setAuthorization(REQUEST_HEADER + credential.getAccessToken());
                     GenericUrl url = request.getUrl();
-                    url.put("key", apiKey);
+                    url.put(FIELD_NAME, apiKey);
                     request.setUrl(url);
                 }
             }
@@ -65,7 +64,7 @@ public class GoogleApiConfig {
 
         return new Calendar.Builder(GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance(), initializer)
-                .setApplicationName("fixadate")
+                .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 }

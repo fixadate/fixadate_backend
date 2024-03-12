@@ -6,7 +6,9 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.exception.EventNotExistException;
+import com.fixadate.domain.adate.exception.GoogleSecurityException;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.entity.ColorType;
@@ -17,22 +19,16 @@ import com.fixadate.global.config.GoogleApiConfig;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
-
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
 import java.util.List;
-
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,33 +38,38 @@ public class AdateService {
     private final AdateRepository adateRepository;
     private final AdateQueryRepository adateQueryRepository;
     private final ColorTypeRepository colorTypeRepository;
-    public static final String calendarId = "primary";
-    public static final String calendarOrderBy = "startTime";
-    public static final String calendarCancelStatus = "cancelled";
+    static final String CALENDAR_ID = "primary";
+    static final String CALENDAR_ORDER_BY = "startTime";
+    static final String CALENDAR_CANCELLED = "cancelled";
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
-                                                        GoogleCalendarTimeRequest googleCalendarTimeRequest)
-            throws IOException, GeneralSecurityException, ParseException {
-        Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
+                                                        GoogleCalendarTimeRequest googleCalendarTimeRequest) {
+        try {
+            Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
 
-        Events events = calendarService.events().list(calendarId)
-                .setMaxResults(googleCalendarTimeRequest.range())
-                .setOrderBy(calendarOrderBy)
-                .setShowDeleted(false)
-                .setTimeMax(googleCalendarTimeRequest.getDateTimes().get(0))
-                .setTimeMin(googleCalendarTimeRequest.getDateTimes().get(1))
-                .setSingleEvents(true)
-                .setOauthToken(oauth2AccessToken.getValue())
-                .setShowDeleted(true)
-                .execute();
+            Events events = calendarService.events().list(CALENDAR_ID)
+                    .setMaxResults(googleCalendarTimeRequest.range())
+                    .setOrderBy(CALENDAR_ORDER_BY)
+                    .setShowDeleted(false)
+                    .setTimeMax(googleCalendarTimeRequest.getDateTimes().get(0))
+                    .setTimeMin(googleCalendarTimeRequest.getDateTimes().get(1))
+                    .setSingleEvents(true)
+                    .setOauthToken(oauth2AccessToken.getValue())
+                    .setShowDeleted(true)
+                    .execute();
 
-        return getEventResponse(events.getItems());
+            return getEventResponse(events.getItems());
+        } catch (IOException e) {
+            throw new AdateIOException(e);
+        } catch (GeneralSecurityException e) {
+            throw new GoogleSecurityException();
+        }
     }
 
     public List<GoogleCalendarEventResponse> getEventResponse(List<Event> events) {
         return events.stream()
                 .map(GoogleCalendarEventResponse::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -76,7 +77,7 @@ public class AdateService {
         for (GoogleCalendarRegistRequest googleCalendarRegistRequest : googleCalendarRegistRequests) {
             String calendarId = googleCalendarRegistRequest.calendarId();
 
-            if (calendarCancelStatus.equals(googleCalendarRegistRequest.status())) {
+            if (CALENDAR_CANCELLED.equals(googleCalendarRegistRequest.status())) {
                 deleteAdateIfExists(calendarId);
             } else {
                 processAdate(googleCalendarRegistRequest, calendarId, member);
@@ -134,7 +135,7 @@ public class AdateService {
     private List<AdateCalendarEventResponse> getResponseDto(List<Adate> adates) {
         return adates.stream()
                 .map(AdateCalendarEventResponse::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Adate> getAdateResponseByMemberName(String memberName) {
