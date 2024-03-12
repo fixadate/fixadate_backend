@@ -1,6 +1,5 @@
 package com.fixadate.global.config;
 
-import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.jwt.CustomAuthenticationEntryPoint;
 import com.fixadate.global.jwt.JwtAccessDeniedHandler;
 import com.fixadate.global.jwt.filter.ExceptionHandlerFilter;
@@ -11,13 +10,11 @@ import com.fixadate.global.oauth.handler.OAuth2MemberSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +25,11 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final OAuth2MemberSuccessHandler oAuth2MemberSuccessHandler;
     private final OAuth2MemberFailureHandler oAuth2MemberFailureHandler;
+
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web) -> web.ignoring().requestMatchers("/images/**", "/js/**", "/webjars/**","/css/**");
+//    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -54,7 +56,9 @@ public class SecurityConfig {
                 .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
 
                 .authorizeHttpRequests()
-                .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**", "/", "/member/nickname", "/error").permitAll()
+                .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**", "/", "/member/nickname",
+                        "/error", "/swagger-ui/**", "/swagger-resources/**",
+                        "/v3/api-docs/**", "/swagger-ui/index.html/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
