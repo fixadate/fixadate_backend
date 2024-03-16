@@ -26,10 +26,6 @@ public class SecurityConfig {
     private final OAuth2MemberSuccessHandler oAuth2MemberSuccessHandler;
     private final OAuth2MemberFailureHandler oAuth2MemberFailureHandler;
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().requestMatchers("/images/**", "/js/**", "/webjars/**","/css/**");
-//    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -58,7 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**", "/", "/member/nickname",
                         "/error", "/swagger-ui/**", "/swagger-resources/**",
-                        "/v3/api-docs/**", "/swagger-ui/index.html/**").permitAll()
+                        "/v3/api-docs/**", "/swagger-ui/index.html/**","/google/**","/google").permitAll()
                 .anyRequest().authenticated()
 
                 .and()

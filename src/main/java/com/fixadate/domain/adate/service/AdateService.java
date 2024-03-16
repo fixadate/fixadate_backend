@@ -8,6 +8,7 @@ import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.exception.EventNotExistException;
+import com.fixadate.domain.adate.exception.GoogleCalendarWatchException;
 import com.fixadate.domain.adate.exception.GoogleSecurityException;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
@@ -21,9 +22,13 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -41,6 +46,11 @@ public class AdateService {
     static final String CALENDAR_ID = "primary";
     static final String CALENDAR_ORDER_BY = "startTime";
     static final String CALENDAR_CANCELLED = "cancelled";
+    static final String BASE_WATCH_URL = "https://www.googleapis.com/calendar/v3/calendars/";
+    static final String EVENT_WATCH = "/events/watch";
+    static final String AUTHORIZATION = "Authorization";
+    static final String BEARER = "Bearer ";
+
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
                                                         GoogleCalendarTimeRequest googleCalendarTimeRequest) {
@@ -140,5 +150,24 @@ public class AdateService {
 
     public List<Adate> getAdateResponseByMemberName(String memberName) {
         return adateQueryRepository.findAdatesByMemberName(memberName);
+    }
+
+    public ResponseEntity<String> executeWatchRequest(String email, String token) {
+        try {
+            RestClient restClient = RestClient.create();
+            return restClient.post()
+                    .uri(createWatchUrl(email))
+                    .body(GoogleApiConfig.createChannel())
+                    .header(AUTHORIZATION, BEARER + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(String.class);
+        } catch (HttpClientErrorException e) {
+            throw new GoogleCalendarWatchException();
+        }
+    }
+
+    private String createWatchUrl(String email) {
+        return BASE_WATCH_URL + email + EVENT_WATCH;
     }
 }

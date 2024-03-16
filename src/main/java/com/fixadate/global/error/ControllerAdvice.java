@@ -2,6 +2,7 @@ package com.fixadate.global.error;
 
 import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.exception.DateParseException;
+import com.fixadate.domain.adate.exception.GoogleCalendarWatchException;
 import com.fixadate.domain.adate.exception.GoogleSecurityException;
 import com.fixadate.domain.colortype.exception.ColorTypeNameDuplicatedException;
 import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
@@ -32,7 +33,8 @@ public class ControllerAdvice {
             ColorTypeNameDuplicatedException.class,
             AdateIOException.class,
             DateParseException.class,
-            GoogleSecurityException.class
+            GoogleSecurityException.class,
+            GoogleCalendarWatchException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
