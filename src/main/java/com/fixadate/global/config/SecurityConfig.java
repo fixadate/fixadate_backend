@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**", "/", "/member/nickname",
                         "/error", "/swagger-ui/**", "/swagger-resources/**",
-                        "/v3/api-docs/**", "/swagger-ui/index.html/**","/google/**","/google").permitAll()
+                        "/v3/api-docs/**", "/swagger-ui/index.html/**","/google/**","/google","/health-check").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
