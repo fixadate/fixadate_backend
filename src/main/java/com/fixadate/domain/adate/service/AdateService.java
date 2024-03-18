@@ -18,6 +18,7 @@ import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.config.GoogleApiConfig;
 import com.google.api.services.calendar.Calendar;
+import com.google.api.services.calendar.model.Channel;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +52,9 @@ public class AdateService {
     static final String EVENT_WATCH = "/events/watch";
     static final String AUTHORIZATION = "Authorization";
     static final String BEARER = "Bearer ";
+    static final String CHANNEL_TYPE = "web_hook";
+    static final String BASE_URL = "https://api/fixadate.app";
+    static final String NOTIFICATION_URL = "/google/notifications";
 
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
@@ -157,7 +162,7 @@ public class AdateService {
             RestClient restClient = RestClient.create();
             return restClient.post()
                     .uri(createWatchUrl(email))
-                    .body(GoogleApiConfig.createChannel())
+                    .body(createChannel())
                     .header(AUTHORIZATION, BEARER + token)
                     .contentType(MediaType.APPLICATION_JSON)
                     .retrieve()
@@ -169,5 +174,14 @@ public class AdateService {
 
     private String createWatchUrl(String email) {
         return BASE_WATCH_URL + email + EVENT_WATCH;
+    }
+
+    private Channel createChannel() {
+        return new Channel()
+                .setId(UUID.randomUUID().toString())
+                .setType(CHANNEL_TYPE)
+                .setAddress(BASE_URL + NOTIFICATION_URL)
+                .setExpiration(System.currentTimeMillis() + 9_000_000_000L)
+                .setToken("tokenValue");
     }
 }

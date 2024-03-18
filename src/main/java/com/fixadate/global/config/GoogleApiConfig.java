@@ -10,7 +10,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.MemoryDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.Channel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.UUID;
 
 @Configuration
 public class GoogleApiConfig {
@@ -72,14 +70,5 @@ public class GoogleApiConfig {
                 JacksonFactory.getDefaultInstance(), initializer)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
-    }
-
-    public static Channel createChannel() {
-        return new Channel()
-                .setId(UUID.randomUUID().toString())
-                .setType(CHANNEL_TYPE)
-                .setAddress(BASE_URL + NOTIFICATION_URL)
-                .setExpiration(System.currentTimeMillis() + 9_000_000_000_000L)
-                .setToken("tokenValue");
     }
 }
