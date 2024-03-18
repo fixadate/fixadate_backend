@@ -38,7 +38,7 @@ public class GoogleApiConfig {
     static final String APPLICATION_NAME = "fixadate";
     static final String CHANNEL_TYPE = "web_hook";
     static final String BASE_URL = "https://api/fixadate.app";
-    static final String NOTIFICATION_URL = "/notifications";
+    static final String NOTIFICATION_URL = "/google/notifications";
 
 
 
