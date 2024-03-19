@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -48,19 +49,13 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     public ResponseEntity<String> watchCalendar(
             @RequestParam String googleAccessToken,
             @RequestParam String googleEmail) {
-
+        log.info("/google/watch Controller에서 수신 완료");
         return adateService.executeWatchRequest(googleEmail, googleAccessToken);
     }
 
     @PostMapping("/notifications")
     public String printNotification(
-            @RequestHeader(name="X-Goog-Channel-ID", required = false) String channelID,
-            @RequestHeader(name="X-Goog-Resource-ID", required = false) String resourceID,
-            @RequestHeader(name="X-Goog-Resource-URI", required = false) String resourceURI,
-            @RequestHeader(name= "X-Goog-Resource-State", required = false) String resourceState) {
-        return "ChannelID" + channelID + "\r\n" +
-                "resourceID" + resourceID + "\r\n" +
-                "resourceURI" + resourceURI + "\r\n" +
-                "resourceState" + resourceState + "\r\n";
+            @RequestHeader Map<String, String> headers) {
+        return headers.get("x-goog-channel-id");
     }
 }
