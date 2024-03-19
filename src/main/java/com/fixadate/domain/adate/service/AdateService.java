@@ -49,7 +49,7 @@ public class AdateService {
     static final String CALENDAR_ORDER_BY = "startTime";
     static final String CALENDAR_CANCELLED = "cancelled";
     static final String BASE_WATCH_URL = "https://www.googleapis.com/calendar/v3/calendars/";
-    static final String EVENT_WATCH = "/events/watch";
+    static final String EVENT_WATCH = "/events";
     static final String AUTHORIZATION = "Authorization";
     static final String BEARER = "Bearer ";
     static final String CHANNEL_TYPE = "web_hook";
