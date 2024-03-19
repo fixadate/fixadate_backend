@@ -61,7 +61,6 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .newInstance()
                 .scheme("https")
                 .host("api.fixadate.app")
-                .port(8080)
                 .path("/hello")
                 .queryParam("accessToken", oAuth2AccessToken.getTokenValue())
                 .queryParam("email", email)
