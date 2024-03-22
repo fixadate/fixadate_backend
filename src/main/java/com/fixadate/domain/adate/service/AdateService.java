@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,8 +74,6 @@ public class AdateService {
             return getEventResponse(events.getItems());
         } catch (IOException e) {
             throw new AdateIOException(e);
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
         }
     }
 
