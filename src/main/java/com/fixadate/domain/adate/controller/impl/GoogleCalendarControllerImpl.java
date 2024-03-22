@@ -6,6 +6,7 @@ import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
 import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.global.jwt.MemberPrincipal;
+import com.google.api.services.calendar.model.Channel;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,11 +47,9 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     }
 
     @PostMapping("/watch")
-    public ResponseEntity<String> watchCalendar(
-            @RequestParam String googleAccessToken,
-            @RequestParam String googleEmail) {
-        log.info("/google/watch Controller에서 수신 완료");
-        return adateService.executeWatchRequest(googleEmail, googleAccessToken);
+    public ResponseEntity<Channel> watchCalendar(){
+        Channel channel = adateService.executeWatchRequest();
+        return ResponseEntity.ok(channel);
     }
 
     @PostMapping("/notifications")

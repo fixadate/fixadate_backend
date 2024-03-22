@@ -47,6 +47,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                           OAuth2User oAuth2User, OAuth2AccessToken oAuth2AccessToken)
             throws IOException {
         String email = oAuth2User.getAttribute("email");
+        log.info("여기야!");
         String uri = createURI(oAuth2AccessToken, email).toString(); // Access Token과 Refresh Token을 포함한 URL을 생성
         getRedirectStrategy().sendRedirect(request, response, uri);
     }

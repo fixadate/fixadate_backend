@@ -8,8 +8,6 @@ import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.exception.EventNotExistException;
-import com.fixadate.domain.adate.exception.GoogleCalendarWatchException;
-import com.fixadate.domain.adate.exception.GoogleSecurityException;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.entity.ColorType;
@@ -17,25 +15,23 @@ import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.config.GoogleApiConfig;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,19 +45,21 @@ public class AdateService {
     static final String CALENDAR_ORDER_BY = "startTime";
     static final String CALENDAR_CANCELLED = "cancelled";
     static final String BASE_WATCH_URL = "https://www.googleapis.com/calendar/v3/calendars/";
-    static final String EVENT_WATCH = "/events";
+    static final String EVENT_WATCH = "/events/watch";
     static final String AUTHORIZATION = "Authorization";
     static final String BEARER = "Bearer ";
     static final String CHANNEL_TYPE = "web_hook";
     static final String BASE_URL = "https://api/fixadate.app";
     static final String NOTIFICATION_URL = "/google/notifications";
+    private static HttpTransport HTTP_TRANSPORT;
+    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+    private static GoogleAuthorizationCodeFlow.Builder builder;
 
 
     public List<GoogleCalendarEventResponse> listEvents(DefaultOAuth2AccessToken oauth2AccessToken,
                                                         GoogleCalendarTimeRequest googleCalendarTimeRequest) {
         try {
-            Calendar calendarService = googleApiConfig.calendarService(googleApiConfig.googleAuthorizationCodeFlow());
-
+            Calendar calendarService = googleApiConfig.calendarService();
             Events events = calendarService.events().list(CALENDAR_ID)
                     .setMaxResults(googleCalendarTimeRequest.range())
                     .setOrderBy(CALENDAR_ORDER_BY)
@@ -76,8 +74,6 @@ public class AdateService {
             return getEventResponse(events.getItems());
         } catch (IOException e) {
             throw new AdateIOException(e);
-        } catch (GeneralSecurityException e) {
-            throw new GoogleSecurityException();
         }
     }
 
@@ -157,31 +153,7 @@ public class AdateService {
         return adateQueryRepository.findAdatesByMemberName(memberName);
     }
 
-    public ResponseEntity<String> executeWatchRequest(String email, String token) {
-        try {
-            RestClient restClient = RestClient.create();
-            return restClient.post()
-                    .uri(createWatchUrl(email))
-                    .body(createChannel())
-                    .header(AUTHORIZATION, BEARER + token)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .toEntity(String.class);
-        } catch (HttpClientErrorException e) {
-            throw new GoogleCalendarWatchException();
-        }
-    }
-
-    private String createWatchUrl(String email) {
-        return BASE_WATCH_URL + email + EVENT_WATCH;
-    }
-
-    private Channel createChannel() {
-        return new Channel()
-                .setId(UUID.randomUUID().toString())
-                .setType(CHANNEL_TYPE)
-                .setAddress(BASE_URL + NOTIFICATION_URL)
-                .setExpiration(System.currentTimeMillis() + 9_000_000_000L)
-                .setToken("tokenValue");
+    public Channel executeWatchRequest() {
+        return googleApiConfig.executeWatchRequest();
     }
 }
