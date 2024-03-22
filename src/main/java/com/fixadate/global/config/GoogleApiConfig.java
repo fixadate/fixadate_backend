@@ -14,6 +14,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
@@ -30,6 +31,8 @@ import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
 @Configuration
 @Slf4j
 public class GoogleApiConfig {
+    @Value("${google.port}")
+    private int port;
     static final String ACCESS_TYPE = "offline";
     static final String APPLICATION_NAME = "fixadate";
     static final String CHANNEL_TYPE = "web_hook";
@@ -62,7 +65,7 @@ public class GoogleApiConfig {
                     .setAccessType(ACCESS_TYPE)
                     .setApprovalPrompt(APPROVAL_PROMPT)
                     .build();
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8080).build();
+            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(port).build();
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(USER_ID);
         } catch (IOException e) {
             log.info(e.getMessage());
