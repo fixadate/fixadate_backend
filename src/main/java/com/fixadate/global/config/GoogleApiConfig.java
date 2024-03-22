@@ -13,7 +13,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -51,29 +50,18 @@ public class GoogleApiConfig {
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private HttpTransport HTTP_TRANSPORT;
     private GoogleAuthorizationCodeFlow flow;
-    private Credential credential;
 
-    //userId
     public Calendar calendarService() {
-        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
-    }
-
-    @PostConstruct
-    void initializeFlow() {
-        try {
-            this.HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            this.credential = getCredentials();
-        } catch (GeneralSecurityException | IOException e) {
-            throw new GoogleCalendarWatchException();
-        }
     }
 
     public Credential getCredentials() {
         try {
             InputStream in = GoogleApiConfig.class.getResourceAsStream(FILE_PATH);
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+            this.HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             this.flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
                     List.of(CALENDAR_READONLY, CALENDAR_EVENTS_READONLY))
                     .setDataStoreFactory(new FileDataStoreFactory(new File(TOKEN_DIRECTORY_PATH)))
@@ -84,6 +72,8 @@ public class GoogleApiConfig {
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(USER_ID);
         } catch (IOException e) {
             log.info(e.getMessage());
+            throw new GoogleCalendarWatchException();
+        } catch (GeneralSecurityException e) {
             throw new GoogleCalendarWatchException();
         }
 
