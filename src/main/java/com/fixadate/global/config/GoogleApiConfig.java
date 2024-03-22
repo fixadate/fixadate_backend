@@ -69,7 +69,7 @@ public class GoogleApiConfig {
                     .setAccessType(ACCESS_TYPE)
                     .setApprovalPrompt(APPROVAL_PROMPT)
                     .build();
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8080).build();
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(USER_ID);
         } catch (IOException e) {
             log.info(e.getMessage());
