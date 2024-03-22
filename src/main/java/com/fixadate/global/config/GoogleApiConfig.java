@@ -1,24 +1,36 @@
 package com.fixadate.global.config;
 
+import com.fixadate.domain.adate.exception.GoogleCalendarWatchException;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.MemoryDataStoreFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Channel;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import static com.google.api.services.calendar.CalendarScopes.CALENDAR_EVENTS_READONLY;
+import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
 
 @Configuration
+@Slf4j
 public class GoogleApiConfig {
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -30,45 +42,66 @@ public class GoogleApiConfig {
     @Value("${google.api.key}")
     private String apiKey;
     static final String ACCESS_TYPE = "offline";
-    static final String USER_ID = "user";
-    static final String REQUEST_HEADER = "Bearer ";
-    static final String FIELD_NAME = "key";
     static final String APPLICATION_NAME = "fixadate";
     static final String CHANNEL_TYPE = "web_hook";
     static final String BASE_URL = "https://api/fixadate.app";
     static final String NOTIFICATION_URL = "/google/notifications";
+    static final String FILE_PATH = "/credentials.json";
+    static final String TOKEN_DIRECTORY_PATH = "tokens";
+    static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private HttpTransport HTTP_TRANSPORT;
+    private GoogleAuthorizationCodeFlow flow;
 
-
-
-    @Bean
-    public GoogleAuthorizationCodeFlow googleAuthorizationCodeFlow() throws GeneralSecurityException, IOException {
-        HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-
-        return new GoogleAuthorizationCodeFlow.Builder(httpTransport, JacksonFactory.getDefaultInstance(),
-                clientId, clientSecret, Collections.singleton(CalendarScopes.CALENDAR))
-                .setDataStoreFactory(new MemoryDataStoreFactory())
-                .setAccessType(ACCESS_TYPE)
+    //userId
+    public Calendar calendarService() throws IOException, GeneralSecurityException {
+        Credential credential = getCredentials();
+        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 
-    @Bean
-    public Calendar calendarService(GoogleAuthorizationCodeFlow flow) throws GeneralSecurityException, IOException {
-        HttpRequestInitializer initializer = new HttpRequestInitializer() {
-            @Override
-            public void initialize(com.google.api.client.http.HttpRequest request) throws IOException {
-                Credential credential = flow.loadCredential(USER_ID);
-                if (credential != null) {
-                    request.getHeaders().setAuthorization(REQUEST_HEADER + credential.getAccessToken());
-                    GenericUrl url = request.getUrl();
-                    url.put(FIELD_NAME, apiKey);
-                    request.setUrl(url);
-                }
-            }
-        };
+    @PostConstruct
+    void initializeFlow() throws GeneralSecurityException, IOException {
+        if (clientId == null || clientSecret == null) {
+            return;
+        }
+        this.HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+    }
 
-        return new Calendar.Builder(GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance(), initializer)
-                .setApplicationName(APPLICATION_NAME)
+    public Credential getCredentials() throws IOException, GeneralSecurityException {
+        InputStream in = GoogleApiConfig.class.getResourceAsStream(FILE_PATH);
+        // try with resources 공부하고 적용해보기
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+        this.HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        this.flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
+                List.of(CALENDAR_READONLY, CALENDAR_EVENTS_READONLY))
+                .setDataStoreFactory(new FileDataStoreFactory(new File(TOKEN_DIRECTORY_PATH)))
+                .setAccessType(ACCESS_TYPE)
+                .setApprovalPrompt("force")
                 .build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    }
+    public Channel executeWatchRequest() {
+        try {
+            Channel channel = createChannel();
+            Calendar.Events.Watch watch = calendarService()
+                    .events()
+                    .watch("primary", channel);
+            return watch.execute();
+        } catch (IOException e) {
+            log.info(e.getMessage());
+            throw new GoogleCalendarWatchException();
+        } catch (GeneralSecurityException e) {
+            throw new GoogleCalendarWatchException();
+        }
+    }
+    private Channel createChannel() {
+        return new Channel()
+                .setId(UUID.randomUUID().toString())
+                .setType(CHANNEL_TYPE)
+                .setAddress(BASE_URL + NOTIFICATION_URL)
+                .setExpiration(System.currentTimeMillis() + 9_000_000_000L)
+                .setToken("tokenValue");
     }
 }
