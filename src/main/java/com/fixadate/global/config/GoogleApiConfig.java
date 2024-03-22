@@ -5,7 +5,6 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -19,8 +18,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +30,13 @@ import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
 public class GoogleApiConfig {
     @Value("${google.port}")
     private int port;
+    @Value("${google.uri}")
+    private String callbackUrl;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String clientSecret;
+
     static final String ACCESS_TYPE = "offline";
     static final String APPLICATION_NAME = "fixadate";
     static final String CHANNEL_TYPE = "web_hook";
@@ -56,16 +60,16 @@ public class GoogleApiConfig {
 
     public Credential getCredentials() {
         try {
-            InputStream in = GoogleApiConfig.class.getResourceAsStream(FILE_PATH);
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+//            InputStream in = GoogleApiConfig.class.getResourceAsStream(FILE_PATH);
+//            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
             this.HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            this.flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
+            this.flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientId, clientSecret,
                     List.of(CALENDAR_READONLY, CALENDAR_EVENTS_READONLY))
                     .setDataStoreFactory(new FileDataStoreFactory(new File(TOKEN_DIRECTORY_PATH)))
                     .setAccessType(ACCESS_TYPE)
                     .setApprovalPrompt(APPROVAL_PROMPT)
                     .build();
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(port).build();
+            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setCallbackPath(callbackUrl).build();
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(USER_ID);
         } catch (IOException e) {
             log.info(e.getMessage());
