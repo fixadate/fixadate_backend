@@ -10,6 +10,7 @@ on:
       - '**/settings.gradle*'
       - '**/application*.yml'
       - '**.sql'
+      - '**/yml'
 
 env:
   PROJECT_NAME: fixadate
@@ -40,9 +41,11 @@ jobs:
           find src
 
       - name: SET Credentials
-        run: |
-          echo "${{ secrets.FIXADATE_CREDENTIALS_JSON }}" > src/main/resources/credentials.json
-          find src
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "credentials.json"
+          json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
+          dir: './src/main/resources/'
 
       - name: Set TEST YML
         run: |

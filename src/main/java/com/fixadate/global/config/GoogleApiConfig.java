@@ -14,7 +14,6 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
@@ -31,12 +30,6 @@ import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
 @Configuration
 @Slf4j
 public class GoogleApiConfig {
-
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
-    private String clientSecret;
     static final String ACCESS_TYPE = "offline";
     static final String APPLICATION_NAME = "fixadate";
     static final String CHANNEL_TYPE = "web_hook";
