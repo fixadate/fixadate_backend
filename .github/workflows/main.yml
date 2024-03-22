@@ -37,10 +37,12 @@ jobs:
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
+          find src
+
+      - name: SET Credentials
+        run: |
           echo "${{ secrets.FIXADATE_CREDENTIALS_JSON }}" > src/main/resources/credentials.json
           find src
-      
-          
 
       - name: Set TEST YML
         run: |
