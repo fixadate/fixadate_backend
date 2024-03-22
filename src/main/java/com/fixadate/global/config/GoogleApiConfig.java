@@ -52,7 +52,8 @@ public class GoogleApiConfig {
     private GoogleAuthorizationCodeFlow flow;
 
     public Calendar calendarService() {
-        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
+        Credential credential = getCredentials();
+        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
