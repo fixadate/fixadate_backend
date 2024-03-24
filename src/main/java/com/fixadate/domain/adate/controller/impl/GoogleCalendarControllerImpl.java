@@ -2,15 +2,19 @@ package com.fixadate.domain.adate.controller.impl;
 
 import com.fixadate.domain.adate.controller.GoogleCalendarController;
 import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
+import com.fixadate.domain.adate.dto.request.GoogleCalendarTimeRequest;
+import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.google.api.services.calendar.model.Channel;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,15 +28,17 @@ import java.util.Map;
 public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     private final AdateService adateService;
 
-//    @Override
-//    @GetMapping()
-//    public ResponseEntity<List<GoogleCalendarEventResponse>> getGoogleCalendarEvents(
-//            @RequestParam String accessToken,
-//            @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest) {
-//        DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(accessToken);
-//        List<GoogleCalendarEventResponse> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest);
-//        return ResponseEntity.ok(events);
-//    }
+    @Override
+    @GetMapping()
+    public ResponseEntity<List<GoogleCalendarEventResponse>> getGoogleCalendarEvents(
+            @RequestParam String accessToken,
+            @RequestBody GoogleCalendarTimeRequest googleCalendarTimeRequest,
+            HttpServletRequest httpServletRequest) {
+        String userId = httpServletRequest.getSession().getId();
+        DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(accessToken);
+        List<GoogleCalendarEventResponse> events = adateService.listEvents(oAuth2AccessToken, googleCalendarTimeRequest, userId);
+        return ResponseEntity.ok(events);
+    }
 
     @Override
     @PostMapping()

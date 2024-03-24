@@ -7,7 +7,7 @@ public class ConstantValue {
     public static final String ACCESS_TYPE = "offline";
     public static final String APPLICATION_NAME = "fixadate";
     public static final String CHANNEL_TYPE = "web_hook";
-    public static final String BASE_URL = "https://api/fixadate.app";
+    public static final String BASE_URL = "https://api.fixadate.app";
     public static final String NOTIFICATION_URL = "/google/notifications";
     public static final String FILE_PATH = "/credentials.json";
     public static final String TOKEN_DIRECTORY_PATH = "tokens";
