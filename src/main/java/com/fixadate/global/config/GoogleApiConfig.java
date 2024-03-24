@@ -89,10 +89,10 @@ public class GoogleApiConfig {
         }
     }
 
-    public Channel executeWatchRequest(String accessToken) {
+    public Channel executeWatchRequest(String userId) {
         try {
             Channel channel = createChannel();
-            Calendar.Events.Watch watch = calendarService(accessToken)
+            Calendar.Events.Watch watch = calendarService(userId)
                     .events()
                     .watch(CALENDAR_ID, channel);
             return watch.execute();
@@ -101,17 +101,16 @@ public class GoogleApiConfig {
         }
     }
 
-    public Calendar calendarService(String accessToken) {
-        Credential credential = getCredentials(accessToken);
+    public Calendar calendarService(String userId) {
+        Credential credential = getCredentials(userId);
         return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 
-    public static Credential getCredentials(String accessToken) {
+    public static Credential getCredentials(String userId) {
         try {
-            log.info(accessToken);
-            return flow.loadCredential(accessToken);
+            return flow.loadCredential(userId);
         } catch (IOException e) {
             throw new GoogleCredentialException();
         }
