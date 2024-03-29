@@ -14,4 +14,7 @@ public class ConstantValue {
     public static final String CALENDAR_ID = "primary";
     public static final String GOOGLE_CALLBACK = "/oauth2callback";
     public static final String APPROVAL_PROMPT = "force";
+    public static final java.io.File DATA_STORE_DIR =
+            new java.io.File(System.getProperty("user.home"), ".store/token");
+
 }

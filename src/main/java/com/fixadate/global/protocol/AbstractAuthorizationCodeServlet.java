@@ -22,9 +22,10 @@ public abstract class AbstractAuthorizationCodeServlet extends HttpServlet {
     private Credential credential;
     private AuthorizationCodeFlow flow;
 
-    public AbstractAuthorizationCodeServlet() {
+    protected AbstractAuthorizationCodeServlet() {
     }
 
+    @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         this.lock.lock();
 

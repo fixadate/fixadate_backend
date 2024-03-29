@@ -21,7 +21,9 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
             throws IOException {
         String userId = req.getSession().getId();
-        resp.sendRedirect("/google/watch?userId=" + userId);
+        log.info("userId : " + userId);
+        log.info("accessToken: " + credential.getAccessToken());
+        resp.sendRedirect("/google/watch?userId=" + userId + "&accessToken=" + credential.getAccessToken());
     }
 
     /**

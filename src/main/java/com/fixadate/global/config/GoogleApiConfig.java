@@ -11,6 +11,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,10 +40,12 @@ public class GoogleApiConfig {
     private String clientId;
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
+    private Channel channel;
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     static final List<String> SCOPES = List.of(CALENDAR_READONLY, CALENDAR_EVENTS_READONLY);
     private static HttpTransport HTTP_TRANSPORT;
     private static GoogleAuthorizationCodeFlow flow;
+    private static FileDataStoreFactory dataStoreFactory;
     private static String CLIENT_ID;
     private static String CLIENT_SECRET;
 
@@ -52,13 +54,15 @@ public class GoogleApiConfig {
         CLIENT_ID = clientId;
         CLIENT_SECRET = clientSecret;
         HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
         GoogleClientSecrets clientSecrets = getClientSecrets();
         flow = new GoogleAuthorizationCodeFlow.Builder(
                 HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new File(TOKEN_DIRECTORY_PATH)))
+                .setDataStoreFactory(dataStoreFactory)
                 .setAccessType(ACCESS_TYPE)
                 .setApprovalPrompt(APPROVAL_PROMPT)
                 .build();
+        channel = createChannel();
     }
 
 
@@ -91,7 +95,6 @@ public class GoogleApiConfig {
 
     public Channel executeWatchRequest(String userId) {
         try {
-            Channel channel = createChannel();
             Calendar.Events.Watch watch = calendarService(userId)
                     .events()
                     .watch(CALENDAR_ID, channel);
@@ -124,5 +127,19 @@ public class GoogleApiConfig {
                 .setAddress(BASE_URL + NOTIFICATION_URL)
                 .setExpiration(System.currentTimeMillis() + 9_000_000_000L)
                 .setToken("tokenValue");
+    }
+
+    public String getNextSyncToken(String userId) {
+        try {
+            Calendar.Events.Watch watch = calendarService(userId)
+                    .events()
+                    .watch(CALENDAR_ID, channel);
+            return watch.getSyncToken();
+        } catch (IOException e) {
+            throw new GoogleCalendarWatchException();
+        }
+    }
+    public static DataStoreFactory getDataStoreFactory() {
+        return dataStoreFactory;
     }
 }
