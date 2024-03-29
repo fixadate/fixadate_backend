@@ -44,10 +44,10 @@ public class AdateService {
     static final String CALENDAR_CANCELLED = "cancelled";
 
     @Transactional
-    public void listEvents(String accessToken, String sessionId, Long memberId) {
+    public void listEvents(String accessToken, String sessionId) {
         try {
             List<Event> events = getEvents(accessToken, sessionId);
-            syncEvents(events, memberId);
+            syncEvents(events);
         } catch (IOException e) {
             throw new AdateIOException(e);
         }
@@ -63,7 +63,7 @@ public class AdateService {
         }
     }
 
-    public void syncEvents(List<Event> events, Long memberId) {
+    public void syncEvents(List<Event> events) {
         List<Event> eventsToRemove = new ArrayList<>();
         for (Event event : events) {
             Optional<Adate> adateOptional = getAdateFromRepository(event.getId());
@@ -80,7 +80,7 @@ public class AdateService {
             }
         }
         events.removeAll(eventsToRemove);
-        registEvents(events, memberId);
+        registEvents(events);
     }
 
 
@@ -92,10 +92,9 @@ public class AdateService {
         return adateRepository.findAdateByCalendarId(calendarId);
     }
 
-    public void registEvents(List<Event> events, Long memberId) {
-        Member member = memberService.getMemberFromId(memberId);
+    public void registEvents(List<Event> events) {
         List<Adate> adates = events.stream()
-                .map((Event event) -> Adate.getAdateFromEvent(event, member))
+                .map((Event event) -> Adate.getAdateFromEvent(event))
                 .toList();
         adateRepository.saveAll(adates);
     }
