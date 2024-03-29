@@ -28,10 +28,8 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     @Override
     @GetMapping()
     public ResponseEntity<List<GoogleCalendarEventResponse>> getGoogleCalendarEvents(@RequestParam String accessToken,
-                                                                                     @RequestParam String userId,
-                                                                                     @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        Long memberId = memberPrincipal.getMember().getId();
-        adateService.listEvents(accessToken, userId, memberId);
+                                                                                     @RequestParam String userId) {
+        adateService.listEvents(accessToken, userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -65,11 +63,9 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
                                                                                @RequestHeader(WebhookHeaders.RESOURCE_STATE) String resourceState,
                                                                                @RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber,
                                                                                @RequestHeader("Authorization") String accessToken,
-                                                                               HttpServletRequest httpServletRequest,
-                                                                               @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+                                                                               HttpServletRequest httpServletRequest) {
         String sessionId = httpServletRequest.getSession().getId();
-        Long memberId = memberPrincipal.getMember().getId();
-        adateService.listEvents(accessToken, sessionId, memberId);
+        adateService.listEvents(accessToken, sessionId);
         log.info("Request for calendar sync, channelId=" + channelId + ", expiration=" + channelExpiration + ", messageNumber=" + messageNumber);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

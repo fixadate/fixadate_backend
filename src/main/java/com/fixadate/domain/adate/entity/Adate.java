@@ -68,7 +68,7 @@ public class Adate extends BaseTimeEntity {
         this.status = event.getStatus();
     }
 
-    public static Adate getAdateFromEvent(Event event, Member member) {
+    public static Adate getAdateFromEvent(Event event) {
         return Adate.builder()
                 .title(event.getSummary())
                 .notes(event.getDescription())
@@ -81,7 +81,6 @@ public class Adate extends BaseTimeEntity {
                 .reminders(event.getReminders().getUseDefault())
                 .recurringEventId(event.getRecurringEventId())
                 .status(event.getStatus())
-                .member(member)
                 .build();
     }
     public void setColorType(ColorType colorType) {
