@@ -63,6 +63,8 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
                                                                                @RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber,
                                                                                HttpServletRequest request) {
         log.info("Request for calendar sync, channelId=" + channelId + ", expiration=" + channelExpiration + ", messageNumber=" + messageNumber);
+        String userId = request.getSession().getId();
+        adateService.listEvents(userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
