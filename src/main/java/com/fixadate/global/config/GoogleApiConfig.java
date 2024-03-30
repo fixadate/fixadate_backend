@@ -67,7 +67,7 @@ public class GoogleApiConfig {
 
 
     public static String getClientId(HttpServletRequest httpServletRequest) {
-        return httpServletRequest.getSession().getId();
+        return httpServletRequest.getSession(true).getId();
     }
 
     public static GoogleAuthorizationCodeFlow initializeFlow() {
