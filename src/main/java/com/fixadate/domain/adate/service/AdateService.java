@@ -39,9 +39,11 @@ public class AdateService {
     private final ColorTypeRepository colorTypeRepository;
     private final MemberService memberService;
     private DataStore<String> syncSettingsDataStore;
+    private DataStore<String> eventDataStore;
 
     static final String CALENDAR_ID = "primary";
     static final String CALENDAR_CANCELLED = "cancelled";
+    private static final String SYNC_TOKEN_KEY = "syncToken";
 
     @Transactional
     public void listEvents(String accessToken, String sessionId) {
@@ -54,8 +56,9 @@ public class AdateService {
     }
 
     public List<Event> getEvents(String accessToken, String sessionId) throws IOException {
+        eventDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("EventStore");
         syncSettingsDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("SyncSettings");
-        String nextSyncToken = syncSettingsDataStore.get(sessionId);
+        String nextSyncToken = syncSettingsDataStore.get(SYNC_TOKEN_KEY);
         if (nextSyncToken == null) {
             return getEventsWhenNextSyncTokenIsNull(accessToken, sessionId);
         } else {
@@ -106,7 +109,7 @@ public class AdateService {
                 .setOauthToken(accessToken)
                 .execute();
         List<Event> events = event.getItems();
-        setNextSyncToken(userId, event);
+        setNextSyncToken(SYNC_TOKEN_KEY, event);
         return events;
     }
 
