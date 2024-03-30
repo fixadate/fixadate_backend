@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Builder
 @Slf4j
@@ -25,28 +25,35 @@ public record GoogleCalendarEventResponse(
         boolean ifAllDay,
         String status
 ) {
+    static final String DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     static final String TRANSPARENCY = "transparency";
 
     public static GoogleCalendarEventResponse of(Event event) {
         return new GoogleCalendarEventResponse(
-                convertDateTimeToLocalDateTime(event.getCreated()),
-                convertDateTimeToLocalDateTime(event.getEnd().getDateTime()),
+                getLocalDateTimeFromDateTime(event.getCreated()),
+                getLocalDateTimeFromDateTime(event.getEnd().getDateTime()),
                 event.getId(),
                 getRemindersDefaultValue(event.getReminders()),
-                convertDateTimeToLocalDateTime(event.getStart().getDateTime()),
+                getLocalDateTimeFromDateTime(event.getStart().getDateTime()),
                 event.getLocation(),
                 event.getSummary(),
                 event.getDescription(),
-                convertDateTimeToLocalDateTime(event.getUpdated()),
+                getLocalDateTimeFromDateTime(event.getUpdated()),
                 event.getRecurringEventId(),
                 getIfAllDayFromGetTransparency(event.getTransparency()),
                 event.getStatus()
         );
     }
 
-    public static LocalDateTime convertDateTimeToLocalDateTime(DateTime dateTime) {
-        OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTime.toString());
-        return offsetDateTime.toLocalDateTime();
+    public static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {
+        try {
+            DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER);
+            return LocalDateTime.parse(dateTime.toStringRfc3339(), f);
+        } catch (Exception e) {
+            //fixme 정보를 알려주는 log로 변경할 것
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static boolean getIfAllDayFromGetTransparency(String transparency) {
