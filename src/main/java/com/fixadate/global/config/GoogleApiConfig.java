@@ -11,6 +11,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
@@ -48,6 +49,9 @@ public class GoogleApiConfig {
     private static FileDataStoreFactory dataStoreFactory;
     private static String CLIENT_ID;
     private static String CLIENT_SECRET;
+    private DataStore<String> syncSettingsDataStore;
+    private DataStore<String> eventDataStore;
+
 
     @PostConstruct
     public void init() throws GeneralSecurityException, IOException {
@@ -63,6 +67,8 @@ public class GoogleApiConfig {
                 .setApprovalPrompt(APPROVAL_PROMPT)
                 .build();
         channel = createChannel();
+        eventDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("EventStore");
+        syncSettingsDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("SyncSettings");
     }
 
 
@@ -141,5 +147,9 @@ public class GoogleApiConfig {
     }
     public static DataStoreFactory getDataStoreFactory() {
         return dataStoreFactory;
+    }
+
+    public DataStore<String> getSyncSettingsDataStore() {
+        return syncSettingsDataStore;
     }
 }

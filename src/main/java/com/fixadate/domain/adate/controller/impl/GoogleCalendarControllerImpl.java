@@ -5,6 +5,7 @@ import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.adate.entity.constant.WebhookHeaders;
 import com.fixadate.domain.adate.service.AdateService;
 import com.google.api.services.calendar.model.Channel;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +25,10 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 
     @Override
     @GetMapping()
-    public ResponseEntity<List<GoogleCalendarEventResponse>> getGoogleCalendarEvents(@RequestParam String accessToken,
-                                                                                     @RequestParam String userId) {
-        adateService.listEvents(accessToken, userId);
+    public ResponseEntity<Void> getGoogleCalendarEvents(
+            HttpServletRequest httpServletRequest) {
+        String userId = httpServletRequest.getSession().getId();
+        adateService.listEvents(userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -58,7 +60,8 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
                                                                                @RequestHeader(WebhookHeaders.CHANNEL_ID) String channelId,
                                                                                @RequestHeader(WebhookHeaders.CHANNEL_EXPIRATION) String channelExpiration,
                                                                                @RequestHeader(WebhookHeaders.RESOURCE_STATE) String resourceState,
-                                                                               @RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber) {
+                                                                               @RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber,
+                                                                               HttpServletRequest request) {
         log.info("Request for calendar sync, channelId=" + channelId + ", expiration=" + channelExpiration + ", messageNumber=" + messageNumber);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

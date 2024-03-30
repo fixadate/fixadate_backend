@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse.convertDateTimeToLocalDateTime;
+import static com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse.getLocalDateTimeFromDateTime;
 
 @Entity
 @Builder
@@ -59,8 +59,8 @@ public class Adate extends BaseTimeEntity {
         this.notes = event.getDescription();
         this.location = event.getLocation();
         this.color = event.getColorId();
-        this.startsWhen = convertDateTimeToLocalDateTime(event.getStart().getDateTime());
-        this.endsWhen = convertDateTimeToLocalDateTime(event.getEnd().getDateTime());
+        this.startsWhen = checkStartDateTimeIsNull(event);
+        this.endsWhen = checkEndDateTimeIsNull(event);
         this.calendarId = event.getId();
         this.etag = event.getEtag();
         this.reminders = event.getReminders().getUseDefault();
@@ -74,14 +74,33 @@ public class Adate extends BaseTimeEntity {
                 .notes(event.getDescription())
                 .location(event.getLocation())
                 .color(event.getColorId())
-                .startsWhen(convertDateTimeToLocalDateTime(event.getStart().getDateTime()))
-                .endsWhen(convertDateTimeToLocalDateTime(event.getEnd().getDateTime()))
+                .startsWhen(checkStartDateTimeIsNull(event))
+                .endsWhen(checkEndDateTimeIsNull(event))
+                .ifAllDay(checkEventIsAllDayType(event))
                 .calendarId(event.getId())
                 .etag(event.getEtag())
                 .reminders(event.getReminders().getUseDefault())
                 .recurringEventId(event.getRecurringEventId())
                 .status(event.getStatus())
                 .build();
+    }
+
+    private static LocalDateTime checkStartDateTimeIsNull(Event event) {
+        if (event.getStart().getDateTime() == null) {
+            return getLocalDateTimeFromDateTime(event.getStart().getDate());
+        }
+        return getLocalDateTimeFromDateTime(event.getStart().getDateTime());
+    }
+
+    private static LocalDateTime checkEndDateTimeIsNull(Event event) {
+        if (event.getStart().getDateTime() == null) {
+            return getLocalDateTimeFromDateTime(event.getEnd().getDate());
+        }
+        return getLocalDateTimeFromDateTime(event.getEnd().getDateTime());
+    }
+
+    private static boolean checkEventIsAllDayType(Event event) {
+        return event.getStart().getDateTime() == null;
     }
     public void setColorType(ColorType colorType) {
         this.colorType = colorType;

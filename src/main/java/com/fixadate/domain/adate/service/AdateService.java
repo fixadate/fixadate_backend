@@ -11,9 +11,7 @@ import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.config.GoogleApiConfig;
-import com.google.api.client.util.store.DataStore;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import com.google.api.services.calendar.model.Event;
@@ -37,18 +35,25 @@ public class AdateService {
     private final AdateRepository adateRepository;
     private final AdateQueryRepository adateQueryRepository;
     private final ColorTypeRepository colorTypeRepository;
-    private final MemberService memberService;
-    private DataStore<String> syncSettingsDataStore;
-    private DataStore<String> eventDataStore;
 
     static final String CALENDAR_ID = "primary";
     static final String CALENDAR_CANCELLED = "cancelled";
     private static final String SYNC_TOKEN_KEY = "syncToken";
 
     @Transactional
-    public void listEvents(String accessToken, String sessionId) {
+    public void listEvents(String sessionId) {
         try {
-            List<Event> events = getEvents(accessToken, sessionId);
+            Calendar calendar = googleApiConfig.calendarService(sessionId);
+            Calendar.Events.List request = calendar.events().list("primary");
+            String syncToken = getNextSyncToken();
+            List<Event> events;
+            if (syncToken == null) {
+                events = request.execute().getItems();
+            } else {
+                request.setSyncToken(syncToken);
+                events = request.execute().getItems();
+                googleApiConfig.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, syncToken);
+            }
             syncEvents(events);
         } catch (IOException e) {
             throw new AdateIOException(e);
@@ -56,50 +61,12 @@ public class AdateService {
     }
 
     public List<Event> getEvents(String accessToken, String sessionId) throws IOException {
-        eventDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("EventStore");
-        syncSettingsDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("SyncSettings");
-        String nextSyncToken = syncSettingsDataStore.get(SYNC_TOKEN_KEY);
+        String nextSyncToken = googleApiConfig.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY);
         if (nextSyncToken == null) {
             return getEventsWhenNextSyncTokenIsNull(accessToken, sessionId);
         } else {
             return getEventsWhenNextSyncTokenExists(accessToken, sessionId, nextSyncToken);
         }
-    }
-
-    public void syncEvents(List<Event> events) {
-        List<Event> eventsToRemove = new ArrayList<>();
-        for (Event event : events) {
-            Optional<Adate> adateOptional = getAdateFromRepository(event.getId());
-            if (event.getStatus().equals(CALENDAR_CANCELLED)) {
-                eventsToRemove.add(event);
-                adateOptional.ifPresent(this::deleteAdate);
-                continue;
-            }
-            if (adateOptional.isPresent()) {
-                Adate adate = adateOptional.get();
-                if (adate.getEtag().equals(event.getEtag())) {
-                    eventsToRemove.add(event);
-                } else adate.updateFrom(event);
-            }
-        }
-        events.removeAll(eventsToRemove);
-        registEvents(events);
-    }
-
-
-    private void deleteAdate(Adate adate) {
-        adateRepository.delete(adate);
-    }
-
-    private Optional<Adate> getAdateFromRepository(String calendarId) {
-        return adateRepository.findAdateByCalendarId(calendarId);
-    }
-
-    public void registEvents(List<Event> events) {
-        List<Adate> adates = events.stream()
-                .map((Event event) -> Adate.getAdateFromEvent(event))
-                .toList();
-        adateRepository.saveAll(adates);
     }
 
 
@@ -127,12 +94,53 @@ public class AdateService {
         try {
             String nextSyncToken = events.getNextSyncToken();
             if (nextSyncToken != null) {
-                syncSettingsDataStore.set(userId, nextSyncToken);
+                googleApiConfig.getSyncSettingsDataStore().set(userId, nextSyncToken);
             }
         } catch (IOException e) {
             throw new GoogleNextSyncTokenException();
         }
     }
+
+    public void syncEvents(List<Event> events) throws IOException {
+        List<Event> eventsToRemove = new ArrayList<>();
+        for (Event event : events) {
+            Optional<Adate> adateOptional = getAdateFromRepository(event.getId());
+            if (event.getStatus().equals(CALENDAR_CANCELLED)) {
+                eventsToRemove.add(event);
+                adateOptional.ifPresent(this::deleteAdate);
+                continue;
+            }
+            if (adateOptional.isPresent()) {
+                Adate adate = adateOptional.get();
+                if (adate.getEtag().equals(event.getEtag())) {
+                    eventsToRemove.add(event);
+                } else adate.updateFrom(event);
+            }
+        }
+        events.removeAll(eventsToRemove);
+        for (Event event : events) {
+            log.info(event.toPrettyString());
+        }
+        registEvents(events);
+    }
+
+
+    private void deleteAdate(Adate adate) {
+        adateRepository.delete(adate);
+    }
+
+    private Optional<Adate> getAdateFromRepository(String calendarId) {
+        return adateRepository.findAdateByCalendarId(calendarId);
+    }
+
+    public void registEvents(List<Event> events) {
+        List<Adate> adates = events.stream()
+                .map((Event event) -> Adate.getAdateFromEvent(event))
+                .toList();
+        adateRepository.saveAll(adates);
+    }
+
+
 
     @Transactional
     public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
@@ -167,7 +175,11 @@ public class AdateService {
         return googleApiConfig.executeWatchRequest(userId);
     }
 
-    public String getNextSyncToken(String userId) {
-        return googleApiConfig.getNextSyncToken(userId);
+    public String getNextSyncToken() {
+        try {
+            return googleApiConfig.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
