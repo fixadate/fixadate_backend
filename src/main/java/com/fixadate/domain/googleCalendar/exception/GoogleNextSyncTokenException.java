@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.exception;
+package com.fixadate.domain.googleCalendar.exception;
 
 public class GoogleNextSyncTokenException extends RuntimeException {
     public GoogleNextSyncTokenException(final String message) {

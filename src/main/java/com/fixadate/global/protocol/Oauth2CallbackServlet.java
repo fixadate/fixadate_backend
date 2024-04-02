@@ -8,21 +8,17 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = "/oauth2callback")
-@Slf4j
 public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServlet {
 
     @Override
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
             throws IOException {
         String userId = req.getSession().getId();
-        log.info("userId : " + userId);
-        log.info("accessToken: " + credential.getAccessToken());
         resp.sendRedirect("/google/watch?userId=" + userId + "&accessToken=" + credential.getAccessToken());
     }
 

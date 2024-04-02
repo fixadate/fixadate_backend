@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse.getLocalDateTimeFromDateTime;
+import static com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventResponse.getLocalDateTimeFromDateTime;
 
 @Entity
 @Builder

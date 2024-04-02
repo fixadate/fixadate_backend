@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.dto.request;
+package com.fixadate.domain.googleCalendar.dto.request;
 
 import com.fixadate.domain.adate.exception.DateParseException;
 import com.google.api.client.util.DateTime;
