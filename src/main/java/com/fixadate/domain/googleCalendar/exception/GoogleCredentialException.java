@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.exception;
+package com.fixadate.domain.googleCalendar.exception;
 
 public class GoogleCredentialException extends RuntimeException{
     public GoogleCredentialException(final String message) {

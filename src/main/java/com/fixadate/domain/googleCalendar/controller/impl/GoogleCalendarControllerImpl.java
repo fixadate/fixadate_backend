@@ -1,11 +1,10 @@
-package com.fixadate.domain.adate.controller.impl;
+package com.fixadate.domain.googleCalendar.controller.impl;
 
-import com.fixadate.domain.adate.controller.GoogleCalendarController;
-import com.fixadate.domain.adate.dto.response.GoogleCalendarEventResponse;
-import com.fixadate.domain.adate.entity.constant.WebhookHeaders;
-import com.fixadate.domain.adate.service.AdateService;
+import com.fixadate.domain.googleCalendar.controller.GoogleCalendarController;
+import com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventResponse;
+import com.fixadate.domain.googleCalendar.entity.constant.WebhookHeaders;
+import com.fixadate.domain.googleCalendar.service.GoogleService;
 import com.google.api.services.calendar.model.Channel;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -21,25 +20,14 @@ import java.util.List;
 @RequestMapping("/google")
 @Slf4j
 public class GoogleCalendarControllerImpl implements GoogleCalendarController {
-    private final AdateService adateService;
+    private final GoogleService googleService;
 
     @Override
     @GetMapping()
-    public ResponseEntity<Void> getGoogleCalendarEvents(
-            HttpServletRequest httpServletRequest) {
-        String userId = httpServletRequest.getSession().getId();
-        adateService.listEvents(userId);
+    public ResponseEntity<Void> getGoogleCalendarEvents(@RequestParam String channelId) {
+        googleService.listEvents(channelId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-//    @Override
-//    @PostMapping()
-//    public ResponseEntity<Void> registerGoogleCalendarEvents(
-//            @Valid @RequestBody List<GoogleCalendarRegistRequest> googleCalendarRegistRequest,
-//            @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-//        adateService.registGoogleEvent(googleCalendarRegistRequest, memberPrincipal.getMember());
-//        return ResponseEntity.status(HttpStatus.CREATED).build();
-//    }
 
     @GetMapping("/watch")
     public ResponseEntity<Channel> watchCalendar(@RequestParam String userId,
@@ -48,7 +36,8 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", accessToken);
 
-        Channel channel = adateService.executeWatchRequest(userId);
+        Channel channel = googleService.executeWatchRequest(userId);
+        googleService.registGoogleCredentials(channel, accessToken, userId);
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(channel);
@@ -60,11 +49,9 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
                                                                                @RequestHeader(WebhookHeaders.CHANNEL_ID) String channelId,
                                                                                @RequestHeader(WebhookHeaders.CHANNEL_EXPIRATION) String channelExpiration,
                                                                                @RequestHeader(WebhookHeaders.RESOURCE_STATE) String resourceState,
-                                                                               @RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber,
-                                                                               HttpServletRequest request) {
+                                                                               @RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber) {
         log.info("Request for calendar sync, channelId=" + channelId + ", expiration=" + channelExpiration + ", messageNumber=" + messageNumber);
-        String userId = request.getSession().getId();
-        adateService.listEvents(userId);
+        googleService.listEvents(channelId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.exception;
+package com.fixadate.domain.googleCalendar.exception;
 
 public class GoogleClientSecretsException extends RuntimeException {
     public GoogleClientSecretsException(final String message) {

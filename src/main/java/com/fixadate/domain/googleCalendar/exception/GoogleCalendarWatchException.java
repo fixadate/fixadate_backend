@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.exception;
+package com.fixadate.domain.googleCalendar.exception;
 
 public class GoogleCalendarWatchException extends RuntimeException {
     public GoogleCalendarWatchException(final String message) {

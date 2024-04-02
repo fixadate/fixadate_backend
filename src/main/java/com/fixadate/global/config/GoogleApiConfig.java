@@ -1,8 +1,8 @@
 package com.fixadate.global.config;
 
-import com.fixadate.domain.adate.exception.GoogleCalendarWatchException;
-import com.fixadate.domain.adate.exception.GoogleClientSecretsException;
-import com.fixadate.domain.adate.exception.GoogleCredentialException;
+import com.fixadate.domain.googleCalendar.exception.GoogleCalendarWatchException;
+import com.fixadate.domain.googleCalendar.exception.GoogleClientSecretsException;
+import com.fixadate.domain.googleCalendar.exception.GoogleCredentialException;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
@@ -50,6 +50,7 @@ public class GoogleApiConfig {
     private static String CLIENT_ID;
     private static String CLIENT_SECRET;
     private DataStore<String> syncSettingsDataStore;
+    private static Credential CREDENTIAL;
     private DataStore<String> eventDataStore;
 
 
@@ -123,6 +124,11 @@ public class GoogleApiConfig {
         } catch (IOException e) {
             throw new GoogleCredentialException();
         }
+
+        /*
+                Credential credential =
+                new Credential(BearerToken.authorizationHeaderAccessMethod()).setAccessToken(accessToken);
+         */
     }
 
     private Channel createChannel() {
@@ -135,16 +141,16 @@ public class GoogleApiConfig {
                 .setToken("tokenValue");
     }
 
-    public String getNextSyncToken(String userId) {
-        try {
-            Calendar.Events.Watch watch = calendarService(userId)
-                    .events()
-                    .watch(CALENDAR_ID, channel);
-            return watch.getSyncToken();
-        } catch (IOException e) {
-            throw new GoogleCalendarWatchException();
-        }
-    }
+//    public String getNextSyncToken(String userId) {
+//        try {
+//            Calendar.Events.Watch watch = calendarService()
+//                    .events()
+//                    .watch(CALENDAR_ID, channel);
+//            return watch.getSyncToken();
+//        } catch (IOException e) {
+//            throw new GoogleCalendarWatchException();
+//        }
+//    }
     public static DataStoreFactory getDataStoreFactory() {
         return dataStoreFactory;
     }

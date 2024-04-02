@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.dto.response;
+package com.fixadate.domain.googleCalendar.dto.response;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;

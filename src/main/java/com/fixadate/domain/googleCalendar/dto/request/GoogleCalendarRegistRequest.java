@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.dto.request;
+package com.fixadate.domain.googleCalendar.dto.request;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
