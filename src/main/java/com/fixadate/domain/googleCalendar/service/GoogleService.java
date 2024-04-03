@@ -42,15 +42,15 @@ public class GoogleService {
             String userId = googleCredentials.getUserId();
             Calendar.Events.List request = googleUtils.calendarService(userId).events().list(CALENDAR_ID)
                     .setOauthToken(googleCredentials.getAccessToken());
-            String syncToken = getNextSyncToken();
+            String syncToken = getNextSyncToken(userId);
 
             List<Event> events;
             if (syncToken == null) {
-                setNextSyncToken(request.execute());
+                setNextSyncToken(request.execute(), userId);
                 events = request.execute().getItems();
             } else {
                 request.setSyncToken(syncToken);
-                setNextSyncToken(request.execute());
+                setNextSyncToken(request.execute(), userId);
                 events = request.execute().getItems();
             }
             syncEvents(events);
@@ -97,18 +97,17 @@ public class GoogleService {
         return googleUtils.executeWatchRequest(userId);
     }
 
-    public String getNextSyncToken() {
+    public String getNextSyncToken(String userId) {
         try {
-            return googleUtils.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY);
+            return googleUtils.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY + userId);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void setNextSyncToken(Events events) {
+    public void setNextSyncToken(Events events, String userId) {
         try {
-            log.info(events.getNextSyncToken());
-            googleUtils.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, events.getNextSyncToken());
+            googleUtils.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY + userId, events.getNextSyncToken());
         } catch (IOException e) {
             throw new GoogleCredentialException();
         }
