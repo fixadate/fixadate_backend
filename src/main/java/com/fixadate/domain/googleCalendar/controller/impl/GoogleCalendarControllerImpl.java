@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -36,9 +38,9 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     public ResponseEntity<Channel> watchCalendar(@RequestParam String userId,
                                                  HttpServletRequest request) {
         TokenResponse tokenResponse = createTokenResponse(request.getCookies());
-        String accessToken = "Bearer " + tokenResponse.getAccessToken();
+        String accessToken = AUTHORIZATION_BEARER + tokenResponse.getAccessToken();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", accessToken);
+        headers.add(AUTHORIZATION, accessToken);
 
         Channel channel = googleService.executeWatchRequest(userId);
         googleService.registGoogleCredentials(channel, tokenResponse, userId);
@@ -50,9 +52,9 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     private TokenResponse createTokenResponse(Cookie[] cookies) {
         TokenResponse tokenResponse = new TokenResponse();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("accessToken")) {
+            if (cookie.getName().equals(ACCESS_TOKEN)) {
                 tokenResponse.setAccessToken(cookie.getValue());
-            } else if (cookie.getName().equals("refreshToken")) {
+            } else if (cookie.getName().equals(REFRESH_TOKEN)) {
                 tokenResponse.setRefreshToken(cookie.getValue());
             }
         }
@@ -66,7 +68,6 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
                                                                                @RequestHeader(WebhookHeaders.CHANNEL_EXPIRATION) String channelExpiration,
                                                                                @RequestHeader(WebhookHeaders.RESOURCE_STATE) String resourceState,
                                                                                @RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber) {
-        log.info("Request for calendar sync, channelId=" + channelId + ", expiration=" + channelExpiration + ", messageNumber=" + messageNumber);
         googleService.listEvents(channelId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

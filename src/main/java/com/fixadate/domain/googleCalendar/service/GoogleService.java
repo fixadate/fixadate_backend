@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -30,10 +32,6 @@ public class GoogleService {
     private final GoogleUtils googleUtils;
     private final AdateService adateService;
     private final GoogleRepository googleRepository;
-
-    static final String CALENDAR_ID = "primary";
-    static final String CALENDAR_CANCELLED = "cancelled";
-    private static final String SYNC_TOKEN_KEY = "syncToken";
 
     @Transactional
     public void listEvents(String channelId) {
@@ -44,16 +42,13 @@ public class GoogleService {
             String userId = googleCredentials.getUserId();
             Calendar.Events.List request = googleUtils.calendarService(userId).events().list(CALENDAR_ID)
                     .setOauthToken(googleCredentials.getAccessToken());
-            log.info(request.getSyncToken() + "존재 함??");
             String syncToken = getNextSyncToken();
 
             List<Event> events;
             if (syncToken == null) {
-                log.info("syncToken 없다");
                 setNextSyncToken(request.execute());
                 events = request.execute().getItems();
             } else {
-                log.info("syncToken 있다");
                 request.setSyncToken(syncToken);
                 setNextSyncToken(request.execute());
                 events = request.execute().getItems();
@@ -64,36 +59,33 @@ public class GoogleService {
         }
     }
 
-    //todo : 변경 / 삭제 안됨
     public void syncEvents(List<Event> events) throws IOException {
         List<Event> useLessEvents = new ArrayList<>();
         List<Adate> eventsToRemove = new ArrayList<>();
 
         for (Event event : events) {
-            log.info(event.toPrettyString());
-            log.info("여기 봐!!");
             Optional<Adate> adateOptional = adateService.getAdateFromRepository(event.getId());
-            if (adateOptional.isPresent()) {
-                Adate adate = adateOptional.get();
-                log.info("1");
+            if (event.getStatus().equals(CALENDAR_CANCELLED)) {
+                if (adateOptional.isPresent()) {
 
-                if (event.getStatus().equals(CALENDAR_CANCELLED)) {
-                    log.info("2");
-                    eventsToRemove.add(adate);
-                    useLessEvents.add(event);
-                    continue;
-                }
-                if (adate.getEtag().equals(event.getEtag())) {
-                    log.info("3");
+                    eventsToRemove.add(adateOptional.get());
                     useLessEvents.add(event);
                 } else {
-                    log.info("4");
+                    useLessEvents.add(event);
+                }
+                continue;
+            }
+            if (adateOptional.isPresent()) {
+                Adate adate = adateOptional.get();
+
+                if (adate.getEtag().equals(event.getEtag())) {
+                    useLessEvents.add(event);
+                } else {
                     adate.updateFrom(event);
                     useLessEvents.add(event);
                 }
             }
         }
-        log.info("5");
 
         events.removeAll(useLessEvents);
         adateService.removeEvents(eventsToRemove);
@@ -114,7 +106,6 @@ public class GoogleService {
 
     public void setNextSyncToken(Events events) {
         try {
-            log.info("홍용준");
             log.info(events.getNextSyncToken());
             googleUtils.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, events.getNextSyncToken());
         } catch (IOException e) {
@@ -126,6 +117,7 @@ public class GoogleService {
         //todo : mapper 사용하는 방향으로 리팩토링 하기
         GoogleCredentials googleCredentials = GoogleCredentials
                 .getGoogleCredentialsFromCredentials(channel, userId, tokenResponse.getAccessToken());
+        googleUtils.registCredential(tokenResponse, userId);
         googleRepository.save(googleCredentials);
     }
 }
