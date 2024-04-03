@@ -21,7 +21,6 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
             throws IOException {
         String userId = req.getSession().getId();
-        //cookie로 refreshToken, accessToken 보내기
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", credential.getAccessToken())
                 .httpOnly(true)
                 .build();
