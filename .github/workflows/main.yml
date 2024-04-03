@@ -10,6 +10,7 @@ on:
       - '**/settings.gradle*'
       - '**/application*.yml'
       - '**.sql'
+      - '**/yml'
 
 env:
   PROJECT_NAME: fixadate
@@ -33,11 +34,18 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Set YML
+      - name: Set YML AND Credentials
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
           find src
+
+      - name: SET Credentials
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "credentials.json"
+          json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
+          dir: './src/main/resources/'
 
       - name: Set TEST YML
         run: |

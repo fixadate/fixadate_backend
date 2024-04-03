@@ -3,7 +3,6 @@ package com.fixadate.domain.adate.dto.response;
 import com.fixadate.domain.adate.entity.Adate;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public record AdateCalendarEventResponse(
         String title,
@@ -18,7 +17,6 @@ public record AdateCalendarEventResponse(
         LocalDateTime endsWhen,
         String calendarId,
         boolean reminders,
-        String recurringEventId,
         String status
 ) {
 
@@ -36,7 +34,6 @@ public record AdateCalendarEventResponse(
                 adate.getEndsWhen(),
                 adate.getCalendarId(),
                 adate.isReminders(),
-                adate.getRecurringEventId(),
                 adate.getStatus()
         );
     }

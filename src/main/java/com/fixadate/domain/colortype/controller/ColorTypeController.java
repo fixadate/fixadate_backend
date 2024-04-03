@@ -3,42 +3,23 @@ package com.fixadate.domain.colortype.controller;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
-import com.fixadate.domain.colortype.service.ColorTypeService;
 import com.fixadate.global.jwt.MemberPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/color")
-public class ColorTypeController {
+@Tag(name = "ColorTypeController", description = "ColorTypeController 입니다.")
+public interface ColorTypeController {
 
-    private final ColorTypeService colorTypeService;
+    @Operation(summary = "색상 유형 생성", description = "색상 유형을 생성합니다.")
+    ResponseEntity<Void> createColorType(MemberPrincipal memberPrincipal, @Valid ColorTypeRequest colorTypeRequest);
 
-    @PostMapping()
-    public ResponseEntity<Void> createColorType(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
-                                                @Valid @RequestBody ColorTypeRequest colorTypeRequest) {
-        colorTypeService.insertColorType(memberPrincipal.getMember(), colorTypeRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+    @Operation(summary = "색상 유형 조회", description = "사용자의 색상 유형을 조회합니다.")
+    ResponseEntity<List<ColorTypeResponse>> findColorTypes(MemberPrincipal memberPrincipal);
 
-    @GetMapping()
-    public ResponseEntity<List<ColorTypeResponse>> findColorTypes(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-
-        List<ColorTypeResponse> colorTypeResponses = colorTypeService.getColorTypeResponses(memberPrincipal.getMember());
-        return ResponseEntity.ok(colorTypeResponses);
-    }
-
-    @PatchMapping()
-    public ResponseEntity<ColorTypeResponse> updateColorType(@Valid @RequestBody ColorTypeUpdateRequest colorTypeUpdateRequest) {
-        ColorTypeResponse colorTypeResponse = colorTypeService.updateColorType(colorTypeUpdateRequest);
-        return ResponseEntity.ok(colorTypeResponse);
-    }
+    @Operation(summary = "색상 유형 업데이트", description = "색상 유형을 업데이트합니다.")
+    ResponseEntity<ColorTypeResponse> updateColorType(@Valid ColorTypeUpdateRequest colorTypeUpdateRequest);
 }
