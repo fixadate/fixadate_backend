@@ -1,6 +1,6 @@
-package com.fixadate.global.protocol;
+package com.fixadate.domain.googleCalendar.protocol;
 
-import com.fixadate.global.config.GoogleApiConfig;
+import com.fixadate.global.util.GoogleUtils;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.google.api.client.auth.oauth2.Credential;
@@ -8,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 
 import java.io.IOException;
 
@@ -19,7 +21,16 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
             throws IOException {
         String userId = req.getSession().getId();
-        resp.sendRedirect("/google/watch?userId=" + userId + "&accessToken=" + credential.getAccessToken());
+        //cookie로 refreshToken, accessToken 보내기
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", credential.getAccessToken())
+                .httpOnly(true)
+                .build();
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", credential.getRefreshToken())
+                .httpOnly(true)
+                .build();
+        resp.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        resp.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        resp.sendRedirect("/google/watch?userId=" + userId);
     }
 
     /**
@@ -36,17 +47,17 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
 
     @Override
     protected AuthorizationCodeFlow initializeFlow() {
-        return GoogleApiConfig.initializeFlow();
+        return GoogleUtils.initializeFlow();
 
     }
 
     @Override
     protected String getRedirectUri(HttpServletRequest var1) {
-        return GoogleApiConfig.getRedirectUri(var1);
+        return GoogleUtils.getRedirectUri(var1);
     }
 
     @Override
     protected String getUserId(HttpServletRequest var1) {
-        return GoogleApiConfig.getClientId(var1);
+        return GoogleUtils.getClientId(var1);
     }
 }

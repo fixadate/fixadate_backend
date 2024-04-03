@@ -41,8 +41,6 @@ public record GoogleCalendarRegistRequest(
                 .calendarId(calendarId)
                 .reminders(reminders)
                 .version(version)
-                .created(created)
-                .recurringEventId(recurringEventId)
                 .status(status)
                 .member(member)
                 .build();

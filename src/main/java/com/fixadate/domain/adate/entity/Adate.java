@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventResponse.getLocalDateTimeFromDateTime;
+import static com.fixadate.global.util.DateTimeUtils.getLocalDateTimeFromDate;
+import static com.fixadate.global.util.DateTimeUtils.getLocalDateTimeFromDateTime;
+
 
 @Entity
 @Builder
@@ -42,8 +44,6 @@ public class Adate extends BaseTimeEntity {
     private String etag;
     private boolean reminders;
     private LocalDateTime version;
-    private LocalDateTime created;
-    private String recurringEventId;
     private String status;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,7 +64,6 @@ public class Adate extends BaseTimeEntity {
         this.calendarId = event.getId();
         this.etag = event.getEtag();
         this.reminders = event.getReminders().getUseDefault();
-        this.recurringEventId = event.getRecurringEventId();
         this.status = event.getStatus();
     }
 
@@ -80,21 +79,20 @@ public class Adate extends BaseTimeEntity {
                 .calendarId(event.getId())
                 .etag(event.getEtag())
                 .reminders(event.getReminders().getUseDefault())
-                .recurringEventId(event.getRecurringEventId())
                 .status(event.getStatus())
                 .build();
     }
 
     private static LocalDateTime checkStartDateTimeIsNull(Event event) {
         if (event.getStart().getDateTime() == null) {
-            return getLocalDateTimeFromDateTime(event.getStart().getDate());
+            return getLocalDateTimeFromDate(event.getStart().getDate());
         }
         return getLocalDateTimeFromDateTime(event.getStart().getDateTime());
     }
 
     private static LocalDateTime checkEndDateTimeIsNull(Event event) {
         if (event.getStart().getDateTime() == null) {
-            return getLocalDateTimeFromDateTime(event.getEnd().getDate());
+            return getLocalDateTimeFromDate(event.getEnd().getDate());
         }
         return getLocalDateTimeFromDateTime(event.getEnd().getDateTime());
     }
