@@ -4,7 +4,10 @@ import com.fixadate.domain.googleCalendar.controller.GoogleCalendarController;
 import com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.googleCalendar.entity.constant.WebhookHeaders;
 import com.fixadate.domain.googleCalendar.service.GoogleService;
+import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.model.Channel;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -31,16 +34,29 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 
     @GetMapping("/watch")
     public ResponseEntity<Channel> watchCalendar(@RequestParam String userId,
-                                                 @RequestParam String accessToken) {
-        accessToken = "Bearer " + accessToken;
+                                                 HttpServletRequest request) {
+        TokenResponse tokenResponse = createTokenResponse(request.getCookies());
+        String accessToken = "Bearer " + tokenResponse.getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", accessToken);
 
         Channel channel = googleService.executeWatchRequest(userId);
-        googleService.registGoogleCredentials(channel, accessToken, userId);
+        googleService.registGoogleCredentials(channel, tokenResponse, userId);
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(channel);
+    }
+
+    private TokenResponse createTokenResponse(Cookie[] cookies) {
+        TokenResponse tokenResponse = new TokenResponse();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("accessToken")) {
+                tokenResponse.setAccessToken(cookie.getValue());
+            } else if (cookie.getName().equals("refreshToken")) {
+                tokenResponse.setRefreshToken(cookie.getValue());
+            }
+        }
+        return tokenResponse;
     }
 
     @PostMapping("/notifications")

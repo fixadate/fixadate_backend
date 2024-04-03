@@ -5,13 +5,12 @@ import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.googleCalendar.exception.GoogleCredentialsNotFoundException;
-import com.fixadate.domain.googleCalendar.exception.GoogleNextSyncTokenException;
 import com.fixadate.domain.googleCalendar.repository.GoogleRepository;
-import com.fixadate.global.config.GoogleApiConfig;
+import com.fixadate.global.util.GoogleUtils;
+import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.Events;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class GoogleService {
-    private final GoogleApiConfig googleApiConfig;
+    private final GoogleUtils googleUtils;
     private final AdateService adateService;
     private final GoogleRepository googleRepository;
 
@@ -39,16 +38,20 @@ public class GoogleService {
         try {
             GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByChannelId(channelId)
                     .orElseThrow(GoogleCredentialsNotFoundException::new);
+
             String userId = googleCredentials.getUserId();
-            Calendar.Events.List request = googleApiConfig.calendarService(userId).events().list("primary");
+            Calendar.Events.List request = googleUtils.calendarService(userId).events().list(CALENDAR_ID)
+                    .setOauthToken(googleCredentials.getAccessToken());
             String syncToken = getNextSyncToken();
             List<Event> events;
             if (syncToken == null) {
+                log.info("syncToken 없다");
                 events = request.execute().getItems();
             } else {
+                log.info("syncToken 있다");
                 request.setSyncToken(syncToken);
                 events = request.execute().getItems();
-                googleApiConfig.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, syncToken);
+                googleUtils.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, request.getSyncToken());
             }
             syncEvents(events);
         } catch (IOException e) {
@@ -56,87 +59,59 @@ public class GoogleService {
         }
     }
 
-    public List<Event> getEvents(String accessToken, String sessionId) throws IOException {
-        String nextSyncToken = googleApiConfig.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY);
-        if (nextSyncToken == null) {
-            return getEventsWhenNextSyncTokenIsNull(accessToken, sessionId);
-        } else {
-            return getEventsWhenNextSyncTokenExists(accessToken, sessionId, nextSyncToken);
-        }
-    }
-
-
-    private List<Event> getEventsWhenNextSyncTokenIsNull(String accessToken, String userId) throws IOException {
-        Calendar calendarService = googleApiConfig.calendarService(userId);
-        Events event = calendarService.events().list(CALENDAR_ID)
-                .setOauthToken(accessToken)
-                .execute();
-        List<Event> events = event.getItems();
-        setNextSyncToken(event);
-        return events;
-    }
-
-    private List<Event> getEventsWhenNextSyncTokenExists(String accessToken, String userId,
-                                                         String nextSyncToken) throws IOException {
-        Calendar calendarService = googleApiConfig.calendarService(userId);
-        Events event = calendarService.events().list(CALENDAR_ID)
-                .setSyncToken(nextSyncToken)
-                .setOauthToken(accessToken)
-                .execute();
-        return event.getItems();
-    }
-
-    private void setNextSyncToken(Events events) {
-        try {
-            String nextSyncToken = events.getNextSyncToken();
-            if (nextSyncToken != null) {
-                googleApiConfig.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, nextSyncToken);
-            }
-        } catch (IOException e) {
-            throw new GoogleNextSyncTokenException();
-        }
-    }
-
+    //todo : 변경 / 삭제 안됨
     public void syncEvents(List<Event> events) throws IOException {
-        List<Event> eventsToRemove = new ArrayList<>();
-        for (Event event : events) {
-            Optional<Adate> adateOptional = adateService.getAdateFromRepository(event.getId());
-            if (event.getStatus().equals(CALENDAR_CANCELLED)) {
-                eventsToRemove.add(event);
-                adateOptional.ifPresent(adateService::deleteAdate);
-                continue;
-            }
-            if (adateOptional.isPresent()) {
-                Adate adate = adateOptional.get();
-                if (adate.getEtag().equals(event.getEtag())) {
-                    eventsToRemove.add(event);
-                } else adate.updateFrom(event);
-            }
-        }
-        events.removeAll(eventsToRemove);
+        List<Event> useLessEvents = new ArrayList<>();
+        List<Adate> eventsToRemove = new ArrayList<>();
+
         for (Event event : events) {
             log.info(event.toPrettyString());
+            log.info("여기 봐!!");
+            Optional<Adate> adateOptional = adateService.getAdateFromRepository(event.getId());
+            if (adateOptional.isPresent()) {
+                Adate adate = adateOptional.get();
+                log.info("1");
+
+                if (event.getStatus().equals(CALENDAR_CANCELLED)) {
+                    log.info("2");
+                    eventsToRemove.add(adate);
+                    useLessEvents.add(event);
+                    continue;
+                }
+                if (adate.getEtag().equals(event.getEtag())) {
+                    log.info("3");
+                    useLessEvents.add(event);
+                } else {
+                    log.info("4");
+                    adate.updateFrom(event);
+                    useLessEvents.add(event);
+                }
+            }
         }
+        log.info("5");
+
+        events.removeAll(useLessEvents);
+        adateService.removeEvents(eventsToRemove);
         adateService.registEvents(events);
     }
 
     public Channel executeWatchRequest(String userId) {
-        return googleApiConfig.executeWatchRequest(userId);
+        return googleUtils.executeWatchRequest(userId);
     }
 
     public String getNextSyncToken() {
         try {
-            return googleApiConfig.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY);
+            return googleUtils.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void registGoogleCredentials(Channel channel, String accessToken, String userId) {
+    public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId) {
         //todo : mapper 사용하는 방향으로 리팩토링 하기
         GoogleCredentials googleCredentials = GoogleCredentials
-                .getGoogleCredentialsFromCredentials(channel, accessToken, userId);
+                .getGoogleCredentialsFromCredentials(channel, userId, tokenResponse.getAccessToken());
+        googleUtils.registCredentials(tokenResponse, userId);
         googleRepository.save(googleCredentials);
     }
-
 }

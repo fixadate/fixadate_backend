@@ -1,9 +1,10 @@
-package com.fixadate.global.config;
+package com.fixadate.global.util;
 
 import com.fixadate.domain.googleCalendar.exception.GoogleCalendarWatchException;
 import com.fixadate.domain.googleCalendar.exception.GoogleClientSecretsException;
 import com.fixadate.domain.googleCalendar.exception.GoogleCredentialException;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -35,7 +36,7 @@ import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
 
 @Configuration
 @Slf4j
-public class GoogleApiConfig {
+public class GoogleUtils {
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
@@ -50,7 +51,6 @@ public class GoogleApiConfig {
     private static String CLIENT_ID;
     private static String CLIENT_SECRET;
     private DataStore<String> syncSettingsDataStore;
-    private static Credential CREDENTIAL;
     private DataStore<String> eventDataStore;
 
 
@@ -68,8 +68,8 @@ public class GoogleApiConfig {
                 .setApprovalPrompt(APPROVAL_PROMPT)
                 .build();
         channel = createChannel();
-        eventDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("EventStore");
-        syncSettingsDataStore = GoogleApiConfig.getDataStoreFactory().getDataStore("SyncSettings");
+        eventDataStore = GoogleUtils.getDataStoreFactory().getDataStore("EventStore");
+        syncSettingsDataStore = GoogleUtils.getDataStoreFactory().getDataStore("SyncSettings");
     }
 
 
@@ -89,7 +89,7 @@ public class GoogleApiConfig {
     }
 
     private static GoogleClientSecrets getClientSecrets(){
-        InputStream in = GoogleApiConfig.class.getResourceAsStream(FILE_PATH);
+        InputStream in = GoogleUtils.class.getResourceAsStream(FILE_PATH);
         try {
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
             clientSecrets.getDetails().setClientId(CLIENT_ID);
@@ -124,11 +124,14 @@ public class GoogleApiConfig {
         } catch (IOException e) {
             throw new GoogleCredentialException();
         }
+    }
 
-        /*
-                Credential credential =
-                new Credential(BearerToken.authorizationHeaderAccessMethod()).setAccessToken(accessToken);
-         */
+    public void registCredentials(TokenResponse tokenResponse, String userId) {
+        try {
+            flow.createAndStoreCredential(tokenResponse, userId);
+        } catch (IOException e) {
+            throw new GoogleCredentialException();
+        }
     }
 
     private Channel createChannel() {
@@ -141,16 +144,6 @@ public class GoogleApiConfig {
                 .setToken("tokenValue");
     }
 
-//    public String getNextSyncToken(String userId) {
-//        try {
-//            Calendar.Events.Watch watch = calendarService()
-//                    .events()
-//                    .watch(CALENDAR_ID, channel);
-//            return watch.getSyncToken();
-//        } catch (IOException e) {
-//            throw new GoogleCalendarWatchException();
-//        }
-//    }
     public static DataStoreFactory getDataStoreFactory() {
         return dataStoreFactory;
     }

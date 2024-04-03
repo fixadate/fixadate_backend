@@ -1,4 +1,4 @@
-package com.fixadate.global.protocol;//
+package com.fixadate.domain.googleCalendar.protocol;//
 // Source code recreated from a .class file by IntelliJ IDEA
 // (powered by FernFlower decompiler)
 //

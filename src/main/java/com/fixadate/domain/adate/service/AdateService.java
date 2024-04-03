@@ -58,9 +58,13 @@ public class AdateService {
     }
     public void registEvents(List<Event> events) {
         List<Adate> adates = events.stream()
-                .map((Event event) -> Adate.getAdateFromEvent(event))
+                .map(Adate::getAdateFromEvent)
                 .toList();
         adateRepository.saveAll(adates);
+    }
+
+    public void removeEvents(List<Adate> adates) {
+        adateRepository.deleteAll(adates);
     }
 
     public void deleteAdate(Adate adate) {

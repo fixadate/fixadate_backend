@@ -10,9 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -21,45 +23,39 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-//    private final OAuth2MemberSuccessHandler oAuth2MemberSuccessHandler;
-//    private final OAuth2MemberFailureHandler oAuth2MemberFailureHandler;
+    private static final String[] PERMIT_URL_ARRAY = {
+            /* swagger v3 */
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/index.html/**",
+            "/favicon.ico",
+            /* google calendar */
+            "/google/**",
+            "/oauth2Login/**",
+            "/oauth2callback/**"
+            ,
+            /* signIn */
+            "/auth/**",
+            /* etc */
+            "/member/nickname",
+            "/error"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                .and()
-                .csrf()
-                .disable()
-                .logout()
-                .disable()
-                .httpBasic()
-                .disable()
-
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-                .and()
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .authorizeHttpRequests((req) -> req
+                        .requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                        .anyRequest().authenticated())
                 .exceptionHandling()
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 .authenticationEntryPoint(authenticationEntryPoint)
-
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
-
-                .authorizeHttpRequests()
-                .requestMatchers("/calendar/google/**", "/calendar/google", "/auth/**", "/", "/member/nickname",
-                        "/error", "/swagger-ui/**", "/swagger-resources/**",
-                        "/v3/api-docs/**", "/swagger-ui/index.html/**","/google/**","/google","/health-check",
-                        "/oauth2Login/**","/login/oauth2/code/google/**","/favicon.ico","/oauth2callback/**").permitAll()
-                .anyRequest().authenticated();
-
-//                .and()
-//                .oauth2Login()
-//                .successHandler(oAuth2MemberSuccessHandler);
-//                .failureHandler(oAuth2MemberFailureHandler);
-        return http.build();
+                .build();
     }
 }
