@@ -4,6 +4,7 @@ import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
+import com.fixadate.domain.googleCalendar.exception.GoogleCredentialException;
 import com.fixadate.domain.googleCalendar.exception.GoogleCredentialsNotFoundException;
 import com.fixadate.domain.googleCalendar.repository.GoogleRepository;
 import com.fixadate.global.util.GoogleUtils;
@@ -11,6 +12,7 @@ import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.Events;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,16 +44,19 @@ public class GoogleService {
             String userId = googleCredentials.getUserId();
             Calendar.Events.List request = googleUtils.calendarService(userId).events().list(CALENDAR_ID)
                     .setOauthToken(googleCredentials.getAccessToken());
+            log.info(request.getSyncToken() + "존재 함??");
             String syncToken = getNextSyncToken();
+
             List<Event> events;
             if (syncToken == null) {
                 log.info("syncToken 없다");
+                setNextSyncToken(request.execute());
                 events = request.execute().getItems();
             } else {
                 log.info("syncToken 있다");
                 request.setSyncToken(syncToken);
+                setNextSyncToken(request.execute());
                 events = request.execute().getItems();
-                googleUtils.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, request.getSyncToken());
             }
             syncEvents(events);
         } catch (IOException e) {
@@ -107,11 +112,20 @@ public class GoogleService {
         }
     }
 
+    public void setNextSyncToken(Events events) {
+        try {
+            log.info("홍용준");
+            log.info(events.getNextSyncToken());
+            googleUtils.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY, events.getNextSyncToken());
+        } catch (IOException e) {
+            throw new GoogleCredentialException();
+        }
+    }
+
     public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId) {
         //todo : mapper 사용하는 방향으로 리팩토링 하기
         GoogleCredentials googleCredentials = GoogleCredentials
                 .getGoogleCredentialsFromCredentials(channel, userId, tokenResponse.getAccessToken());
-        googleUtils.registCredentials(tokenResponse, userId);
         googleRepository.save(googleCredentials);
     }
 }
