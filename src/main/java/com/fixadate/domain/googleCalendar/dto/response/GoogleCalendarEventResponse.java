@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
+import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.TRANSPARENCY;
 import static com.fixadate.global.util.DateTimeUtils.getLocalDateTimeFromDateTime;
 
 @Builder
@@ -25,7 +26,6 @@ public record GoogleCalendarEventResponse(
         boolean ifAllDay,
         String status
 ) {
-    static final String TRANSPARENCY = "transparency";
 
     public static GoogleCalendarEventResponse of(Event event) {
         return new GoogleCalendarEventResponse(

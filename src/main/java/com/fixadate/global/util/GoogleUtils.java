@@ -4,6 +4,7 @@ import com.fixadate.domain.googleCalendar.exception.GoogleCalendarWatchException
 import com.fixadate.domain.googleCalendar.exception.GoogleClientSecretsException;
 import com.fixadate.domain.googleCalendar.exception.GoogleCredentialException;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -118,6 +119,14 @@ public class GoogleUtils {
     public static Credential getCredentials(String userId) {
         try {
             return flow.loadCredential(userId);
+        } catch (IOException e) {
+            throw new GoogleCredentialException();
+        }
+    }
+
+    public void registCredential(TokenResponse tokenResponse, String userId) {
+        try {
+            flow.createAndStoreCredential(tokenResponse, userId);
         } catch (IOException e) {
             throw new GoogleCredentialException();
         }
