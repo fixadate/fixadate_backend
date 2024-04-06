@@ -1,9 +1,9 @@
 package com.fixadate.domain.adate.entity;
 
-import com.fixadate.domain.adate.dto.request.GoogleCalendarRegistRequest;
 import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
+import com.google.api.services.calendar.model.Event;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static com.fixadate.global.util.DateTimeUtils.getLocalDateTimeFromDate;
+import static com.fixadate.global.util.DateTimeUtils.getLocalDateTimeFromDateTime;
+
 
 @Entity
 @Builder
@@ -37,10 +41,9 @@ public class Adate extends BaseTimeEntity {
     private LocalDateTime endsWhen;
     @Column(unique = true)
     private String calendarId;
+    private String etag;
     private boolean reminders;
     private LocalDateTime version;
-    private LocalDateTime created;
-    private String recurringEventId;
     private String status;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,21 +54,51 @@ public class Adate extends BaseTimeEntity {
     @JoinColumn(name = "colorType_id")
     private ColorType colorType;
 
-    public void updateFrom(GoogleCalendarRegistRequest other) {
-        this.title = other.title();
-        this.notes = other.notes();
-        this.location = other.location();
-        this.alertWhen = other.alertWhen();
-        this.repeatFreq = other.repeatFreq();
-        this.color = other.color();
-        this.adateName = other.adateName();
-        this.ifAllDay = other.ifAllDay();
-        this.startsWhen = other.startsWhen();
-        this.endsWhen = other.endsWhen();
-        this.calendarId = other.calendarId();
-        this.reminders = other.reminders();
-        this.recurringEventId = other.recurringEventId();
-        this.status = other.status();
+    public void updateFrom(Event event) {
+        this.title = event.getSummary();
+        this.notes = event.getDescription();
+        this.location = event.getLocation();
+        this.color = event.getColorId();
+        this.startsWhen = checkStartDateTimeIsNull(event);
+        this.endsWhen = checkEndDateTimeIsNull(event);
+        this.calendarId = event.getId();
+        this.etag = event.getEtag();
+        this.reminders = event.getReminders().getUseDefault();
+        this.status = event.getStatus();
+    }
+
+    public static Adate getAdateFromEvent(Event event) {
+        return Adate.builder()
+                .title(event.getSummary())
+                .notes(event.getDescription())
+                .location(event.getLocation())
+                .color(event.getColorId())
+                .startsWhen(checkStartDateTimeIsNull(event))
+                .endsWhen(checkEndDateTimeIsNull(event))
+                .ifAllDay(checkEventIsAllDayType(event))
+                .calendarId(event.getId())
+                .etag(event.getEtag())
+                .reminders(event.getReminders().getUseDefault())
+                .status(event.getStatus())
+                .build();
+    }
+
+    private static LocalDateTime checkStartDateTimeIsNull(Event event) {
+        if (event.getStart().getDateTime() == null) {
+            return getLocalDateTimeFromDate(event.getStart().getDate());
+        }
+        return getLocalDateTimeFromDateTime(event.getStart().getDateTime());
+    }
+
+    private static LocalDateTime checkEndDateTimeIsNull(Event event) {
+        if (event.getStart().getDateTime() == null) {
+            return getLocalDateTimeFromDate(event.getEnd().getDate());
+        }
+        return getLocalDateTimeFromDateTime(event.getEnd().getDateTime());
+    }
+
+    private static boolean checkEventIsAllDayType(Event event) {
+        return event.getStart().getDateTime() == null;
     }
     public void setColorType(ColorType colorType) {
         this.colorType = colorType;

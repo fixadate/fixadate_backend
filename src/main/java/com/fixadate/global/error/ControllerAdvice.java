@@ -1,6 +1,10 @@
 package com.fixadate.global.error;
 
-import com.fixadate.domain.adate.exception.GoogleAccessTokenExpiredException;
+import com.fixadate.domain.adate.exception.AdateIOException;
+import com.fixadate.domain.adate.exception.DateParseException;
+import com.fixadate.domain.googleCalendar.exception.GoogleCalendarWatchException;
+import com.fixadate.domain.googleCalendar.exception.GoogleCredentialsNotFoundException;
+import com.fixadate.domain.googleCalendar.exception.GoogleSecurityException;
 import com.fixadate.domain.colortype.exception.ColorTypeNameDuplicatedException;
 import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.invitation.exception.InvitationNotFountException;
@@ -18,7 +22,8 @@ public class ControllerAdvice {
             MemberNotFoundException.class,
             UnknownOAuthPlatformException.class,
             InvitationNotFountException.class,
-            ColorTypeNotFoundException.class
+            ColorTypeNotFoundException.class,
+            GoogleCredentialsNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
@@ -28,7 +33,10 @@ public class ControllerAdvice {
 
     @ExceptionHandler({
             ColorTypeNameDuplicatedException.class,
-            GoogleAccessTokenExpiredException.class,
+            AdateIOException.class,
+            DateParseException.class,
+            GoogleSecurityException.class,
+            GoogleCalendarWatchException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

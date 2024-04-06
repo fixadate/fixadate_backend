@@ -1,47 +1,18 @@
 package com.fixadate.domain.member.controller;
 
-import com.fixadate.domain.member.service.MemberService;
-
-import java.util.List;
-
-import com.fixadate.global.util.S3Utils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/member")
-@Slf4j
-public class MemberController {
-    private final MemberService memberService;
-    private final S3Utils s3Utils;
+@Tag(name = "MemberController", description = "MemberController 입니다.")
+public interface MemberController {
 
-    @Value("${randNick.adjs}")
-    private String randomAdjs;
-    @Value("${randNick.nouns}")
-    private String randomNouns;
+    @Operation(summary = "랜덤 닉네임 생성", description = "랜덤한 닉네임을 생성합니다.")
+    ResponseEntity<String> getRandomNickname();
 
-    @GetMapping("/nickname")
-    public ResponseEntity<String> getRandomNickname() {
-        List<String> adjs = List.of(randomAdjs.split(","));
-        List<String> nouns = List.of(randomNouns.split(","));
+    @Operation(summary = "프로필 이미지 Presigned URL 조회", description = "프로필 이미지의 Presigned URL을 조회합니다.")
+    ResponseEntity<String> getProfileImagePresignedUrl(String filename);
 
-        String adj = memberService.getRandomNickname(adjs);
-        String noun = memberService.getRandomNickname(nouns);
-        String randomNickname = adj + " " + noun;
-        return ResponseEntity.ok(randomNickname);
-    }
-
-    @GetMapping("/profile-img")
-    public ResponseEntity<String> getProfileImagePresignedUrl(@RequestParam String filename) {
-        return ResponseEntity.ok(s3Utils.generatePresignedUrlForDownload(filename));
-    }
-
-    @DeleteMapping("/profile-img")
-    public ResponseEntity<String> getProfileImageDeletePresignedUrl(@RequestParam String filename) {
-        return ResponseEntity.ok(s3Utils.generatePresignedUrlForDelete(filename));
-    }
+    @Operation(summary = "프로필 이미지 Presigned URL 삭제", description = "프로필 이미지의 Presigned URL을 삭제합니다.")
+    ResponseEntity<String> getProfileImageDeletePresignedUrl(String filename);
 }
