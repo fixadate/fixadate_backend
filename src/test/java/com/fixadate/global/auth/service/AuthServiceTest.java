@@ -1,98 +1,145 @@
 package com.fixadate.global.auth.service;
 
+import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.AggregateWith;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.aggregator.ArgumentsAggregationException;
+import org.junit.jupiter.params.aggregator.ArgumentsAggregator;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(DataClearExtension.class)
 @SpringBootTest
+@Testcontainers
 class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
-
     @Autowired
     private MemberRepository memberRepository;
+    @Container
+    static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
+    @BeforeAll
+    public static void initDataBase(@Autowired DataSource dataSource) {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/member_test.sql"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Nested
     @DisplayName("oauthId 검색 테스트")
     class findMemberByOauthIdTest {
-        @Test
-        @DisplayName("Member의 oauthId가 존재하는 경우")
-        void findMemberByOauthIdIfMemberExistsTest() {
-            Member member = Member.builder()
-                    .oauthId("123")
-                    .name("kevin")
-                    .nickname("hong")
-                    .signatureColor("red")
-                    .build();
-            memberRepository.save(member);
-            Member findMember = authService.findMemberByOAuthId("123");
-            Assertions.assertEquals("kevin", findMember.getName());
+        @DisplayName("oauthId가 존재하는 경우")
+        @Sql(scripts = "/sql/setUp/memberSetUp.sql")
+        @ParameterizedTest(name = "[{index}] oauthId -> {arguments}")
+        @ValueSource(strings = {"123", "2", "3", "4", "5"})
+        void findMemberByOauthIdIfMemberExistsTest(String inputs) {
+            assertAll(
+                    () -> assertDoesNotThrow(() -> authService.findMemberByOAuthId(inputs))
+            );
         }
 
-        @Test
-        @DisplayName("Member의 oauthId가 존재하지 않는 경우 예외 발생")
-        void findMemberByOauthIdIfMemberNotExistTest() {
-            Member member = Member.builder()
-                    .oauthId("1234")
-                    .name("kevin")
-                    .nickname("hong")
-                    .signatureColor("red")
-                    .build();
-            memberRepository.save(member);
+        @DisplayName("조회 시, oauthId가 존재하지 않는 경우 예외 발생")
+        @ParameterizedTest(name = "[{index}] oauthId -> {arguments}")
+        @ValueSource(strings = {"11", "22", "33", "44", "55"})
+        void findMemberByOauthIdIfMemberNotExistTest(String input) {
+            assertAll(
+                    () -> assertThrows(MemberSigninException.class, () -> authService.findMemberByOAuthId(input))
+            );
 
-            Assertions.assertThrows(MemberSigninException.class, () -> authService.findMemberByOAuthId("1"));
         }
     }
 
     @Nested
     @DisplayName("Member 저장 테스트")
     class registMemberTest {
-        @Test
         @DisplayName("동일한 oauthId를 가진 Member가 존재하는 경우 에러 발생")
-        void registMemberTestIfDuplicatedIdExist() {
-            Member member = Member.builder()
-                    .id(1L)
-                    .oauthId("12345")
-                    .name("kevin")
-                    .nickname("hong")
-                    .signatureColor("red")
-                    .build();
-            memberRepository.save(member);
-
-            MemberRegistRequestDto memberRegistRequestDto =
-                    new MemberRegistRequestDto("12345", "kakao", "yongjun", "213", "kevin",
-                            20000928, "male", "student", "red", "img");
-            Assertions.assertThrows(DataIntegrityViolationException.class, () -> authService.registMember(memberRegistRequestDto));
+        @Sql(scripts = "/sql/setUp/memberSetUp.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {"123, google, yongjun, 213, kevinH, 20000928, male, student, red, img",
+                "2, kakao, hannah, 314, alex, 19980512, female, engineer, blue, img",
+                "3, apple, david, 415, emma, 20010320, male, designer, green, img",
+                "4, kakao, sarah, 516, michael, 19991225, female, developer, yellow, img",
+                "5, google, emily, 617, chris, 19921005, female, manager, orange, img"})
+        void registMemberTestIfDuplicatedIdExist(@AggregateWith(MemberAggregator.class) MemberRegistRequestDto memberRegistRequestDto) {
+            assertThrows(DataIntegrityViolationException.class, () -> authService.registMember(memberRegistRequestDto));
+            Member member = authService.findMemberByOAuthId(memberRegistRequestDto.oauthId());
+            assertAll(
+                    () -> assertNotEquals(memberRegistRequestDto.name(), member.getName()),
+                    () -> assertNotEquals(memberRegistRequestDto.nickname(), member.getNickname()),
+                    () -> assertNotEquals(memberRegistRequestDto.birth(), member.getBirth())
+            );
         }
 
-        @Test
         @DisplayName("잘못된 oauthPlatform 값이 들어간 경우 에러 발생")
-        void registMemberTestIfoauthPlatformHasInvalidValue() {
-            MemberRegistRequestDto memberRegistRequestDto =
-                    new MemberRegistRequestDto("12345", "daum", "yongjun", "213", "kevin",
-                            20000928, "male", "student", "red", "img");
-            Assertions.assertThrows(UnknownOAuthPlatformException.class, () -> authService.registMember(memberRegistRequestDto));
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {"101, naver, yongjun, 213, kevin, 20000928, male, student, red, img",
+                "102, git, hannah, 314, alex, 19980512, female, engineer, blue, img",
+                "103, microsoft, david, 415, emma, 20010320, male, designer, green, img",
+                "104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, img",
+                "105, wooabros, emily, 617, chris, 19921005, female, manager, orange, img"})
+        void registMemberTestIfoauthPlatformHasInvalidValue(@AggregateWith(MemberAggregator.class) MemberRegistRequestDto memberRegistRequestDto) {
+            assertAll(
+                    () -> assertThrows(UnknownOAuthPlatformException.class, () -> authService.registMember(memberRegistRequestDto)),
+                    () -> assertThrows(MemberSigninException.class, () -> authService.findMemberByOAuthId(memberRegistRequestDto.oauthId()))
+            );
         }
 
-        @Test
         @DisplayName("저장이 정상적으로 되는 경우")
-        void registMemberTestIfEveryThingsIsOk() {
-            MemberRegistRequestDto memberRegistRequestDto =
-                    new MemberRegistRequestDto("12345", "google", "yongjun", "213", "kevin",
-                            20000928, "male", "student", "red", "img");
-            Assertions.assertDoesNotThrow(() -> authService.registMember(memberRegistRequestDto));
-            Member member = authService.findMemberByOAuthId("12345");
-            Assertions.assertEquals("yongjun",member.getName());
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {"100, google, yongjun, 213, kevin, 20000928, male, student, red, img",
+                "101, google, kevin, 314, alex, 19980512, female, engineer, blue, img",
+                "102, apple, david, 415, emma, 20010320, male, designer, green, img",
+                "103, google, sarah, 516, michael, 19991225, female, developer, yellow, img",
+                "104, google, emily, 617, chris, 19921005, female, manager, orange, img"})
+        void registMemberTestIfEveryThingsIsOk(@AggregateWith(MemberAggregator.class) MemberRegistRequestDto memberRegistRequestDto) {
+            assertDoesNotThrow(() -> authService.registMember(memberRegistRequestDto));
+            Member member = authService.findMemberByOAuthId(memberRegistRequestDto.oauthId());
+            assertAll(
+                    () -> assertEquals(memberRegistRequestDto.name(), member.getName()),
+                    () -> assertEquals(memberRegistRequestDto.oauthId(), member.getOauthId()),
+                    () -> assertEquals(memberRegistRequestDto.birth(), member.getBirth()),
+                    () -> assertEquals(memberRegistRequestDto.nickname(), member.getNickname()),
+                    () -> assertEquals(memberRegistRequestDto.gender(), member.getGender()),
+                    () -> memberRepository.delete(member)
+            );
+        }
+    }
+
+    static class MemberAggregator implements ArgumentsAggregator {
+        @Override
+        public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws ArgumentsAggregationException {
+            return new MemberRegistRequestDto(argumentsAccessor.getString(0), argumentsAccessor.getString(1), argumentsAccessor.getString(2), argumentsAccessor.getString(3),
+                    argumentsAccessor.getString(4), argumentsAccessor.getInteger(5), argumentsAccessor.getString(6), argumentsAccessor.getString(7), argumentsAccessor.getString(8),
+                    argumentsAccessor.getString(9));
         }
     }
 }
