@@ -7,7 +7,7 @@ build/
 /tokens
 src/main/resources/
 src/main/generated/
-src/test/resources/
+src/test/resources/application.yml
 ### STS ###
 .apt_generated
 .classpath
