@@ -36,6 +36,7 @@ dependencies {
 	//test container
 	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.18.3'
 	testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.18.3'
+	testImplementation "com.redis:testcontainers-redis:2.2.2"
 	testImplementation "org.testcontainers:mysql:1.19.7"
 
 	//oauth & oauth-client
