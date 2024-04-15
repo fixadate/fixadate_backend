@@ -10,7 +10,7 @@ on:
       - '**/settings.gradle*'
       - '**/application*.yml'
       - '**.sql'
-      - '**/yml'
+      - '**.sh'
 
 env:
   PROJECT_NAME: fixadate
