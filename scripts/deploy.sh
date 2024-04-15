@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 REPOSITORY=/home/ubuntu/fixadate
+LOG=/home/ubuntu/deploy.log
 cd $REPOSITORY
 
 APP_NAME=fixadate
@@ -19,4 +20,4 @@ else
 fi
 
 echo "> Deploy - $JAR_PATH "
-sudo nohup java -jar $JAR_PATH > ../../../deploy.log 2>&1
+sudo nohup java -jar $JAR_PATH > $LOG 2>&1
