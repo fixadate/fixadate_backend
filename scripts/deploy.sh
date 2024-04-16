@@ -5,7 +5,7 @@ cd $REPOSITORY
 
 APP_NAME=fixadate
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
-LOG=$(ls /home/ubuntu/ | grep 'deploy.log' | tail -n 1)
+#LOG=$(ls /home/ubuntu/ | grep 'deploy.log' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
 CURRENT_PID=$(pgrep -f $APP_NAME)
@@ -20,4 +20,4 @@ else
 fi
 
 echo "> Deploy - $JAR_PATH "
-sudo nohup java -jar $JAR_PATH > $LOG 2>&1
+sudo nohup java -jar $JAR_PATH > "/home/ubuntu/deploy.log" 2>&1
