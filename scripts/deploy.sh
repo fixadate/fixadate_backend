@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 REPOSITORY=/home/ubuntu/fixadate
-LOG=/home/ubuntu/deploy.log
 cd $REPOSITORY
 
 APP_NAME=fixadate
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
+LOG=$(ls /home/ubuntu/ | grep 'deploy.log' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
 CURRENT_PID=$(pgrep -f $APP_NAME)
