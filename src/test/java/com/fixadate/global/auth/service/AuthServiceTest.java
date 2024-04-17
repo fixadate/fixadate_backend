@@ -6,6 +6,7 @@ import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -46,12 +47,18 @@ class AuthServiceTest {
     @Container
     static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
     @BeforeAll
-    public static void initDataBase(@Autowired DataSource dataSource) {
+    static void initDataBase(@Autowired DataSource dataSource) {
         try (Connection conn = dataSource.getConnection()) {
+            mySQLContainer.start();
             ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/member_test.sql"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @AfterAll
+    static void stopContainers() {
+        mySQLContainer.stop();
     }
 
     @Nested
