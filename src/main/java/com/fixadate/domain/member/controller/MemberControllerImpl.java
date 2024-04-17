@@ -1,20 +1,20 @@
 package com.fixadate.domain.member.controller;
 
 import com.fixadate.domain.member.service.MemberService;
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.util.S3Utils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@RestController
+@RestControllerWithMapping("/member")
 @RequiredArgsConstructor
-@RequestMapping("/member")
-@Slf4j
-public class MemberControllerImpl implements MemberController{
+public class MemberControllerImpl implements MemberController {
     private final MemberService memberService;
     private final S3Utils s3Utils;
 

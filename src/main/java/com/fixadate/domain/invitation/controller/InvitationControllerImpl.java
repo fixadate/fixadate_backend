@@ -4,6 +4,7 @@ import com.fixadate.domain.invitation.dto.request.InvitationRequest;
 import com.fixadate.domain.invitation.dto.request.InvitationSpecifyRequest;
 import com.fixadate.domain.invitation.dto.response.InvitationResponse;
 import com.fixadate.domain.invitation.service.InvitationService;
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,9 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
 @RequiredArgsConstructor
-@RequestMapping("/invitation")
+@RestControllerWithMapping("/invitation")
 public class InvitationControllerImpl implements InvitationController{
     private final InvitationService invitationService;
 

@@ -1,6 +1,7 @@
 package com.fixadate.global.auth.controller;
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequestDto;
 import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
 import com.fixadate.global.auth.service.AuthService;
@@ -14,13 +15,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import static com.fixadate.global.oauth.ConstantValue.ACCESS_TOKEN;
 
-@RestController
-@RequestMapping("/auth")
+@RestControllerWithMapping("/auth")
 @RequiredArgsConstructor
 public class AuthControllerImpl implements AuthController{
     private final AuthService authService;

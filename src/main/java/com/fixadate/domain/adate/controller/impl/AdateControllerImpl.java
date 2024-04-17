@@ -6,6 +6,7 @@ import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RestController
+@RestControllerWithMapping("/calendar")
 @RequiredArgsConstructor
-@RequestMapping("/calendar")
 public class AdateControllerImpl implements AdateController {
     private final AdateService adateService;
 

@@ -4,26 +4,27 @@ import com.fixadate.domain.googleCalendar.controller.GoogleCalendarController;
 import com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.googleCalendar.entity.constant.WebhookHeaders;
 import com.fixadate.domain.googleCalendar.service.GoogleService;
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.model.Channel;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.*;
 
 
-@RestController
+@RestControllerWithMapping("/google")
 @RequiredArgsConstructor
-@RequestMapping("/google")
-@Slf4j
 public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     private final GoogleService googleService;
 

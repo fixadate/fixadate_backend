@@ -4,6 +4,7 @@ import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
 import com.fixadate.domain.colortype.service.ColorTypeService;
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestControllerWithMapping("/color")
 @RequiredArgsConstructor
-@RequestMapping("/color")
 public class ColorTypeControllerImpl implements ColorTypeController{
 
     private final ColorTypeService colorTypeService;
