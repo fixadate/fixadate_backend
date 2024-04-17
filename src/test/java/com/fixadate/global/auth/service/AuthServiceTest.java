@@ -50,6 +50,7 @@ class AuthServiceTest {
     static void initDataBase(@Autowired DataSource dataSource) {
         try (Connection conn = dataSource.getConnection()) {
             mySQLContainer.start();
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/dropTable.sql"));
             ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/member_test.sql"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
