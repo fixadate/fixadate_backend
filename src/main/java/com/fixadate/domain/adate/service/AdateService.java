@@ -53,6 +53,7 @@ public class AdateService {
                 .toList();
     }
 
+    @Transactional
     public List<Adate> getAdateResponseByMemberName(String memberName) {
         return adateQueryRepository.findAdatesByMemberName(memberName);
     }
