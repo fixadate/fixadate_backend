@@ -59,6 +59,7 @@ public class GoogleService {
         }
     }
 
+    @Transactional
     public void syncEvents(List<Event> events) throws IOException {
         List<Event> useLessEvents = new ArrayList<>();
         List<Adate> eventsToRemove = new ArrayList<>();
@@ -113,6 +114,7 @@ public class GoogleService {
         }
     }
 
+    @Transactional
     public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId) {
         //todo : mapper 사용하는 방향으로 리팩토링 하기
         GoogleCredentials googleCredentials = GoogleCredentials

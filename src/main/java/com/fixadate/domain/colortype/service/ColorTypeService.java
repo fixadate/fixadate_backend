@@ -25,6 +25,7 @@ public class ColorTypeService {
         colorTypeRepository.save(colorType);
     }
 
+    @Transactional(readOnly = true)
     public List<ColorTypeResponse> getColorTypeResponses(Member member) {
         List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(member);
         return createColorTypeResponsesWithColorTypes(colorTypes);

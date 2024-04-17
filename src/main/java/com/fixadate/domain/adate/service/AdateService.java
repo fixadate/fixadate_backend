@@ -40,7 +40,7 @@ public class AdateService {
                 .orElseThrow(ColorTypeNotFoundException::new);
         adate.setColorType(colorType);
     }
-
+    @Transactional(readOnly = true)
     public List<AdateCalendarEventResponse> getAdateCalendarEvents(Member member, LocalDateTime startDateTime,
                                                                    LocalDateTime endDateTime) {
         List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
@@ -53,10 +53,11 @@ public class AdateService {
                 .toList();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Adate> getAdateResponseByMemberName(String memberName) {
         return adateQueryRepository.findAdatesByMemberName(memberName);
     }
+    @Transactional
     public void registEvents(List<Event> events) {
         List<Adate> adates = events.stream()
                 .map(Adate::getAdateFromEvent)
@@ -64,6 +65,7 @@ public class AdateService {
         adateRepository.saveAll(adates);
     }
 
+    @Transactional
     public void removeEvents(List<Adate> adates) {
         adateRepository.deleteAll(adates);
     }
@@ -72,6 +74,7 @@ public class AdateService {
         adateRepository.delete(adate);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Adate> getAdateFromRepository(String calendarId) {
         return adateRepository.findAdateByCalendarId(calendarId);
     }
