@@ -9,6 +9,7 @@ import com.fixadate.domain.invitation.repository.InvitationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class InvitationService {
     private final InvitationRepository invitationRepository;
 
+    @Transactional
     public String registInvitation(InvitationRequest invitationRequest) {
         Invitation invitation = invitationRequest.toEntity();
         invitationRepository.save(invitation);
