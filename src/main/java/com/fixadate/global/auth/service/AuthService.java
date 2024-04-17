@@ -4,10 +4,9 @@ package com.fixadate.global.auth.service;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
-
 import com.fixadate.global.auth.exception.MemberSigninException;
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +28,10 @@ public class AuthService {
         memberRepository.save(member);
     }
 
-    public Cookie createHttpOnlyCooke(String token) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN, token);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        return cookie;
+    public ResponseCookie createHttpOnlyCooke(String token) {
+        return ResponseCookie.from(REFRESH_TOKEN, token)
+                .secure(true)
+                .httpOnly(true)
+                .build();
     }
 }

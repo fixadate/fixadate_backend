@@ -2,16 +2,12 @@ package com.fixadate.domain.googleCalendar.dto.response;
 
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Event.Reminders;
-import lombok.Builder;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
 import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.TRANSPARENCY;
 import static com.fixadate.global.util.DateTimeUtils.getLocalDateTimeFromDateTime;
 
-@Builder
-@Slf4j
 public record GoogleCalendarEventResponse(
         LocalDateTime created,
         LocalDateTime end,
