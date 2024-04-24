@@ -72,7 +72,7 @@ class AdateServiceTest {
     class adateRegistTest {
 
         @DisplayName("모든 조건이 문제 없는 경우 / 저장")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
                 "title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, red, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
@@ -94,7 +94,7 @@ class AdateServiceTest {
         adateRegist를 할 때 calendarId를 무작위로 설정하는데, 이 때 정합성을 보장하지 못해 직접 repository에 저장하는 방식으로 구현 함.
          */
         @DisplayName("모든 조건이 문제 없는 경우 / 조회")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
                 "title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, red, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
@@ -122,7 +122,7 @@ class AdateServiceTest {
         }
 
         @DisplayName("color가 존재하지 않는 경우")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
                 "title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, wf, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
@@ -152,7 +152,7 @@ class AdateServiceTest {
         4. 24:00(안 됨)
          */
         @DisplayName("정상 조회")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
                 "1, '2024-04-15T09:00:00', '2024-04-17T10:00:00'",
@@ -180,7 +180,7 @@ class AdateServiceTest {
         }
 
         @DisplayName("범위에 adate가 없는 경우")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
                 "1, '2024-04-15T09:00:00', '2024-04-14T10:00:00'",
@@ -202,7 +202,7 @@ class AdateServiceTest {
         }
 
         @DisplayName("member가 저장한 adate가 없는 경우")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
                 "2, '2024-04-17T09:00:00', '2024-04-17T09:59:59'",
@@ -228,7 +228,7 @@ class AdateServiceTest {
     class getAdateByMemberNameTest {
 
         @DisplayName("member가 존재하고 저장한 adate가 있는 경우")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest
         @CsvSource(value = {"hong", "muny", "kim"})
         void getAdateByMemberNameTestWhenMemberExistsAndMemberHasAdate(String memberName) {
@@ -236,7 +236,7 @@ class AdateServiceTest {
         }
 
         @DisplayName("member가 존재하지 않는 경우")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest
         @CsvSource(value = {"anna", "kevin", "lee"})
         void getAdateByMemberNameTestWhenMemberNotExists(String memberName) {
@@ -244,7 +244,7 @@ class AdateServiceTest {
         }
 
         @DisplayName("member가 존재하고 저장한 adate가 없는 경우")
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest
         @CsvSource(value = {"karina", "down"})
         void getAdateByMemberNameTestWhenMemberExistsAndMemberHasNoAdate(String memberName) {
@@ -257,7 +257,7 @@ class AdateServiceTest {
     class getAdateFromRepositoryTest {
         @DisplayName("calendarId로 조회가 가능한 경우")
         @ParameterizedTest
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @CsvSource(value = {"abc123", "def456", "ghi789", "jkl012", "mno345", "ads234", "qew267"})
         void getAdateFromRepositoryTestWhenAdateIsExists(String calendarId) {
             Optional<Adate> adateOptional = adateService.getAdateFromRepository(calendarId);
@@ -266,7 +266,7 @@ class AdateServiceTest {
 
         @DisplayName("calendarId로 조회가 불가능한 경우")
         @ParameterizedTest
-        @Sql(scripts = "/sql/setUp/adateSetup.sql")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
         @CsvSource(value = {"werw123", "adsf123123", "adsfs12312", "fdsfa1232", "fdksja9i09", "e34iorjfe", "fjehriweq21"})
         void getAdateFromRepositoryTestWhenAdateIsNotExists(String calendarId) {
             Optional<Adate> adateOptional = adateService.getAdateFromRepository(calendarId);
