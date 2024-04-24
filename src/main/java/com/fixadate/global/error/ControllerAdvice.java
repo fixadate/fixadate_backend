@@ -5,7 +5,7 @@ import com.fixadate.domain.adate.exception.DateParseException;
 import com.fixadate.domain.googleCalendar.exception.GoogleCalendarWatchException;
 import com.fixadate.domain.googleCalendar.exception.GoogleCredentialsNotFoundException;
 import com.fixadate.domain.googleCalendar.exception.GoogleSecurityException;
-import com.fixadate.domain.colortype.exception.ColorTypeNameDuplicatedException;
+import com.fixadate.domain.colortype.exception.ColorTypeDuplicatedException;
 import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.invitation.exception.InvitationNotFountException;
 import com.fixadate.domain.member.exception.MemberNotFoundException;
@@ -32,7 +32,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            ColorTypeNameDuplicatedException.class,
+            ColorTypeDuplicatedException.class,
             AdateIOException.class,
             DateParseException.class,
             GoogleSecurityException.class,
