@@ -66,7 +66,7 @@ class AuthServiceTest {
     @DisplayName("oauthId 검색 테스트")
     class findMemberByOauthIdTest {
         @DisplayName("oauthId가 존재하는 경우")
-        @Sql(scripts = "/sql/setUp/memberSetUp.sql")
+        @Sql(scripts = "/sql/setup/member_setUp.sql")
         @ParameterizedTest(name = "[{index}] oauthId -> {arguments}")
         @ValueSource(strings = {"123", "2", "3", "4", "5"})
         void findMemberByOauthIdIfMemberExistsTest(String inputs) {
@@ -90,7 +90,7 @@ class AuthServiceTest {
     @DisplayName("Member 저장 테스트")
     class registMemberTest {
         @DisplayName("동일한 oauthId를 가진 Member가 존재하는 경우 에러 발생")
-        @Sql(scripts = "/sql/setUp/memberSetUp.sql")
+        @Sql(scripts = "/sql/setup/member_setUp.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {"123, google, yongjun, 213, kevinH, 20000928, male, student, red, img",
                 "2, kakao, hannah, 314, alex, 19980512, female, engineer, blue, img",
