@@ -23,6 +23,6 @@ public interface InvitationController {
     @Operation(summary = "멤버 초대", description = "특정 멤버를 팀에 초대합니다.", deprecated = true)
     ResponseEntity<?> inviteMemberToTeams(@Valid InvitationSpecifyRequest requestDto);
 
-    @Operation(summary = "팀별 초대 조회", description = "특정 팀에 대한 초대를 조회합니다.")
+    @Operation(summary = "팀별 초대 조회", description = "특정 팀에 대한 초대를 조회합니다.", deprecated = true)
     ResponseEntity<?> getSpecifyInvitationByTeamId(Long teamId);
 }
