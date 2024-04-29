@@ -36,10 +36,11 @@ public class SecurityConfig {
             "/oauth2callback/**"
             ,
             /* signIn */
-            "/auth/**",
+            "/signin",
+            "/signup",
             /* etc */
             "/member/nickname",
-            "/error"
+            "/error/**"
     };
 
     @Bean
