@@ -54,8 +54,8 @@ public class AdateService {
     }
 
     @Transactional(readOnly = true)
-    public List<Adate> getAdateResponseByMemberName(String memberName) {
-        return adateQueryRepository.findAdatesByMemberName(memberName);
+    public List<AdateCalendarEventResponse> getAdateResponseByMemberName(String memberName) {
+        return getResponseDto(adateQueryRepository.findAdatesByMemberName(memberName));
     }
     @Transactional
     public void registEvents(List<Event> events) {

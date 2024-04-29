@@ -3,7 +3,6 @@ package com.fixadate.domain.adate.controller.impl;
 import com.fixadate.domain.adate.controller.AdateController;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
-import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.annotation.RestControllerWithMapping;
@@ -13,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,8 +49,8 @@ public class AdateControllerImpl implements AdateController {
 
     @Override
     @GetMapping("/member")
-    public ResponseEntity<List<Adate>> getAdatesByMemberName(@RequestParam String memberName) {
-        List<Adate> adates = adateService.getAdateResponseByMemberName(memberName);
+    public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByMemberName(@RequestParam String memberName) {
+        List<AdateCalendarEventResponse> adates = adateService.getAdateResponseByMemberName(memberName);
         return ResponseEntity.ok(adates);
     }
 }

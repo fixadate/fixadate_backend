@@ -1,9 +1,8 @@
 package com.fixadate.global.auth.controller;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.annotation.RestControllerWithMapping;
-import com.fixadate.global.auth.dto.request.MemberOAuthRequestDto;
-import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
+import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
+import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.global.jwt.service.JwtProvider;
 import com.fixadate.global.util.S3Utils;
@@ -15,10 +14,11 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.fixadate.global.oauth.ConstantValue.ACCESS_TOKEN;
 
-@RestControllerWithMapping("/auth")
+@RestController
 @RequiredArgsConstructor
 public class AuthControllerImpl implements AuthController{
     private final AuthService authService;
@@ -26,9 +26,9 @@ public class AuthControllerImpl implements AuthController{
     private final JwtProvider jwtProvider;
 
     @Override
-    @PostMapping("/member")
-    public ResponseEntity<Void> registMember(@Valid @RequestBody MemberOAuthRequestDto memberOAuthRequestDto) {
-        String oauthId = memberOAuthRequestDto.oauthId();
+    @PostMapping("/signin")
+    public ResponseEntity<Void> registMember(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest) {
+        String oauthId = memberOAuthRequest.oauthId();
         Member member = authService.findMemberByOAuthId(oauthId);
         String accessToken = jwtProvider.createAccessToken(member.getOauthId());
         String refreshToken = jwtProvider.createRefreshToken(member.getOauthId());
@@ -45,13 +45,13 @@ public class AuthControllerImpl implements AuthController{
     }
 
     @Override
-    @PostMapping("/member/additional")
+    @PostMapping("/signup")
     public ResponseEntity<String> AdditionalRegistMember(
-            @Valid @RequestBody MemberRegistRequestDto memberRegistRequestDto) {
-        authService.registMember(memberRegistRequestDto);
+            @Valid @RequestBody MemberRegistRequest memberRegistRequest) {
+        authService.registMember(memberRegistRequest);
 
-        String url = s3Utils.generatePresignedUrlForUpload(memberRegistRequestDto.profileImg(),
-                memberRegistRequestDto.contentType());
+        String url = s3Utils.generatePresignedUrlForUpload(memberRegistRequest.profileImg(),
+                memberRegistRequest.contentType());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(url);
     }

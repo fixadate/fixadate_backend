@@ -15,9 +15,9 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Fixadate API")
-                        .description("Fixadate의 API 문서입니다..")
-                        .version("1.0.0"))
+                        .title("Fixadate API 명세서")
+                        .description("Fixadate의 API 문서입니다.")
+                        .version("v1"))
                 .components(new Components()
                         .addSecuritySchemes("bearer-key",
                                 new io.swagger.v3.oas.models.security.SecurityScheme()
