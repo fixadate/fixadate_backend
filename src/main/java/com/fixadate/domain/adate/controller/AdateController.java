@@ -20,7 +20,7 @@ import java.util.List;
 @Tag(name = "AdateController", description = "AdateController 입니다.")
 public interface AdateController {
 
-    @Operation(summary = "Adate 이벤트 등록", description = "Adate 이벤트를 등록합니다.[jwt 필요]", tags = {"Member Controller"})
+    @Operation(summary = "Adate 이벤트 등록 / [jwt 필요]", description = "Adate 이벤트를 등록합니다.")
     @RequestBody(content = @Content(schema = @Schema(implementation = AdateRegistRequest.class)), required = true)
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "created",
@@ -32,7 +32,7 @@ public interface AdateController {
     })
     ResponseEntity<Void> registerAdateEvent(AdateRegistRequest adateRegistRequest, MemberPrincipal memberPrincipal);
 
-    @Operation(summary = "Adate 캘린더 이벤트 조회", description = "지정된 범위에 해당하는 calendar를 조회합니다.[jwt 필요]", tags = {"Member Controller"})
+    @Operation(summary = "Adate 캘린더 이벤트 조회 / [jwt 필요]", description = "지정된 범위에 해당하는 calendar를 조회합니다.[jwt 필요]")
     @Parameters({
             @Parameter(name = "startDateTime", required = true, description = "00-00-01 ~ 23-59-59"),
             @Parameter(name = "endDateTime", required = true, description = "00-00-01 ~ 23-59-59"),
@@ -45,7 +45,7 @@ public interface AdateController {
     })
     ResponseEntity<List<AdateCalendarEventResponse>> getAdateCalendarEvents(MemberPrincipal memberPrincipal, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    @Operation(summary = "멤버별 Adate 조회", description = "멤버별 Adate를 조회합니다.[jwt 필요]", tags = {"Member Controller"})
+    @Operation(summary = "멤버별 Adate 조회 / [jwt 필요]", description = "멤버별 Adate를 조회합니다.[jwt 필요]")
     @Parameters({
             @Parameter(name = "memberName", required = true)
     })

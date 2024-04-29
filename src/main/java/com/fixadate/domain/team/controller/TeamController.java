@@ -1,6 +1,7 @@
 package com.fixadate.domain.team.controller;
 
 import com.fixadate.global.annotation.RestControllerWithMapping;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -13,11 +14,13 @@ public class TeamController {
 
     private final RedisTemplate<String, Object> redisTemplate;
     @GetMapping("/redistest")
+    @Operation(deprecated = true)
     public String redisTest() {
         redisTemplate.opsForValue().set("yongjun", "yongjun");
         return (String) redisTemplate.opsForValue().get("yongjun");
     }
     @GetMapping("/health-check")
+    @Operation(deprecated = true)
     public ResponseEntity<Void> checkHealthStatus() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
