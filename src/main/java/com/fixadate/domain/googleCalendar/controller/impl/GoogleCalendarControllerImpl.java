@@ -29,12 +29,6 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     private final GoogleService googleService;
 
     @Override
-    @GetMapping()
-    public ResponseEntity<Void> getGoogleCalendarEvents(@RequestParam String channelId) {
-        googleService.listEvents(channelId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
     @GetMapping("/watch")
     public ResponseEntity<Channel> watchCalendar(@RequestParam String userId,
                                                  HttpServletRequest request) {
@@ -45,9 +39,8 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 
         Channel channel = googleService.executeWatchRequest(userId);
         googleService.registGoogleCredentials(channel, tokenResponse, userId);
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(channel);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .headers(headers).build();
     }
 
     private TokenResponse createTokenResponse(Cookie[] cookies) {
@@ -62,6 +55,7 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
         return tokenResponse;
     }
 
+    @Override
     @PostMapping("/notifications")
     public ResponseEntity<List<GoogleCalendarEventResponse>> printNotification(@RequestHeader(WebhookHeaders.RESOURCE_ID) String resourceId,
                                                                                @RequestHeader(WebhookHeaders.RESOURCE_URI) String resourceUri,
