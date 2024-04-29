@@ -3,7 +3,7 @@ package com.fixadate.global.auth.service;
 
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
+import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
@@ -22,9 +22,9 @@ public class AuthService {
     }
 
     @Transactional
-    public void registMember(MemberRegistRequestDto memberRegistRequestDto) {
+    public void registMember(MemberRegistRequest memberRegistRequest) {
         //fixme modelmapper 사용해서 구현해보기
-        Member member = memberRegistRequestDto.of();
+        Member member = memberRegistRequest.of();
         memberRepository.save(member);
     }
 

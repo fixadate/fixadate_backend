@@ -6,7 +6,7 @@ import com.fixadate.global.oauth.entity.OAuthProvider;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record MemberRegistRequestDto(
+public record MemberRegistRequest(
         @NotBlank String oauthId,
         @NotBlank String oauthPlatform,
         @NotBlank String name,

@@ -3,7 +3,7 @@ package com.fixadate.global.auth.service;
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.auth.dto.request.MemberRegistRequestDto;
+import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
 import org.junit.jupiter.api.AfterAll;
@@ -97,13 +97,13 @@ class AuthServiceTest {
                 "3, apple, david, 415, emma, 20010320, male, designer, green, img",
                 "4, kakao, sarah, 516, michael, 19991225, female, developer, yellow, img",
                 "5, google, emily, 617, chris, 19921005, female, manager, orange, img"})
-        void registMemberTestIfDuplicatedIdExist(@AggregateWith(MemberAggregator.class) MemberRegistRequestDto memberRegistRequestDto) {
-            assertThrows(DataIntegrityViolationException.class, () -> authService.registMember(memberRegistRequestDto));
-            Member member = authService.findMemberByOAuthId(memberRegistRequestDto.oauthId());
+        void registMemberTestIfDuplicatedIdExist(@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
+            assertThrows(DataIntegrityViolationException.class, () -> authService.registMember(memberRegistRequest));
+            Member member = authService.findMemberByOAuthId(memberRegistRequest.oauthId());
             assertAll(
-                    () -> assertNotEquals(memberRegistRequestDto.name(), member.getName()),
-                    () -> assertNotEquals(memberRegistRequestDto.nickname(), member.getNickname()),
-                    () -> assertNotEquals(memberRegistRequestDto.birth(), member.getBirth())
+                    () -> assertNotEquals(memberRegistRequest.name(), member.getName()),
+                    () -> assertNotEquals(memberRegistRequest.nickname(), member.getNickname()),
+                    () -> assertNotEquals(memberRegistRequest.birth(), member.getBirth())
             );
         }
 
@@ -114,10 +114,10 @@ class AuthServiceTest {
                 "103, microsoft, david, 415, emma, 20010320, male, designer, green, img",
                 "104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, img",
                 "105, wooabros, emily, 617, chris, 19921005, female, manager, orange, img"})
-        void registMemberTestIfoauthPlatformHasInvalidValue(@AggregateWith(MemberAggregator.class) MemberRegistRequestDto memberRegistRequestDto) {
+        void registMemberTestIfoauthPlatformHasInvalidValue(@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
             assertAll(
-                    () -> assertThrows(UnknownOAuthPlatformException.class, () -> authService.registMember(memberRegistRequestDto)),
-                    () -> assertThrows(MemberSigninException.class, () -> authService.findMemberByOAuthId(memberRegistRequestDto.oauthId()))
+                    () -> assertThrows(UnknownOAuthPlatformException.class, () -> authService.registMember(memberRegistRequest)),
+                    () -> assertThrows(MemberSigninException.class, () -> authService.findMemberByOAuthId(memberRegistRequest.oauthId()))
             );
         }
 
@@ -128,15 +128,15 @@ class AuthServiceTest {
                 "102, apple, david, 415, emma, 20010320, male, designer, green, img",
                 "103, google, sarah, 516, michael, 19991225, female, developer, yellow, img",
                 "104, google, emily, 617, chris, 19921005, female, manager, orange, img"})
-        void registMemberTestIfEveryThingsIsOk(@AggregateWith(MemberAggregator.class) MemberRegistRequestDto memberRegistRequestDto) {
-            assertDoesNotThrow(() -> authService.registMember(memberRegistRequestDto));
-            Member member = authService.findMemberByOAuthId(memberRegistRequestDto.oauthId());
+        void registMemberTestIfEveryThingsIsOk(@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
+            assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
+            Member member = authService.findMemberByOAuthId(memberRegistRequest.oauthId());
             assertAll(
-                    () -> assertEquals(memberRegistRequestDto.name(), member.getName()),
-                    () -> assertEquals(memberRegistRequestDto.oauthId(), member.getOauthId()),
-                    () -> assertEquals(memberRegistRequestDto.birth(), member.getBirth()),
-                    () -> assertEquals(memberRegistRequestDto.nickname(), member.getNickname()),
-                    () -> assertEquals(memberRegistRequestDto.gender(), member.getGender()),
+                    () -> assertEquals(memberRegistRequest.name(), member.getName()),
+                    () -> assertEquals(memberRegistRequest.oauthId(), member.getOauthId()),
+                    () -> assertEquals(memberRegistRequest.birth(), member.getBirth()),
+                    () -> assertEquals(memberRegistRequest.nickname(), member.getNickname()),
+                    () -> assertEquals(memberRegistRequest.gender(), member.getGender()),
                     () -> memberRepository.delete(member)
             );
         }
@@ -145,7 +145,7 @@ class AuthServiceTest {
     static class MemberAggregator implements ArgumentsAggregator {
         @Override
         public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws ArgumentsAggregationException {
-            return new MemberRegistRequestDto(argumentsAccessor.getString(0), argumentsAccessor.getString(1), argumentsAccessor.getString(2), argumentsAccessor.getString(3),
+            return new MemberRegistRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1), argumentsAccessor.getString(2), argumentsAccessor.getString(3),
                     argumentsAccessor.getString(4), argumentsAccessor.getInteger(5), argumentsAccessor.getString(6), argumentsAccessor.getString(7), argumentsAccessor.getString(8),
                     argumentsAccessor.getString(9));
         }
