@@ -1,5 +1,6 @@
-package com.fixadate.domain.colortype.controller;
+package com.fixadate.domain.colortype.controller.impl;
 
+import com.fixadate.domain.colortype.controller.ColorTypeController;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @RestControllerWithMapping("/color")
 @RequiredArgsConstructor
-public class ColorTypeControllerImpl implements ColorTypeController{
+public class ColorTypeControllerImpl implements ColorTypeController {
 
     private final ColorTypeService colorTypeService;
 

@@ -2,6 +2,7 @@ package com.fixadate.global.auth.service;
 
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
@@ -28,7 +29,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public Member signIn(MemberOAuthRequest memberOAuthRequest) {
+    public Member memberSignIn(MemberOAuthRequest memberOAuthRequest) {
         Member member = findMemberByOAuthProviderAndEmailAndName(
                 translateStringToOAuthProvider(memberOAuthRequest.oauthPlatform()),
                 memberOAuthRequest.email(), memberOAuthRequest.memberName()
@@ -61,6 +62,17 @@ public class AuthService {
         //fixme modelmapper 사용해서 구현해보기
         Member member = memberRegistRequest.of(encodedOauthId);
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void memberSignout(String email, String id) {
+        Member member = memberRepository.findMemberById(Long.parseLong(id))
+                .orElseThrow(MemberNotFoundException::new);
+
+        if (!member.getEmail().equals(email)) {
+            throw new MemberNotFoundException();
+        }
+        memberRepository.delete(member);
     }
 
     public ResponseCookie createHttpOnlyCooke(String token) {

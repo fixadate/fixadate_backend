@@ -12,6 +12,7 @@ import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.MemberSignupException;
 import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
+import com.fixadate.global.jwt.exception.RefreshTokenInvalidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,7 +48,8 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            MemberSigninException.class
+            MemberSigninException.class,
+            RefreshTokenInvalidException.class
     })
     public ResponseEntity<ErrorResponse> handleUnAuthorizedRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

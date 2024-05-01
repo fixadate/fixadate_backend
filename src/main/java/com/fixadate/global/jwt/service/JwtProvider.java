@@ -3,32 +3,49 @@ package com.fixadate.global.jwt.service;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.jwt.MemberPrincipal;
-import io.jsonwebtoken.*;
+import com.fixadate.global.jwt.entity.TokenResponse;
+import com.fixadate.global.jwt.exception.RefreshTokenInvalidException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+
+import static com.fixadate.global.jwt.filter.JwtAuthenticationFilter.AUTHORIZATION_HEADER;
+import static com.fixadate.global.jwt.filter.JwtAuthenticationFilter.BEARER_TOKEN_PREFIX;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtProvider {
-    private final MemberRepository memberRepository;
     static final String ID = "id";
+    static final String BLACK_LIST = "blackList";
     @Value("${jwt.secret}")
     private String secret;
     @Value("${jwt.accessToken.expiration-period}")
     private long accesesTokenexpirationPeriod;
     @Value("${jwt.refreshToken.expiration-period}")
     private int refreshTokenexpirationPeriod;
+
+    private final RedisTemplate<String, String> redisTemplate;
+    private final MemberRepository memberRepository;
+
     private Key key;
 
     @PostConstruct
@@ -36,16 +53,54 @@ public class JwtProvider {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String createAccessToken(String oauthId) {
+    public TokenResponse getTokenResponse(String id) {
+        return new TokenResponse(createAccessToken(id), createRefreshToken(id));
+    }
+
+    public String createAccessToken(String id) {
         Claims claims = Jwts.claims();
-        claims.put(ID, oauthId);
+        claims.put(ID, id);
         return createToken(claims, accesesTokenexpirationPeriod);
     }
 
-    public String createRefreshToken(String oauthId) {
+    public String createRefreshToken(String id) {
         Claims claims = Jwts.claims();
-        claims.put(ID, oauthId);
-        return createToken(claims, refreshTokenexpirationPeriod);
+        claims.put(ID, id);
+        String refreshToken = createToken(claims, refreshTokenexpirationPeriod);
+        registRefreshTokenInRedis(refreshToken, id);
+        return refreshToken;
+    }
+
+    private void registRefreshTokenInRedis(String refreshToken, String id) {
+        redisTemplate.delete(id);
+        redisTemplate.opsForValue().set(id, refreshToken, Duration.ofDays(90));
+    }
+
+    public TokenResponse reIssueToken(Cookie cookie, String accessToken) {
+        String id = getIdFromToken(accessToken);
+        String refreshToken = redisTemplate.opsForValue().get(id);
+
+        if (!cookie.getValue().equals(refreshToken)) throw new RefreshTokenInvalidException();
+        redisTemplate.delete(id);
+        return getTokenResponse(id);
+    }
+
+    public void setAccessTokenBlackList(String accessToken) {
+        redisTemplate.opsForValue().set(accessToken, BLACK_LIST, Duration.ofDays(2));
+    }
+
+    public void memberLogout(String accessToken) {
+        String id = getIdFromToken(accessToken);
+        setAccessTokenBlackList(accessToken);
+        redisTemplate.delete(id);
+    }
+
+    public boolean isTokenBlackList(String accessToken) {
+        String value = redisTemplate.opsForValue().get(accessToken);
+        if (value == null) {
+            return true;
+        }
+        return !value.equals(BLACK_LIST);
     }
 
     private String createToken(Claims claims, long expirationPeriod) {
@@ -76,11 +131,19 @@ public class JwtProvider {
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) throws MalformedJwtException {
-        String oauthId = getIdFromToken(token);
-        Member member = memberRepository.findMemberById(Long.parseLong(oauthId)).orElseThrow(() ->
+        String id = getIdFromToken(token);
+        Member member = memberRepository.findMemberById(Long.parseLong(id)).orElseThrow(() ->
                 new MalformedJwtException("조회된 member가 없음"));
         MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
+    }
+
+    public String retrieveToken(HttpServletRequest httpServletRequest) {
+        String bearerToken = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TOKEN_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     public String getIdFromToken(String token) {
@@ -88,7 +151,6 @@ public class JwtProvider {
                 .setSigningKey(secret.getBytes())
                 .parseClaimsJws(token)
                 .getBody()
-                .get(ID,
-                        String.class);
+                .get(ID, String.class);
     }
 }
