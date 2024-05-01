@@ -9,6 +9,7 @@ import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.MemberSignupException;
 import com.fixadate.global.oauth.entity.OAuthProvider;
+import com.fixadate.global.util.constant.ConstantValue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.fixadate.global.oauth.ConstantValue.REFRESH_TOKEN;
 import static com.fixadate.global.oauth.entity.OAuthProvider.*;
 
 @Service
@@ -76,7 +76,7 @@ public class AuthService {
     }
 
     public ResponseCookie createHttpOnlyCooke(String token) {
-        return ResponseCookie.from(REFRESH_TOKEN, token)
+        return ResponseCookie.from(ConstantValue.REFRESH_TOKEN.getValue(), token)
                 .secure(true)
                 .httpOnly(true)
                 .build();

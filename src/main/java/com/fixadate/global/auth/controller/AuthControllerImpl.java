@@ -17,8 +17,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.fixadate.global.oauth.ConstantValue.ACCESS_TOKEN;
-import static com.fixadate.global.oauth.ConstantValue.REFRESH_TOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.ACCESS_TOKEN;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class AuthControllerImpl implements AuthController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
-        httpHeaders.add(ACCESS_TOKEN, tokenResponse.getAccessToken());
+        httpHeaders.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
         return ResponseEntity.noContent()
                 .headers(httpHeaders)
@@ -60,14 +60,14 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @PostMapping("/reissue")
     public ResponseEntity<Void> reissueAccessToken(
-            @CookieValue(value = REFRESH_TOKEN, required = true) Cookie cookie,
+            @CookieValue(value = "refreshToken", required = true) Cookie cookie,
             @RequestHeader String accessToken) {
         TokenResponse tokenResponse = jwtProvider.reIssueToken(cookie, accessToken);
         ResponseCookie ncookie = authService.createHttpOnlyCooke(tokenResponse.getRefreshToken());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.SET_COOKIE, ncookie.toString());
-        httpHeaders.add(ACCESS_TOKEN, tokenResponse.getAccessToken());
+        httpHeaders.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
         return ResponseEntity.noContent()
                 .headers(httpHeaders)

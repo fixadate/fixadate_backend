@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.*;
+import static com.fixadate.global.util.constant.ConstantValue.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class GoogleService {
                     .orElseThrow(GoogleCredentialsNotFoundException::new);
 
             String userId = googleCredentials.getUserId();
-            Calendar.Events.List request = googleUtils.calendarService(userId).events().list(CALENDAR_ID)
+            Calendar.Events.List request = googleUtils.calendarService(userId).events().list(CALENDAR_ID.getValue())
                     .setOauthToken(googleCredentials.getAccessToken());
             String syncToken = getNextSyncToken(userId);
 

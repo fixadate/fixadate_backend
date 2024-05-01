@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.*;
+import static com.fixadate.global.util.constant.ConstantValue.*;
 
 
 @RestControllerWithMapping("/google")
@@ -33,9 +33,9 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     public ResponseEntity<Channel> watchCalendar(@RequestParam String userId,
                                                  HttpServletRequest request) {
         TokenResponse tokenResponse = createTokenResponse(request.getCookies());
-        String accessToken = AUTHORIZATION_BEARER + tokenResponse.getAccessToken();
+        String accessToken = AUTHORIZATION_BEARER.getValue() + tokenResponse.getAccessToken();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(AUTHORIZATION, accessToken);
+        headers.add(AUTHORIZATION.getValue(), accessToken);
 
         Channel channel = googleService.executeWatchRequest(userId);
         googleService.registGoogleCredentials(channel, tokenResponse, userId);

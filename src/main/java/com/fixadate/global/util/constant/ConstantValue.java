@@ -1,7 +1,35 @@
 package com.fixadate.global.util.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum ConstantValue {
-    /*
-    여기에 고정 값들 하나로 정의
-     */
+    OAUTH_ID("oauthId"),
+    ACCESS_TOKEN("accessToken"),
+    REFRESH_TOKEN("refreshToken"),
+    ACCESS_TYPE("offline"),
+    APPLICATION_NAME("fixadate"),
+    CHANNEL_TYPE("web_hook"),
+    BASE_URL("https://api.fixadate.app"),
+    NOTIFICATION_URL("/google/notifications"),
+    FILE_PATH("/credentials.json"),
+    TOKEN_DIRECTORY_PATH("tokens"),
+    CALENDAR_ID("primary"),
+    GOOGLE_CALLBACK("/oauth2callback"),
+    APPROVAL_PROMPT("force"),
+    AUTHORIZATION("Authorization"),
+    AUTHORIZATION_BEARER("Bearer "),
+    CALENDAR_CANCELLED("cancelled"),
+    SYNC_TOKEN_KEY("syncToken"),
+    SYNC_SETTINGS("SyncSettings"),
+    TRANSPARENCY("transparency"),
+    ID("id"),
+    BLACK_LIST("blackList");
+
+    private final String value;
+
+    ConstantValue(String value) {
+        this.value = value;
+    }
+
 }
