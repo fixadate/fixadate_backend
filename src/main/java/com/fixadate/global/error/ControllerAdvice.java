@@ -10,6 +10,7 @@ import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.invitation.exception.InvitationNotFountException;
 import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.global.auth.exception.MemberSigninException;
+import com.fixadate.global.auth.exception.MemberSignupException;
 import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,8 @@ public class ControllerAdvice {
             AdateIOException.class,
             DateParseException.class,
             GoogleSecurityException.class,
-            GoogleCalendarWatchException.class
+            GoogleCalendarWatchException.class,
+            MemberSignupException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

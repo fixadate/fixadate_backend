@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 public enum JwtException {
     JWT_EXCEPTION(HttpStatus.BAD_REQUEST, "There is an issue with the token-related logic."),
     JWT_EXPIRED_EXCEPTION(HttpStatus.UNAUTHORIZED, "The token has expired."),
-    JWT_UNSUPPORTED_EXCEPTION(HttpStatus.BAD_REQUEST,"Unsupported token format.");
+    JWT_UNSUPPORTED_EXCEPTION(HttpStatus.BAD_REQUEST,"Unsupported token format."),
+    JWT_INVALID_EXCEPTION(HttpStatus.UNAUTHORIZED, "There is no valid member identifier in the JWT token.");
 
     private final String description;
     private final HttpStatus status;

@@ -27,11 +27,11 @@ public class AuthControllerImpl implements AuthController{
 
     @Override
     @PostMapping("/signin")
-    public ResponseEntity<Void> registMember(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest) {
-        String oauthId = memberOAuthRequest.oauthId();
-        Member member = authService.findMemberByOAuthId(oauthId);
-        String accessToken = jwtProvider.createAccessToken(member.getOauthId());
-        String refreshToken = jwtProvider.createRefreshToken(member.getOauthId());
+    public ResponseEntity<Void> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest) {
+        Member member = authService.signIn(memberOAuthRequest);
+
+        String accessToken = jwtProvider.createAccessToken(member.getId().toString());
+        String refreshToken = jwtProvider.createRefreshToken(member.getId().toString());
 
         ResponseCookie cookie = authService.createHttpOnlyCooke(refreshToken);
 
@@ -46,7 +46,7 @@ public class AuthControllerImpl implements AuthController{
 
     @Override
     @PostMapping("/signup")
-    public ResponseEntity<String> AdditionalRegistMember(
+    public ResponseEntity<String> signup(
             @Valid @RequestBody MemberRegistRequest memberRegistRequest) {
         authService.registMember(memberRegistRequest);
 

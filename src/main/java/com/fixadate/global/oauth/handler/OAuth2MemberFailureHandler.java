@@ -32,15 +32,10 @@ public class OAuth2MemberFailureHandler extends SimpleUrlAuthenticationFailureHa
             errorMessage = MemberNotFoundException;
         } else if(exception instanceof OAuth2AuthenticationException){
             errorMessage = ErrorMessage;
-            log.info("로그 확인");
-            log.info(exception.toString());
-            log.info(exception.getMessage());
-            log.info(exception.getLocalizedMessage());
-            log.info(exception.getStackTrace().toString());
         }
 
         errorMessage = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
-        setDefaultFailureUrl("/auth/login?error=true&exception=" + errorMessage);
+        setDefaultFailureUrl("/signin?error=true&exception=" + errorMessage);
         super.onAuthenticationFailure(request, response, exception);
     }
 }
