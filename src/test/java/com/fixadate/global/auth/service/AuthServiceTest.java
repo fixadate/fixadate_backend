@@ -2,6 +2,7 @@ package com.fixadate.global.auth.service;
 
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
@@ -146,7 +147,7 @@ class AuthServiceTest {
         })
         void signinTestIfNameNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
             registMember();
-            assertThrows(MemberSigninException.class, () -> authService.signIn(memberOAuthRequest));
+            assertThrows(MemberSigninException.class, () -> authService.memberSignIn(memberOAuthRequest));
         }
 
         @DisplayName("멤버의 이메일이 존재하지 않는 경우")
@@ -160,7 +161,7 @@ class AuthServiceTest {
         })
         void signinTestIfEmailNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
             registMember();
-            assertThrows(MemberSigninException.class, () -> authService.signIn(memberOAuthRequest));
+            assertThrows(MemberSigninException.class, () -> authService.memberSignIn(memberOAuthRequest));
         }
 
         @DisplayName("잘못 된 oauthPlatform 값인 경우")
@@ -174,7 +175,7 @@ class AuthServiceTest {
         })
         void signinTestIfMemberNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
             registMember();
-            assertThrows(UnknownOAuthPlatformException.class, () -> authService.signIn(memberOAuthRequest));
+            assertThrows(UnknownOAuthPlatformException.class, () -> authService.memberSignIn(memberOAuthRequest));
         }
 
         @DisplayName("잘못된 oauthId 값인 경우")
@@ -188,7 +189,7 @@ class AuthServiceTest {
         })
         void signinTestIfOAuthIdIsInvalid(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
             registMember();
-            assertThrows(MemberSigninException.class, () -> authService.signIn(memberOAuthRequest));
+            assertThrows(MemberSigninException.class, () -> authService.memberSignIn(memberOAuthRequest));
         }
 
         @DisplayName("성공적으로 로그인을 한 경우")
@@ -202,7 +203,56 @@ class AuthServiceTest {
         })
         void signinTestIfSuccess(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
             registMember();
-            assertDoesNotThrow(() -> authService.signIn(memberOAuthRequest));
+            assertDoesNotThrow(() -> authService.memberSignIn(memberOAuthRequest));
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 탈퇴 테스트")
+    class signoutTest {
+        @DisplayName("성공적으로 탈퇴를 한 경우")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource({
+                "1, hong@example.com",
+                "2, muny@example.com",
+                "3, kim@example.com",
+                "4, karina@example.com",
+                "5, down@example.com"
+        })
+        void signupTestIfSuccess(String id, String email) {
+            registMember();
+            authService.memberSignout(email, id);
+            assertTrue(memberRepository.findMemberById(Long.parseLong(id)).isEmpty());
+        }
+
+        @DisplayName("Id가 잘못된 값인 경우")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource({
+                "6, hong@example.com",
+                "7, muny@example.com",
+                "8, kim@example.com",
+                "9, karina@example.com",
+                "10, down@example.com"})
+        void signUpTestIfIdisInvalid(String id, String email) {
+            registMember();
+            assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email,id));
+        }
+
+        @DisplayName("email이 잘못된 값인 경우")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource({
+                "1, hing@example.com",
+                "2, miny@example.com",
+                "3, jin@example.com",
+                "4, winter@example.com",
+                "5, up@example.com"
+        })
+        void signUpTestIfEmailIsInvalid(String id, String email) {
+            registMember();
+            assertAll(
+                    () -> assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email, id)),
+                    () -> assertFalse(memberRepository.findMemberById(Long.parseLong(id)).isEmpty())
+            );
         }
     }
 

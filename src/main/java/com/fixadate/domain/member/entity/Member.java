@@ -44,7 +44,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Adate> adates;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ColorType> colorTypes;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

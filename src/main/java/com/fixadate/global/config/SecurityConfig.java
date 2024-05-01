@@ -42,7 +42,10 @@ public class SecurityConfig {
             "/signup",
             /* etc */
             "/member/nickname",
-            "/error/**"
+            "/error/**",
+
+            /* reissue */
+            "/reissue"
     };
 
     @Bean
