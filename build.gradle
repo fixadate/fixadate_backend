@@ -78,6 +78,10 @@ dependencies {
 
 	//swagger
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
+	// PasswordEncoder
+	implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '6.2.1'
+
 }
 
 tasks.named('test') {
