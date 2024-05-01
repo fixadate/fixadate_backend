@@ -22,9 +22,9 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException exception) {
             setErrorResponse(response, JwtException.JWT_EXPIRED_EXCEPTION);
-        } catch (UnsupportedJwtException exception) {
-            setErrorResponse(response, JwtException.JWT_UNSUPPORTED_EXCEPTION);
-        } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
+        } catch (MalformedJwtException exception) {
+            setErrorResponse(response, JwtException.JWT_INVALID_EXCEPTION);
+        } catch (SecurityException | UnsupportedJwtException | IllegalArgumentException e) {
             setErrorResponse(response, JwtException.JWT_EXCEPTION);
         }
     }
