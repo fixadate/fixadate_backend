@@ -30,9 +30,10 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
 
-import static com.fixadate.global.oauth.ConstantValue.*;
+import static com.fixadate.global.util.constant.ConstantValue.*;
 import static com.google.api.services.calendar.CalendarScopes.CALENDAR_EVENTS_READONLY;
 import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
+
 
 @Configuration
 @Slf4j
@@ -51,6 +52,9 @@ public class GoogleUtils {
     private static String CLIENT_ID;
     private static String CLIENT_SECRET;
     private DataStore<String> syncSettingsDataStore;
+    public static final java.io.File DATA_STORE_DIR =
+            new java.io.File(System.getProperty("user.home"), ".store/token");
+
 
 
     @PostConstruct
@@ -63,11 +67,11 @@ public class GoogleUtils {
         flow = new GoogleAuthorizationCodeFlow.Builder(
                 HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
                 .setDataStoreFactory(dataStoreFactory)
-                .setAccessType(ACCESS_TYPE)
-                .setApprovalPrompt(APPROVAL_PROMPT)
+                .setAccessType(ACCESS_TYPE.getValue())
+                .setApprovalPrompt(APPROVAL_PROMPT.getValue())
                 .build();
         channel = createChannel();
-        syncSettingsDataStore = GoogleUtils.getDataStoreFactory().getDataStore("SyncSettings");
+        syncSettingsDataStore = GoogleUtils.getDataStoreFactory().getDataStore(SYNC_SETTINGS.getValue());
     }
 
 
@@ -82,12 +86,12 @@ public class GoogleUtils {
 
     public static String getRedirectUri(HttpServletRequest req) {
         GenericUrl requestUrl = new GenericUrl(req.getRequestURL().toString());
-        requestUrl.setRawPath(GOOGLE_CALLBACK);
+        requestUrl.setRawPath(GOOGLE_CALLBACK.getValue());
         return requestUrl.build();
     }
 
     private static GoogleClientSecrets getClientSecrets(){
-        InputStream in = GoogleUtils.class.getResourceAsStream(FILE_PATH);
+        InputStream in = GoogleUtils.class.getResourceAsStream(FILE_PATH.getValue());
         try {
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
             clientSecrets.getDetails().setClientId(CLIENT_ID);
@@ -102,7 +106,7 @@ public class GoogleUtils {
         try {
             Calendar.Events.Watch watch = calendarService(userId)
                     .events()
-                    .watch(CALENDAR_ID, channel);
+                    .watch(CALENDAR_ID.getValue(), channel);
             return watch.execute();
         } catch (IOException e) {
             throw new GoogleCalendarWatchException();
@@ -112,7 +116,7 @@ public class GoogleUtils {
     public Calendar calendarService(String userId) {
         Credential credential = getCredentials(userId);
         return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(APPLICATION_NAME)
+                .setApplicationName(APPLICATION_NAME.getValue())
                 .build();
     }
 
@@ -136,8 +140,8 @@ public class GoogleUtils {
         String tokenValue = UUID.randomUUID().toString();
         return new Channel()
                 .setId(tokenValue)
-                .setType(CHANNEL_TYPE)
-                .setAddress(BASE_URL + NOTIFICATION_URL)
+                .setType(CHANNEL_TYPE.getValue())
+                .setAddress(BASE_URL.getValue() + NOTIFICATION_URL.getValue())
                 .setExpiration(System.currentTimeMillis() + 9_000_000_000L)
                 .setToken("tokenValue");
     }

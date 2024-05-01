@@ -27,15 +27,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static com.fixadate.global.jwt.filter.JwtAuthenticationFilter.AUTHORIZATION_HEADER;
-import static com.fixadate.global.jwt.filter.JwtAuthenticationFilter.BEARER_TOKEN_PREFIX;
+import static com.fixadate.global.util.constant.ConstantValue.*;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtProvider {
-    static final String ID = "id";
-    static final String BLACK_LIST = "blackList";
     @Value("${jwt.secret}")
     private String secret;
     @Value("${jwt.accessToken.expiration-period}")
@@ -59,13 +56,13 @@ public class JwtProvider {
 
     public String createAccessToken(String id) {
         Claims claims = Jwts.claims();
-        claims.put(ID, id);
+        claims.put(ID.getValue(), id);
         return createToken(claims, accesesTokenexpirationPeriod);
     }
 
     public String createRefreshToken(String id) {
         Claims claims = Jwts.claims();
-        claims.put(ID, id);
+        claims.put(ID.getValue(), id);
         String refreshToken = createToken(claims, refreshTokenexpirationPeriod);
         registRefreshTokenInRedis(refreshToken, id);
         return refreshToken;
@@ -86,7 +83,7 @@ public class JwtProvider {
     }
 
     public void setAccessTokenBlackList(String accessToken) {
-        redisTemplate.opsForValue().set(accessToken, BLACK_LIST, Duration.ofDays(2));
+        redisTemplate.opsForValue().set(accessToken, BLACK_LIST.getValue(), Duration.ofDays(2));
     }
 
     public void memberLogout(String accessToken) {
@@ -139,8 +136,8 @@ public class JwtProvider {
     }
 
     public String retrieveToken(HttpServletRequest httpServletRequest) {
-        String bearerToken = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TOKEN_PREFIX)) {
+        String bearerToken = httpServletRequest.getHeader(AUTHORIZATION.getValue());
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(AUTHORIZATION_BEARER.getValue())) {
             return bearerToken.substring(7);
         }
         return null;
@@ -151,6 +148,6 @@ public class JwtProvider {
                 .setSigningKey(secret.getBytes())
                 .parseClaimsJws(token)
                 .getBody()
-                .get(ID, String.class);
+                .get(ID.getValue(), String.class);
     }
 }

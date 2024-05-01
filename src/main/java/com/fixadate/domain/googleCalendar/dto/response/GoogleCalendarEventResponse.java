@@ -5,8 +5,8 @@ import com.google.api.services.calendar.model.Event.Reminders;
 
 import java.time.LocalDateTime;
 
-import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.TRANSPARENCY;
 import static com.fixadate.global.util.DateTimeUtils.getLocalDateTimeFromDateTime;
+import static com.fixadate.global.util.constant.ConstantValue.TRANSPARENCY;
 
 public record GoogleCalendarEventResponse(
         LocalDateTime created,
@@ -40,7 +40,7 @@ public record GoogleCalendarEventResponse(
         );
     }
     private static boolean getIfAllDayFromGetTransparency(String transparency) {
-        return transparency != null && transparency.equals(TRANSPARENCY);
+        return transparency != null && transparency.equals(TRANSPARENCY.getValue());
     }
     private static boolean getRemindersDefaultValue(Reminders reminders) {
         return reminders.getUseDefault();

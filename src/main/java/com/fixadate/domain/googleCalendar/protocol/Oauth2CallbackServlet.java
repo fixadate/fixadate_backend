@@ -13,8 +13,9 @@ import org.springframework.http.ResponseCookie;
 
 import java.io.IOException;
 
-import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.ACCESS_TOKEN;
-import static com.fixadate.domain.googleCalendar.entity.constant.GoogleConstantValue.REFRESH_TOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.ACCESS_TOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.REFRESH_TOKEN;
+
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = "/oauth2callback")
@@ -24,10 +25,10 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
             throws IOException {
         String userId = req.getSession().getId();
-        ResponseCookie accessTokenCookie = ResponseCookie.from(ACCESS_TOKEN, credential.getAccessToken())
+        ResponseCookie accessTokenCookie = ResponseCookie.from(ACCESS_TOKEN.getValue(), credential.getAccessToken())
                 .httpOnly(true)
                 .build();
-        ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN, credential.getRefreshToken())
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN.getValue(), credential.getRefreshToken())
                 .httpOnly(true)
                 .build();
         resp.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
