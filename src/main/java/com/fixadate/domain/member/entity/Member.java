@@ -39,8 +39,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String profession;
     @Column(nullable = false)
     private String signatureColor;
-    // 로그인 정보 식별 값, 프로필 사진, 필명, 이름, 성별, 생년월일, 이메일
-
+    @Column(nullable = false)
+    private String email;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Adate> adates;
 

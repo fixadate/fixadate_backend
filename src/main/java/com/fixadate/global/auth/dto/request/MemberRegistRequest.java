@@ -1,10 +1,10 @@
 package com.fixadate.global.auth.dto.request;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
-import com.fixadate.global.oauth.entity.OAuthProvider;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import static com.fixadate.global.oauth.entity.OAuthProvider.translateStringToOAuthProvider;
 
 public record MemberRegistRequest(
         @NotBlank String oauthId,
@@ -16,30 +16,23 @@ public record MemberRegistRequest(
         @NotBlank String gender,
         @NotBlank String profession,
         @NotBlank String signatureColor,
-        @NotBlank String contentType
+        @NotBlank String contentType,
+        @NotBlank String email
 ) {
 
-    public Member of() {
+    public Member of(String encodedOauthId) {
         return Member.builder()
-                .oauthId(oauthId)
-                .oauthPlatform(getOAuthProviderFromString(oauthPlatform))
+                .oauthId(encodedOauthId)
+                .oauthPlatform(translateStringToOAuthProvider(oauthPlatform))
                 .name(name)
                 .profileImg(profileImg)
                 .nickname(nickname)
                 .birth(birth)
                 .gender(gender)
+                .email(email)
                 .profession(profession)
                 .signatureColor(signatureColor)
                 .profileImg(profileImg)
                 .build();
-    }
-
-    private OAuthProvider getOAuthProviderFromString(String oauthPlatform) {
-        return switch (oauthPlatform.toLowerCase()) {
-            case "kakao" -> OAuthProvider.KAKAO;
-            case "google" -> OAuthProvider.GOOGLE;
-            case "apple" -> OAuthProvider.APPLE;
-            default -> throw new UnknownOAuthPlatformException();
-        };
     }
 }
