@@ -51,7 +51,7 @@ public interface AdateController {
     @Operation(summary = "멤버별 Adate 조회", description = "멤버별 Adate를 조회합니다.[jwt 필요]")
     @Parameters({
             @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
-            @Parameter(name = "memberName", required = true, description = "member의 이름")
+            @Parameter(name = "name", required = true, description = "member의 이름")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK",
