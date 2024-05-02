@@ -21,7 +21,7 @@ public interface MemberController {
     })
     ResponseEntity<String> getRandomNickname();
 
-    @Operation(summary = "프로필 이미지 생성용 Presigned URL 발급", description = "프로필 이미지의 Presigned URL을 발급합니다.")
+    @Operation(summary = "이미지 조회용 Presigned URL 발급", description = "이미지 조회를 위햔 url 발급.")
     @Parameters(value = {
             @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
             @Parameter(name = "filename", description = "amazon s3로부터 presignedURL을 받기 위한 filename",
@@ -33,7 +33,7 @@ public interface MemberController {
     )
     ResponseEntity<String> getProfileImagePresignedUrl(String filename);
 
-    @Operation(summary = "프로필 이미지 삭제용 Presigned 발급", description = "프로필 이미지의 Presigned URL을 삭제합니다.")
+    @Operation(summary = "이미지 삭제용 Presigned 발급", description = "이미지 삭제를 위한 url 발급.")
     @Parameters(value = {
             @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
             @Parameter(name = "filename", description = "이미지를 삭제하기 위해 amazons3에게 전달하는 filename",
