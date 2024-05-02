@@ -180,6 +180,28 @@ class ColorTypeServiceTest {
             );
         }
 
+        @DisplayName("성공적으로 이름만 업데이트를 한 경우")
+        @Sql(scripts = "/sql/setup/colorType_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "yellow, newColor1,",
+                "violet, newColor2,",
+                "white, newColor3,",
+                "orange, newColor4,",
+                "green, newColor5,"
+        })
+        void updateColorNameOnlyNameIfColorExists(@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+            assertDoesNotThrow(() -> colorTypeService.updateColorType(colorTypeUpdateRequest));
+            Optional<ColorType> colorTypeByColor = colorTypeRepository.findColorTypeByColor(colorTypeUpdateRequest.newColor());
+
+            assertAll(
+                    () -> assertTrue(colorTypeByColor.isPresent()),
+                    () -> assertEquals(colorTypeUpdateRequest.newColor(), colorTypeByColor.get().getColor()),
+                    () -> assertNotEquals(colorTypeUpdateRequest.newName(), colorTypeByColor.get().getName()),
+                    () -> assertNotNull(colorTypeByColor.get().getName())
+            );
+        }
+
         @DisplayName("같은 색으로 업데이트를 한 경우")
         @Sql(scripts = "/sql/setup/colorType_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")

@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotBlank;
 public record ColorTypeUpdateRequest(
         @NotBlank String color,
         @NotBlank String newColor,
-        @NotBlank String newName) {
+        String newName) {
 }
