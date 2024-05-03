@@ -1,8 +1,8 @@
 package com.fixadate.global.auth.controller;
 
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
+import com.fixadate.global.auth.dto.response.MemberSigninResponse;
 import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
@@ -29,10 +29,10 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     @PostMapping("/signin")
-    public ResponseEntity<Void> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest) {
-        Member member = authService.memberSignIn(memberOAuthRequest);
+    public ResponseEntity<MemberSigninResponse> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest) {
+        MemberSigninResponse response = authService.memberSignIn(memberOAuthRequest);
 
-        TokenResponse tokenResponse = jwtProvider.getTokenResponse(member.getId().toString());
+        TokenResponse tokenResponse = jwtProvider.getTokenResponse(response.id());
 
         ResponseCookie cookie = authService.createHttpOnlyCooke(tokenResponse.getRefreshToken());
 
@@ -40,9 +40,9 @@ public class AuthControllerImpl implements AuthController {
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
         httpHeaders.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
-        return ResponseEntity.noContent()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .headers(httpHeaders)
-                .build();
+                .body(response);
     }
 
     @Override
@@ -85,9 +85,9 @@ public class AuthControllerImpl implements AuthController {
     @DeleteMapping("/signout")
     public ResponseEntity<Void> signout(@RequestParam String email, HttpServletRequest httpServletRequest) {
         String accessToken = jwtProvider.retrieveToken(httpServletRequest);
+        authService.memberSignout(email, jwtProvider.getIdFromToken(accessToken));
         jwtProvider.memberLogout(accessToken);
 
-        authService.memberSignout(email, jwtProvider.getIdFromToken(accessToken));
         return ResponseEntity.noContent().build();
     }
 }

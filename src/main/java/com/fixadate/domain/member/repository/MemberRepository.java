@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Optional<Member> findMemberById(Long memberId);
+    Optional<Member> findMemberById(String id);
+
+    Optional<Member> findMemberByEmail(String email);
 
     @Query("SELECT m FROM Member m WHERE m.oauthPlatform = :oauthPlatform AND m.email = :email AND m.name = :memberName")
     Optional<Member> findMemberByOauthPlatformAndEmailAndName(OAuthProvider oauthPlatform, String email, String memberName);

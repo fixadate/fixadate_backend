@@ -82,7 +82,7 @@ class AdateServiceTest {
                 "title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, violet, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
         })
         void registAdateTest(@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(1L);
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
             assertNotNull(memberOptional.get());
 
             assertAll(
@@ -101,10 +101,10 @@ class AdateServiceTest {
                 "title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, black, adateName2, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
                 "title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, blue, adateName3, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
                 "title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, white, adateName4, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-                "title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, violet, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
+                "title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, violet, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true",
         })
         void registAdateTestwithfind(@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(1L);
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
             assertNotNull(memberOptional.get());
 
             Adate adate = adateRegistRequest.toEntity(memberOptional.get());
@@ -129,10 +129,10 @@ class AdateServiceTest {
                 "title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, wa, adateName2, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
                 "title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, we, adateName3, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
                 "title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, ws, adateName4, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-                "title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, wq, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
+                "title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, wq, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true",
         })
         void registAdateTestIfcolorNotExists(@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(1L);
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
             assertAll(
                     () -> assertNotNull(memberOptional.get()),
                     () -> assertThrows(ColorTypeNotFoundException.class,
@@ -145,33 +145,27 @@ class AdateServiceTest {
     @DisplayName("adate 범위 조회")
     class getAdateEventsTest {
 
-        /*
-        1. 11:00 ~ 11:00 시작, 끝 시간이 똑같은 경우
-        2. 0419 ~ 0420 날짜를 넘어가는 경우
-        3. 예약 시간이 9~10인 경우 찾는 시간이 8~9인 것 처럼 걸치는 경우
-        4. 24:00(안 됨)
-         */
         @DisplayName("정상 조회")
         @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
-                "1, '2024-04-15T09:00:00', '2024-04-17T10:00:00'",
-                "1, '2024-04-17T11:00:00', '2024-04-17T12:00:00'",
+                "'2024-04-15T09:00:00', '2024-04-17T10:00:00', hong@example.com",
+                "'2024-04-17T11:00:00', '2024-04-17T12:00:00', hong@example.com",
 
-                "1, '2024-04-18T00:00:00', '2024-04-18T23:00:00'",
-                "1, '2024-04-18T23:00:00', '2024-04-19T12:00:00'",
+                "'2024-04-18T00:00:00', '2024-04-18T23:00:00', hong@example.com",
+                "'2024-04-18T23:00:00', '2024-04-19T12:00:00', hong@example.com",
 
-                "1, '2024-04-17T10:00:00', '2024-04-19T11:00:00'",
-                "1, '2024-04-16T10:00:00', '2024-04-19T11:00:00'",
+                "'2024-04-17T10:00:00', '2024-04-19T11:00:00', hong@example.com",
+                "'2024-04-16T10:00:00', '2024-04-19T11:00:00', hong@example.com",
 
-                "1, '2024-04-18T10:00:00', '2024-04-20T11:00:00'",
-                "1, '2024-04-20T11:00:00', '2024-04-20T11:00:00'",
+                "'2024-04-18T10:00:00', '2024-04-20T11:00:00', hong@example.com",
+                "'2024-04-20T11:00:00', '2024-04-20T11:00:00', hong@example.com",
 
-                "1, '2024-04-21T09:00:00', '2024-04-23T11:00:00'",
-                "1, '2024-04-21T10:00:00', '2024-04-21T11:00:00'",
+                "'2024-04-21T09:00:00', '2024-04-23T11:00:00', hong@example.com",
+                "'2024-04-21T10:00:00', '2024-04-21T11:00:00', hong@example.com",
         })
-        void getAdateCalendarEventsTestWhenItsOk(Long id, LocalDateTime startsWhen, LocalDateTime endsWhen) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(id);
+        void getAdateCalendarEventsTestWhenItsOk(LocalDateTime startsWhen, LocalDateTime endsWhen, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
             assertNotNull(memberOptional.get());
 
             assertAll(
@@ -183,17 +177,17 @@ class AdateServiceTest {
         @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
-                "1, '2024-04-15T09:00:00', '2024-04-14T10:00:00'",
-                "1, '2024-04-17T11:00:01', '2024-04-17T12:00:00'",
+                "'2024-04-15T09:00:00', '2024-04-14T10:00:00', hong@example.com",
+                "'2024-04-17T11:00:01', '2024-04-17T12:00:00', hong@example.com",
 
-                "1, '2024-04-18T09:00:00', '2024-04-18T09:59:59'",
-                "1, '2024-04-18T11:00:01', '2024-04-18T12:00:00'",
+                "'2024-04-18T09:00:00', '2024-04-18T09:59:59', hong@example.com",
+                "'2024-04-18T11:00:01', '2024-04-18T12:00:00', hong@example.com",
 
-                "1, '2024-04-17T11:00:01', '2024-04-18T09:00:00'",
-                "1, '2023-04-16T10:00:00', '2023-04-19T11:00:00'",
+                "'2024-04-17T11:00:01', '2024-04-18T09:00:00', hong@example.com",
+                "'2023-04-16T10:00:00', '2023-04-19T11:00:00', hong@example.com",
         })
-        void getAdateCalendarEventsTestWhenThereIsNoResult(Long id, LocalDateTime startsWhen, LocalDateTime endsWhen) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(id);
+        void getAdateCalendarEventsTestWhenThereIsNoResult(LocalDateTime startsWhen, LocalDateTime endsWhen, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
             assertNotNull(memberOptional.get());
 
             assertAll(
@@ -205,17 +199,17 @@ class AdateServiceTest {
         @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
-                "2, '2024-04-17T09:00:00', '2024-04-17T09:59:59'",
-                "2, '2024-04-17T11:00:01', '2024-04-17T12:00:00'",
+                "'2024-04-17T09:00:00', '2024-04-17T09:59:59', hong@example.com",
+                "'2024-04-17T11:00:01', '2024-04-17T12:00:00', hong@example.com",
 
-                "2, '2023-04-18T09:00:00', '2023-04-18T10:00:00'",
-                "2, '2024-05-18T11:00:00', '2024-05-18T12:00:00'",
+                "'2023-04-18T09:00:00', '2023-04-18T10:00:00', hong@example.com",
+                "'2024-05-18T11:00:00', '2024-05-18T12:00:00', hong@example.com",
 
-                "2, '2024-04-17T12:00:00', '2024-04-18T09:00:00'",
-                "2, '2024-04-16T10:00:00', '2024-04-16T11:00:00'",
+                "'2024-04-17T12:00:00', '2024-04-18T09:00:00', hong@example.com",
+                "'2024-04-16T10:00:00', '2024-04-16T11:00:00', hong@example.com",
         })
-        void getAdateCalendarEventsTestWhenMemberHasNoAdate(Long id, LocalDateTime startsWhen, LocalDateTime endsWhen) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(id);
+        void getAdateCalendarEventsTestWhenMemberHasNoAdate(LocalDateTime startsWhen, LocalDateTime endsWhen, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
             assertNotNull(memberOptional.get());
             assertAll(
                     () -> assertTrue(adateService.getAdateCalendarEvents(memberOptional.get(), startsWhen, endsWhen).isEmpty())
@@ -273,7 +267,6 @@ class AdateServiceTest {
             assertTrue(!adateOptional.isPresent());
         }
     }
-
 
 
     static class AdateRegistDtoAggregator implements ArgumentsAggregator {

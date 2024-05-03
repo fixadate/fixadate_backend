@@ -129,7 +129,7 @@ public class JwtProvider {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) throws MalformedJwtException {
         String id = getIdFromToken(token);
-        Member member = memberRepository.findMemberById(Long.parseLong(id)).orElseThrow(() ->
+        Member member = memberRepository.findMemberById(id).orElseThrow(() ->
                 new MalformedJwtException("조회된 member가 없음"));
         MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());

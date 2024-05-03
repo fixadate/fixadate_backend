@@ -87,7 +87,7 @@ class ColorTypeServiceTest {
                 "pink, 연애"
         })
         void registColorType(@AggregateWith(ColorTypeRequestAggregator.class) ColorTypeRequest colorTypeRequest) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(1L);
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
             assertNotNull(memberOptional.get());
 
             assertDoesNotThrow(() -> colorTypeService.insertColorType(memberOptional.get(), colorTypeRequest));
@@ -114,7 +114,7 @@ class ColorTypeServiceTest {
                 "white, 연애"
         })
         void registColorTypeTestIfDuplicatedColorExists(@AggregateWith(ColorTypeRequestAggregator.class) ColorTypeRequest colorTypeRequest) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(1L);
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
             assertNotNull(memberOptional.get());
 
             assertThrows(ColorTypeDuplicatedException.class, () -> colorTypeService.insertColorType(memberOptional.get(), colorTypeRequest));
@@ -131,9 +131,9 @@ class ColorTypeServiceTest {
         @DisplayName("member가 저장한 colorType이 존재하는 경우")
         @Sql(scripts = "/sql/setup/colorType_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-        @ValueSource(longs = {1L, 2L, 3L, 4L, 5L})
-        void checkColorTestIfColorTypeExists(long input) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(input);
+        @ValueSource(strings = {"hong@example.com", "muny@example.com", "kim@example.com", "karina@example.com", "down@example.com"})
+        void checkColorTestIfColorTypeExists(String input) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(input);
 
             assertAll(
                     () -> assertTrue(memberOptional.isPresent()),
@@ -144,10 +144,9 @@ class ColorTypeServiceTest {
         @DisplayName("member가 저장한 colorType이 존재하지 않는 경우")
         @Sql(scripts = "/sql/setup/colorType_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-        @ValueSource(longs = {6L, 7L, 8L, 9L, 10L})
-        void checkColorTestIfColorTypeNotExists(long input) {
-            Optional<Member> memberOptional = memberRepository.findMemberById(input);
-
+        @ValueSource(strings = {"choi@example.com", "lee@example.com", "park@example.com", "cho@example.com", "han@example.com"})
+        void checkColorTestIfColorTypeNotExists(String input) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(input);
             assertAll(
                     () -> assertTrue(memberOptional.isPresent()),
                     () -> assertEquals(0, colorTypeService.getColorTypeResponses(memberOptional.get()).size())
