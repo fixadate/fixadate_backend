@@ -38,14 +38,17 @@ public class SecurityConfig {
             "/oauth2callback/**"
             ,
             /* signIn */
-            "/signin",
-            "/signup",
+            "/auth/signin",
+            "/auth/signup",
             /* etc */
             "/member/nickname",
             "/error/**",
 
             /* reissue */
-            "/reissue"
+            "/auth/reissue",
+
+            /* logout */
+            "/auth/logout"
     };
 
     @Bean

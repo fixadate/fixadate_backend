@@ -1,5 +1,6 @@
 package com.fixadate.global.auth.controller;
 
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.dto.response.MemberSigninResponse;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -20,8 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import static com.fixadate.global.util.constant.ConstantValue.ACCESS_TOKEN;
 
 
-@RestController
+@RestControllerWithMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthControllerImpl implements AuthController {
     private final AuthService authService;
     private final S3Utils s3Utils;
@@ -60,9 +63,8 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @PostMapping("/reissue")
     public ResponseEntity<Void> reissueAccessToken(
-            @CookieValue(value = "refreshToken", required = true) Cookie cookie,
-            @RequestHeader String accessToken) {
-        TokenResponse tokenResponse = jwtProvider.reIssueToken(cookie, accessToken);
+            @CookieValue(value = "refreshToken", required = true) Cookie cookie ) {
+        TokenResponse tokenResponse = jwtProvider.reIssueToken(cookie);
         ResponseCookie ncookie = authService.createHttpOnlyCooke(tokenResponse.getRefreshToken());
 
         HttpHeaders httpHeaders = new HttpHeaders();

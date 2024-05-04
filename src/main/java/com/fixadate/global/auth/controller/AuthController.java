@@ -54,8 +54,7 @@ public interface AuthController {
     @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
     @Parameters(
             value = {
-                    @Parameter(name = "refreshToken", description = "refreshToken : <cookie>", in = ParameterIn.COOKIE, required = true),
-                    @Parameter(name = "accessToken", description = "accessToken : <accessToken>", in = ParameterIn.HEADER, required = true)
+                    @Parameter(name = "refreshToken", description = "refreshToken : <cookie>", in = ParameterIn.COOKIE, required = true)
             })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "재발급 성공", headers = {
@@ -65,7 +64,7 @@ public interface AuthController {
             @ApiResponse(responseCode = "401", description = "유효하지 않은 refreshToken",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    ResponseEntity<Void> reissueAccessToken(Cookie cookie, String accessToken);
+    ResponseEntity<Void> reissueAccessToken(Cookie cookie);
 
 
     @Operation(summary = "로그아웃", description = "refreshToken을 삭제하고, accessToken 블랙리스트")
