@@ -24,6 +24,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             setErrorResponse(response, JwtException.JWT_EXPIRED_EXCEPTION);
         } catch (MalformedJwtException exception) {
             setErrorResponse(response, JwtException.JWT_INVALID_EXCEPTION);
+        } catch (AccessTokenBlackListException e) {
+            setErrorResponse(response, JwtException.JWT_BLACKLIST_EXCEPTION);
         } catch (SecurityException | UnsupportedJwtException | IllegalArgumentException e) {
             setErrorResponse(response, JwtException.JWT_EXCEPTION);
         }

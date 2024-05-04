@@ -8,7 +8,8 @@ public enum JwtException {
     JWT_EXCEPTION(HttpStatus.BAD_REQUEST, "There is an issue with the token-related logic."),
     JWT_EXPIRED_EXCEPTION(HttpStatus.UNAUTHORIZED, "The token has expired."),
     JWT_UNSUPPORTED_EXCEPTION(HttpStatus.BAD_REQUEST,"Unsupported token format."),
-    JWT_INVALID_EXCEPTION(HttpStatus.UNAUTHORIZED, "There is no valid member identifier in the JWT token.");
+    JWT_INVALID_EXCEPTION(HttpStatus.UNAUTHORIZED, "There is no valid member identifier in the JWT token."),
+    JWT_BLACKLIST_EXCEPTION(HttpStatus.UNAUTHORIZED, "AccessToken is in BlackList");
 
     private final String description;
     private final HttpStatus status;
