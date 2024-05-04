@@ -26,7 +26,7 @@ public class MemberService implements UserDetailsService {
         return strings.get(random.nextInt(strings.size())).trim();
     }
 
-    public Member getMemberFromId(Long memberId) {
+    public Member getMemberFromId(String memberId) {
         return memberRepository.findMemberById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
     }

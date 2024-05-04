@@ -9,7 +9,6 @@ import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
 import com.fixadate.util.CreateMemberRegistRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -43,7 +43,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest
 @Testcontainers
-@Slf4j
 class AuthServiceTest {
 
     @Autowired
@@ -76,11 +75,11 @@ class AuthServiceTest {
     class registMemberTest {
         @DisplayName("잘못된 oauthPlatform 값이 들어간 경우 에러 발생")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-        @CsvSource(value = {"101, naver, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com",
-                "102, git, hannah, 314, alex, 19980512, female, engineer, blue, img, kevin@naver.com",
-                "103, microsoft, david, 415, emma, 20010320, male, designer, green, img, kevin",
-                "104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, img, kev",
-                "105, wooabros, emily, 617, chris, 19921005, female, manager, orange, img, k"})
+        @CsvSource(value = {"101, naver, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com, MEMBER",
+                "102, git, hannah, 314, alex, 19980512, female, engineer, blue, img, kevin@naver.com, MEMBER",
+                "103, microsoft, david, 415, emma, 20010320, male, designer, green, img, kevin, MEMBER",
+                "104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, img, kev, MEMBER",
+                "105, wooabros, emily, 617, chris, 19921005, female, manager, orange, img, k, MEMBER"})
         void registMemberTestIfoauthPlatformHasInvalidValue(@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
             assertAll(
                     () -> assertThrows(UnknownOAuthPlatformException.class, () -> authService.registMember(memberRegistRequest))
@@ -89,11 +88,11 @@ class AuthServiceTest {
 
         @DisplayName("저장이 정상적으로 되는 경우")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-        @CsvSource(value = {"100, google, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com",
-                "101, google, kevin, 314, alex, 19980512, female, engineer, blue, img, kevin09288715@google.com",
-                "102, apple, david, 415, emma, 20010320, male, designer, green, img, kevin0928@apache.com",
-                "103, google, sarah, 516, michael, 19991225, female, developer, yellow, img, kevin0928@mit.com",
-                "104, google, emily, 617, chris, 19921005, female, manager, orange, img, kevin0928@daum.net",})
+        @CsvSource(value = {"100, google, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com, MEMBER",
+                "101, google, kevin, 314, alex, 19980512, female, engineer, blue, img, kevin09288715@google.com, MEMBER",
+                "102, apple, david, 415, emma, 20010320, male, designer, green, img, kevin0928@apache.com, MEMBER",
+                "103, google, sarah, 516, michael, 19991225, female, developer, yellow, img, kevin0928@mit.com, MEMBER",
+                "104, google, emily, 617, chris, 19921005, female, manager, orange, img, kevin0928@daum.net, MEMBER",})
         void registMemberTestIfEveryThingsIsOk(@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
             assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
             Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
@@ -109,16 +108,15 @@ class AuthServiceTest {
                     () -> assertEquals(memberRegistRequest.gender(), member.getGender()),
                     () -> memberRepository.delete(member)
             );
-            log.info(member.getOauthId());
         }
 
         @DisplayName("정상적으로 암호화가 되는 경우")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-        @CsvSource(value = {"100, google, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com",
-                "101, google, kevin, 314, alex, 19980512, female, engineer, blue, img, kevin09288715@google.com",
-                "102, apple, david, 415, emma, 20010320, male, designer, green, img, kevin0928@apache.com",
-                "103, google, sarah, 516, michael, 19991225, female, developer, yellow, img, kevin0928@mit.com",
-                "104, google, emily, 617, chris, 19921005, female, manager, orange, img, kevin0928@daum.net",})
+        @CsvSource(value = {"100, google, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com, MEMBER",
+                "101, google, kevin, 314, alex, 19980512, female, engineer, blue, img, kevin09288715@google.com, MEMBER",
+                "102, apple, david, 415, emma, 20010320, male, designer, green, img, kevin0928@apache.com, MEMBER",
+                "103, google, sarah, 516, michael, 19991225, female, developer, yellow, img, kevin0928@mit.com, MEMBER",
+                "104, google, emily, 617, chris, 19921005, female, manager, orange, img, kevin0928@daum.net, MEMBER",})
         void registMemberTestencryption(@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
             assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
             Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
@@ -211,47 +209,47 @@ class AuthServiceTest {
     @DisplayName("회원 탈퇴 테스트")
     class signoutTest {
         @DisplayName("성공적으로 탈퇴를 한 경우")
+        @Sql(scripts = "/sql/setup/member_regist_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource({
-                "1, hong@example.com",
-                "2, muny@example.com",
-                "3, kim@example.com",
-                "4, karina@example.com",
-                "5, down@example.com"
+                "101, hong@example.com",
+                "102, muny@example.com",
+                "103, kim@example.com",
+                "104, karina@example.com",
+                "105, down@example.com"
         })
         void signupTestIfSuccess(String id, String email) {
-            registMember();
             authService.memberSignout(email, id);
-            assertTrue(memberRepository.findMemberById(Long.parseLong(id)).isEmpty());
+            assertTrue(memberRepository.findMemberById(id).isEmpty());
         }
 
         @DisplayName("Id가 잘못된 값인 경우")
+        @Sql(scripts = "/sql/setup/member_regist_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource({
-                "6, hong@example.com",
-                "7, muny@example.com",
-                "8, kim@example.com",
-                "9, karina@example.com",
-                "10, down@example.com"})
+                "106, hong@example.com",
+                "107, muny@example.com",
+                "108, kim@example.com",
+                "109, karina@example.com",
+                "110, down@example.com"})
         void signUpTestIfIdisInvalid(String id, String email) {
-            registMember();
             assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email,id));
         }
 
         @DisplayName("email이 잘못된 값인 경우")
+        @Sql(scripts = "/sql/setup/member_regist_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource({
-                "1, hing@example.com",
-                "2, miny@example.com",
-                "3, jin@example.com",
-                "4, winter@example.com",
-                "5, up@example.com"
+                "101, hing@example.com",
+                "102, miny@example.com",
+                "103, jin@example.com",
+                "104, winter@example.com",
+                "105, up@example.com"
         })
         void signUpTestIfEmailIsInvalid(String id, String email) {
-            registMember();
             assertAll(
                     () -> assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email, id)),
-                    () -> assertFalse(memberRepository.findMemberById(Long.parseLong(id)).isEmpty())
+                    () -> assertFalse(memberRepository.findMemberById(id).isEmpty())
             );
         }
     }
@@ -272,7 +270,7 @@ class AuthServiceTest {
                     argumentsAccessor.getString(4), argumentsAccessor.getInteger(5),
                     argumentsAccessor.getString(6), argumentsAccessor.getString(7),
                     argumentsAccessor.getString(8), argumentsAccessor.getString(9),
-                    argumentsAccessor.getString(10));
+                    argumentsAccessor.getString(10), argumentsAccessor.getString(11));
         }
     }
 

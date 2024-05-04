@@ -1,3 +1,10 @@
+CREATE TABLE push_key
+(
+    id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id VARCHAR(255),
+    push_key  VARCHAR(255) UNIQUE
+);
+
 CREATE TABLE member
 (
     id                 VARCHAR(255) NOT NULL,
@@ -11,21 +18,12 @@ CREATE TABLE member
     profession         VARCHAR(255),
     email              VARCHAR(255),
     role               VARCHAR(255),
-    push_key_id         BIGINT,
     signature_color    VARCHAR(255) NOT NULL,
+    push_key_id         BIGINT,
     create_date        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    UNIQUE KEY oauth_id (oauth_id)
+    UNIQUE KEY oauth_id (oauth_id),
+    FOREIGN KEY (push_key_id) REFERENCES push_key (id)
 );
 
-
-CREATE TABLE color_type
-(
-    id        BIGINT NOT NULL AUTO_INCREMENT,
-    color     VARCHAR(255) UNIQUE,
-    name      VARCHAR(255),
-    member_id VARCHAR(255),
-    PRIMARY KEY (id),
-    FOREIGN KEY (member_id) REFERENCES member (id)
-);

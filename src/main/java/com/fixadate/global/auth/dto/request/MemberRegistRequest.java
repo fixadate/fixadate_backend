@@ -17,7 +17,8 @@ public record MemberRegistRequest(
         @NotBlank String profession,
         @NotBlank String signatureColor,
         @NotBlank String contentType,
-        @NotBlank String email
+        @NotBlank String email,
+        @NotBlank String role
 ) {
 
     public Member of(String encodedOauthId) {
@@ -33,6 +34,7 @@ public record MemberRegistRequest(
                 .profession(profession)
                 .signatureColor(signatureColor)
                 .profileImg(profileImg)
+                .role(role)
                 .build();
     }
 }

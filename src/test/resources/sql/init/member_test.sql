@@ -1,6 +1,6 @@
 CREATE TABLE member
 (
-    id                 BIGINT       NOT NULL AUTO_INCREMENT,
+    id                 VARCHAR(255) NOT NULL,
     oauth_id           VARCHAR(255) NOT NULL,
     oauth_platform     ENUM ('APPLE', 'GOOGLE', 'KAKAO'),
     name               VARCHAR(255) NOT NULL,
@@ -10,11 +10,14 @@ CREATE TABLE member
     gender             VARCHAR(255),
     profession         VARCHAR(255),
     email              VARCHAR(255),
+    role               VARCHAR(255),
     signature_color    VARCHAR(255) NOT NULL,
+    push_key_id         BIGINT,
     create_date        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    UNIQUE KEY oauth_id (oauth_id)
+    UNIQUE KEY oauth_id (oauth_id),
+    FOREIGN KEY (push_key_id) REFERENCES push_key (id)
 );
 
 CREATE TABLE color_type
@@ -22,11 +25,10 @@ CREATE TABLE color_type
     id        BIGINT NOT NULL AUTO_INCREMENT,
     color     VARCHAR(255) UNIQUE,
     name      VARCHAR(255),
-    member_id BIGINT,
+    member_id VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
-
 
 
 CREATE TABLE adate
@@ -47,7 +49,7 @@ CREATE TABLE adate
     reminders          TINYINT(1),
     version            DATETIME,
     status             VARCHAR(255),
-    member_id          BIGINT,
+    member_id          VARCHAR(255),
     color_type_id      BIGINT,
     create_date        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -56,5 +58,10 @@ CREATE TABLE adate
     FOREIGN KEY (color_type_id) REFERENCES color_type (id)
 );
 
-
+CREATE TABLE push_key
+(
+    id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id VARCHAR(255),
+    push_key  VARCHAR(255) UNIQUE
+);
 

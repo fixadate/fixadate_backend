@@ -22,7 +22,8 @@ public class CreateMemberRegistRequest {
                 "student",
                 "red",
                 "img",
-                "hong@example.com"
+                "hong@example.com",
+                "USER"
         );
 
         MemberRegistRequest memberRegistRequest2 = new MemberRegistRequest(
@@ -36,7 +37,8 @@ public class CreateMemberRegistRequest {
                 "engineer",
                 "blue",
                 "img",
-                "muny@example.com"
+                "muny@example.com",
+                "USER"
         );
 
         MemberRegistRequest memberRegistRequest3 = new MemberRegistRequest(
@@ -50,7 +52,8 @@ public class CreateMemberRegistRequest {
                 "designer",
                 "green",
                 "img",
-                "kim@example.com"
+                "kim@example.com",
+                "USER"
         );
 
         MemberRegistRequest memberRegistRequest4 = new MemberRegistRequest(
@@ -64,7 +67,8 @@ public class CreateMemberRegistRequest {
                 "developer",
                 "yellow",
                 "img",
-                "karina@example.com"
+                "karina@example.com",
+                "USER"
         );
 
         MemberRegistRequest memberRegistRequest5 = new MemberRegistRequest(
@@ -78,7 +82,8 @@ public class CreateMemberRegistRequest {
                 "manager",
                 "orange",
                 "img",
-                "down@example.com"
+                "down@example.com",
+                "USER"
         );
         memberRegistRequests.add(memberRegistRequest1);
         memberRegistRequests.add(memberRegistRequest2);

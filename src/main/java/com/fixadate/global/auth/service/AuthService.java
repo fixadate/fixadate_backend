@@ -6,6 +6,7 @@ import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
+import com.fixadate.global.auth.dto.response.MemberSigninResponse;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.MemberSignupException;
 import com.fixadate.global.oauth.entity.OAuthProvider;
@@ -29,13 +30,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public Member memberSignIn(MemberOAuthRequest memberOAuthRequest) {
+    public MemberSigninResponse memberSignIn(MemberOAuthRequest memberOAuthRequest) {
         Member member = findMemberByOAuthProviderAndEmailAndName(
                 translateStringToOAuthProvider(memberOAuthRequest.oauthPlatform()),
                 memberOAuthRequest.email(), memberOAuthRequest.memberName()
         ).orElseThrow(() -> new MemberSigninException("Member not found"));
         authenticateMember(memberOAuthRequest, member);
-        return member;
+        return MemberSigninResponse.of(member);
     }
 
     private Optional<Member> findMemberByOAuthProviderAndEmailAndName(OAuthProvider oauthProvider, String email, String name) {
@@ -61,12 +62,13 @@ public class AuthService {
         String encodedOauthId = passwordEncoder.encode(memberRegistRequest.oauthId());
         //fixme modelmapper 사용해서 구현해보기
         Member member = memberRegistRequest.of(encodedOauthId);
+        member.createMemberId();
         memberRepository.save(member);
     }
 
     @Transactional
     public void memberSignout(String email, String id) {
-        Member member = memberRepository.findMemberById(Long.parseLong(id))
+        Member member = memberRepository.findMemberById(id)
                 .orElseThrow(MemberNotFoundException::new);
 
         if (!member.getEmail().equals(email)) {
