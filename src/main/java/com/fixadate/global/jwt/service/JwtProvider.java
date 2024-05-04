@@ -4,6 +4,7 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.entity.TokenResponse;
+import com.fixadate.global.jwt.exception.AccessTokenBlackListException;
 import com.fixadate.global.jwt.exception.RefreshTokenInvalidException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -73,11 +74,14 @@ public class JwtProvider {
         redisTemplate.opsForValue().set(id, refreshToken, Duration.ofDays(90));
     }
 
-    public TokenResponse reIssueToken(Cookie cookie, String accessToken) {
-        String id = getIdFromToken(accessToken);
-        String refreshToken = redisTemplate.opsForValue().get(id);
+    public TokenResponse reIssueToken(Cookie cookie) {
+        String refreshToken = cookie.getValue();
+        String id = getIdFromToken(refreshToken);
 
-        if (!cookie.getValue().equals(refreshToken)) throw new RefreshTokenInvalidException();
+        String oldRefreshToken = redisTemplate.opsForValue().get(id);
+        if (oldRefreshToken == null || !oldRefreshToken.equals(refreshToken)) {
+            throw new RefreshTokenInvalidException();
+        }
         redisTemplate.delete(id);
         return getTokenResponse(id);
     }
@@ -94,13 +98,13 @@ public class JwtProvider {
 
     public boolean isTokenBlackList(String accessToken) {
         String value = redisTemplate.opsForValue().get(accessToken);
-        if (value == null) {
-            return true;
+        if (value != null && value.equals(BLACK_LIST.getValue())) {
+            throw new AccessTokenBlackListException();
         }
-        return !value.equals(BLACK_LIST);
+        return false;
     }
 
-    private String createToken(Claims claims, long expirationPeriod) {
+    public String createToken(Claims claims, long expirationPeriod) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(issuedAt())
