@@ -12,10 +12,12 @@ CREATE TABLE member
     email              VARCHAR(255),
     role               VARCHAR(255),
     signature_color    VARCHAR(255) NOT NULL,
+    push_key_id         BIGINT,
     create_date        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    UNIQUE KEY oauth_id (oauth_id)
+    UNIQUE KEY oauth_id (oauth_id),
+    FOREIGN KEY (push_key_id) REFERENCES push_key (id)
 );
 
 CREATE TABLE color_type
@@ -56,5 +58,10 @@ CREATE TABLE adate
     FOREIGN KEY (color_type_id) REFERENCES color_type (id)
 );
 
-
+CREATE TABLE push_key
+(
+    id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id VARCHAR(255),
+    push_key  VARCHAR(255) UNIQUE
+);
 

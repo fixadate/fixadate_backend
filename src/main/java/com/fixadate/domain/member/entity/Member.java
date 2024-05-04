@@ -2,6 +2,7 @@ package com.fixadate.domain.member.entity;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.colortype.entity.ColorType;
+import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.fixadate.global.oauth.entity.OAuthProvider;
 import com.fixadate.global.util.RandomValueUtils;
@@ -57,6 +58,15 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ColorType> colorTypes;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "pushKey_id")
+    private PushKey pushKey;
+
+    public void setMemberPushKey(PushKey pushKey) {
+        this.pushKey = pushKey;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils.commaSeparatedStringToAuthorityList(role);
