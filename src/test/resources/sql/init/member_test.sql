@@ -1,3 +1,10 @@
+CREATE TABLE push_key
+(
+    id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id VARCHAR(255),
+    push_key  VARCHAR(255) UNIQUE
+);
+
 CREATE TABLE member
 (
     id                 VARCHAR(255) NOT NULL,
@@ -58,10 +65,5 @@ CREATE TABLE adate
     FOREIGN KEY (color_type_id) REFERENCES color_type (id)
 );
 
-CREATE TABLE push_key
-(
-    id        BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id VARCHAR(255),
-    push_key  VARCHAR(255) UNIQUE
-);
+
 
