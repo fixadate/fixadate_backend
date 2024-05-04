@@ -1,5 +1,6 @@
 package com.fixadate.global.jwt.filter;
 
+import com.fixadate.global.jwt.exception.AccessTokenBlackListException;
 import com.fixadate.global.jwt.service.JwtProvider;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -21,9 +22,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException, MalformedJwtException {
+            throws ServletException, IOException, MalformedJwtException, AccessTokenBlackListException {
         String jwt = jwtProvider.retrieveToken(request);
-        if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt) && jwtProvider.isTokenBlackList(jwt)) {
+        if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt) && !jwtProvider.isTokenBlackList(jwt)) {
             SecurityContextHolder
                     .getContext()
                     .setAuthentication(
