@@ -38,7 +38,7 @@ public interface AuthController {
     })
     ResponseEntity<MemberSigninResponse> signin(@Valid MemberOAuthRequest memberOAuthRequest);
 
-    @Operation(summary = "추가 회원 등록", description = "추가 정보를 포함하여 회원을 등록합니다.")
+    @Operation(summary = "회원가입", description = "회원가입을 합니다..")
     @RequestBody(description = "회원가입", content = @Content(schema = @Schema(implementation = MemberRegistRequest.class)))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원 가입 성공, profile 이미지 등록을 위해 링크 발급",
