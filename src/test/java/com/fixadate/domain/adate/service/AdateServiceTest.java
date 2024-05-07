@@ -411,7 +411,9 @@ class AdateServiceTest {
                 "newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, violet, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
         })
         void updateAdateTest_Success(@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
-            assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest));
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
+
+            assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
             Optional<Adate> adateOptional = adateService.getAdateFromRepository("abc123");
 
             assertAll(
@@ -432,10 +434,12 @@ class AdateServiceTest {
                 ",,,, 2025-05-21T11:30:00, violet,, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
         })
         void updateAdateTestIfSomeFieldsMiss(@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
+
             Optional<Adate> oldAdateOptional = adateService.getAdateFromRepository("abc123");
             Adate oldAdate = oldAdateOptional.get();
 
-            assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest));
+            assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
             Optional<Adate> newAdateOptional = adateService.getAdateFromRepository("abc123");
             Adate newAdate = newAdateOptional.get();
 
@@ -456,7 +460,9 @@ class AdateServiceTest {
                 "newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, color5, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
         })
         void updateAdateTestIfColorNotExists(@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
-            assertThrows(ColorTypeNotFoundException.class, () -> adateService.updateAdate("abc123", adateUpdateRequest));
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
+
+            assertThrows(ColorTypeNotFoundException.class, () -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
             Optional<Adate> adateOptional = adateService.getAdateFromRepository("abc123");
 
             assertAll(

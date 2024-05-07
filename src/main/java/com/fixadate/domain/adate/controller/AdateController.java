@@ -125,5 +125,5 @@ public interface AdateController {
             @ApiResponse(responseCode = "404", description = "calendarId로 adate를 찾을 수 없을 때 생기는 예외",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    public ResponseEntity<?> updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest);
+    public ResponseEntity<?> updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest, MemberPrincipal memberPrincipal);
 }

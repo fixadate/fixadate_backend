@@ -22,14 +22,14 @@ public class ColorTypeService {
 
     @Transactional
     public void insertColorType(Member member, ColorTypeRequest colorTypeRequest) {
-        checkColor(colorTypeRequest.color());
+        checkColor(colorTypeRequest.color(), member);
         ColorType colorType = colorTypeRequest.toEntity(member);
         colorTypeRepository.save(colorType);
     }
 
     @Transactional(readOnly = true)
-    public void checkColor(String color) {
-        if (colorTypeRepository.findColorTypeByColor(color).isPresent()) {
+    public void checkColor(String color, Member member) {
+        if (colorTypeRepository.findColorTypeByColorAndMember(color, member).isPresent()) {
             throw new ColorTypeDuplicatedException();
         }
     }
@@ -47,17 +47,17 @@ public class ColorTypeService {
     }
 
     @Transactional
-    public ColorTypeResponse updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest) {
-        checkColor(colorTypeUpdateRequest.newColor());
-        ColorType colorType = colorTypeRepository.findColorTypeByColor(colorTypeUpdateRequest.color())
+    public ColorTypeResponse updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest, Member member) {
+        checkColor(colorTypeUpdateRequest.newColor(), member);
+        ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(colorTypeUpdateRequest.color(), member)
                 .orElseThrow(ColorTypeNotFoundException::new);
         colorType.updateColorType(colorTypeUpdateRequest);
         return ColorTypeResponse.of(colorType);
     }
 
     @Transactional
-    public void removeColor(String color) {
-        ColorType colorType = colorTypeRepository.findColorTypeByColor(color).orElseThrow(ColorTypeNotFoundException::new);
+    public void removeColor(String color, Member member) {
+        ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(color, member).orElseThrow(ColorTypeNotFoundException::new);
         colorTypeRepository.delete(colorType);
     }
 }

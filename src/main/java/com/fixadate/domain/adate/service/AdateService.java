@@ -37,13 +37,13 @@ public class AdateService {
     @Transactional
     public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
         Adate adate = adateRegistRequest.toEntity(member);
-        setAdateColorType(adate);
+        setAdateColorType(adate, member);
         adateRepository.save(adate);
     }
 
     @Transactional
-    public void setAdateColorType(Adate adate) {
-        ColorType colorType = colorTypeRepository.findColorTypeByColor(adate.getColor())
+    public void setAdateColorType(Adate adate, Member member) {
+        ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(adate.getColor(), member)
                 .orElseThrow(ColorTypeNotFoundException::new);
         adate.setColorType(colorType);
     }
@@ -106,11 +106,11 @@ public class AdateService {
     }
 
     @Transactional
-    public AdateCalendarEventResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest) {
+    public AdateCalendarEventResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest, Member member) {
         Adate adate = getAdateFromRepository(calendarId).orElseThrow(EventNotExistException::new);
 
         adate.updateAdate(adateUpdateRequest);
-        setAdateColorType(adate);
+        setAdateColorType(adate, member);
         return AdateCalendarEventResponse.of(adate);
     }
 

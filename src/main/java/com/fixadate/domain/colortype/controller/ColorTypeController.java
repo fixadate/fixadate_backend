@@ -60,7 +60,7 @@ public interface ColorTypeController {
             @ApiResponse(responseCode = "404", description = "변경하고자 하는 color가 조회되지 않을 때 생기는 예외",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    ResponseEntity<ColorTypeResponse> updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest);
+    ResponseEntity<ColorTypeResponse> updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest, MemberPrincipal memberPrincipal);
 
     @Operation(summary = "색상 유형 삭제", description = "색상 유형을 삭제.")
     @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
@@ -73,5 +73,5 @@ public interface ColorTypeController {
             @ApiResponse(responseCode = "404", description = "삭제하고자 하는 color가 조회되지 않을 때 생기는 예외",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    ResponseEntity<Void> removeColorType(@RequestParam String color);
+    ResponseEntity<Void> removeColorType(@RequestParam String color, MemberPrincipal memberPrincipal);
 }
