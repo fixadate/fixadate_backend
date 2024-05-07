@@ -392,7 +392,7 @@ class AdateServiceTest {
         void removeAdateByCalendarIdWhenCalendarNotExists(String calendarId) {
             assertAll(
                     () -> assertThrows(EventNotExistException.class, () -> adateService.removeAdateByCalendarId(calendarId)),
-                    () -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isPresent())
+                    () -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isEmpty())
             );
         }
     }

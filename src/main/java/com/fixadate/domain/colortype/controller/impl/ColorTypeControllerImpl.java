@@ -45,4 +45,11 @@ public class ColorTypeControllerImpl implements ColorTypeController {
         ColorTypeResponse colorTypeResponse = colorTypeService.updateColorType(colorTypeUpdateRequest);
         return ResponseEntity.ok(colorTypeResponse);
     }
+
+    @Override
+    @DeleteMapping()
+    public ResponseEntity<Void> removeColorType(@RequestParam String color) {
+        colorTypeService.removeColor(color);
+        return ResponseEntity.noContent().build();
+    }
 }
