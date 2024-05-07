@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -60,4 +61,17 @@ public interface ColorTypeController {
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
     ResponseEntity<ColorTypeResponse> updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest);
+
+    @Operation(summary = "색상 유형 삭제", description = "색상 유형을 삭제.")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @Parameter(name = "color", in = ParameterIn.QUERY)
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "no content",
+                    content = @Content(schema = @Schema(implementation = ColorTypeResponse.class))),
+            @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "404", description = "삭제하고자 하는 color가 조회되지 않을 때 생기는 예외",
+                    content = @Content(schema = @Schema(implementation = Void.class)))
+    })
+    ResponseEntity<Void> removeColorType(@RequestParam String color);
 }

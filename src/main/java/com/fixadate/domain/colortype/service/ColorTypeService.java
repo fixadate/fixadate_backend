@@ -54,4 +54,10 @@ public class ColorTypeService {
         colorType.updateColorType(colorTypeUpdateRequest);
         return ColorTypeResponse.of(colorType);
     }
+
+    @Transactional
+    public void removeColor(String color) {
+        ColorType colorType = colorTypeRepository.findColorTypeByColor(color).orElseThrow(ColorTypeNotFoundException::new);
+        colorTypeRepository.delete(colorType);
+    }
 }

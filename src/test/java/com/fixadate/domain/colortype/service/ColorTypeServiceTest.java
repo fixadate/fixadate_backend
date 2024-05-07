@@ -254,6 +254,44 @@ class ColorTypeServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("color 삭제 테스트")
+    class removeColorTest {
+        @DisplayName("모든 조건에 문제가 없는 경우")
+        @Sql(scripts = "/sql/setup/colorType_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @ValueSource(strings = {
+                "yellow",
+                "violet",
+                "white",
+                "orange",
+                "magenta"
+        })
+        void removeColor_Success(String color) {
+            assertAll(
+                    () -> assertDoesNotThrow(() -> colorTypeService.removeColor(color)),
+                    () -> assertTrue(colorTypeRepository.findColorTypeByColor(color).isEmpty())
+            );
+        }
+
+        @DisplayName("존재하지 않는 color를 삭제하려고 할 때")
+        @Sql(scripts = "/sql/setup/colorType_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @ValueSource(strings = {
+                "red",
+                "blue",
+                "black",
+                "purple",
+                "pink"
+        })
+        void removeColorIfColorNotExists(String color) {
+            assertAll(
+                    () -> assertThrows(ColorTypeNotFoundException.class, () -> colorTypeService.removeColor(color)),
+                    () -> assertTrue(colorTypeRepository.findColorTypeByColor(color).isEmpty())
+            );
+        }
+    }
+
 
     static class ColorTypeRequestAggregator implements ArgumentsAggregator {
         @Override
