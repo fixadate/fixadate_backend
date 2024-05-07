@@ -107,3 +107,24 @@ WHERE title = 'Meeting13';
 UPDATE adate
 SET member_id = (SELECT id FROM member WHERE name = 'down')
 WHERE title = 'Meeting14';
+
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'black';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'red';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'white';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'blue';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'violet';

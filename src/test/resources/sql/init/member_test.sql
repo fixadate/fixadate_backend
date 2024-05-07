@@ -30,7 +30,7 @@ CREATE TABLE member
 CREATE TABLE color_type
 (
     id        BIGINT NOT NULL AUTO_INCREMENT,
-    color     VARCHAR(255) UNIQUE,
+    color     VARCHAR(255),
     name      VARCHAR(255),
     member_id VARCHAR(255),
     PRIMARY KEY (id),

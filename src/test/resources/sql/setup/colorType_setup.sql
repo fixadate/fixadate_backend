@@ -41,17 +41,33 @@ SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'yellow';
 
 UPDATE color_type
-SET member_id = (SELECT id FROM member WHERE name = 'muny')
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'violet';
 
 UPDATE color_type
-SET member_id = (SELECT id FROM member WHERE name = 'kim')
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'white';
 
 UPDATE color_type
-SET member_id = (SELECT id FROM member WHERE name = 'karina')
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'orange';
 
 UPDATE color_type
-SET member_id = (SELECT id FROM member WHERE name = 'down')
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'green';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'muny')
+WHERE color = 'brown';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'kim')
+WHERE color = 'silver';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'karina')
+WHERE color = 'cyan';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'down')
+WHERE color = 'magenta';

@@ -48,8 +48,9 @@ public class AdateControllerImpl implements AdateController {
 
     @PatchMapping()
     public ResponseEntity<AdateCalendarEventResponse> updateAdate(@RequestParam String calendarId,
-                                         @Valid @RequestBody AdateUpdateRequest adateUpdateRequest) {
-        AdateCalendarEventResponse adateCalendarEventResponse = adateService.updateAdate(calendarId, adateUpdateRequest);
+                                                                  @Valid @RequestBody AdateUpdateRequest adateUpdateRequest,
+                                                                  @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        AdateCalendarEventResponse adateCalendarEventResponse = adateService.updateAdate(calendarId, adateUpdateRequest, memberPrincipal.getMember());
         return ResponseEntity.ok(adateCalendarEventResponse);
     }
 

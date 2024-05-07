@@ -41,15 +41,17 @@ public class ColorTypeControllerImpl implements ColorTypeController {
 
     @Override
     @PatchMapping()
-    public ResponseEntity<ColorTypeResponse> updateColorType(@Valid @RequestBody ColorTypeUpdateRequest colorTypeUpdateRequest) {
-        ColorTypeResponse colorTypeResponse = colorTypeService.updateColorType(colorTypeUpdateRequest);
+    public ResponseEntity<ColorTypeResponse> updateColorType(@Valid @RequestBody ColorTypeUpdateRequest colorTypeUpdateRequest,
+                                                             @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        ColorTypeResponse colorTypeResponse = colorTypeService.updateColorType(colorTypeUpdateRequest, memberPrincipal.getMember());
         return ResponseEntity.ok(colorTypeResponse);
     }
 
     @Override
     @DeleteMapping()
-    public ResponseEntity<Void> removeColorType(@RequestParam String color) {
-        colorTypeService.removeColor(color);
+    public ResponseEntity<Void> removeColorType(@RequestParam String color,
+                                                @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        colorTypeService.removeColor(color, memberPrincipal.getMember());
         return ResponseEntity.noContent().build();
     }
 }
