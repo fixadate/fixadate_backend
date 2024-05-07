@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.controller.impl;
 
 import com.fixadate.domain.adate.controller.AdateController;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
@@ -44,6 +45,14 @@ public class AdateControllerImpl implements AdateController {
                 getAdateCalendarEvents(member, startDateTime, endDateTime);
         return ResponseEntity.ok(adateCalendarEventResponses);
     }
+
+    @PatchMapping()
+    public ResponseEntity<AdateCalendarEventResponse> updateAdate(@RequestParam String calendarId,
+                                         @Valid @RequestBody AdateUpdateRequest adateUpdateRequest) {
+        AdateCalendarEventResponse adateCalendarEventResponse = adateService.updateAdate(calendarId, adateUpdateRequest);
+        return ResponseEntity.ok(adateCalendarEventResponse);
+    }
+
     @Override
     @DeleteMapping()
     public ResponseEntity<Void> removeAdate(@RequestParam String calendarId) {

@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.entity;
 
+import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
@@ -67,6 +68,40 @@ public class Adate extends BaseTimeEntity {
         this.status = event.getStatus();
     }
 
+    public void updateAdate(AdateUpdateRequest adateUpdateRequest) {
+        if (adateUpdateRequest.title() != null) {
+            this.title = adateUpdateRequest.title();
+        }
+        if (adateUpdateRequest.notes() != null) {
+            this.notes = adateUpdateRequest.notes();
+        }
+        if (adateUpdateRequest.location() != null) {
+            this.location = adateUpdateRequest.location();
+        }
+        if (adateUpdateRequest.alertWhen() != null) {
+            this.alertWhen = adateUpdateRequest.alertWhen();
+        }
+        if (adateUpdateRequest.repeatFreq() != null) {
+            this.repeatFreq = adateUpdateRequest.repeatFreq();
+        }
+        if (adateUpdateRequest.color() != null) {
+            this.color = adateUpdateRequest.color();
+        }
+        if (adateUpdateRequest.adateName() != null) {
+            this.adateName = adateUpdateRequest.adateName();
+        }
+        this.ifAllDay = adateUpdateRequest.ifAllDay();
+
+        if (adateUpdateRequest.startsWhen() != null) {
+            this.startsWhen = adateUpdateRequest.startsWhen();
+        }
+        if (adateUpdateRequest.endsWhen() != null) {
+            this.endsWhen = adateUpdateRequest.endsWhen();
+        }
+        this.reminders = adateUpdateRequest.reminders();
+    }
+
+
     public static Adate getAdateFromEvent(Event event) {
         return Adate.builder()
                 .title(event.getSummary())
@@ -100,6 +135,7 @@ public class Adate extends BaseTimeEntity {
     private static boolean checkEventIsAllDayType(Event event) {
         return event.getStart().getDateTime() == null;
     }
+
     public void setColorType(ColorType colorType) {
         this.colorType = colorType;
     }

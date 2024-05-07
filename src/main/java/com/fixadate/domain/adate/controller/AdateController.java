@@ -1,6 +1,7 @@
 package com.fixadate.domain.adate.controller;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.global.jwt.MemberPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -109,4 +110,20 @@ public interface AdateController {
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
     ResponseEntity<Void> removeAdate(@RequestParam String calendarId);
+
+    @Operation(summary = "Adate 수정", description = "Adate를 수정합니다.")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @RequestBody(description = "adate를 수정 내용 / boolean 값인 ifAllDay와 reminders는 값을 반드시 보내야함. 만약 사용자가 입력하지 않으면 이전의 값을 보내야함.",
+            content = @Content(schema = @Schema(implementation = AdateUpdateRequest.class)), required = true)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = AdateCalendarEventResponse.class))),
+            @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "404", description = "color를 colorType에서 찾을 수 없을 때 생기는 예외",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "404", description = "calendarId로 adate를 찾을 수 없을 때 생기는 예외",
+                    content = @Content(schema = @Schema(implementation = Void.class)))
+    })
+    public ResponseEntity<?> updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest);
 }

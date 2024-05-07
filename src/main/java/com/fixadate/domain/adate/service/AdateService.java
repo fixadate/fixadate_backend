@@ -1,6 +1,7 @@
 package com.fixadate.domain.adate.service;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.EventNotExistException;
@@ -67,7 +68,7 @@ public class AdateService {
 
     @Transactional
     public void removeAdateByCalendarId(String calendarId) {
-        Adate adate = adateRepository.findAdateByCalendarId(calendarId).orElseThrow(EventNotExistException::new);
+        Adate adate = getAdateFromRepository(calendarId).orElseThrow(EventNotExistException::new);
         deleteAdate(adate);
     }
 
@@ -102,6 +103,15 @@ public class AdateService {
         LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
 
         return getAdateCalendarEvents(member, startTime, endTime);
+    }
+
+    @Transactional
+    public AdateCalendarEventResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest) {
+        Adate adate = getAdateFromRepository(calendarId).orElseThrow(EventNotExistException::new);
+
+        adate.updateAdate(adateUpdateRequest);
+        setAdateColorType(adate);
+        return AdateCalendarEventResponse.of(adate);
     }
 
     private List<AdateCalendarEventResponse> getResponseDto(List<Adate> adates) {

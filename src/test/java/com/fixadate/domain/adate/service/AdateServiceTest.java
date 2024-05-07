@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.service;
 
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.exception.EventNotExistException;
 import com.fixadate.domain.adate.repository.AdateRepository;
@@ -379,7 +380,7 @@ class AdateServiceTest {
         void removeAdateByCalendarIdWhenCalendarExists(String calendarId) {
 
             assertAll(
-                    () -> assertDoesNotThrow(()-> adateService.removeAdateByCalendarId(calendarId)),
+                    () -> assertDoesNotThrow(() -> adateService.removeAdateByCalendarId(calendarId)),
                     () -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isEmpty())
             );
         }
@@ -396,10 +397,90 @@ class AdateServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("adate 수정 테스트")
+    class updateAdate {
+        @DisplayName("모든 값이 문제 없는 경우 / 수정")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, black, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+                "newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, red, newAdateName2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
+                "newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, white, newAdateName3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
+                "newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, blue, newAdateName4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
+                "newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, violet, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+        })
+        void updateAdateTest_Success(@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
+            assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest));
+            Optional<Adate> adateOptional = adateService.getAdateFromRepository("abc123");
+
+            assertAll(
+                    () -> assertTrue(adateOptional.isPresent()),
+                    () -> assertEquals(adateUpdateRequest.title(), adateOptional.get().getTitle()),
+                    () -> assertEquals(adateUpdateRequest.color(), adateOptional.get().getColor())
+            );
+        }
+
+        @DisplayName("몇 개의 값이 제외된 경우")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                ",,, 2025-05-17T10:30:00, 2025-05-17T11:30:00, black, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+                ",, , 2025-05-18T10:30:00, 2025-05-18T11:30:00, red, newAdateName2, false,,, false",
+                ",,,, 2025-05-19T11:30:00, white,, true,, 2025-05-19T13:00:00, false",
+                ",,, 2025-05-20T10:30:00, 2025-05-20T11:30:00, blue, newAdateName4, false, 2025-05-20T12:00:00, , true",
+                ",,,, 2025-05-21T11:30:00, violet,, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+        })
+        void updateAdateTestIfSomeFieldsMiss(@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
+            Optional<Adate> oldAdateOptional = adateService.getAdateFromRepository("abc123");
+            Adate oldAdate = oldAdateOptional.get();
+
+            assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest));
+            Optional<Adate> newAdateOptional = adateService.getAdateFromRepository("abc123");
+            Adate newAdate = newAdateOptional.get();
+
+            assertAll(
+                    () -> assertEquals(oldAdate.getTitle(), newAdate.getTitle()),
+                    () -> assertEquals(oldAdate.getNotes(), newAdate.getNotes())
+            );
+        }
+
+        @DisplayName("존재하지 않는 color 값으로 수정하려고 할 때")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, color1, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+                "newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, color2, newAdateName2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
+                "newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, color3, newAdateName3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
+                "newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, color4, newAdateName4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
+                "newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, color5, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+        })
+        void updateAdateTestIfColorNotExists(@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
+            assertThrows(ColorTypeNotFoundException.class, () -> adateService.updateAdate("abc123", adateUpdateRequest));
+            Optional<Adate> adateOptional = adateService.getAdateFromRepository("abc123");
+
+            assertAll(
+                    () -> assertTrue(adateOptional.isPresent()),
+                    () -> assertNotEquals(adateUpdateRequest.title(), adateOptional.get().getTitle()),
+                    () -> assertNotEquals(adateUpdateRequest.color(), adateOptional.get().getColor())
+            );
+        }
+    }
+
     static class AdateRegistDtoAggregator implements ArgumentsAggregator {
         @Override
         public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws ArgumentsAggregationException {
             return new AdateRegistRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1), argumentsAccessor.getString(2),
+                    argumentsAccessor.get(3, LocalDateTime.class), argumentsAccessor.get(4, LocalDateTime.class), argumentsAccessor.getString(5),
+                    argumentsAccessor.getString(6), argumentsAccessor.getBoolean(7), argumentsAccessor.get(8, LocalDateTime.class),
+                    argumentsAccessor.get(9, LocalDateTime.class), argumentsAccessor.getBoolean(10));
+        }
+    }
+
+    static class AdateUpdateDtoAggregator implements ArgumentsAggregator {
+        @Override
+        public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws ArgumentsAggregationException {
+            return new AdateUpdateRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1), argumentsAccessor.getString(2),
                     argumentsAccessor.get(3, LocalDateTime.class), argumentsAccessor.get(4, LocalDateTime.class), argumentsAccessor.getString(5),
                     argumentsAccessor.getString(6), argumentsAccessor.getBoolean(7), argumentsAccessor.get(8, LocalDateTime.class),
                     argumentsAccessor.get(9, LocalDateTime.class), argumentsAccessor.getBoolean(10));
