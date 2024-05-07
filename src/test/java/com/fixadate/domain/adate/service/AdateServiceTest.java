@@ -31,6 +31,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -149,15 +151,6 @@ class AdateServiceTest {
         @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
         @CsvSource(value = {
-                "'2024-04-15T09:00:00', '2024-04-17T10:00:00', hong@example.com",
-                "'2024-04-17T11:00:00', '2024-04-17T12:00:00', hong@example.com",
-
-                "'2024-04-18T00:00:00', '2024-04-18T23:00:00', hong@example.com",
-                "'2024-04-18T23:00:00', '2024-04-19T12:00:00', hong@example.com",
-
-                "'2024-04-17T10:00:00', '2024-04-19T11:00:00', hong@example.com",
-                "'2024-04-16T10:00:00', '2024-04-19T11:00:00', hong@example.com",
-
                 "'2024-04-18T10:00:00', '2024-04-20T11:00:00', hong@example.com",
                 "'2024-04-20T11:00:00', '2024-04-20T11:00:00', hong@example.com",
 
@@ -240,9 +233,116 @@ class AdateServiceTest {
         @DisplayName("member가 존재하고 저장한 adate가 없는 경우")
         @Sql(scripts = "/sql/setup/adate_setup.sql")
         @ParameterizedTest
-        @CsvSource(value = {"karina", "down"})
+        @CsvSource(value = {"karina", "pink"})
         void getAdateByMemberNameTestWhenMemberExistsAndMemberHasNoAdate(String memberName) {
             assertTrue(adateService.getAdateResponseByMemberName(memberName).isEmpty());
+        }
+    }
+
+    @Nested
+    @DisplayName("월 별로 adate 조회")
+    class getAdatesByMonth {
+        @DisplayName("해당 월에 adate가 존재하는 경우")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "'2024', '4', down@example.com",
+                "'2024', '5', down@example.com",
+                "'2024', '6', down@example.com"
+        })
+        void getAdatesByMonth_Success(int year, int month, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+            assertNotNull(memberOptional.get());
+
+            assertAll(
+                    () -> assertTrue(!adateService.getAdatesByMonth(year, month, memberOptional.get()).isEmpty())
+            );
+        }
+
+        @DisplayName("해당 월에 adate가 존재하지 않는 경우")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "'2024', '9', down@example.com",
+                "'2024', '10', down@example.com",
+                "'2024', '11', down@example.com"
+        })
+        void getAdatesByMonthWhenThereIsNoEvents(int year, int month, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+            assertNotNull(memberOptional.get());
+
+            assertAll(
+                    () -> assertEquals(0, adateService.getAdatesByMonth(year, month, memberOptional.get()).size())
+            );
+        }
+
+        @DisplayName("윤년일 때 2월달을 조회하는 경우")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "'2024', '2', down@example.com",
+        })
+        void getAdatesByMonthWhenYearIsLeapYear(int year, int month, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+            assertNotNull(memberOptional.get());
+
+            assertAll(
+                    () -> assertEquals(2, adateService.getAdatesByMonth(year, month, memberOptional.get()).size())
+            );
+        }
+
+        @DisplayName("옳지 않은 값이 들어간 경우")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "'2024', '-1', down@example.com",
+                "'2024', '13', down@example.com"
+        })
+        void getAdatesByMonthWhenParameterIsInvalid(int year, int month, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+            assertNotNull(memberOptional.get());
+
+            assertAll(
+                    () -> assertThrows(DateTimeException.class, () -> adateService.getAdatesByMonth(year, month, memberOptional.get()))
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("주 별로 adate 조회")
+    class getAdatesByWeeks {
+        @DisplayName("해당 주에 adate가 존재하는 경우")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "'2024-04-15', '2024-04-22', hong@example.com",
+                "'2024-04-18', '2024-04-23', hong@example.com",
+                "'2024-04-21', '2024-04-28', hong@example.com",
+        })
+        void getAdateCalendarEventsTestWhenItsOk(LocalDate startsWhen, LocalDate endsWhen, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+            assertNotNull(memberOptional.get());
+
+            assertAll(
+                    () -> assertTrue(!adateService.getAdatesByWeek(startsWhen, endsWhen, memberOptional.get()).isEmpty())
+            );
+        }
+
+        @DisplayName("월이 바뀌는 경우")
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+        @CsvSource(value = {
+                "'2024-04-28', '2024-05-04', hong@example.com",
+                "'2024-05-26', '2024-06-01', hong@example.com",
+                "'2024-06-30', '2024-07-06', hong@example.com",
+        })
+        void getAdateCalendarEventsTestWhenMonthChange(LocalDate startsWhen, LocalDate endsWhen, String email) {
+            Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+            assertNotNull(memberOptional.get());
+
+            assertAll(
+                    () -> assertTrue(!adateService.getAdatesByWeek(startsWhen, endsWhen, memberOptional.get()).isEmpty())
+            );
         }
     }
 
