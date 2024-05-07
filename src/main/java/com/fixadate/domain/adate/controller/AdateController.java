@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -95,4 +96,17 @@ public interface AdateController {
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
     ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByMemberName(String memberName);
+
+    @Operation(summary = "adate 삭제", description = "adate를 삭제합니다.[jwt 필요]")
+    @Parameters({
+            @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
+            @Parameter(name = "calendarId", required = true, description = "calendarId / id(pk)와 다름 / calendar를 생성할 때 서버에서 생성하는 10글자의 문자열")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "No Content",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    ResponseEntity<Void> removeAdate(@RequestParam String calendarId);
 }

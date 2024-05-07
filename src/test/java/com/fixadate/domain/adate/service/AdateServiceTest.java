@@ -3,6 +3,7 @@ package com.fixadate.domain.adate.service;
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.exception.EventNotExistException;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.member.entity.Member;
@@ -368,6 +369,32 @@ class AdateServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("adate 삭제 테스트")
+    class removeAdateByCalendarId {
+        @DisplayName("정상적으로 삭제를 한 경우")
+        @ParameterizedTest
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @CsvSource(value = {"abc123", "def456", "ghi789", "jkl012", "mno345", "ads234", "qew267"})
+        void removeAdateByCalendarIdWhenCalendarExists(String calendarId) {
+
+            assertAll(
+                    () -> assertDoesNotThrow(()-> adateService.removeAdateByCalendarId(calendarId)),
+                    () -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isEmpty())
+            );
+        }
+
+        @DisplayName("calendarId가 존재하지 않을 때")
+        @ParameterizedTest
+        @Sql(scripts = "/sql/setup/adate_setup.sql")
+        @CsvSource(value = {"werw123", "adsf123123", "adsfs12312", "fdsfa1232", "fdksja9i09", "e34iorjfe", "fjehriweq21"})
+        void removeAdateByCalendarIdWhenCalendarNotExists(String calendarId) {
+            assertAll(
+                    () -> assertThrows(EventNotExistException.class, () -> adateService.removeAdateByCalendarId(calendarId)),
+                    () -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isPresent())
+            );
+        }
+    }
 
     static class AdateRegistDtoAggregator implements ArgumentsAggregator {
         @Override

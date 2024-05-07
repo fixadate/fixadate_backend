@@ -2,11 +2,11 @@ package com.fixadate.domain.adate.dto.request;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
-import java.util.Random;
+
+import static com.fixadate.global.util.RandomValueUtils.createRandomString;
 
 public record AdateRegistRequest(
         @NotBlank(message = "Adate title cannot be blank") String title,
@@ -33,25 +33,10 @@ public record AdateRegistRequest(
                 .ifAllDay(ifAllDay)
                 .startsWhen(startsWhen)
                 .endsWhen(endsWhen)
-                .calendarId(generateRandomString(20))
+                .calendarId(createRandomString(10))
                 .reminders(reminders)
                 .member(member)
                 .build();
     }
 
-    private String generateRandomString(int length) {
-        long seed = System.currentTimeMillis();
-        Random random = new Random(seed);
-        StringBuilder stringBuilder = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++) {
-            int randomIndex = random.nextInt(62);
-            char randomChar = (char) (randomIndex < 10
-                    ? '0' + randomIndex
-                    : (randomIndex < 36 ? 'A' + randomIndex - 10 : 'a' + randomIndex - 36));
-            stringBuilder.append(randomChar);
-        }
-
-        return stringBuilder.toString();
-    }
 }

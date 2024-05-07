@@ -3,6 +3,7 @@ package com.fixadate.domain.adate.service;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.exception.EventNotExistException;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.entity.ColorType;
@@ -64,6 +65,13 @@ public class AdateService {
         adateRepository.deleteAll(adates);
     }
 
+    @Transactional
+    public void removeAdateByCalendarId(String calendarId) {
+        Adate adate = adateRepository.findAdateByCalendarId(calendarId).orElseThrow(EventNotExistException::new);
+        deleteAdate(adate);
+    }
+
+    @Transactional
     public void deleteAdate(Adate adate) {
         adateRepository.delete(adate);
     }
@@ -87,8 +95,6 @@ public class AdateService {
 
         return getAdateCalendarEvents(member, startTime, endTime);
     }
-
-
 
     @Transactional(readOnly = true)
     public List<AdateCalendarEventResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {

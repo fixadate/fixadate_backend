@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,7 +44,14 @@ public class AdateControllerImpl implements AdateController {
                 getAdateCalendarEvents(member, startDateTime, endDateTime);
         return ResponseEntity.ok(adateCalendarEventResponses);
     }
+    @Override
+    @DeleteMapping()
+    public ResponseEntity<Void> removeAdate(@RequestParam String calendarId) {
+        adateService.removeAdateByCalendarId(calendarId);
+        return ResponseEntity.noContent().build();
+    }
 
+    @Override
     @GetMapping("/month")
     public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByMonth(
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
@@ -59,6 +63,7 @@ public class AdateControllerImpl implements AdateController {
         return ResponseEntity.ok(adateCalendarEventResponses);
     }
 
+    @Override
     @GetMapping("/week")
     public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByWeeks(
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
