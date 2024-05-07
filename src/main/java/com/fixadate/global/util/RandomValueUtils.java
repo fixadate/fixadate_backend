@@ -5,6 +5,10 @@ import java.util.Random;
 public class RandomValueUtils {
     static long seed = System.currentTimeMillis();
     static Random random = new Random(seed);
+
+    private RandomValueUtils() {
+
+    }
     public static String createRandomString(int length) {
         var leftLimit = 65;
         var rightLimit = 122;

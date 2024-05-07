@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,13 +38,35 @@ public class AdateControllerImpl implements AdateController {
 
     @Override
     @GetMapping()
-    public ResponseEntity<List<AdateCalendarEventResponse>> getAdateCalendarEvents(
+    public ResponseEntity<List<AdateCalendarEventResponse>> getAdates(
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
             @RequestParam LocalDateTime startDateTime,
             @RequestParam LocalDateTime endDateTime) {
         Member member = memberPrincipal.getMember();
         List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
                 getAdateCalendarEvents(member, startDateTime, endDateTime);
+        return ResponseEntity.ok(adateCalendarEventResponses);
+    }
+
+    @GetMapping("/month")
+    public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByMonth(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @RequestParam int year,
+            @RequestParam int month) {
+        Member member = memberPrincipal.getMember();
+        List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
+                getAdatesByMonth(year, month, member);
+        return ResponseEntity.ok(adateCalendarEventResponses);
+    }
+
+    @GetMapping("/week")
+    public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByWeeks(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @RequestParam LocalDate firstDay,
+            @RequestParam LocalDate lastDay) {
+        Member member = memberPrincipal.getMember();
+        List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
+                getAdatesByWeek(firstDay, lastDay, member);
         return ResponseEntity.ok(adateCalendarEventResponses);
     }
 
