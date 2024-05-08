@@ -48,11 +48,6 @@ public class AdateService {
         adate.setColorType(colorType);
     }
 
-    @Transactional(readOnly = true)
-    public List<AdateCalendarEventResponse> getAdateResponseByMemberName(String memberName) {
-        return getResponseDto(adateQueryRepository.findAdatesByMemberName(memberName));
-    }
-
     @Transactional
     public void registEvents(List<Event> events) {
         List<Adate> adates = events.stream()
