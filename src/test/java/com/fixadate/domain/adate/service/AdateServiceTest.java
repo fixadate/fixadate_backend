@@ -213,35 +213,6 @@ class AdateServiceTest {
     }
 
     @Nested
-    @DisplayName("memberName으로 adate 조회")
-    class getAdateByMemberNameTest {
-
-        @DisplayName("member가 존재하고 저장한 adate가 있는 경우")
-        @Sql(scripts = "/sql/setup/adate_setup.sql")
-        @ParameterizedTest
-        @CsvSource(value = {"hong", "muny", "kim"})
-        void getAdateByMemberNameTestWhenMemberExistsAndMemberHasAdate(String memberName) {
-            assertTrue(!adateService.getAdateResponseByMemberName(memberName).isEmpty());
-        }
-
-        @DisplayName("member가 존재하지 않는 경우")
-        @Sql(scripts = "/sql/setup/adate_setup.sql")
-        @ParameterizedTest
-        @CsvSource(value = {"anna", "kevin", "lee"})
-        void getAdateByMemberNameTestWhenMemberNotExists(String memberName) {
-            assertTrue(adateService.getAdateResponseByMemberName(memberName).isEmpty());
-        }
-
-        @DisplayName("member가 존재하고 저장한 adate가 없는 경우")
-        @Sql(scripts = "/sql/setup/adate_setup.sql")
-        @ParameterizedTest
-        @CsvSource(value = {"karina", "pink"})
-        void getAdateByMemberNameTestWhenMemberExistsAndMemberHasNoAdate(String memberName) {
-            assertTrue(adateService.getAdateResponseByMemberName(memberName).isEmpty());
-        }
-    }
-
-    @Nested
     @DisplayName("월 별로 adate 조회")
     class getAdatesByMonth {
         @DisplayName("해당 월에 adate가 존재하는 경우")

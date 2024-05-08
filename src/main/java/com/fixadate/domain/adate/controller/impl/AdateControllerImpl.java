@@ -85,10 +85,4 @@ public class AdateControllerImpl implements AdateController {
         return ResponseEntity.ok(adateCalendarEventResponses);
     }
 
-    @Override
-    @GetMapping("/member")
-    public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByMemberName(@RequestParam String memberName) {
-        List<AdateCalendarEventResponse> adates = adateService.getAdateResponseByMemberName(memberName);
-        return ResponseEntity.ok(adates);
-    }
 }
