@@ -17,6 +17,7 @@ env:
   BUCKET_NAME: fixadate-bucket
   CODE_DEPLOY_APP_NAME: fixadate
   DEPLOYMENT_GROUP_NAME: fixadate_codedeploy_group
+  SPRING_PROFILES_ACTIVE: prod
 
 jobs:
   build:
