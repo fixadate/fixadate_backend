@@ -1,0 +1,81 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:44135/fixadateDB
+    username: root
+    password: etaDitto
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+        default-page-size: 5
+
+    redis:
+      host: 127.0.0.1
+      port: 44136
+      password: fixadate_redis_password
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: client-id
+            client-secret: client-secret
+
+            scope:
+              - email
+              - https://www.googleapis.com/auth/calendar.readonly
+  mvc:
+    log-request-details: true
+
+server:
+  error:
+    include-exception: true
+    include-message: always
+  forward-headers-strategy: native # 새로 추가
+
+randNick:
+  adjs: '갓 구운, 뜨거운, 타버린, 식어버린, 녹아버린, 갓 나온, 한 입 베어 문, 떨어트린, 우유에 찍은, 물에 빠진, 슬퍼하는, 기뻐하는, 춤추는, 울고 있는, 기분 좋은, 기분 나쁜, 미끄러진, 배고픈, 무언가 잘못된, 배부른'
+  nouns: '고로케, 핫도그, 소보루빵, 단팥빵, 크루아상, 바게뜨, 프레펠, 붕어빵, 카스테라, 호빵, 계란빵, 도라야끼, 도넛, 휘낭시에, 소금빵, 팬케이크, 잉글리쉬 머핀, 베이글, 토스트, 부시맨브레드'
+
+jwt:
+  accessToken:
+    expiration-period : 100000
+  refreshToken:
+    expiration-period : 100000
+  secret: jwt_secretsjwt_secretsjwt_secretsjwt_secretsjwt_secretsjwt_secretsjwt_secretsjwt_secrets
+
+
+NO_CHECK_URL: "/login"
+
+logging:
+  level:
+    org.springframework.security: debug
+    org.hibernate.SQL: debug
+    org.springframework.web: DEBUG
+
+google:
+  api:
+    key: "portKey"
+  port: 8888
+  uri: "https://api.fixadate.app/login/oauth2/code/google"
+
+cloud:
+  aws:
+    credentials:
+      access-key: access-key
+      secret-key: secret-key
+    region:
+      static: ap-northeast-2
+    bucket-name: bucket-name

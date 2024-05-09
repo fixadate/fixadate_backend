@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:8.0.35
+    ports:
+      - 44135:3306
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./db/mysql/init:/docker-entrypoint-initdb.d
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+    environment:
+      MYSQL_ROOT_PASSWORD: etaDitto
+      MYSQL_DATABASE: fixadateDB
+
+  redis:
+    image: redis:latest
+    hostname: redis
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    command: redis-server --port 6379 --requirepass fixadate_redis_password
+    ports:
+      - 44136:6379
