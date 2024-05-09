@@ -22,7 +22,7 @@ public abstract class AbstractAuthorizationCodeCallbackServlet extends HttpServl
     private final Lock lock = new ReentrantLock();
     private AuthorizationCodeFlow flow;
 
-    public AbstractAuthorizationCodeCallbackServlet() {
+    protected AbstractAuthorizationCodeCallbackServlet() {
     }
 
     protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

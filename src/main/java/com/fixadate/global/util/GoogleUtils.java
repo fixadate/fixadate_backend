@@ -3,6 +3,7 @@ package com.fixadate.global.util;
 import com.fixadate.domain.googleCalendar.exception.GoogleCalendarWatchException;
 import com.fixadate.domain.googleCalendar.exception.GoogleClientSecretsException;
 import com.fixadate.domain.googleCalendar.exception.GoogleCredentialException;
+import com.fixadate.domain.googleCalendar.exception.QueryMissingException;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -19,7 +20,6 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,9 +34,7 @@ import static com.fixadate.global.util.constant.ConstantValue.*;
 import static com.google.api.services.calendar.CalendarScopes.CALENDAR_EVENTS_READONLY;
 import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
 
-
 @Configuration
-@Slf4j
 public class GoogleUtils {
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -54,7 +52,6 @@ public class GoogleUtils {
     private DataStore<String> syncSettingsDataStore;
     public static final java.io.File DATA_STORE_DIR =
             new java.io.File(System.getProperty("user.home"), ".store/token");
-
 
 
     @PostConstruct
@@ -88,6 +85,15 @@ public class GoogleUtils {
         GenericUrl requestUrl = new GenericUrl(req.getRequestURL().toString());
         requestUrl.setRawPath(GOOGLE_CALLBACK.getValue());
         return requestUrl.build();
+    }
+
+    public static String getUserId(HttpServletRequest request) {
+        String id = request.getHeader(ID.getValue());
+        if (id != null) {
+            return id;
+        } else {
+            throw new QueryMissingException();
+        }
     }
 
     private static GoogleClientSecrets getClientSecrets(){
