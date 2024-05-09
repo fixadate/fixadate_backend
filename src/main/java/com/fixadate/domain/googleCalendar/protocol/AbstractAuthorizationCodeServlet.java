@@ -16,6 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.fixadate.global.util.constant.ConstantValue.ID;
+
 public abstract class AbstractAuthorizationCodeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final Lock lock = new ReentrantLock();
@@ -30,6 +33,7 @@ public abstract class AbstractAuthorizationCodeServlet extends HttpServlet {
         this.lock.lock();
 
         try {
+            String memberId = req.getHeader(ID.getValue());
             String userId = this.getUserId(req);
             if (this.flow == null) {
                 this.flow = this.initializeFlow();
@@ -38,6 +42,7 @@ public abstract class AbstractAuthorizationCodeServlet extends HttpServlet {
             this.credential = this.flow.loadCredential(userId);
             if (this.credential != null && this.credential.getAccessToken() != null) {
                 try {
+                    resp.setHeader(ID.getValue(), memberId);
                     super.service(req, resp);
                     return;
                 } catch (HttpResponseException var8) {

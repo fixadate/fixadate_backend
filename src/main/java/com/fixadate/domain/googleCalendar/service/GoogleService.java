@@ -54,44 +54,37 @@ public class GoogleService {
                 setNextSyncToken(request.execute(), userId);
                 events = request.execute().getItems();
             }
-            syncEvents(events);
+            syncEvents(events, googleCredentials.getMemberId());
         } catch (IOException e) {
             throw new AdateIOException(e);
         }
     }
 
     @Transactional
-    public void syncEvents(List<Event> events) throws IOException {
+    public void syncEvents(List<Event> events, String memberId) throws IOException {
         List<Event> useLessEvents = new ArrayList<>();
         List<Adate> eventsToRemove = new ArrayList<>();
 
         for (Event event : events) {
             Optional<Adate> adateOptional = adateService.getAdateFromRepository(event.getId());
-            if (event.getStatus().equals(CALENDAR_CANCELLED)) {
-                if (adateOptional.isPresent()) {
-
-                    eventsToRemove.add(adateOptional.get());
-                    useLessEvents.add(event);
-                } else {
-                    useLessEvents.add(event);
-                }
+            if (event.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
+                adateOptional.ifPresent(eventsToRemove::add);
+                useLessEvents.add(event);
                 continue;
             }
-            if (adateOptional.isPresent()) {
-                Adate adate = adateOptional.get();
-
+            adateOptional.ifPresent(adate -> {
                 if (adate.getEtag().equals(event.getEtag())) {
                     useLessEvents.add(event);
                 } else {
                     adate.updateFrom(event);
                     useLessEvents.add(event);
                 }
-            }
+            });
         }
 
         events.removeAll(useLessEvents);
         adateService.removeEvents(eventsToRemove);
-        adateService.registEvents(events);
+        adateService.registEvents(events, memberId);
     }
 
     public Channel executeWatchRequest(String userId) {
@@ -115,10 +108,10 @@ public class GoogleService {
     }
 
     @Transactional
-    public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId) {
+    public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String memberId) {
         //todo : mapper 사용하는 방향으로 리팩토링 하기
         GoogleCredentials googleCredentials = GoogleCredentials
-                .getGoogleCredentialsFromCredentials(channel, userId, tokenResponse.getAccessToken());
+                .getGoogleCredentialsFromCredentials(channel, userId, tokenResponse.getAccessToken(), memberId);
         googleUtils.registCredential(tokenResponse, userId);
         googleRepository.save(googleCredentials);
     }

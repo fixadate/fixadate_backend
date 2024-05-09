@@ -31,6 +31,7 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     @Override
     @GetMapping("/watch")
     public ResponseEntity<Channel> watchCalendar(@RequestParam String userId,
+                                                 @RequestParam String memberId,
                                                  HttpServletRequest request) {
         TokenResponse tokenResponse = createTokenResponse(request.getCookies());
         String accessToken = AUTHORIZATION_BEARER.getValue() + tokenResponse.getAccessToken();
@@ -38,7 +39,7 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
         headers.add(AUTHORIZATION.getValue(), accessToken);
 
         Channel channel = googleService.executeWatchRequest(userId);
-        googleService.registGoogleCredentials(channel, tokenResponse, userId);
+        googleService.registGoogleCredentials(channel, tokenResponse, userId, memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .headers(headers).build();
     }
@@ -46,9 +47,9 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
     private TokenResponse createTokenResponse(Cookie[] cookies) {
         TokenResponse tokenResponse = new TokenResponse();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(ACCESS_TOKEN)) {
+            if (cookie.getName().equals(ACCESS_TOKEN.getValue())) {
                 tokenResponse.setAccessToken(cookie.getValue());
-            } else if (cookie.getName().equals(REFRESH_TOKEN)) {
+            } else if (cookie.getName().equals(REFRESH_TOKEN.getValue())) {
                 tokenResponse.setRefreshToken(cookie.getValue());
             }
         }

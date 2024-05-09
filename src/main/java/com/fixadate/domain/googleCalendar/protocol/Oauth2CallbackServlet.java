@@ -13,8 +13,7 @@ import org.springframework.http.ResponseCookie;
 
 import java.io.IOException;
 
-import static com.fixadate.global.util.constant.ConstantValue.ACCESS_TOKEN;
-import static com.fixadate.global.util.constant.ConstantValue.REFRESH_TOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.*;
 
 
 @SuppressWarnings("serial")
@@ -24,6 +23,7 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
     @Override
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
             throws IOException {
+        String memberId = req.getHeader(ID.getValue());
         String userId = req.getSession().getId();
         ResponseCookie accessTokenCookie = ResponseCookie.from(ACCESS_TOKEN.getValue(), credential.getAccessToken())
                 .httpOnly(true)
@@ -33,7 +33,7 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
                 .build();
         resp.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         resp.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-        resp.sendRedirect("/google/watch?userId=" + userId);
+        resp.sendRedirect("/google/watch?userId=" + userId + "&memberId=" + memberId);
     }
 
     /**

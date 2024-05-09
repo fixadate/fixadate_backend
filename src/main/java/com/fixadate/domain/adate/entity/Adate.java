@@ -102,7 +102,7 @@ public class Adate extends BaseTimeEntity {
     }
 
 
-    public static Adate getAdateFromEvent(Event event) {
+    public static Adate getAdateFromEvent(Event event, Member member) {
         return Adate.builder()
                 .title(event.getSummary())
                 .notes(event.getDescription())
@@ -115,6 +115,7 @@ public class Adate extends BaseTimeEntity {
                 .etag(event.getEtag())
                 .reminders(event.getReminders().getUseDefault())
                 .status(event.getStatus())
+                .member(member)
                 .build();
     }
 

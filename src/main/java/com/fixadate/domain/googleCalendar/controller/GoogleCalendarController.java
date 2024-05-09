@@ -27,7 +27,7 @@ public interface GoogleCalendarController {
             @ApiResponse(responseCode = "400", description = "google CredentialException",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    ResponseEntity<Channel> watchCalendar(String userId, HttpServletRequest request);
+    ResponseEntity<Channel> watchCalendar(String userId, String memberId, HttpServletRequest request);
 
     @Operation(summary = "push notification 수신", description = "event가 발생하면 google로부터 push notification을 수신합니다.")
     @ApiResponses({

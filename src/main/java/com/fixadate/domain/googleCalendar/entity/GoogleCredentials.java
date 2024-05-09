@@ -23,8 +23,10 @@ public class GoogleCredentials {
     private Long channelExpiration;
     private String channelToken;
     private String userId;
+    private String memberId;
 
-    public static GoogleCredentials getGoogleCredentialsFromCredentials(Channel channel, String userId, String accessToken) {
+    public static GoogleCredentials getGoogleCredentialsFromCredentials(Channel channel, String userId,
+                                                                        String accessToken, String memberId) {
         return GoogleCredentials.builder()
                 .channelId(channel.getId())
                 .accessToken(accessToken)
@@ -34,6 +36,7 @@ public class GoogleCredentials {
                 .channelExpiration(channel.getExpiration())
                 .channelToken(channel.getToken())
                 .userId(userId)
+                .memberId(memberId)
                 .build();
     }
 }
