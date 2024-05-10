@@ -233,7 +233,7 @@ class AuthServiceTest {
                 "109, karina@example.com",
                 "110, down@example.com"})
         void signUpTestIfIdisInvalid(String id, String email) {
-            assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email,id));
+            assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email, id));
         }
 
         @DisplayName("email이 잘못된 값인 경우")

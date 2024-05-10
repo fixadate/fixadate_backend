@@ -2,6 +2,7 @@ package com.fixadate.domain.member.entity;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.colortype.entity.ColorType;
+import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.fixadate.global.oauth.entity.OAuthProvider;
@@ -63,8 +64,16 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @JoinColumn(name = "pushKey_id")
     private PushKey pushKey;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "google_credentials_id")
+    private GoogleCredentials googleCredentials;
+
     public void setMemberPushKey(PushKey pushKey) {
         this.pushKey = pushKey;
+    }
+
+    public void setGoogleCredentials(GoogleCredentials googleCredentials) {
+        this.googleCredentials = googleCredentials;
     }
 
     @Override

@@ -12,6 +12,7 @@ CREATE TABLE member
     email              VARCHAR(255),
     role               VARCHAR(255),
     push_key_id         BIGINT,
+    google_credentials_id         BIGINT,
     signature_color    VARCHAR(255) NOT NULL,
     create_date        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
