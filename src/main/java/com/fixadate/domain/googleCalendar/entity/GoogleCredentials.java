@@ -1,6 +1,7 @@
 package com.fixadate.domain.googleCalendar.entity;
 
 import com.fixadate.domain.member.entity.Member;
+import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.model.Channel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class GoogleCredentials {
 
     private String channelId;
     private String accessToken;
+    private String refreshToken;
     private String resourceId;
     private String resourceUri;
     private String resourceState;
@@ -31,10 +33,11 @@ public class GoogleCredentials {
     private Member member;
 
     public static GoogleCredentials getGoogleCredentialsFromCredentials(Channel channel, String userId,
-                                                                        String accessToken) {
+                                                                        TokenResponse tokenResponse) {
         return GoogleCredentials.builder()
                 .channelId(channel.getId())
-                .accessToken(accessToken)
+                .accessToken(tokenResponse.getAccessToken())
+                .refreshToken(tokenResponse.getRefreshToken())
                 .resourceId(channel.getResourceId())
                 .resourceUri(channel.getResourceUri())
                 .resourceState(channel.getType())

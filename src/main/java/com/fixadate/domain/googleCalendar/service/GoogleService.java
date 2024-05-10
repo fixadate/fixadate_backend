@@ -115,7 +115,7 @@ public class GoogleService {
     public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String memberId) {
         //todo : mapper 사용하는 방향으로 리팩토링 하기
         GoogleCredentials googleCredentials = GoogleCredentials
-                .getGoogleCredentialsFromCredentials(channel, userId, tokenResponse.getAccessToken());
+                .getGoogleCredentialsFromCredentials(channel, userId, tokenResponse);
         Member member = findMemberAndSetRelationship(memberId, googleCredentials);
         googleCredentials.setMember(member);
 
