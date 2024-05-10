@@ -11,7 +11,6 @@ import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.google.api.services.calendar.model.Event;
 import lombok.RequiredArgsConstructor;
@@ -52,16 +51,11 @@ public class AdateService {
     }
 
     @Transactional
-    public void registEvents(List<Event> events, String memberId) {
+    public void registEvents(List<Event> events, Member member) {
         List<Adate> adates = events.stream()
-                .map((Event event) -> Adate.getAdateFromEvent(event, getMemberById(memberId)))
+                .map((Event event) -> Adate.getAdateFromEvent(event, member))
                 .toList();
         adateRepository.saveAll(adates);
-    }
-
-    @Transactional
-    public Member getMemberById(String memberId) {
-        return memberRepository.findMemberById(memberId).orElseThrow(MemberNotFoundException::new);
     }
 
     @Transactional

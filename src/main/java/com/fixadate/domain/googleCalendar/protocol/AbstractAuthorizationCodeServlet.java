@@ -18,7 +18,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.fixadate.global.util.constant.ConstantValue.ID;
-
 public abstract class AbstractAuthorizationCodeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final Lock lock = new ReentrantLock();
@@ -31,9 +30,12 @@ public abstract class AbstractAuthorizationCodeServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         this.lock.lock();
+        String memberId = req.getHeader(ID.getValue());
+        if (memberId.isBlank()) {
+            throw new IOException();
+        }
 
         try {
-            String memberId = req.getHeader(ID.getValue());
             String userId = this.getUserId(req);
             if (this.flow == null) {
                 this.flow = this.initializeFlow();
