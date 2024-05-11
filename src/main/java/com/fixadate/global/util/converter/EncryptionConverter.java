@@ -15,10 +15,8 @@ import com.fixadate.global.util.AesUtil;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import lombok.extern.slf4j.Slf4j;
 
 @Converter
-@Slf4j
 public class EncryptionConverter implements AttributeConverter<String, String> {
 
 	@Override
@@ -30,8 +28,6 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
 			return AesUtil.aesCBCEncode(attribute);
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
 				 InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-			log.info(e.getLocalizedMessage());
-			log.info(e.getCause().toString());
 			throw new EncryptionException(e);
 		}
 	}
@@ -45,8 +41,6 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
 			return AesUtil.aesCBCDecode(dbData);
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
 				 InvalidKeyException | DecoderException | IllegalBlockSizeException | BadPaddingException e) {
-			log.info(e.getLocalizedMessage());
-			log.info(e.getCause().toString());
 			throw new EncryptionException(e);
 		}
 	}
