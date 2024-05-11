@@ -30,7 +30,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
-      
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
@@ -48,33 +48,27 @@ jobs:
           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
           dir: './src/main/resources/'
 
-      - name: Set TEST YML
-        run: |
-          mkdir -p src/test/resources
-          echo "${{ secrets.FIXADATE_TEST_CREDENTIALS }}" | base64 --decode > src/test/resources/application.yml
-          find src
-
       - name: Build with Gradle
         run: ./gradlew build
 
       - name: Make Zip File
         run: zip -qq -r ./$GITHUB_SHA.zip .
         shell: bash
-        
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_FIXAMATE_ACCESSKEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_FIXAMATE_ACCESSKEY }}
           aws-region: ap-northeast-2
-      
+
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
 
       - name: Code Deploy To EC2 instance
-        run: aws deploy create-deployment 
-                --application-name $CODE_DEPLOY_APP_NAME 
-                --deployment-config-name CodeDeployDefault.AllAtOnce
-                --deployment-group-name $DEPLOYMENT_GROUP_NAME 
-                --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+        run: aws deploy create-deployment
+          --application-name $CODE_DEPLOY_APP_NAME
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name $DEPLOYMENT_GROUP_NAME
+          --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
 
