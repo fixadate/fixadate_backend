@@ -1,6 +1,7 @@
 package com.fixadate.domain.googleCalendar.entity;
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.util.converter.EncryptionConverter;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.model.Channel;
 import jakarta.persistence.*;
@@ -20,13 +21,22 @@ public class GoogleCredentials {
     private Long id;
 
     private String channelId;
+
     private String accessToken;
+
+    @Convert(converter = EncryptionConverter.class)
     private String refreshToken;
+
     private String resourceId;
+
     private String resourceUri;
+
     private String resourceState;
+
     private Long channelExpiration;
+
     private String channelToken;
+
     private String userId;
 
     @OneToOne(mappedBy = "googleCredentials")

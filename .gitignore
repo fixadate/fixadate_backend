@@ -8,6 +8,7 @@ build/
 src/main/resources/credentials.json
 src/main/resources/application-prod.yml
 src/main/resources/application-test.yml
+src/main/java/com/fixadate/global/util/converter/Key.java
 /db
 
 src/main/generated/
