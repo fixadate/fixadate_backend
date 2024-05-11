@@ -26,7 +26,7 @@ public interface AuthController {
     @Operation(summary = "로그인", description = "OAuth 대조를 통해 로그인을 합니다.")
     @RequestBody(description = "member 확인을 위한 oauthId", content = @Content(schema = @Schema(implementation = MemberOAuthRequest.class)))
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "로그인 성공",
+            @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(implementation = MemberSigninResponse.class)),
                     headers = {
                             @Header(name = "cookie", description = "refreshToken이 담겨있는 httpOnlyCookie입니다."),

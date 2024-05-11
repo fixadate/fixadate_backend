@@ -43,7 +43,7 @@ public class AuthControllerImpl implements AuthController {
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
         httpHeaders.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .headers(httpHeaders)
                 .body(response);
     }
