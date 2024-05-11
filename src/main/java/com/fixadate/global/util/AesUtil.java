@@ -19,16 +19,19 @@ import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.fixadate.global.util.converter.Key;
-
 @Component
 public final class AesUtil {
 	private static String privateKey_256;
-	private static String private_iv = Key.VECTOR;
+	private static String private_iv;
 
 	@Value("${encryption.secret}")
 	public void setPrivateKey_256(String key) {
 		this.privateKey_256 = key;
+	}
+
+	@Value("${encryption.vector}")
+	public void setPrivate_iv(String vector) {
+		this.private_iv = vector;
 	}
 
 	private AesUtil() {
