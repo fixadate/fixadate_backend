@@ -4,10 +4,7 @@ import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.exception.DateParseException;
 import com.fixadate.domain.colortype.exception.ColorTypeDuplicatedException;
 import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
-import com.fixadate.domain.googleCalendar.exception.GoogleCalendarWatchException;
-import com.fixadate.domain.googleCalendar.exception.GoogleCredentialsNotFoundException;
-import com.fixadate.domain.googleCalendar.exception.GoogleSecurityException;
-import com.fixadate.domain.googleCalendar.exception.QueryMissingException;
+import com.fixadate.domain.googleCalendar.exception.*;
 import com.fixadate.domain.invitation.exception.InvitationNotFountException;
 import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.global.auth.exception.MemberSigninException;
@@ -42,7 +39,8 @@ public class ControllerAdvice {
             GoogleSecurityException.class,
             GoogleCalendarWatchException.class,
             MemberSignupException.class,
-            QueryMissingException.class
+            QueryMissingException.class,
+            EncryptionException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());

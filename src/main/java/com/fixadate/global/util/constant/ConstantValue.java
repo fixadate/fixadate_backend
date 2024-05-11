@@ -24,7 +24,9 @@ public enum ConstantValue {
     SYNC_SETTINGS("SyncSettings"),
     TRANSPARENCY("transparency"),
     ID("id"),
-    BLACK_LIST("blackList");
+    BLACK_LIST("blackList"),
+    AES_ALGORITHM("AES"),
+    CIPHER_INSTANCE("AES/CBC/PKCS5Padding");
 
     private final String value;
 
