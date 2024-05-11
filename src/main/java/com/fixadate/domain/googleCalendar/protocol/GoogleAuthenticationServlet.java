@@ -1,6 +1,6 @@
 package com.fixadate.domain.googleCalendar.protocol;
 
-import com.fixadate.global.util.GoogleUtils;
+import com.fixadate.global.util.GoogleUtil;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,16 +11,16 @@ import jakarta.servlet.http.HttpServletRequest;
 public class GoogleAuthenticationServlet extends AbstractAuthorizationCodeServlet {
     @Override
     protected AuthorizationCodeFlow initializeFlow() {
-        return GoogleUtils.initializeFlow();
+        return GoogleUtil.initializeFlow();
     }
 
     @Override
     protected String getRedirectUri(HttpServletRequest httpServletRequest) {
-        return GoogleUtils.getRedirectUri(httpServletRequest);
+        return GoogleUtil.getRedirectUri(httpServletRequest);
     }
 
     @Override
     protected String getUserId(HttpServletRequest httpServletRequest) {
-        return GoogleUtils.getClientId(httpServletRequest);
+        return GoogleUtil.getClientId(httpServletRequest);
     }
 }

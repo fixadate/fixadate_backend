@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.fixadate.global.util.DateTimeParseUtils.getLocalDateTimeFromDate;
-import static com.fixadate.global.util.DateTimeParseUtils.getLocalDateTimeFromDateTime;
+import static com.fixadate.global.util.DateTimeParseUtil.getLocalDateTimeFromDate;
+import static com.fixadate.global.util.DateTimeParseUtil.getLocalDateTimeFromDateTime;
 
 
 @Entity

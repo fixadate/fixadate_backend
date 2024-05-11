@@ -6,7 +6,7 @@ import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.fixadate.global.oauth.entity.OAuthProvider;
-import com.fixadate.global.util.RandomValueUtils;
+import com.fixadate.global.util.RandomValueUtil;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -82,7 +82,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     }
 
     public void createMemberId() {
-        this.id = System.currentTimeMillis() + RandomValueUtils.createRandomString(7);
+        this.id = System.currentTimeMillis() + RandomValueUtil.createRandomString(7);
     }
 
     @Override

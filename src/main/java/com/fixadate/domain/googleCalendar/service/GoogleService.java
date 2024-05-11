@@ -10,7 +10,7 @@ import com.fixadate.domain.googleCalendar.repository.GoogleRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.util.GoogleUtils;
+import com.fixadate.global.util.GoogleUtil;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
@@ -33,7 +33,7 @@ import static com.fixadate.global.util.constant.ConstantValue.*;
 @RequiredArgsConstructor
 @Slf4j
 public class GoogleService {
-    private final GoogleUtils googleUtils;
+    private final GoogleUtil googleUtil;
     private final AdateService adateService;
     private final GoogleRepository googleRepository;
     private final MemberRepository memberRepository;
@@ -45,7 +45,7 @@ public class GoogleService {
                     .orElseThrow(GoogleCredentialsNotFoundException::new);
 
             String userId = googleCredentials.getUserId();
-            Calendar.Events.List request = googleUtils.calendarService(userId).events().list(CALENDAR_ID.getValue())
+            Calendar.Events.List request = googleUtil.calendarService(userId).events().list(CALENDAR_ID.getValue())
                     .setOauthToken(googleCredentials.getAccessToken());
             String syncToken = getNextSyncToken(userId);
 
@@ -92,12 +92,12 @@ public class GoogleService {
     }
 
     public Channel executeWatchRequest(String userId) {
-        return googleUtils.executeWatchRequest(userId);
+        return googleUtil.executeWatchRequest(userId);
     }
 
     public String getNextSyncToken(String userId) {
         try {
-            return googleUtils.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY + userId);
+            return googleUtil.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY + userId);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -105,7 +105,7 @@ public class GoogleService {
 
     public void setNextSyncToken(Events events, String userId) {
         try {
-            googleUtils.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY + userId, events.getNextSyncToken());
+            googleUtil.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY + userId, events.getNextSyncToken());
         } catch (IOException e) {
             throw new GoogleCredentialException();
         }
@@ -119,7 +119,7 @@ public class GoogleService {
         Member member = findMemberAndSetRelationship(memberId, googleCredentials);
         googleCredentials.setMember(member);
 
-        googleUtils.registCredential(tokenResponse, userId);
+        googleUtil.registCredential(tokenResponse, userId);
         googleRepository.save(googleCredentials);
     }
 

@@ -2,7 +2,7 @@ package com.fixadate.domain.member.controller;
 
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
-import com.fixadate.global.util.S3Utils;
+import com.fixadate.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberControllerImpl implements MemberController {
     private final MemberService memberService;
-    private final S3Utils s3Utils;
+    private final S3Util s3Util;
 
     @Value("${randNick.adjs}")
     private String randomAdjs;
@@ -38,12 +38,12 @@ public class MemberControllerImpl implements MemberController {
     @Override
     @GetMapping("/profile-img")
     public ResponseEntity<String> getProfileImagePresignedUrl(@RequestParam String filename) {
-        return ResponseEntity.ok(s3Utils.generatePresignedUrlForDownload(filename));
+        return ResponseEntity.ok(s3Util.generatePresignedUrlForDownload(filename));
     }
 
     @Override
     @DeleteMapping("/profile-img")
     public ResponseEntity<String> getProfileImageDeletePresignedUrl(@RequestParam String filename) {
-        return ResponseEntity.ok(s3Utils.generatePresignedUrlForDelete(filename));
+        return ResponseEntity.ok(s3Util.generatePresignedUrlForDelete(filename));
     }
 }

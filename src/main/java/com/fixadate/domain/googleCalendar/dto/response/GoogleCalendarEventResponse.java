@@ -5,7 +5,7 @@ import com.google.api.services.calendar.model.Event.Reminders;
 
 import java.time.LocalDateTime;
 
-import static com.fixadate.global.util.DateTimeParseUtils.getLocalDateTimeFromDateTime;
+import static com.fixadate.global.util.DateTimeParseUtil.getLocalDateTimeFromDateTime;
 import static com.fixadate.global.util.constant.ConstantValue.TRANSPARENCY;
 
 public record GoogleCalendarEventResponse(

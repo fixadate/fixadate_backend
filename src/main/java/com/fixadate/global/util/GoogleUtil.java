@@ -35,7 +35,7 @@ import static com.google.api.services.calendar.CalendarScopes.CALENDAR_EVENTS_RE
 import static com.google.api.services.calendar.CalendarScopes.CALENDAR_READONLY;
 
 @Configuration
-public class GoogleUtils {
+public class GoogleUtil {
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
@@ -68,7 +68,7 @@ public class GoogleUtils {
                 .setApprovalPrompt(APPROVAL_PROMPT.getValue())
                 .build();
         channel = createChannel();
-        syncSettingsDataStore = GoogleUtils.getDataStoreFactory().getDataStore(SYNC_SETTINGS.getValue());
+        syncSettingsDataStore = GoogleUtil.getDataStoreFactory().getDataStore(SYNC_SETTINGS.getValue());
     }
 
 
@@ -97,7 +97,7 @@ public class GoogleUtils {
     }
 
     private static GoogleClientSecrets getClientSecrets(){
-        InputStream in = GoogleUtils.class.getResourceAsStream(FILE_PATH.getValue());
+        InputStream in = GoogleUtil.class.getResourceAsStream(FILE_PATH.getValue());
         try {
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
             clientSecrets.getDetails().setClientId(CLIENT_ID);

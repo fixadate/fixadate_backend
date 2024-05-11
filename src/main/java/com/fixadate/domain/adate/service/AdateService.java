@@ -23,8 +23,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.fixadate.global.util.DateTimeParseUtils.getLocalDateTimeFromLocalDate;
-import static com.fixadate.global.util.DateTimeParseUtils.getLocalDateTimeFromYearAndMonth;
+import static com.fixadate.global.util.DateTimeParseUtil.getLocalDateTimeFromLocalDate;
+import static com.fixadate.global.util.DateTimeParseUtil.getLocalDateTimeFromYearAndMonth;
 
 
 @Service

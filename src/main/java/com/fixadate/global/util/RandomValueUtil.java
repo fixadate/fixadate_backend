@@ -2,11 +2,11 @@ package com.fixadate.global.util;
 
 import java.util.Random;
 
-public class RandomValueUtils {
+public class RandomValueUtil {
     static long seed = System.currentTimeMillis();
     static Random random = new Random(seed);
 
-    private RandomValueUtils() {
+    private RandomValueUtil() {
 
     }
     public static String createRandomString(int length) {

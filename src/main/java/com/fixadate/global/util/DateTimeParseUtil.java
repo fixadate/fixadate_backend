@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class DateTimeParseUtils {
+public class DateTimeParseUtil {
     static final String DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     static final String DATE_FORMATTER = "yyyy-MM-dd";
 
-    private DateTimeParseUtils() {
+    private DateTimeParseUtil() {
     }
 
     public static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {

@@ -7,7 +7,7 @@ import com.fixadate.global.auth.dto.response.MemberSigninResponse;
 import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
-import com.fixadate.global.util.S3Utils;
+import com.fixadate.global.util.S3Util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ import static com.fixadate.global.util.constant.ConstantValue.ACCESS_TOKEN;
 @Slf4j
 public class AuthControllerImpl implements AuthController {
     private final AuthService authService;
-    private final S3Utils s3Utils;
+    private final S3Util s3Util;
     private final JwtProvider jwtProvider;
 
     @Override
@@ -54,7 +54,7 @@ public class AuthControllerImpl implements AuthController {
             @Valid @RequestBody MemberRegistRequest memberRegistRequest) {
         authService.registMember(memberRegistRequest);
 
-        String url = s3Utils.generatePresignedUrlForUpload(memberRegistRequest.profileImg(),
+        String url = s3Util.generatePresignedUrlForUpload(memberRegistRequest.profileImg(),
                 memberRegistRequest.contentType());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(url);

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 
-import static com.fixadate.global.util.RandomValueUtils.createRandomString;
+import static com.fixadate.global.util.RandomValueUtil.createRandomString;
 
 public record AdateRegistRequest(
         @NotBlank(message = "Adate title cannot be blank") String title,
