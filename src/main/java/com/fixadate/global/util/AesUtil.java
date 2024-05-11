@@ -16,15 +16,24 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.fixadate.global.util.converter.Key;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-public class AesUtil {
-	private static String privateKey_256 = Key.AES_KEY;
+@Component
+public final class AesUtil {
+	private static String privateKey_256;
 	private static String private_iv = Key.VECTOR;
+
+	@Value("${encryption.secret}")
+	public void setPrivateKey_256(String key) {
+		this.privateKey_256 = key;
+	}
+
+	private AesUtil() {
+
+	}
 
 	public static String aesCBCEncode(String plainText) throws NoSuchPaddingException, NoSuchAlgorithmException,
 		InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException,
