@@ -11,6 +11,7 @@ on:
       - '**/application*.yml'
       - '**.sql'
       - '**.sh'
+      - '**.yml'
 
 env:
   PROJECT_NAME: fixadate
@@ -47,7 +48,6 @@ jobs:
           name: "credentials.json"
           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
           dir: './src/main/resources/'
-
 
       - name: Build with Gradle
         run: ./gradlew build
