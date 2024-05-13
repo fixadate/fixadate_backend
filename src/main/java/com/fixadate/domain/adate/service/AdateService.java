@@ -1,6 +1,6 @@
 package com.fixadate.domain.adate.service;
 
-import static com.fixadate.global.util.DateTimeParseUtil.*;
+import static com.fixadate.global.util.TimeUtil.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

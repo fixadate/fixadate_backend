@@ -9,11 +9,11 @@ import java.time.format.DateTimeFormatter;
 import com.fixadate.domain.adate.exception.InvalidDateTimeException;
 import com.google.api.client.util.DateTime;
 
-public class DateTimeParseUtil {
+public class TimeUtil {
 	static final String DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 	static final String DATE_FORMATTER = "yyyy-MM-dd";
 
-	private DateTimeParseUtil() {
+	private TimeUtil() {
 	}
 
 	public static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {
