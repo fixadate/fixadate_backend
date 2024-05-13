@@ -1,4 +1,4 @@
-package com.fixadate.global.error;
+package com.fixadate.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.fixadate.global.auth.service;
 
-import static com.fixadate.global.oauth.entity.OAuthProvider.*;
+import static com.fixadate.global.auth.entity.OAuthProvider.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;

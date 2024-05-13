@@ -1,6 +1,6 @@
 package com.fixadate.global.auth.service;
 
-import static com.fixadate.global.oauth.entity.OAuthProvider.*;
+import static com.fixadate.global.auth.entity.OAuthProvider.*;
 
 import java.util.Optional;
 
@@ -15,9 +15,9 @@ import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.dto.response.MemberSigninResponse;
+import com.fixadate.global.auth.entity.OAuthProvider;
 import com.fixadate.global.auth.exception.MemberSigninException;
 import com.fixadate.global.auth.exception.MemberSignupException;
-import com.fixadate.global.oauth.entity.OAuthProvider;
 import com.fixadate.global.util.constant.ConstantValue;
 
 import lombok.RequiredArgsConstructor;
