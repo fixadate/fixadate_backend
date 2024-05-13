@@ -1,8 +1,7 @@
 package com.fixadate.global.auth.dto.request;
 
-import static com.fixadate.global.oauth.entity.OAuthProvider.*;
-
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.auth.entity.OAuthProvider;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +24,7 @@ public record MemberRegistRequest(
 	public Member of(String encodedOauthId) {
 		return Member.builder()
 			.oauthId(encodedOauthId)
-			.oauthPlatform(translateStringToOAuthProvider(oauthPlatform))
+			.oauthPlatform(OAuthProvider.translateStringToOAuthProvider(oauthPlatform))
 			.name(name)
 			.profileImg(profileImg)
 			.nickname(nickname)

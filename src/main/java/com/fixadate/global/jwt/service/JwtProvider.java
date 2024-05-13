@@ -1,5 +1,6 @@
 package com.fixadate.global.jwt.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.security.Key;
@@ -16,14 +17,12 @@ import org.springframework.util.StringUtils;
 
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.global.exception.unAuthorized.TokenException;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.entity.TokenResponse;
-import com.fixadate.global.jwt.exception.AccessTokenBlackListException;
-import com.fixadate.global.jwt.exception.RefreshTokenInvalidException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -82,7 +81,7 @@ public class JwtProvider {
 
 		String oldRefreshToken = redisTemplate.opsForValue().get(id);
 		if (oldRefreshToken == null || !oldRefreshToken.equals(refreshToken)) {
-			throw new RefreshTokenInvalidException();
+			throw new TokenException(NOT_FOUND_REFRESHTOKEN);
 		}
 		redisTemplate.delete(id);
 		return getTokenResponse(id);
@@ -101,7 +100,7 @@ public class JwtProvider {
 	public boolean isTokenBlackList(String accessToken) {
 		String value = redisTemplate.opsForValue().get(accessToken);
 		if (value != null && value.equals(BLACK_LIST.getValue())) {
-			throw new AccessTokenBlackListException();
+			throw new TokenException(INVALID_TOKEN_BLACKLIST);
 		}
 		return false;
 	}
@@ -133,10 +132,10 @@ public class JwtProvider {
 		return true;
 	}
 
-	public UsernamePasswordAuthenticationToken getAuthentication(String token) throws MalformedJwtException {
+	public UsernamePasswordAuthenticationToken getAuthentication(String token) {
 		String id = getIdFromToken(token);
 		Member member = memberRepository.findMemberById(id).orElseThrow(() ->
-			new MalformedJwtException("조회된 member가 없음"));
+			new TokenException(NOT_FOUND_MEMBER_IDENTIFIER));
 		MemberPrincipal memberPrincipal = new MemberPrincipal(member);
 		return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
 	}

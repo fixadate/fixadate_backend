@@ -1,6 +1,6 @@
 package com.fixadate.domain.googleCalendar.dto.response;
 
-import static com.fixadate.global.util.DateTimeParseUtil.*;
+import static com.fixadate.global.util.TimeUtil.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.time.LocalDateTime;

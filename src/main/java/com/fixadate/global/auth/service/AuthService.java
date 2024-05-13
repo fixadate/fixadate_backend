@@ -1,6 +1,7 @@
 package com.fixadate.global.auth.service;
 
-import static com.fixadate.global.oauth.entity.OAuthProvider.*;
+import static com.fixadate.global.auth.entity.OAuthProvider.*;
+import static com.fixadate.global.exception.ExceptionCode.*;
 
 import java.util.Optional;
 
@@ -10,14 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.dto.response.MemberSigninResponse;
-import com.fixadate.global.auth.exception.MemberSigninException;
-import com.fixadate.global.auth.exception.MemberSignupException;
-import com.fixadate.global.oauth.entity.OAuthProvider;
+import com.fixadate.global.auth.entity.OAuthProvider;
+import com.fixadate.global.exception.notFound.MemberNotFoundException;
+import com.fixadate.global.exception.unAuthorized.AuthException;
 import com.fixadate.global.util.constant.ConstantValue;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class AuthService {
 		Member member = findMemberByOAuthProviderAndEmailAndName(
 			translateStringToOAuthProvider(memberOAuthRequest.oauthPlatform()),
 			memberOAuthRequest.email(), memberOAuthRequest.memberName()
-		).orElseThrow(() -> new MemberSigninException("Member not found"));
+		).orElseThrow(() -> new AuthException(NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME));
 		authenticateMember(memberOAuthRequest, member);
 		return MemberSigninResponse.of(member);
 	}
@@ -46,7 +46,7 @@ public class AuthService {
 
 	private void authenticateMember(MemberOAuthRequest memberOAuthRequest, Member member) {
 		if (!passwordEncoder.matches(memberOAuthRequest.oauthId(), member.getOauthId())) {
-			throw new MemberSigninException("Invalid credentials");
+			throw new AuthException(FAIL_TO_SIGNIN);
 		}
 	}
 
@@ -57,7 +57,7 @@ public class AuthService {
 			memberRegistRequest.email(), memberRegistRequest.name()
 		);
 		if (memberOptional.isPresent()) {
-			throw new MemberSignupException();
+			throw new AuthException(ALREADY_EXISTS_MEMBER);
 		}
 		String encodedOauthId = passwordEncoder.encode(memberRegistRequest.oauthId());
 		//fixme modelmapper 사용해서 구현해보기
@@ -69,10 +69,10 @@ public class AuthService {
 	@Transactional
 	public void memberSignout(String email, String id) {
 		Member member = memberRepository.findMemberById(id)
-			.orElseThrow(MemberNotFoundException::new);
+			.orElseThrow(() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID));
 
 		if (!member.getEmail().equals(email)) {
-			throw new MemberNotFoundException();
+			throw new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
 		}
 		memberRepository.delete(member);
 	}

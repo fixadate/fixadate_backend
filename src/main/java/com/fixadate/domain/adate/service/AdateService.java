@@ -1,6 +1,7 @@
 package com.fixadate.domain.adate.service;
 
-import static com.fixadate.global.util.DateTimeParseUtil.*;
+import static com.fixadate.global.exception.ExceptionCode.*;
+import static com.fixadate.global.util.TimeUtil.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,13 +15,14 @@ import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.exception.EventNotExistException;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.entity.ColorType;
-import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.exception.badRequest.InvalidTimeException;
+import com.fixadate.global.exception.notFound.AdateNotFoundException;
+import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
 import com.google.api.services.calendar.model.Event;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +46,7 @@ public class AdateService {
 	@Transactional
 	public void setAdateColorType(Adate adate, Member member) {
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(adate.getColor(), member)
-			.orElseThrow(ColorTypeNotFoundException::new);
+			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 		adate.setColorType(colorType);
 	}
 
@@ -63,7 +65,8 @@ public class AdateService {
 
 	@Transactional
 	public void removeAdateByCalendarId(String calendarId) {
-		Adate adate = getAdateFromRepository(calendarId).orElseThrow(EventNotExistException::new);
+		Adate adate = getAdateFromRepository(calendarId).
+			orElseThrow(() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 		deleteAdate(adate);
 	}
 
@@ -88,6 +91,7 @@ public class AdateService {
 	public List<AdateCalendarEventResponse> getAdatesByMonth(int year, int month, Member member) {
 		LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
 		LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
+		checkStartAndEndTime(startTime, endTime);
 
 		return getAdateCalendarEvents(member, startTime, endTime);
 	}
@@ -96,14 +100,22 @@ public class AdateService {
 	public List<AdateCalendarEventResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {
 		LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
 		LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
+		checkStartAndEndTime(startTime, endTime);
 
 		return getAdateCalendarEvents(member, startTime, endTime);
+	}
+
+	private void checkStartAndEndTime(LocalDateTime startTime, LocalDateTime endTime) {
+		if (startTime.isAfter(endTime)) {
+			throw new InvalidTimeException(INVALID_START_END_TIME);
+		}
 	}
 
 	@Transactional
 	public AdateCalendarEventResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest,
 		Member member) {
-		Adate adate = getAdateFromRepository(calendarId).orElseThrow(EventNotExistException::new);
+		Adate adate = getAdateFromRepository(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
 		adate.updateAdate(adateUpdateRequest);
 		setAdateColorType(adate, member);

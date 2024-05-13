@@ -1,13 +1,15 @@
 package com.fixadate.global.jwt.filter;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
+
 import java.io.IOException;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fixadate.global.jwt.exception.AccessTokenBlackListException;
-import com.fixadate.global.jwt.exception.JwtException;
+import com.fixadate.global.exception.ExceptionCode;
+import com.fixadate.global.exception.unAuthorized.TokenException;
 import com.fixadate.global.jwt.exception.JwtExceptionResponse;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -26,22 +28,26 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (ExpiredJwtException exception) {
-			setErrorResponse(response, JwtException.JWT_EXPIRED_EXCEPTION);
+			setErrorResponse(response, EXPIRED_PERIOD_TOKEN);
 		} catch (MalformedJwtException exception) {
-			setErrorResponse(response, JwtException.JWT_INVALID_EXCEPTION);
-		} catch (AccessTokenBlackListException e) {
-			setErrorResponse(response, JwtException.JWT_BLACKLIST_EXCEPTION);
+			setErrorResponse(response, INVALID_TOKEN);
+		} catch (TokenException e) {
+			if (e.getMessage().equals(INVALID_TOKEN_BLACKLIST.getMessage())) {
+				setErrorResponse(response, INVALID_TOKEN_BLACKLIST);
+			} else if (e.getMessage().equals(NOT_FOUND_MEMBER_IDENTIFIER.getMessage())) {
+				setErrorResponse(response, NOT_FOUND_MEMBER_IDENTIFIER);
+			}
 		} catch (SecurityException | UnsupportedJwtException | IllegalArgumentException e) {
-			setErrorResponse(response, JwtException.JWT_EXCEPTION);
+			setErrorResponse(response, FAIL_TO_VALIDATE_TOKEN);
 		}
 	}
 
-	public void setErrorResponse(HttpServletResponse response, JwtException jwtException) throws IOException {
+	public void setErrorResponse(HttpServletResponse response, ExceptionCode exceptionCode) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
-		response.setStatus(jwtException.getStatus().value());
+		response.setStatus(exceptionCode.getCode());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		JwtExceptionResponse errorResponse = new JwtExceptionResponse(jwtException.getStatus().value(),
-			jwtException.getDescription());
+		response.setCharacterEncoding("utf-8");
+		JwtExceptionResponse errorResponse = new JwtExceptionResponse(exceptionCode.getMessage());
 		response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
 	}
 }

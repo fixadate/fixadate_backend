@@ -9,10 +9,11 @@ import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
 import com.fixadate.domain.colortype.entity.ColorType;
-import com.fixadate.domain.colortype.exception.ColorTypeDuplicatedException;
-import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.exception.ExceptionCode;
+import com.fixadate.global.exception.badRequest.ColorTypeBadRequestException;
+import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +33,7 @@ public class ColorTypeService {
 	@Transactional(readOnly = true)
 	public void checkColor(String color, Member member) {
 		if (colorTypeRepository.findColorTypeByColorAndMember(color, member).isPresent()) {
-			throw new ColorTypeDuplicatedException();
+			throw new ColorTypeBadRequestException(ExceptionCode.ALREADY_EXISTS_COLORTYPE);
 		}
 	}
 
@@ -52,7 +53,7 @@ public class ColorTypeService {
 	public ColorTypeResponse updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest, Member member) {
 		checkColor(colorTypeUpdateRequest.newColor(), member);
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(colorTypeUpdateRequest.color(), member)
-			.orElseThrow(ColorTypeNotFoundException::new);
+			.orElseThrow(() -> new ColorTypeNotFoundException(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 		colorType.updateColorType(colorTypeUpdateRequest);
 		return ColorTypeResponse.of(colorType);
 	}
@@ -60,7 +61,7 @@ public class ColorTypeService {
 	@Transactional
 	public void removeColor(String color, Member member) {
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(color, member)
-			.orElseThrow(ColorTypeNotFoundException::new);
+			.orElseThrow(() -> new ColorTypeNotFoundException(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 		colorTypeRepository.delete(colorType);
 	}
 }

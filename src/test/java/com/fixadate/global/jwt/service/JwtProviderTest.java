@@ -19,9 +19,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
+import com.fixadate.global.exception.unAuthorized.TokenException;
 import com.fixadate.global.jwt.entity.TokenResponse;
-import com.fixadate.global.jwt.exception.AccessTokenBlackListException;
-import com.fixadate.global.jwt.exception.RefreshTokenInvalidException;
 import com.redis.testcontainers.RedisContainer;
 
 import io.jsonwebtoken.Claims;
@@ -145,7 +144,7 @@ class JwtProviderTest {
 			Cookie cookie = makeRefreshTokenCookie(refreshToken);
 
 			assertAll(
-				() -> assertThrows(RefreshTokenInvalidException.class, () -> jwtProvider.reIssueToken(cookie)),
+				() -> assertThrows(TokenException.class, () -> jwtProvider.reIssueToken(cookie)),
 				() -> assertNull(redisTemplate.opsForValue().get(SAMPLE_SUBJECT))
 			);
 		}
@@ -171,8 +170,8 @@ class JwtProviderTest {
 			() -> assertNull(redisTemplate.opsForValue().get(SAMPLE_SUBJECT)),
 			() -> assertEquals(BLACK_LIST.getValue(), redisTemplate.opsForValue().get(tokenResponse.getAccessToken())),
 			() -> assertThatThrownBy(() -> jwtProvider.isTokenBlackList(tokenResponse.getAccessToken()))
-				.isInstanceOf(AccessTokenBlackListException.class)
-				.hasMessage("AccessToken is in BlackList")
+				.isInstanceOf(TokenException.class)
+				.hasMessage("토큰이 블랙리스트 명단에 포함되어 있습니다.")
 		);
 	}
 }

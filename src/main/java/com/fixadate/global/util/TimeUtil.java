@@ -6,14 +6,15 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import com.fixadate.domain.adate.exception.InvalidDateTimeException;
+import com.fixadate.global.exception.ExceptionCode;
+import com.fixadate.global.exception.badRequest.InvalidTimeException;
 import com.google.api.client.util.DateTime;
 
-public class DateTimeParseUtil {
+public class TimeUtil {
 	static final String DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 	static final String DATE_FORMATTER = "yyyy-MM-dd";
 
-	private DateTimeParseUtil() {
+	private TimeUtil() {
 	}
 
 	public static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {
@@ -43,11 +44,11 @@ public class DateTimeParseUtil {
 	public static LocalDateTime getLocalDateTimeFromLocalDate(LocalDate localDate, boolean isFirstDay) {
 		try {
 			if (isFirstDay) {
-				return localDate.atTime(0, 0);
+				return localDate.atTime(0, 0, 0, 0);
 			}
-			return localDate.atTime(23, 59);
+			return localDate.atTime(23, 59, 59, 59);
 		} catch (DateTimeException e) {
-			throw new InvalidDateTimeException(e);
+			throw new InvalidTimeException(ExceptionCode.INVALID_LOCALDATE);
 		}
 	}
 
@@ -63,7 +64,7 @@ public class DateTimeParseUtil {
 			case 1, 3, 5, 7, 8, 10, 12 -> 31;
 			case 4, 6, 9, 11 -> 30;
 			case 2 -> 29;
-			default -> throw new IllegalArgumentException("Invalid month: " + month);
+			default -> throw new InvalidTimeException(ExceptionCode.INVALID_MONTH);
 		};
 	}
 }

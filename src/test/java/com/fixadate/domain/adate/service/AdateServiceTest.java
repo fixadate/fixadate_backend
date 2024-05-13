@@ -36,11 +36,11 @@ import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.exception.EventNotExistException;
 import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.global.exception.notFound.AdateNotFoundException;
+import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest
@@ -374,7 +374,7 @@ class AdateServiceTest {
 			"fjehriweq21"})
 		void removeAdateByCalendarIdWhenCalendarNotExists(String calendarId) {
 			assertAll(
-				() -> assertThrows(EventNotExistException.class,
+				() -> assertThrows(AdateNotFoundException.class,
 					() -> adateService.removeAdateByCalendarId(calendarId)),
 				() -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isEmpty())
 			);

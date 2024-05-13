@@ -1,5 +1,6 @@
 package com.fixadate.domain.googleCalendar.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.io.IOException;
@@ -11,15 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.exception.AdateIOException;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
-import com.fixadate.domain.googleCalendar.exception.GoogleCredentialException;
-import com.fixadate.domain.googleCalendar.exception.GoogleCredentialsNotFoundException;
 import com.fixadate.domain.googleCalendar.repository.GoogleRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.global.exception.badRequest.GoogleIOExcetption;
+import com.fixadate.global.exception.notFound.GoogleNotFoundException;
+import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.util.GoogleUtil;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.Calendar;
@@ -43,7 +43,7 @@ public class GoogleService {
 	public void listEvents(String channelId) {
 		try {
 			GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByChannelId(channelId)
-				.orElseThrow(GoogleCredentialsNotFoundException::new);
+				.orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_CHANNELID));
 
 			String userId = googleCredentials.getUserId();
 			Calendar.Events.List request = googleUtil.calendarService(userId).events().list(CALENDAR_ID.getValue())
@@ -61,12 +61,12 @@ public class GoogleService {
 			}
 			syncEvents(events, googleCredentials.getMember());
 		} catch (IOException e) {
-			throw new AdateIOException(e);
+			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE);
 		}
 	}
 
 	@Transactional
-	public void syncEvents(List<Event> events, Member member) throws IOException {
+	public void syncEvents(List<Event> events, Member member) {
 		List<Event> useLessEvents = new ArrayList<>();
 		List<Adate> eventsToRemove = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class GoogleService {
 		try {
 			return googleUtil.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY + userId);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_GET_SYNCTOKEN);
 		}
 	}
 
@@ -108,7 +108,7 @@ public class GoogleService {
 		try {
 			googleUtil.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY + userId, events.getNextSyncToken());
 		} catch (IOException e) {
-			throw new GoogleCredentialException();
+			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_SET_SYNCTOKEN);
 		}
 	}
 
@@ -126,7 +126,8 @@ public class GoogleService {
 
 	@Transactional
 	public Member findMemberAndSetRelationship(String memberId, GoogleCredentials googleCredentials) {
-		Member member = memberRepository.findMemberById(memberId).orElseThrow(MemberNotFoundException::new);
+		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
+			NOT_FOUND_MEMBER_ID));
 		member.setGoogleCredentials(googleCredentials);
 		return member;
 	}

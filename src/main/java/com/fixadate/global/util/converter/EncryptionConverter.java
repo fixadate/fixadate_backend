@@ -1,16 +1,5 @@
 package com.fixadate.global.util.converter;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import org.apache.commons.codec.DecoderException;
-
-import com.fixadate.domain.googleCalendar.exception.EncryptionException;
 import com.fixadate.global.util.AesUtil;
 
 import jakarta.persistence.AttributeConverter;
@@ -24,12 +13,7 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
 		if (attribute.isBlank()) {
 			return attribute;
 		}
-		try {
-			return AesUtil.aesCBCEncode(attribute);
-		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
-				 InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-			throw new EncryptionException(e);
-		}
+		return AesUtil.aesCBCEncode(attribute);
 	}
 
 	@Override
@@ -37,12 +21,7 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
 		if (dbData.isBlank()) {
 			return dbData;
 		}
-		try {
-			return AesUtil.aesCBCDecode(dbData);
-		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
-				 InvalidKeyException | DecoderException | IllegalBlockSizeException | BadPaddingException e) {
-			throw new EncryptionException(e);
-		}
+		return AesUtil.aesCBCDecode(dbData);
 	}
 
 }

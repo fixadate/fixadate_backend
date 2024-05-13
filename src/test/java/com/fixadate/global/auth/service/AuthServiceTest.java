@@ -1,6 +1,6 @@
 package com.fixadate.global.auth.service;
 
-import static com.fixadate.global.oauth.entity.OAuthProvider.*;
+import static com.fixadate.global.auth.entity.OAuthProvider.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
@@ -34,12 +34,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.exception.MemberSigninException;
-import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
+import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
+import com.fixadate.global.exception.notFound.MemberNotFoundException;
+import com.fixadate.global.exception.unAuthorized.AuthException;
 import com.fixadate.util.CreateMemberRegistRequest;
 
 @ExtendWith(DataClearExtension.class)
@@ -86,7 +86,7 @@ class AuthServiceTest {
 		void registMemberTestIfoauthPlatformHasInvalidValue(
 			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
 			assertAll(
-				() -> assertThrows(UnknownOAuthPlatformException.class,
+				() -> assertThrows(OAuthPlatformBadRequest.class,
 					() -> authService.registMember(memberRegistRequest))
 			);
 		}
@@ -154,7 +154,7 @@ class AuthServiceTest {
 		})
 		void signinTestIfNameNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(MemberSigninException.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThrows(AuthException.class, () -> authService.memberSignIn(memberOAuthRequest));
 		}
 
 		@DisplayName("멤버의 이메일이 존재하지 않는 경우")
@@ -168,7 +168,7 @@ class AuthServiceTest {
 		})
 		void signinTestIfEmailNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(MemberSigninException.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThrows(AuthException.class, () -> authService.memberSignIn(memberOAuthRequest));
 		}
 
 		@DisplayName("잘못 된 oauthPlatform 값인 경우")
@@ -182,7 +182,7 @@ class AuthServiceTest {
 		})
 		void signinTestIfMemberNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(UnknownOAuthPlatformException.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThrows(OAuthPlatformBadRequest.class, () -> authService.memberSignIn(memberOAuthRequest));
 		}
 
 		@DisplayName("잘못된 oauthId 값인 경우")
@@ -196,7 +196,7 @@ class AuthServiceTest {
 		})
 		void signinTestIfOAuthIdIsInvalid(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(MemberSigninException.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThrows(AuthException.class, () -> authService.memberSignIn(memberOAuthRequest));
 		}
 
 		@DisplayName("성공적으로 로그인을 한 경우")

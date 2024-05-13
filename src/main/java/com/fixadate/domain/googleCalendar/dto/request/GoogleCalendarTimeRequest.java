@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import com.fixadate.domain.adate.exception.DateParseException;
+import com.fixadate.global.exception.ExceptionCode;
+import com.fixadate.global.exception.badRequest.InvalidTimeException;
 import com.google.api.client.util.DateTime;
 
 import jakarta.validation.constraints.NotBlank;
@@ -36,7 +37,7 @@ public record GoogleCalendarTimeRequest(
 			Date date = format.parse(time);
 			return new DateTime(date, TimeZone.getTimeZone(ASIA_ZONE_ID));
 		} catch (ParseException e) {
-			throw new DateParseException();
+			throw new InvalidTimeException(ExceptionCode.INVALID_STRING_TO_DATETIME);
 		}
 	}
 }

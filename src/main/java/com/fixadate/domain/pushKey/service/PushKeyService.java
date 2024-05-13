@@ -1,15 +1,17 @@
 package com.fixadate.domain.pushKey.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.domain.pushKey.repository.PushKeyRepository;
+import com.fixadate.global.exception.notFound.MemberNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,6 +52,6 @@ public class PushKeyService {
 
 	@Transactional(readOnly = true)
 	public Member findMemberById(String id) {
-		return memberRepository.findMemberById(id).orElseThrow(MemberNotFoundException::new);
+		return memberRepository.findMemberById(id).orElseThrow(() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID));
 	}
 }

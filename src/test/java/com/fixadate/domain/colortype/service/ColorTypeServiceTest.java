@@ -35,11 +35,11 @@ import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.entity.ColorType;
-import com.fixadate.domain.colortype.exception.ColorTypeDuplicatedException;
-import com.fixadate.domain.colortype.exception.ColorTypeNotFoundException;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.global.exception.badRequest.ColorTypeBadRequestException;
+import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,7 +121,7 @@ class ColorTypeServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			assertThrows(ColorTypeDuplicatedException.class,
+			assertThrows(ColorTypeBadRequestException.class,
 				() -> colorTypeService.insertColorType(memberOptional.get(), colorTypeRequest));
 			List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(memberOptional.get());
 
@@ -228,7 +228,7 @@ class ColorTypeServiceTest {
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
-				() -> assertThrows(ColorTypeDuplicatedException.class,
+				() -> assertThrows(ColorTypeBadRequestException.class,
 					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get())),
 				() -> assertTrue(colorTypeRepository
 					.findColorTypeByColor(colorTypeUpdateRequest.color()).isPresent())
@@ -248,7 +248,7 @@ class ColorTypeServiceTest {
 		void updateColorNameToExistsColor(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertThrows(ColorTypeDuplicatedException.class,
+			assertThrows(ColorTypeBadRequestException.class,
 				() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()));
 			assertAll(
 				() -> assertTrue(colorTypeRepository

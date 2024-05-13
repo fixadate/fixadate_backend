@@ -24,8 +24,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
-import com.fixadate.domain.member.exception.MemberNotFoundException;
 import com.fixadate.domain.pushKey.repository.PushKeyRepository;
+import com.fixadate.global.exception.notFound.MemberNotFoundException;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest

@@ -12,7 +12,7 @@ import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
-import com.fixadate.global.oauth.entity.OAuthProvider;
+import com.fixadate.global.auth.entity.OAuthProvider;
 import com.fixadate.global.util.RandomValueUtil;
 
 import jakarta.persistence.CascadeType;
