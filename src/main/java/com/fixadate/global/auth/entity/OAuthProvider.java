@@ -1,6 +1,8 @@
 package com.fixadate.global.auth.entity;
 
-import com.fixadate.global.auth.exception.UnknownOAuthPlatformException;
+import static com.fixadate.global.exception.ExceptionCode.*;
+
+import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +21,7 @@ public enum OAuthProvider {
 			case "kakao" -> OAuthProvider.KAKAO;
 			case "google" -> OAuthProvider.GOOGLE;
 			case "apple" -> OAuthProvider.APPLE;
-			default -> throw new UnknownOAuthPlatformException();
+			default -> throw new OAuthPlatformBadRequest(NOT_SUPPORTED_OAUTH_SERVICE);
 		};
 	}
 }

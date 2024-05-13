@@ -1,5 +1,6 @@
 package com.fixadate.global.util;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.nio.charset.StandardCharsets;
@@ -18,6 +19,9 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.fixadate.global.exception.badRequest.EncryptionBadRequestException;
+import com.fixadate.global.exception.notFound.EncryptionNotFoundException;
 
 @Component
 public final class AesUtil {
@@ -38,31 +42,48 @@ public final class AesUtil {
 
 	}
 
-	public static String aesCBCEncode(String plainText) throws NoSuchPaddingException, NoSuchAlgorithmException,
-		InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException,
-		BadPaddingException {
-		SecretKeySpec secretKey = new SecretKeySpec(privateKey_256.getBytes(StandardCharsets.UTF_8),
-			AES_ALGORITHM.getValue());
-		IvParameterSpec iv = new IvParameterSpec(private_iv.getBytes());
-		Cipher c = Cipher.getInstance(CIPHER_INSTANCE.getValue());
-		c.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-		byte[] encryptionByte = c.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+	public static String aesCBCEncode(String plainText) {
+		try {
+			SecretKeySpec secretKey = new SecretKeySpec(privateKey_256.getBytes(StandardCharsets.UTF_8),
+				AES_ALGORITHM.getValue());
+			IvParameterSpec iv = new IvParameterSpec(private_iv.getBytes());
+			Cipher c = Cipher.getInstance(CIPHER_INSTANCE.getValue());
+			c.init(Cipher.ENCRYPT_MODE, secretKey, iv);
+			byte[] encryptionByte = c.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
 
-		return Hex.encodeHexString(encryptionByte);
+			return Hex.encodeHexString(encryptionByte);
+		} catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+			throw new EncryptionNotFoundException(NOT_FOUND_PADDING_OR_ALGORITHM);
+		} catch (InvalidAlgorithmParameterException | InvalidKeyException e) {
+			throw new EncryptionBadRequestException(INVALID_ALGORITHM_OR_KEY);
+		} catch (IllegalBlockSizeException e) {
+			throw new EncryptionBadRequestException(INVALID_BLOCKSIZE);
+		} catch (BadPaddingException e) {
+			throw new EncryptionBadRequestException(INVALID_PADDING);
+		}
 	}
 
-	public static String aesCBCDecode(String encodedText) throws NoSuchPaddingException, NoSuchAlgorithmException,
-		InvalidAlgorithmParameterException, InvalidKeyException, DecoderException,
-		IllegalBlockSizeException, BadPaddingException {
+	public static String aesCBCDecode(String encodedText) {
+		try {
+			SecretKeySpec secretKey = new SecretKeySpec(privateKey_256.getBytes(StandardCharsets.UTF_8),
+				AES_ALGORITHM.getValue());
+			IvParameterSpec iv = new IvParameterSpec(private_iv.getBytes());
+			Cipher c = Cipher.getInstance(CIPHER_INSTANCE.getValue());
+			c.init(Cipher.DECRYPT_MODE, secretKey, iv);
+			byte[] decodedByte = Hex.decodeHex(encodedText.toCharArray());
 
-		SecretKeySpec secretKey = new SecretKeySpec(privateKey_256.getBytes(StandardCharsets.UTF_8),
-			AES_ALGORITHM.getValue());
-		IvParameterSpec iv = new IvParameterSpec(private_iv.getBytes());
-		Cipher c = Cipher.getInstance(CIPHER_INSTANCE.getValue());
-		c.init(Cipher.DECRYPT_MODE, secretKey, iv);
-		byte[] decodedByte = Hex.decodeHex(encodedText.toCharArray());
-
-		return new String(c.doFinal(decodedByte), StandardCharsets.UTF_8);
+			return new String(c.doFinal(decodedByte), StandardCharsets.UTF_8);
+		} catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+			throw new EncryptionNotFoundException(NOT_FOUND_PADDING_OR_ALGORITHM);
+		} catch (InvalidAlgorithmParameterException | InvalidKeyException e) {
+			throw new EncryptionBadRequestException(INVALID_ALGORITHM_OR_KEY);
+		} catch (IllegalBlockSizeException e) {
+			throw new EncryptionBadRequestException(INVALID_BLOCKSIZE);
+		} catch (BadPaddingException e) {
+			throw new EncryptionBadRequestException(INVALID_PADDING);
+		} catch (DecoderException e) {
+			throw new EncryptionBadRequestException(FAIL_TO_DECODER);
+		}
 	}
 
 }
