@@ -94,7 +94,7 @@ class ColorTypeServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			assertDoesNotThrow(() -> colorTypeService.insertColorType(memberOptional.get(), colorTypeRequest));
+			assertDoesNotThrow(() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest));
 
 			Optional<ColorType> colorTypeOptional = colorTypeRepository.findColorTypeByColor(colorTypeRequest.color());
 			List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(memberOptional.get());
@@ -123,7 +123,7 @@ class ColorTypeServiceTest {
 			assertNotNull(memberOptional.get());
 
 			assertThrows(ColorTypeBadRequestException.class,
-				() -> colorTypeService.insertColorType(memberOptional.get(), colorTypeRequest));
+				() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest));
 			List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(memberOptional.get());
 
 			assertEquals(5, colorTypes.size()); // 기존에 저장된 데이터 때문에 1이다.
