@@ -71,7 +71,7 @@ public class GoogleService {
 		List<Adate> eventsToRemove = new ArrayList<>();
 
 		for (Event event : events) {
-			Optional<Adate> adateOptional = adateService.getAdateFromRepository(event.getId());
+			Optional<Adate> adateOptional = adateService.getAdateByCalendarId(event.getId());
 			if (event.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
 				adateOptional.ifPresent(eventsToRemove::add);
 				useLessEvents.add(event);
