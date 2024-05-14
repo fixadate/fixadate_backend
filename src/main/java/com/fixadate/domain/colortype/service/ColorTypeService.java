@@ -24,7 +24,7 @@ public class ColorTypeService {
 	private final ColorTypeRepository colorTypeRepository;
 
 	@Transactional
-	public void insertColorType(Member member, ColorTypeRequest colorTypeRequest) {
+	public void registColorType(Member member, ColorTypeRequest colorTypeRequest) {
 		checkColor(colorTypeRequest.color(), member);
 		ColorType colorType = colorTypeRequest.toEntity(member);
 		colorTypeRepository.save(colorType);

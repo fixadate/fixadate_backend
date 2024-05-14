@@ -49,7 +49,7 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam LocalDateTime endDateTime) {
 		Member member = memberPrincipal.getMember();
 		List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
-			getAdateCalendarEvents(member, startDateTime, endDateTime);
+			getAdateByStartAndEndTime(member, startDateTime, endDateTime);
 		return ResponseEntity.ok(adateCalendarEventResponses);
 	}
 

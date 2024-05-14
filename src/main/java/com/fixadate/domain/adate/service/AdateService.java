@@ -65,23 +65,23 @@ public class AdateService {
 
 	@Transactional
 	public void removeAdateByCalendarId(String calendarId) {
-		Adate adate = getAdateFromRepository(calendarId).
+		Adate adate = getAdateByCalendarId(calendarId).
 			orElseThrow(() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
-		deleteAdate(adate);
+		removeAdate(adate);
 	}
 
 	@Transactional
-	public void deleteAdate(Adate adate) {
+	public void removeAdate(Adate adate) {
 		adateRepository.delete(adate);
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<Adate> getAdateFromRepository(String calendarId) {
+	public Optional<Adate> getAdateByCalendarId(String calendarId) {
 		return adateRepository.findAdateByCalendarId(calendarId);
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateCalendarEventResponse> getAdateCalendarEvents(Member member, LocalDateTime startDateTime,
+	public List<AdateCalendarEventResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
 		LocalDateTime endDateTime) {
 		List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
 		return getResponseDto(adates);
@@ -93,7 +93,7 @@ public class AdateService {
 		LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
 		checkStartAndEndTime(startTime, endTime);
 
-		return getAdateCalendarEvents(member, startTime, endTime);
+		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
 
 	@Transactional(readOnly = true)
@@ -102,7 +102,7 @@ public class AdateService {
 		LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
 		checkStartAndEndTime(startTime, endTime);
 
-		return getAdateCalendarEvents(member, startTime, endTime);
+		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
 
 	private void checkStartAndEndTime(LocalDateTime startTime, LocalDateTime endTime) {
@@ -114,7 +114,7 @@ public class AdateService {
 	@Transactional
 	public AdateCalendarEventResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest,
 		Member member) {
-		Adate adate = getAdateFromRepository(calendarId).orElseThrow(
+		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
 		adate.updateAdate(adateUpdateRequest);
