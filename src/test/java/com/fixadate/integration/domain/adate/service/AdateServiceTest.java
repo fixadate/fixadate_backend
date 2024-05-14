@@ -170,7 +170,7 @@ class AdateServiceTest {
 
 			assertAll(
 				() -> assertTrue(
-					!adateService.getAdateCalendarEvents(memberOptional.get(), startsWhen, endsWhen).isEmpty())
+					!adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty())
 			);
 		}
 
@@ -194,7 +194,7 @@ class AdateServiceTest {
 
 			assertAll(
 				() -> assertTrue(
-					adateService.getAdateCalendarEvents(memberOptional.get(), startsWhen, endsWhen).isEmpty())
+					adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty())
 			);
 		}
 
@@ -217,7 +217,7 @@ class AdateServiceTest {
 			assertNotNull(memberOptional.get());
 			assertAll(
 				() -> assertTrue(
-					adateService.getAdateCalendarEvents(memberOptional.get(), startsWhen, endsWhen).isEmpty())
+					adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty())
 			);
 		}
 	}
@@ -338,7 +338,7 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@CsvSource(value = {"abc123", "def456", "ghi789", "jkl012", "mno345", "ads234", "qew267"})
 		void getAdateFromRepositoryTestWhenAdateIsExists(String calendarId) {
-			Optional<Adate> adateOptional = adateService.getAdateFromRepository(calendarId);
+			Optional<Adate> adateOptional = adateService.getAdateByCalendarId(calendarId);
 			assertTrue(adateOptional.isPresent());
 		}
 
@@ -348,7 +348,7 @@ class AdateServiceTest {
 		@CsvSource(value = {"werw123", "adsf123123", "adsfs12312", "fdsfa1232", "fdksja9i09", "e34iorjfe",
 			"fjehriweq21"})
 		void getAdateFromRepositoryTestWhenAdateIsNotExists(String calendarId) {
-			Optional<Adate> adateOptional = adateService.getAdateFromRepository(calendarId);
+			Optional<Adate> adateOptional = adateService.getAdateByCalendarId(calendarId);
 			assertTrue(!adateOptional.isPresent());
 		}
 	}
@@ -400,7 +400,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
-			Optional<Adate> adateOptional = adateService.getAdateFromRepository("abc123");
+			Optional<Adate> adateOptional = adateService.getAdateByCalendarId("abc123");
 
 			assertAll(
 				() -> assertTrue(adateOptional.isPresent()),
@@ -423,11 +423,11 @@ class AdateServiceTest {
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
-			Optional<Adate> oldAdateOptional = adateService.getAdateFromRepository("abc123");
+			Optional<Adate> oldAdateOptional = adateService.getAdateByCalendarId("abc123");
 			Adate oldAdate = oldAdateOptional.get();
 
 			assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
-			Optional<Adate> newAdateOptional = adateService.getAdateFromRepository("abc123");
+			Optional<Adate> newAdateOptional = adateService.getAdateByCalendarId("abc123");
 			Adate newAdate = newAdateOptional.get();
 
 			assertAll(
@@ -452,7 +452,7 @@ class AdateServiceTest {
 
 			assertThrows(ColorTypeNotFoundException.class,
 				() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
-			Optional<Adate> adateOptional = adateService.getAdateFromRepository("abc123");
+			Optional<Adate> adateOptional = adateService.getAdateByCalendarId("abc123");
 
 			assertAll(
 				() -> assertTrue(adateOptional.isPresent()),
