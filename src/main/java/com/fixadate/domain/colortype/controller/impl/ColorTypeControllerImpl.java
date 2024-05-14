@@ -1,5 +1,17 @@
 package com.fixadate.domain.colortype.controller.impl;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.fixadate.domain.colortype.controller.ColorTypeController;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
@@ -11,13 +23,6 @@ import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 @RestControllerWithMapping("/color")
 @RequiredArgsConstructor
 public class ColorTypeControllerImpl implements ColorTypeController {
@@ -28,7 +33,7 @@ public class ColorTypeControllerImpl implements ColorTypeController {
 	@PostMapping()
 	public ResponseEntity<Void> createColorType(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@Valid @RequestBody ColorTypeRequest colorTypeRequest) {
-		colorTypeService.insertColorType(memberPrincipal.getMember(), colorTypeRequest);
+		colorTypeService.registColorType(memberPrincipal.getMember(), colorTypeRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
