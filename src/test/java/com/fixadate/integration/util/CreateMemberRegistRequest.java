@@ -1,4 +1,4 @@
-package com.fixadate.util;
+package com.fixadate.integration.util;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.fixadate.domain.colortype.service;
+package com.fixadate.integration.domain.colortype.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,15 +31,16 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
+import com.fixadate.domain.colortype.service.ColorTypeService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.exception.badRequest.ColorTypeBadRequestException;
 import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
+import com.fixadate.integration.config.DataClearExtension;
 
 import lombok.extern.slf4j.Slf4j;
 

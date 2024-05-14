@@ -1,4 +1,4 @@
-package com.fixadate.config;
+package com.fixadate.integration.config;
 
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

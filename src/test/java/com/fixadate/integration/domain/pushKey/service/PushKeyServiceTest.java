@@ -1,4 +1,4 @@
-package com.fixadate.domain.pushKey.service;
+package com.fixadate.integration.domain.pushKey.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,9 +23,10 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.pushKey.repository.PushKeyRepository;
+import com.fixadate.domain.pushKey.service.PushKeyService;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
+import com.fixadate.integration.config.DataClearExtension;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest

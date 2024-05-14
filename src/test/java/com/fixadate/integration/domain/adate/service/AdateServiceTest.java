@@ -1,4 +1,4 @@
-package com.fixadate.domain.adate.service;
+package com.fixadate.integration.domain.adate.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,15 +32,16 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
 import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
+import com.fixadate.integration.config.DataClearExtension;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest

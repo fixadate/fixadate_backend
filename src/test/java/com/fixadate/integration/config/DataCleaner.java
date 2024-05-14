@@ -1,4 +1,4 @@
-package com.fixadate.config;
+package com.fixadate.integration.config;
 
 import java.util.List;
 
