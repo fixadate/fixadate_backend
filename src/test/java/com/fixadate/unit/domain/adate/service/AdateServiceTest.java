@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
@@ -29,6 +30,7 @@ import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 
 @ExtendWith(MockitoExtension.class)
+@Transactional
 public class AdateServiceTest {
 	@InjectMocks
 	private AdateService adateService;
