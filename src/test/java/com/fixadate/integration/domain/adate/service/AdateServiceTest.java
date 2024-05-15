@@ -1,5 +1,7 @@
 package com.fixadate.integration.domain.adate.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
@@ -39,6 +41,7 @@ import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
 import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
@@ -54,6 +57,7 @@ class AdateServiceTest {
 	private MemberRepository memberRepository;
 	@Autowired
 	private AdateService adateService;
+	private static final String MESSAGE = "message";
 
 	@Container
 	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
@@ -92,9 +96,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, memberOptional.get()))
-			);
+			assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, memberOptional.get()));
 		}
 
 		/*
@@ -142,11 +144,12 @@ class AdateServiceTest {
 		void registAdateTestIfcolorNotExists(
 			@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertAll(
-				() -> assertNotNull(memberOptional.get()),
-				() -> assertThrows(ColorTypeNotFoundException.class,
-					() -> adateService.registAdateEvent(adateRegistRequest, memberOptional.get()))
-			);
+			assertNotNull(memberOptional.get());
+
+			assertThatThrownBy(() -> adateService.registAdateEvent(adateRegistRequest, memberOptional.get()))
+				.isInstanceOf(ColorTypeNotFoundException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage());
 		}
 	}
 
@@ -168,10 +171,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertTrue(
-					!adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty())
-			);
+			assertFalse(adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
 		}
 
 		@DisplayName("범위에 adate가 없는 경우")
@@ -190,12 +190,8 @@ class AdateServiceTest {
 		void getAdateCalendarEventsTestWhenThereIsNoResult(LocalDateTime startsWhen, LocalDateTime endsWhen,
 			String email) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
-			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertTrue(
-					adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty())
-			);
+			assertTrue(adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
 		}
 
 		@DisplayName("member가 저장한 adate가 없는 경우")
@@ -215,10 +211,7 @@ class AdateServiceTest {
 			String email) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
-			assertAll(
-				() -> assertTrue(
-					adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty())
-			);
+			assertTrue(adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
 		}
 	}
 
@@ -237,9 +230,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertTrue(!adateService.getAdatesByMonth(year, month, memberOptional.get()).isEmpty())
-			);
+			assertFalse(adateService.getAdatesByMonth(year, month, memberOptional.get()).isEmpty());
 		}
 
 		@DisplayName("해당 월에 adate가 존재하지 않는 경우")
@@ -254,9 +245,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertEquals(0, adateService.getAdatesByMonth(year, month, memberOptional.get()).size())
-			);
+			assertEquals(0, adateService.getAdatesByMonth(year, month, memberOptional.get()).size());
 		}
 
 		@DisplayName("윤년일 때 2월달을 조회하는 경우")
@@ -269,9 +258,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertEquals(2, adateService.getAdatesByMonth(year, month, memberOptional.get()).size())
-			);
+			assertEquals(2, adateService.getAdatesByMonth(year, month, memberOptional.get()).size());
 		}
 
 		@DisplayName("옳지 않은 값이 들어간 경우")
@@ -286,8 +273,10 @@ class AdateServiceTest {
 			assertNotNull(memberOptional.get());
 
 			assertAll(
-				() -> assertThrows(DateTimeException.class,
-					() -> adateService.getAdatesByMonth(year, month, memberOptional.get()))
+				() -> assertThatThrownBy(() -> adateService.getAdatesByMonth(year, month, memberOptional.get()))
+					.isInstanceOf(DateTimeException.class)
+					.extracting(MESSAGE)
+					.isEqualTo("Invalid value for MonthOfYear (valid values 1 - 12): " + month)
 			);
 		}
 	}
@@ -307,9 +296,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertTrue(!adateService.getAdatesByWeek(startsWhen, endsWhen, memberOptional.get()).isEmpty())
-			);
+			assertFalse(adateService.getAdatesByWeek(startsWhen, endsWhen, memberOptional.get()).isEmpty());
 		}
 
 		@DisplayName("월이 바뀌는 경우")
@@ -324,9 +311,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
 
-			assertAll(
-				() -> assertTrue(!adateService.getAdatesByWeek(startsWhen, endsWhen, memberOptional.get()).isEmpty())
-			);
+			assertFalse(adateService.getAdatesByWeek(startsWhen, endsWhen, memberOptional.get()).isEmpty());
 		}
 	}
 
@@ -349,7 +334,7 @@ class AdateServiceTest {
 			"fjehriweq21"})
 		void getAdateFromRepositoryTestWhenAdateIsNotExists(String calendarId) {
 			Optional<Adate> adateOptional = adateService.getAdateByCalendarId(calendarId);
-			assertTrue(!adateOptional.isPresent());
+			assertFalse(adateOptional.isPresent());
 		}
 	}
 
@@ -374,9 +359,12 @@ class AdateServiceTest {
 		@CsvSource(value = {"werw123", "adsf123123", "adsfs12312", "fdsfa1232", "fdksja9i09", "e34iorjfe",
 			"fjehriweq21"})
 		void removeAdateByCalendarIdWhenCalendarNotExists(String calendarId) {
+
 			assertAll(
-				() -> assertThrows(AdateNotFoundException.class,
-					() -> adateService.removeAdateByCalendarId(calendarId)),
+				() -> assertThatThrownBy(() -> adateService.removeAdateByCalendarId(calendarId))
+					.isInstanceOf(AdateNotFoundException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(NOT_FOUND_ADATE_CALENDAR_ID.getMessage()),
 				() -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isEmpty())
 			);
 		}
@@ -450,8 +438,11 @@ class AdateServiceTest {
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
-			assertThrows(ColorTypeNotFoundException.class,
-				() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
+			assertThatThrownBy(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()))
+				.isInstanceOf(ColorTypeNotFoundException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage());
+
 			Optional<Adate> adateOptional = adateService.getAdateByCalendarId("abc123");
 
 			assertAll(
