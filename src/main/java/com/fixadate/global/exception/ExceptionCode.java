@@ -36,6 +36,7 @@ public enum ExceptionCode {
 	NOT_FOUND_HEADER_ID(3008, "header에서 id를 추출하는데 실패했습니다."),
 
 	NOT_FOUND_MEMBER_ID(4001, "요청한 id에 해당하는 member가 없습니다."),
+	NOT_FOUND_MEMBER_EMAIL(4002, "요청한 email에 해당하는 member가 없습니다."),
 
 	NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME(8001, "요청한 oauthPlatform, email, name에 해당하는 member가 없습니다."),
 	FAIL_TO_SIGNIN(8002, "member의 oauthId와 일치하지 않습니다."),
@@ -47,12 +48,6 @@ public enum ExceptionCode {
 	INVALID_PADDING(9004, "AES 알고리즘에서 복호화 하는 과정에서 패딩이 유효하지 않아 실패했습니다."),
 	FAIL_TO_DECODER(9004, "AES 알고리즘에서 복호화를 하는데 실패했습니다."),
 	NOT_SUPPORTED_OAUTH_SERVICE(9005, "해당 OAuth 서비스는 제공하지 않습니다."),
-
-	INVALID_USER_NAME(8001, "존재하지 않는 사용자입니다."),
-	FAIL_TO_GENERATE_RANDOM_NICKNAME(1012, "랜덤한 닉네임을 생성하는데 실패하였습니다."),
-	ALREADY_DELETED_TRIP_ITEM(2001, "이미 삭제된 여행 아이템입니다."),
-	INVALID_EXPENSE_UNDER_MIN(3009, "금액이 0원보다 작을 수 없습니다."),
-	DUPLICATED_ADMIN_USERNAME(8102, "중복된 사용자 이름입니다."),
 
 	EXPIRED_PERIOD_TOKEN(401, "기한이 만료된 토큰입니다."),
 	FAIL_TO_VALIDATE_TOKEN(400, "토큰 유효성 검사 중 오류가 발생했습니다."),
