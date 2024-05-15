@@ -1,5 +1,6 @@
 package com.fixadate.integration.global.jwt.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +39,7 @@ class JwtProviderTest {
 	private static final Long SAMPLE_EXPIRED_TIME = 0L;
 	private static final String REDIS_IMAGE = "redis:5.0.7-alpine";
 	private static final int REDIS_PORT = 6379;
+	private static final String MESSAGE = "message";
 	private static Claims claims;
 
 	@Autowired
@@ -145,8 +147,11 @@ class JwtProviderTest {
 			Cookie cookie = makeRefreshTokenCookie(refreshToken);
 
 			assertAll(
-				() -> assertThrows(TokenException.class, () -> jwtProvider.reIssueToken(cookie)),
-				() -> assertNull(redisTemplate.opsForValue().get(SAMPLE_SUBJECT))
+				() -> assertNull(redisTemplate.opsForValue().get(SAMPLE_SUBJECT)),
+				() -> assertThatThrownBy(() -> jwtProvider.reIssueToken(cookie))
+					.isInstanceOf(TokenException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(NOT_FOUND_REFRESHTOKEN.getMessage())
 			);
 		}
 	}
@@ -154,10 +159,17 @@ class JwtProviderTest {
 	@DisplayName("블랙 리스트 등록 테스트")
 	@Test
 	void setAccessTokenBlackList() {
-		final String accessToken = jwtProvider.createToken(claims, SAMPLE_EXPIRED_TIME);
+		final String accessToken = jwtProvider.createToken(claims, SAMPLE_EXPIRATION_TIME);
 		jwtProvider.setAccessTokenBlackList(accessToken);
 
-		assertNotNull(redisTemplate.opsForValue().get(accessToken));
+		assertAll(
+			() -> assertNotNull(redisTemplate.opsForValue().get(accessToken)),
+			() -> assertThatThrownBy(() -> jwtProvider.isTokenBlackList(accessToken))
+				.isInstanceOf(TokenException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(INVALID_TOKEN_BLACKLIST.getMessage())
+		);
+
 	}
 
 	@DisplayName("로그아웃 테스트")
@@ -170,9 +182,11 @@ class JwtProviderTest {
 			() -> assertNotNull(redisTemplate.opsForValue().get(tokenResponse.getAccessToken())),
 			() -> assertNull(redisTemplate.opsForValue().get(SAMPLE_SUBJECT)),
 			() -> assertEquals(BLACK_LIST.getValue(), redisTemplate.opsForValue().get(tokenResponse.getAccessToken())),
+
 			() -> assertThatThrownBy(() -> jwtProvider.isTokenBlackList(tokenResponse.getAccessToken()))
 				.isInstanceOf(TokenException.class)
-				.hasMessage("토큰이 블랙리스트 명단에 포함되어 있습니다.")
+				.extracting(MESSAGE)
+				.isEqualTo(INVALID_TOKEN_BLACKLIST.getMessage())
 		);
 	}
 }
