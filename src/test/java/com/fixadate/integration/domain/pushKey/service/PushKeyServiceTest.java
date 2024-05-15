@@ -1,5 +1,7 @@
 package com.fixadate.integration.domain.pushKey.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
@@ -37,6 +39,7 @@ class PushKeyServiceTest {
 	private PushKeyService pushKeyService;
 	@Autowired
 	private PushKeyRepository pushKeyRepository;
+	private static final String MESSAGE = "message";
 
 	@Container
 	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
@@ -109,8 +112,10 @@ class PushKeyServiceTest {
 		})
 		void generatePushKeyTestIfMemberNotExists(String pushKey, String memberId) {
 			assertAll(
-				() -> assertThrows(MemberNotFoundException.class,
-					() -> pushKeyService.registPushKey(pushKey, memberId)),
+				() -> assertThatThrownBy(() -> pushKeyService.registPushKey(pushKey, memberId))
+					.isInstanceOf(MemberNotFoundException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(NOT_FOUND_MEMBER_ID.getMessage()),
 				() -> assertFalse(pushKeyRepository.findPushKeyByPushKey(pushKey).isPresent())
 			);
 		}
