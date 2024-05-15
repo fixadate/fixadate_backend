@@ -72,7 +72,7 @@ public class AuthService {
 			.orElseThrow(() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID));
 
 		if (!member.getEmail().equals(email)) {
-			throw new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
+			throw new MemberNotFoundException(NOT_FOUND_MEMBER_EMAIL);
 		}
 		memberRepository.delete(member);
 	}

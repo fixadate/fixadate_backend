@@ -1,5 +1,7 @@
 package com.fixadate.integration.domain.colortype.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
@@ -56,6 +58,7 @@ class ColorTypeServiceTest {
 	private MemberRepository memberRepository;
 	@Autowired
 	private ColorTypeService colorTypeService;
+	private static final String MESSAGE = "message";
 
 	@Container
 	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
@@ -92,8 +95,6 @@ class ColorTypeServiceTest {
 		})
 		void registColorType(@AggregateWith(ColorTypeRequestAggregator.class) ColorTypeRequest colorTypeRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertNotNull(memberOptional.get());
-
 			assertDoesNotThrow(() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest));
 
 			Optional<ColorType> colorTypeOptional = colorTypeRepository.findColorTypeByColor(colorTypeRequest.color());
@@ -120,13 +121,18 @@ class ColorTypeServiceTest {
 		void registColorTypeTestIfDuplicatedColorExists(
 			@AggregateWith(ColorTypeRequestAggregator.class) ColorTypeRequest colorTypeRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertNotNull(memberOptional.get());
 
-			assertThrows(ColorTypeBadRequestException.class,
-				() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest));
+			assertAll(
+				() -> assertThatThrownBy(() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest))
+					.isInstanceOf(ColorTypeBadRequestException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
+				() -> assertEquals(5, colorTypeRepository.findColorTypesByMember(memberOptional.get()).size())
+			);
+
 			List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(memberOptional.get());
 
-			assertEquals(5, colorTypes.size()); // 기존에 저장된 데이터 때문에 1이다.
+			assertEquals(5, colorTypes.size());
 		}
 	}
 
@@ -229,8 +235,12 @@ class ColorTypeServiceTest {
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
-				() -> assertThrows(ColorTypeBadRequestException.class,
-					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get())),
+				() -> assertThatThrownBy(
+					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
+					.isInstanceOf(ColorTypeBadRequestException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
+
 				() -> assertTrue(colorTypeRepository
 					.findColorTypeByColor(colorTypeUpdateRequest.color()).isPresent())
 			);
@@ -249,9 +259,14 @@ class ColorTypeServiceTest {
 		void updateColorNameToExistsColor(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertThrows(ColorTypeBadRequestException.class,
-				() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()));
+
 			assertAll(
+				() -> assertThatThrownBy(
+					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
+					.isInstanceOf(ColorTypeBadRequestException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
+
 				() -> assertTrue(colorTypeRepository
 					.findColorTypeByColor(colorTypeUpdateRequest.color()).isPresent()),
 				() -> assertTrue(colorTypeRepository
@@ -272,8 +287,11 @@ class ColorTypeServiceTest {
 		void updateColorNameIfColorNotExists(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertThrows(ColorTypeNotFoundException.class,
-				() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()));
+
+			assertThatThrownBy(() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
+				.isInstanceOf(ColorTypeNotFoundException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage());
 		}
 	}
 
@@ -313,8 +331,11 @@ class ColorTypeServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("down@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertThrows(ColorTypeNotFoundException.class,
-					() -> colorTypeService.removeColor(color, memberOptional.get())),
+				() -> assertThatThrownBy(() -> colorTypeService.removeColor(color, memberOptional.get()))
+					.isInstanceOf(ColorTypeNotFoundException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage()),
+
 				() -> assertTrue(colorTypeRepository.findColorTypeByColor(color).isEmpty())
 			);
 		}
