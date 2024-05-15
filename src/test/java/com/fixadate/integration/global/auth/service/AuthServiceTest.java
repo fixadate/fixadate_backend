@@ -1,6 +1,8 @@
 package com.fixadate.integration.global.auth.service;
 
 import static com.fixadate.global.auth.entity.OAuthProvider.*;
+import static com.fixadate.global.exception.ExceptionCode.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
@@ -37,6 +39,7 @@ import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.service.AuthService;
+import com.fixadate.global.exception.badRequest.BadRequestException;
 import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
@@ -54,6 +57,7 @@ class AuthServiceTest {
 	private MemberRepository memberRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	private static final String MESSAGE = "message";
 	@Container
 	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
 
@@ -86,10 +90,10 @@ class AuthServiceTest {
 			"105, wooabros, emily, 617, chris, 19921005, female, manager, orange, img, k, MEMBER"})
 		void registMemberTestIfoauthPlatformHasInvalidValue(
 			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
-			assertAll(
-				() -> assertThrows(OAuthPlatformBadRequest.class,
-					() -> authService.registMember(memberRegistRequest))
-			);
+			assertThatThrownBy(() -> authService.registMember(memberRegistRequest))
+				.isInstanceOf(BadRequestException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(NOT_SUPPORTED_OAUTH_SERVICE.getMessage());
 		}
 
 		@DisplayName("저장이 정상적으로 되는 경우")
@@ -103,9 +107,11 @@ class AuthServiceTest {
 		void registMemberTestIfEveryThingsIsOk(
 			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
 			assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
+
 			Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
 				translateStringToOAuthProvider(memberRegistRequest.oauthPlatform()),
 				memberRegistRequest.email(), memberRegistRequest.name());
+
 			assertTrue(memberOptional.isPresent());
 			Member member = memberOptional.get();
 
@@ -129,9 +135,11 @@ class AuthServiceTest {
 		void registMemberTestencryption(
 			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
 			assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
+
 			Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
 				translateStringToOAuthProvider(memberRegistRequest.oauthPlatform()),
 				memberRegistRequest.email(), memberRegistRequest.name());
+
 			assertTrue(memberOptional.isPresent());
 			Member member = memberOptional.get();
 			assertAll(
@@ -155,7 +163,10 @@ class AuthServiceTest {
 		})
 		void signinTestIfNameNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(AuthException.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
+				.isInstanceOf(AuthException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME.getMessage());
 		}
 
 		@DisplayName("멤버의 이메일이 존재하지 않는 경우")
@@ -169,7 +180,10 @@ class AuthServiceTest {
 		})
 		void signinTestIfEmailNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(AuthException.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
+				.isInstanceOf(AuthException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME.getMessage());
 		}
 
 		@DisplayName("잘못 된 oauthPlatform 값인 경우")
@@ -183,7 +197,10 @@ class AuthServiceTest {
 		})
 		void signinTestIfMemberNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(OAuthPlatformBadRequest.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
+				.isInstanceOf(OAuthPlatformBadRequest.class)
+				.extracting(MESSAGE)
+				.isEqualTo(NOT_SUPPORTED_OAUTH_SERVICE.getMessage());
 		}
 
 		@DisplayName("잘못된 oauthId 값인 경우")
@@ -197,7 +214,10 @@ class AuthServiceTest {
 		})
 		void signinTestIfOAuthIdIsInvalid(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertThrows(AuthException.class, () -> authService.memberSignIn(memberOAuthRequest));
+			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
+				.isInstanceOf(AuthException.class)
+				.extracting(MESSAGE)
+				.isEqualTo(FAIL_TO_SIGNIN.getMessage());
 		}
 
 		@DisplayName("성공적으로 로그인을 한 경우")
@@ -211,7 +231,10 @@ class AuthServiceTest {
 		})
 		void signinTestIfSuccess(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
 			registMember();
-			assertDoesNotThrow(() -> authService.memberSignIn(memberOAuthRequest));
+			assertAll(
+				() -> assertDoesNotThrow(() -> authService.memberSignIn(memberOAuthRequest)),
+				() -> assertTrue(memberRepository.findMemberByEmail(memberOAuthRequest.email()).isPresent())
+			);
 		}
 	}
 
@@ -229,8 +252,10 @@ class AuthServiceTest {
 			"105, down@example.com"
 		})
 		void signupTestIfSuccess(String id, String email) {
-			authService.memberSignout(email, id);
-			assertTrue(memberRepository.findMemberById(id).isEmpty());
+			assertAll(
+				() -> assertDoesNotThrow(() -> authService.memberSignout(email, id)),
+				() -> assertTrue(memberRepository.findMemberById(id).isEmpty())
+			);
 		}
 
 		@DisplayName("Id가 잘못된 값인 경우")
@@ -243,7 +268,14 @@ class AuthServiceTest {
 			"109, karina@example.com",
 			"110, down@example.com"})
 		void signUpTestIfIdisInvalid(String id, String email) {
-			assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email, id));
+			assertAll(
+				() -> assertThatThrownBy(() -> authService.memberSignout(email, id))
+					.isInstanceOf(MemberNotFoundException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(NOT_FOUND_MEMBER_ID.getMessage()),
+
+				() -> assertFalse(memberRepository.findMemberByEmail(email).isEmpty())
+			);
 		}
 
 		@DisplayName("email이 잘못된 값인 경우")
@@ -258,7 +290,11 @@ class AuthServiceTest {
 		})
 		void signUpTestIfEmailIsInvalid(String id, String email) {
 			assertAll(
-				() -> assertThrows(MemberNotFoundException.class, () -> authService.memberSignout(email, id)),
+				() -> assertThatThrownBy(() -> authService.memberSignout(email, id))
+					.isInstanceOf(MemberNotFoundException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(NOT_FOUND_MEMBER_EMAIL.getMessage()),
+
 				() -> assertFalse(memberRepository.findMemberById(id).isEmpty())
 			);
 		}
