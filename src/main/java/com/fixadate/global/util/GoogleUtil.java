@@ -41,7 +41,6 @@ public class GoogleUtil {
 	private String clientId;
 	@Value("${spring.security.oauth2.client.registration.google.client-secret}")
 	private String clientSecret;
-	private Channel channel;
 	static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 	static final List<String> SCOPES = List.of(CALENDAR_READONLY, CALENDAR_EVENTS_READONLY);
 	private static HttpTransport HTTP_TRANSPORT;
@@ -66,7 +65,6 @@ public class GoogleUtil {
 			.setAccessType(ACCESS_TYPE.getValue())
 			.setApprovalPrompt(APPROVAL_PROMPT.getValue())
 			.build();
-		channel = createChannel();
 		syncSettingsDataStore = GoogleUtil.getDataStoreFactory().getDataStore(SYNC_SETTINGS.getValue());
 	}
 
@@ -98,6 +96,7 @@ public class GoogleUtil {
 
 	public Channel executeWatchRequest(String userId) {
 		try {
+			Channel channel = createChannel();
 			Calendar.Events.Watch watch = calendarService(userId)
 				.events()
 				.watch(CALENDAR_ID.getValue(), channel);

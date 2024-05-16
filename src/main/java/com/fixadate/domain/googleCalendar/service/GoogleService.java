@@ -68,7 +68,7 @@ public class GoogleService {
 				events = request.execute();
 			} catch (GoogleJsonResponseException e) {
 				if (e.getStatusCode() == 410) {
-					deleteSyncToken();
+					deleteSyncToken(userId);
 					listEvents(channelId);
 				} else {
 					throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE);
@@ -82,7 +82,7 @@ public class GoogleService {
 			}
 			pageToken = events.getNextPageToken();
 		} while (pageToken != null);
-		setNextSyncToken(events);
+		setNextSyncToken(events, userId);
 	}
 
 	@Transactional
@@ -118,23 +118,23 @@ public class GoogleService {
 
 	public String getNextSyncToken(String userId) {
 		try {
-			return googleUtil.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY + userId);
+			return googleUtil.getSyncSettingsDataStore().get(SYNC_TOKEN_KEY.getValue() + userId);
 		} catch (IOException e) {
 			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_GET_SYNCTOKEN);
 		}
 	}
 
-	public void setNextSyncToken(Events events) {
+	public void setNextSyncToken(Events events, String userId) {
 		try {
-			googleUtil.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY.getValue(), events.getNextSyncToken());
+			googleUtil.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY.getValue() + userId, events.getNextSyncToken());
 		} catch (IOException e) {
 			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_SET_SYNCTOKEN);
 		}
 	}
 
-	public void deleteSyncToken() {
+	public void deleteSyncToken(String userId) {
 		try {
-			googleUtil.getSyncSettingsDataStore().delete(SYNC_TOKEN_KEY.getValue());
+			googleUtil.getSyncSettingsDataStore().delete(SYNC_TOKEN_KEY.getValue() + userId);
 		} catch (IOException e) {
 			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_DELETE_SYNCTOKEN);
 		}
