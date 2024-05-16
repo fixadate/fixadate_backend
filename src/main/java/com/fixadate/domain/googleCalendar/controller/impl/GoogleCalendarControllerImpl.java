@@ -1,7 +1,9 @@
 package com.fixadate.domain.googleCalendar.controller.impl;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpHeaders;
@@ -18,6 +20,7 @@ import com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventRespon
 import com.fixadate.domain.googleCalendar.entity.constant.WebhookHeaders;
 import com.fixadate.domain.googleCalendar.service.GoogleService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
+import com.fixadate.global.exception.badRequest.GoogleIOExcetption;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.model.Channel;
 
@@ -73,7 +76,12 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 		@RequestHeader(WebhookHeaders.CHANNEL_EXPIRATION) String channelExpiration,
 		@RequestHeader(WebhookHeaders.RESOURCE_STATE) String resourceState,
 		@RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber) {
-		googleService.listEvents(channelId);
+		try {
+			googleService.listEvents(channelId);
+		} catch (IOException e) {
+			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE);
+
+		}
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }

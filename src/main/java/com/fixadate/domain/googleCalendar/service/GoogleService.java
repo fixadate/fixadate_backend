@@ -5,8 +5,10 @@ import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ import com.fixadate.global.exception.notFound.GoogleNotFoundException;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.util.GoogleUtil;
 import com.google.api.client.auth.oauth2.TokenResponse;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Channel;
 import com.google.api.services.calendar.model.Event;
@@ -40,29 +44,45 @@ public class GoogleService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public void listEvents(String channelId) {
-		try {
-			GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByChannelId(channelId)
-				.orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_CHANNELID));
+	public void listEvents(String channelId) throws IOException {
+		GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByChannelId(channelId)
+			.orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_CHANNELID));
 
-			String userId = googleCredentials.getUserId();
-			Calendar.Events.List request = googleUtil.calendarService(userId).events().list(CALENDAR_ID.getValue())
-				.setOauthToken(googleCredentials.getAccessToken());
-			String syncToken = getNextSyncToken(userId);
+		String userId = googleCredentials.getUserId();
+		Calendar.Events.List request = googleUtil.calendarService(userId).events().list(CALENDAR_ID.getValue())
+			.setOauthToken(googleCredentials.getAccessToken());
+		String syncToken = getNextSyncToken(userId);
 
-			List<Event> events;
-			if (syncToken == null) {
-				setNextSyncToken(request.execute(), userId);
-				events = request.execute().getItems();
-			} else {
-				request.setSyncToken(syncToken);
-				setNextSyncToken(request.execute(), userId);
-				events = request.execute().getItems();
-			}
-			syncEvents(events, googleCredentials.getMember());
-		} catch (IOException e) {
-			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE);
+		if (syncToken != null) {
+			request.setSyncToken(syncToken);
+		} else {
+			Date oneYearAgo = GoogleUtil.getRelativeDate(java.util.Calendar.MONTH, -1);
+			request.setTimeMin(new DateTime(oneYearAgo, TimeZone.getTimeZone("UTC")));
 		}
+		String pageToken = null;
+		Events events = null;
+		do {
+			request.setPageToken(pageToken);
+
+			try {
+				events = request.execute();
+			} catch (GoogleJsonResponseException e) {
+				if (e.getStatusCode() == 410) {
+					deleteSyncToken();
+					listEvents(channelId);
+				} else {
+					throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE);
+				}
+			}
+
+			List<Event> items = events.getItems();
+
+			if (!items.isEmpty()) {
+				syncEvents(items, googleCredentials.getMember());
+			}
+			pageToken = events.getNextPageToken();
+		} while (pageToken != null);
+		setNextSyncToken(events);
 	}
 
 	@Transactional
@@ -104,16 +124,25 @@ public class GoogleService {
 		}
 	}
 
-	public void setNextSyncToken(Events events, String userId) {
+	public void setNextSyncToken(Events events) {
 		try {
-			googleUtil.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY + userId, events.getNextSyncToken());
+			googleUtil.getSyncSettingsDataStore().set(SYNC_TOKEN_KEY.getValue(), events.getNextSyncToken());
 		} catch (IOException e) {
 			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_SET_SYNCTOKEN);
 		}
 	}
 
+	public void deleteSyncToken() {
+		try {
+			googleUtil.getSyncSettingsDataStore().delete(SYNC_TOKEN_KEY.getValue());
+		} catch (IOException e) {
+			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_DELETE_SYNCTOKEN);
+		}
+	}
+
 	@Transactional
-	public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String memberId) {
+	public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String
+		memberId) {
 		//todo : mapper 사용하는 방향으로 리팩토링 하기
 		GoogleCredentials googleCredentials = GoogleCredentials
 			.getGoogleCredentialsFromCredentials(channel, userId, tokenResponse);

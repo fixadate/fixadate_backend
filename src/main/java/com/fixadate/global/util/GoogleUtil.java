@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -146,6 +147,14 @@ public class GoogleUtil {
 			.setType(CHANNEL_TYPE.getValue())
 			.setAddress(BASE_URL.getValue() + NOTIFICATION_URL.getValue())
 			.setExpiration(System.currentTimeMillis() + 9_000_000_000L);
+	}
+
+	public static Date getRelativeDate(int field, int amount) {
+		Date now = new Date();
+		java.util.Calendar cal = java.util.Calendar.getInstance();
+		cal.setTime(now);
+		cal.add(field, amount);
+		return cal.getTime();
 	}
 
 	public static DataStoreFactory getDataStoreFactory() {
