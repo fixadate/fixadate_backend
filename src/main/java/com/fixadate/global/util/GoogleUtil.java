@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import com.fixadate.global.exception.badRequest.GoogleIOExcetption;
-import com.fixadate.global.exception.notFound.GoogleNotFoundException;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -84,15 +84,6 @@ public class GoogleUtil {
 		return requestUrl.build();
 	}
 
-	public static String getUserId(HttpServletRequest request) {
-		String id = request.getHeader(ID.getValue());
-		if (id != null) {
-			return id;
-		} else {
-			throw new GoogleNotFoundException(NOT_FOUND_HEADER_ID);
-		}
-	}
-
 	private static GoogleClientSecrets getClientSecrets() {
 		InputStream in = GoogleUtil.class.getResourceAsStream(FILE_PATH.getValue());
 		try {
@@ -131,6 +122,16 @@ public class GoogleUtil {
 		}
 	}
 
+	public void stop(String userId, Channel channel) {
+		try {
+			Calendar calendar = calendarService(userId);
+			calendar.channels().stop(channel).execute();
+		} catch (IOException e) {
+			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_STOP);
+		}
+
+	}
+
 	public void registCredential(TokenResponse tokenResponse, String userId) {
 		try {
 			flow.createAndStoreCredential(tokenResponse, userId);
@@ -145,8 +146,15 @@ public class GoogleUtil {
 			.setId(tokenValue)
 			.setType(CHANNEL_TYPE.getValue())
 			.setAddress(BASE_URL.getValue() + NOTIFICATION_URL.getValue())
-			.setExpiration(System.currentTimeMillis() + 9_000_000_000L)
-			.setToken("tokenValue");
+			.setExpiration(System.currentTimeMillis() + 9_000_000_000L);
+	}
+
+	public static Date getRelativeDate(int field, int amount) {
+		Date now = new Date();
+		java.util.Calendar cal = java.util.Calendar.getInstance();
+		cal.setTime(now);
+		cal.add(field, amount);
+		return cal.getTime();
 	}
 
 	public static DataStoreFactory getDataStoreFactory() {

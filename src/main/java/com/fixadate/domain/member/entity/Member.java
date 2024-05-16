@@ -81,7 +81,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@JoinColumn(name = "pushKey_id")
 	private PushKey pushKey;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "google_credentials_id")
 	private GoogleCredentials googleCredentials;
 
