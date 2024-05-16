@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -54,6 +55,13 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 			}
 		}
 		return tokenResponse;
+	}
+
+	@Override
+	@DeleteMapping()
+	public ResponseEntity<Void> stopChannel(@RequestParam String memberId) {
+		googleService.stopChannelAndRemoveGoogleCredentials(memberId);
+		return ResponseEntity.noContent().build();
 	}
 
 	@Override

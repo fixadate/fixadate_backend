@@ -128,7 +128,19 @@ public class GoogleService {
 	public Member findMemberAndSetRelationship(String memberId, GoogleCredentials googleCredentials) {
 		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
 			NOT_FOUND_MEMBER_ID));
-		member.setGoogleCredentials(googleCredentials);
+		googleCredentials.setMember(member);
 		return member;
+	}
+
+	@Transactional
+	public void stopChannelAndRemoveGoogleCredentials(String memberId) {
+		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
+			NOT_FOUND_MEMBER_ID));
+
+		GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByMember(member)
+			.orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER));
+
+		googleUtil.stop(googleCredentials.getUserId(), googleCredentials.toChannel());
+		googleCredentials.setGoogleCredentialsOrphan();
 	}
 }

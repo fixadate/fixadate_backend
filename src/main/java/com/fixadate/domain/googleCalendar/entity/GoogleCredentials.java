@@ -63,7 +63,22 @@ public class GoogleCredentials {
 			.build();
 	}
 
+	public Channel toChannel() {
+		Channel channel = new Channel();
+		channel.setId(channelId);
+		channel.setResourceId(resourceId);
+		return channel;
+	}
+
 	public void setMember(Member member) {
 		this.member = member;
+		if (member != null && member.getGoogleCredentials() != this) {
+			member.setGoogleCredentials(this);
+		}
+	}
+
+	public void setGoogleCredentialsOrphan() {
+		member.setGoogleCredentials(null);
+		this.member = null;
 	}
 }

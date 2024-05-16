@@ -44,4 +44,13 @@ public interface GoogleCalendarController {
 		String channelExpiration,
 		String resourceState,
 		String messageNumber);
+
+	@Operation(summary = "channel 중지", description = "db에서 channel을 삭제하고 중지시킵니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "201", description = "created",
+			content = @Content(schema = @Schema(implementation = Void.class))),
+		@ApiResponse(responseCode = "400", description = "googleIoException",
+			content = @Content(schema = @Schema(implementation = Void.class)))
+	})
+	ResponseEntity<Void> stopChannel(String memberId);
 }

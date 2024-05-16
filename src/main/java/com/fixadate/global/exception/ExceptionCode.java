@@ -32,8 +32,10 @@ public enum ExceptionCode {
 	INVALID_GOOGLE_CALENDAR_WATCH_EXECUTE(3004, "watch에서 채널을 생성하는데 실패했습니다."),
 	INVALID_GOOGLE_CALENDAR_LOAD_CREDENTIALS(3005, "flow로부터 credentials를 가져오는데 실패했습니다."),
 	INVALID_GOOGLE_CALENDAR_CREATE_AND_STORE_CREDENTIALS(3006, "credentials를 생성하고 flow에 저장하는데 실패했습니다."),
-	NOT_FOUND_GOOGLE_CREDENTIALS_CHANNELID(3007, "요청한 channelId에 해당하는 GoogleCredentials가 없습니다."),
-	NOT_FOUND_HEADER_ID(3008, "header에서 id를 추출하는데 실패했습니다."),
+	INVALID_GOOGLE_CALENDAR_STOP(3007, "channel을 중지시키는데 실패했습니다."),
+	NOT_FOUND_GOOGLE_CREDENTIALS_CHANNELID(3008, "요청한 channelId에 해당하는 GoogleCredentials가 없습니다."),
+	NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER(3009, "요청한 member에 해당하는 GoogleCredentials가 없습니다."),
+	NOT_FOUND_HEADER_ID(3010, "header에서 id를 추출하는데 실패했습니다."),
 
 	NOT_FOUND_MEMBER_ID(4001, "요청한 id에 해당하는 member가 없습니다."),
 	NOT_FOUND_MEMBER_EMAIL(4002, "요청한 email에 해당하는 member가 없습니다."),
