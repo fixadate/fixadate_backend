@@ -3,11 +3,17 @@ package com.fixadate.domain.googleCalendar.protocol;//
 // (powered by FernFlower decompiler)
 //
 
+import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.http.HttpStatus;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
@@ -30,11 +36,27 @@ public abstract class AbstractAuthorizationCodeServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-		this.lock.lock();
 		String memberId = req.getHeader(ID.getValue());
-		if (memberId.isBlank()) {
-			throw new IOException();
+		if (memberId == null || memberId.isBlank()) {
+			resp.sendError(HttpStatus.SC_BAD_REQUEST, NOT_FOUND_MEMBER_ID_IN_HEADER.getMessage());
+			return;
 		}
+
+		try (Connection connection = DatabaseConnection.initializeDatabase();
+			 PreparedStatement st = connection.prepareStatement(
+				 "SELECT id FROM member  WHERE id = ?")) {
+			st.setString(1, memberId);
+			ResultSet resultSet = st.executeQuery();
+			if (!resultSet.next()) {
+				resp.sendError(HttpServletResponse.SC_NOT_FOUND, NOT_FOUND_MEMBER_ID.getMessage());
+				return;
+			}
+		} catch (Exception e) {
+			resp.sendError(500, INVALID_SQL.getMessage());
+			return;
+		}
+
+		this.lock.lock();
 
 		try {
 			String userId = this.getUserId(req);

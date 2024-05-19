@@ -51,6 +51,8 @@ public enum ExceptionCode {
 	INVALID_PADDING(9004, "AES 알고리즘에서 복호화 하는 과정에서 패딩이 유효하지 않아 실패했습니다."),
 	FAIL_TO_DECODER(9004, "AES 알고리즘에서 복호화를 하는데 실패했습니다."),
 	NOT_SUPPORTED_OAUTH_SERVICE(9005, "해당 OAuth 서비스는 제공하지 않습니다."),
+	NOT_FOUND_MEMBER_ID_IN_HEADER(9006, "header에서 memberId를 찾을 수 없습니다."),
+	INVALID_SQL(9007, "sql 문에서 예외가 발생했습니다."),
 
 	EXPIRED_PERIOD_TOKEN(401, "기한이 만료된 토큰입니다."),
 	FAIL_TO_VALIDATE_TOKEN(400, "토큰 유효성 검사 중 오류가 발생했습니다."),
