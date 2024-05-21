@@ -19,7 +19,7 @@ public enum ExceptionCode {
 	NOT_FOUND_ADATE_CALENDAR_ID(1001, "요청한 calendarId에 해당하는 Adate가 없습니다."),
 	INVALID_MONTH(1002, "월에는 1부터 12사이의 값을 입력해야 합니다."),
 	INVALID_LOCALDATE(1003, "잘못된 LocalDate 값입니다."),
-	INVALID_START_END_TIME(1004, "시작 시간은 종료 시간보다 빠르면 안됩니다."),
+	INVALID_START_END_TIME(1004, "종료 시간은 시작 시간보다 빠르면 안됩니다."),
 	INVALID_STRING_TO_DATETIME(1005, "문자열을 DateTime으로 변환 하는데 실패했습니다."),
 
 	ALREADY_EXISTS_COLORTYPE(2001, "변경하려고 하는 color가 이미 존재합니다."),
