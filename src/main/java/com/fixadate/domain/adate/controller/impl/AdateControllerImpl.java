@@ -82,7 +82,7 @@ public class AdateControllerImpl implements AdateController {
 	}
 
 	@Override
-	@GetMapping("/week")
+	@GetMapping("/day")
 	public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByWeeks(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam LocalDate firstDay,
