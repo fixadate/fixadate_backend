@@ -1,4 +1,4 @@
-package com.fixadate.domain.Tag.dto.request;
+package com.fixadate.domain.tag.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

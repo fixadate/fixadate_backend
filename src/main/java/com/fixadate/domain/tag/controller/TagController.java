@@ -1,13 +1,13 @@
-package com.fixadate.domain.Tag.controller;
+package com.fixadate.domain.tag.controller;
 
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.fixadate.domain.Tag.dto.request.TagRequest;
-import com.fixadate.domain.Tag.dto.request.TagUpdateRequest;
-import com.fixadate.domain.Tag.dto.response.TagResponse;
+import com.fixadate.domain.tag.dto.request.TagRequest;
+import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
+import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.global.jwt.MemberPrincipal;
 
 import io.swagger.v3.oas.annotations.Operation;

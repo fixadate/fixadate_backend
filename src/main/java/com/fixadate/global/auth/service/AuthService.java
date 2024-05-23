@@ -11,8 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.Tag.entity.Tag;
-import com.fixadate.domain.Tag.repository.TagRepository;
+import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;

@@ -3,7 +3,7 @@ package com.fixadate.unit.domain.tag.fixture;
 import java.util.Collections;
 import java.util.List;
 
-import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.OAuthProvider;
 

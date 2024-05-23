@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;

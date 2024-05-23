@@ -1,4 +1,4 @@
-package com.fixadate.domain.Tag.controller.impl;
+package com.fixadate.domain.tag.controller.impl;
 
 import java.util.List;
 
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.fixadate.domain.Tag.controller.TagController;
-import com.fixadate.domain.Tag.dto.request.TagRequest;
-import com.fixadate.domain.Tag.dto.request.TagUpdateRequest;
-import com.fixadate.domain.Tag.dto.response.TagResponse;
-import com.fixadate.domain.Tag.service.TagService;
+import com.fixadate.domain.tag.controller.TagController;
+import com.fixadate.domain.tag.dto.request.TagRequest;
+import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
+import com.fixadate.domain.tag.dto.response.TagResponse;
+import com.fixadate.domain.tag.service.TagService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.jwt.MemberPrincipal;
 

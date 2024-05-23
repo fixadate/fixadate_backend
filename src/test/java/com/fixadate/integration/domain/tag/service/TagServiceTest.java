@@ -32,11 +32,11 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.domain.Tag.dto.request.TagRequest;
-import com.fixadate.domain.Tag.dto.request.TagUpdateRequest;
-import com.fixadate.domain.Tag.entity.Tag;
-import com.fixadate.domain.Tag.repository.TagRepository;
-import com.fixadate.domain.Tag.service.TagService;
+import com.fixadate.domain.tag.dto.request.TagRequest;
+import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
+import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.service.TagService;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
