@@ -86,49 +86,19 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, red, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
-			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, black, adateName2, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
-			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, blue, adateName3, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
-			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, white, adateName4, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, violet, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
+			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, 검정, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
+			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, 빨강, adateName2, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
+			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, 하양, adateName3, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
+			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, 파랑, adateName4, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
+			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, 바이올렛, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
 		})
 		void registAdateTest(@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, memberOptional.get()));
-		}
-
-		/*
-		adateRegist를 할 때 calendarId를 무작위로 설정하는데, 이 때 정합성을 보장하지 못해 직접 repository에 저장하는 방식으로 구현 함.
-		 */
-		@DisplayName("모든 조건이 문제 없는 경우 / 조회")
-		@Sql(scripts = "/sql/setup/adate_setup.sql")
-		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-		@CsvSource(value = {
-			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, red, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
-			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, black, adateName2, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
-			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, blue, adateName3, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
-			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, white, adateName4, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, violet, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true",
-		})
-		void registAdateTestwithfind(
-			@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
-			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertNotNull(memberOptional.get());
-
-			Adate adate = adateRegistRequest.toEntity(memberOptional.get());
-			assertDoesNotThrow(() -> adateRepository.save(adate));
-
-			Optional<Adate> adateOptional = adateRepository.findAdateByCalendarId(adate.getCalendarId());
-			assertNotNull(adateOptional.get());
-
-			Adate getAdate = adateOptional.get();
-			assertAll(
-				() -> assertEquals(adateRegistRequest.adateName(), getAdate.getAdateName()),
-				() -> assertEquals(adateRegistRequest.startsWhen(), getAdate.getStartsWhen()),
-				() -> assertEquals(adateRegistRequest.endsWhen(), getAdate.getEndsWhen())
-			);
+			assertDoesNotThrow(
+				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.colorTypeName(),
+					memberOptional.get()));
 		}
 
 		@DisplayName("color가 존재하지 않는 경우")
@@ -146,7 +116,9 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			assertThatThrownBy(() -> adateService.registAdateEvent(adateRegistRequest, memberOptional.get()))
+			assertThatThrownBy(
+				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.colorTypeName(),
+					memberOptional.get()))
 				.isInstanceOf(ColorTypeNotFoundException.class)
 				.extracting(MESSAGE)
 				.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage());
@@ -377,11 +349,11 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, black, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
-			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, red, newAdateName2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
-			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, white, newAdateName3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
-			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, blue, newAdateName4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
-			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, violet, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, 빨강, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, 하양, newAdateName2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
+			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, 파랑, newAdateName3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
+			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, 바이올렛, newAdateName4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
+			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, 검정, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
 		})
 		void updateAdateTest_Success(
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
@@ -392,8 +364,7 @@ class AdateServiceTest {
 
 			assertAll(
 				() -> assertTrue(adateOptional.isPresent()),
-				() -> assertEquals(adateUpdateRequest.title(), adateOptional.get().getTitle()),
-				() -> assertEquals(adateUpdateRequest.color(), adateOptional.get().getColor())
+				() -> assertEquals(adateUpdateRequest.title(), adateOptional.get().getTitle())
 			);
 		}
 
@@ -401,11 +372,11 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			",,, 2025-05-17T10:30:00, 2025-05-17T11:30:00, black, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
-			",, , 2025-05-18T10:30:00, 2025-05-18T11:30:00, red, newAdateName2, false,,, false",
-			",,,, 2025-05-19T11:30:00, white,, true,, 2025-05-19T13:00:00, false",
-			",,, 2025-05-20T10:30:00, 2025-05-20T11:30:00, blue, newAdateName4, false, 2025-05-20T12:00:00, , true",
-			",,,, 2025-05-21T11:30:00, violet,, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+			",,, 2025-05-17T10:30:00, 2025-05-17T11:30:00, 빨강, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+			",, , 2025-05-18T10:30:00, 2025-05-18T11:30:00, 하양, newAdateName2, false,,, false",
+			",,,, 2025-05-19T11:30:00, 파랑,, true,, 2025-05-19T13:00:00, false",
+			",,, 2025-05-20T10:30:00, 2025-05-20T11:30:00, 바이올렛, newAdateName4, false, 2025-05-20T12:00:00, , true",
+			",,,, 2025-05-21T11:30:00, 검정,, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
 		})
 		void updateAdateTestIfSomeFieldsMiss(
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
@@ -447,8 +418,7 @@ class AdateServiceTest {
 
 			assertAll(
 				() -> assertTrue(adateOptional.isPresent()),
-				() -> assertNotEquals(adateUpdateRequest.title(), adateOptional.get().getTitle()),
-				() -> assertNotEquals(adateUpdateRequest.color(), adateOptional.get().getColor())
+				() -> assertNotEquals(adateUpdateRequest.title(), adateOptional.get().getTitle())
 			);
 		}
 	}

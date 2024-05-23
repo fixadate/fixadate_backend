@@ -1,5 +1,10 @@
 package com.fixadate.domain.colortype.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
@@ -14,11 +19,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Tag(name = "ColorTypeController", description = "ColorTypeController 입니다.")
 public interface ColorTypeController {
@@ -75,5 +75,5 @@ public interface ColorTypeController {
 		@ApiResponse(responseCode = "404", description = "삭제하고자 하는 color가 조회되지 않을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<Void> removeColorType(@RequestParam String color, MemberPrincipal memberPrincipal);
+	ResponseEntity<Void> removeColorType(@RequestParam String name, MemberPrincipal memberPrincipal);
 }

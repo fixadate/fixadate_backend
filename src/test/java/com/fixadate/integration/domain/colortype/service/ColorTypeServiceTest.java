@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -101,8 +100,8 @@ class ColorTypeServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertDoesNotThrow(() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest));
 
-			Optional<ColorType> colorTypeOptional = colorTypeRepository.findColorTypeByColor(colorTypeRequest.color());
-			List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(memberOptional.get());
+			Optional<ColorType> colorTypeOptional = colorTypeRepository.findColorTypeByNameAndMember(
+				colorTypeRequest.name(), memberOptional.get());
 
 			assertAll(
 				() -> assertTrue(colorTypeOptional.isPresent()),
@@ -111,15 +110,15 @@ class ColorTypeServiceTest {
 			);
 		}
 
-		@DisplayName("중복된 color가 이미 있는 경우")
+		@DisplayName("중복된 이름이 이미 있는 경우")
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"yellow, 회사",
-			"violet, 동아리",
-			"orange, 스터디",
-			"green, 프로젝트",
-			"white, 연애"
+			"yellow, ex1",
+			"violet, ex2",
+			"orange, ex3",
+			"green, ex4",
+			"white, ex5"
 		})
 		void registColorTypeTestIfDuplicatedColorExists(
 			@AggregateWith(ColorTypeRequestAggregator.class) ColorTypeRequest colorTypeRequest) {
@@ -131,8 +130,6 @@ class ColorTypeServiceTest {
 					.extracting(MESSAGE)
 					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage())
 			);
-
-			List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(memberOptional.get());
 		}
 	}
 
@@ -176,18 +173,18 @@ class ColorTypeServiceTest {
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"yellow, newColor1, newName1",
-			"violet, newColor2, newName2",
-			"white, newColor3, newName3",
-			"orange, newColor4, newName4",
-			"green, newColor5, newName5"
+			"ex1, newColor1, newName1",
+			"ex2, newColor2, newName2",
+			"ex3, newColor3, newName3",
+			"ex4, newColor4, newName4",
+			"ex5, newColor5, newName5"
 		})
 		void updateColorNameIfColorExists(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertDoesNotThrow(() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()));
-			Optional<ColorType> colorTypeByColor = colorTypeRepository.findColorTypeByColor(
-				colorTypeUpdateRequest.newColor());
+			Optional<ColorType> colorTypeByColor = colorTypeRepository.findColorTypeByNameAndMember(
+				colorTypeUpdateRequest.newName(), memberOptional.get());
 
 			assertAll(
 				() -> assertEquals(colorTypeUpdateRequest.newColor(), colorTypeByColor.get().getColor()),
@@ -203,37 +200,36 @@ class ColorTypeServiceTest {
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"yellow,,newColor1",
-			"violet,,newColor2",
-			"white,,newColor3",
-			"orange,,newColor4",
-			"green,,newColor5"
+			"ex1,,newColor1",
+			"ex2,,newColor2",
+			"ex3,,newColor3",
+			"ex4,,newColor4",
+			"ex5,,newColor5"
 		})
 		void updateColorNameOnlyNameIfColorExists(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertDoesNotThrow(() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()));
-			Optional<ColorType> colorTypeByColor = colorTypeRepository.findColorTypeByColor(
-				colorTypeUpdateRequest.color());
+			Optional<ColorType> colorTypeByColor = colorTypeRepository.findColorTypeByNameAndMember(
+				colorTypeUpdateRequest.newName(), memberOptional.get());
 
 			assertAll(
 				() -> assertTrue(colorTypeByColor.isPresent()),
-				() -> assertEquals(colorTypeUpdateRequest.color(), colorTypeByColor.get().getColor()),
 				() -> assertEquals(colorTypeUpdateRequest.newName(), colorTypeByColor.get().getName())
 			);
 		}
 
-		@DisplayName("같은 색으로 업데이트를 한 경우")
+		@DisplayName("같은 이름으로 업데이트를 한 경우")
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"yellow, yellow, newName1",
-			"violet, violet, newName2",
-			"white, white, newName3",
-			"orange, orange, newName4",
-			"green, green, newName5"
+			"ex1, yellow, ex1",
+			"ex2, violet, ex2",
+			"ex3, white, ex3",
+			"ex4, orange, ex4",
+			"ex5, green, ex5"
 		})
-		void updateColorNameToSameColor(
+		void updateColorNameToSameName(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
@@ -244,19 +240,19 @@ class ColorTypeServiceTest {
 					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
 
 				() -> assertTrue(colorTypeRepository
-					.findColorTypeByColor(colorTypeUpdateRequest.color()).isPresent())
+					.findColorTypeByNameAndMember(colorTypeUpdateRequest.name(), memberOptional.get()).isPresent())
 			);
 		}
 
-		@DisplayName("이미 존재하는 색으로 업데이트를 한 경우")
+		@DisplayName("이미 존재하는 이름으로 업데이트를 한 경우")
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"yellow, white, newName1",
-			"violet, orange, newName2",
-			"white, green, newName3",
-			"orange, yellow, newName4",
-			"green, violet, newName5"
+			"ex1, white, ex5",
+			"ex2, orange, ex5",
+			"ex3, green, ex5",
+			"ex4, yellow, ex5",
+			"ex5, violet, ex1"
 		})
 		void updateColorNameToExistsColor(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
@@ -270,9 +266,7 @@ class ColorTypeServiceTest {
 					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
 
 				() -> assertTrue(colorTypeRepository
-					.findColorTypeByColor(colorTypeUpdateRequest.color()).isPresent()),
-				() -> assertTrue(colorTypeRepository
-					.findColorTypeByColor(colorTypeUpdateRequest.newColor()).isPresent())
+					.findColorTypeByNameAndMember(colorTypeUpdateRequest.name(), memberOptional.get()).isPresent())
 			);
 		}
 
@@ -280,9 +274,9 @@ class ColorTypeServiceTest {
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"default1, NColor, newName1",
-			"default2, NColor, newName2",
-			"default3, NColor, newName3"
+			"ex8, NColor, newName1",
+			"ex9, NColor, newName2",
+			"ex10, NColor, newName3"
 		})
 		void updateColorNameIfColorTypeisDefault(
 			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
@@ -325,18 +319,18 @@ class ColorTypeServiceTest {
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@ValueSource(strings = {
-			"violet",
-			"white",
-			"orange",
-			"green",
-			"yellow"
+			"ex1",
+			"ex2",
+			"ex3",
+			"ex4",
+			"ex5"
 		})
-		void removeColor_Success(String color) {
+		void removeColor_Success(String name) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertDoesNotThrow(() -> colorTypeService.removeColor(color, memberOptional.get())),
-				() -> assertTrue(colorTypeRepository.findColorTypeByColor(color).isEmpty())
+				() -> assertDoesNotThrow(() -> colorTypeService.removeColor(name, memberOptional.get())),
+				() -> assertTrue(colorTypeRepository.findColorTypeByNameAndMember(name, memberOptional.get()).isEmpty())
 			);
 		}
 
@@ -350,16 +344,16 @@ class ColorTypeServiceTest {
 			"purple",
 			"pink"
 		})
-		void removeColorIfColorNotExists(String color) {
+		void removeColorIfColorNotExists(String name) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("down@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertThatThrownBy(() -> colorTypeService.removeColor(color, memberOptional.get()))
+				() -> assertThatThrownBy(() -> colorTypeService.removeColor(name, memberOptional.get()))
 					.isInstanceOf(ColorTypeNotFoundException.class)
 					.extracting(MESSAGE)
 					.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage()),
 
-				() -> assertTrue(colorTypeRepository.findColorTypeByColor(color).isEmpty())
+				() -> assertTrue(colorTypeRepository.findColorTypeByNameAndMember(name, memberOptional.get()).isEmpty())
 			);
 		}
 
@@ -367,15 +361,15 @@ class ColorTypeServiceTest {
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@ValueSource(strings = {
-			"default1",
-			"default2",
-			"default3"
+			"ex8",
+			"ex9",
+			"ex10"
 		})
-		void removeColorIfColorTypeisDefault(String color) {
+		void removeColorIfColorTypeisDefault(String name) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertThatThrownBy(() -> colorTypeService.removeColor(color, memberOptional.get()))
+				() -> assertThatThrownBy(() -> colorTypeService.removeColor(name, memberOptional.get()))
 					.isInstanceOf(ColorTypeBadRequestException.class)
 					.extracting(MESSAGE)
 					.isEqualTo(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_COLORTYPE.getMessage())

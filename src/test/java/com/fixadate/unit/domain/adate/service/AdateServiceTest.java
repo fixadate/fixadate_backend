@@ -59,19 +59,19 @@ public class AdateServiceTest {
 			ADATE.isReminders()
 		);
 		given(adateRepository.save(any(Adate.class))).willReturn(ADATE);
-		given(colorTypeRepository.findColorTypeByColorAndMember(any(String.class), any(Member.class))).willReturn(
+		given(colorTypeRepository.findColorTypeByNameAndMember(any(String.class), any(Member.class))).willReturn(
 			Optional.ofNullable(COLOR_TYPE));
 
-		assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, MEMBER));
+		assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, "ex1", MEMBER));
 	}
 
 	@DisplayName("Adate에 ColorType을 설정한다.")
 	@Test
 	void setAdateColorTypeTest() {
-		given(colorTypeRepository.findColorTypeByColorAndMember(any(String.class), any(Member.class))).willReturn(
+		given(colorTypeRepository.findColorTypeByNameAndMember(any(String.class), any(Member.class))).willReturn(
 			Optional.ofNullable(COLOR_TYPE));
 
-		adateService.setAdateColorType(ADATE, MEMBER);
+		adateService.setAdateColorType(ADATE, MEMBER, "ex1");
 		assertEquals(COLOR_TYPE, ADATE.getColorType());
 	}
 
@@ -166,7 +166,7 @@ public class AdateServiceTest {
 		);
 
 		given(adateRepository.findAdateByCalendarId(any(String.class))).willReturn(Optional.ofNullable(ADATE));
-		given(colorTypeRepository.findColorTypeByColorAndMember(any(String.class), any(Member.class))).willReturn(
+		given(colorTypeRepository.findColorTypeByNameAndMember(any(String.class), any(Member.class))).willReturn(
 			Optional.ofNullable(COLOR_TYPE));
 
 		AdateCalendarEventResponse response = adateService.updateAdate("1", adateUpdateRequest, MEMBER);

@@ -59,9 +59,9 @@ public class ColorTypeControllerImpl implements ColorTypeController {
 
 	@Override
 	@DeleteMapping()
-	public ResponseEntity<Void> removeColorType(@RequestParam String color,
+	public ResponseEntity<Void> removeColorType(@RequestParam String name,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-		colorTypeService.removeColor(color, memberPrincipal.getMember());
+		colorTypeService.removeColor(name, memberPrincipal.getMember());
 		return ResponseEntity.noContent().build();
 	}
 }

@@ -29,14 +29,14 @@ public class ColorTypeService {
 
 	@Transactional
 	public void registColorType(Member member, ColorTypeRequest colorTypeRequest) {
-		checkColor(colorTypeRequest.color(), member);
+		checkColor(colorTypeRequest.name(), member);
 		ColorType colorType = colorTypeRequest.toEntity(member);
 		colorTypeRepository.save(colorType);
 	}
 
 	@Transactional(readOnly = true)
-	public void checkColor(String color, Member member) {
-		if (colorTypeRepository.findColorTypeByColorAndMember(color, member).isPresent()) {
+	public void checkColor(String name, Member member) {
+		if (colorTypeRepository.findColorTypeByNameAndMember(name, member).isPresent()) {
 			throw new ColorTypeBadRequestException(ALREADY_EXISTS_COLORTYPE);
 		}
 	}
@@ -55,24 +55,32 @@ public class ColorTypeService {
 
 	@Transactional
 	public ColorTypeResponse updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest, Member member) {
-		if (colorTypeUpdateRequest.newColor() != null && !colorTypeUpdateRequest.newColor().isEmpty()) {
-			checkColor(colorTypeUpdateRequest.newColor(), member);
+		if (isValidString(colorTypeUpdateRequest.newName())) {
+			checkColor(colorTypeUpdateRequest.newName(), member);
 		}
-		ColorType colorType = findColorTypeByMemberAndColor(colorTypeUpdateRequest.color(), member);
 
-		isDefaultColorType(colorType);
+		ColorType colorType = findColorTypeByMemberAndColor(colorTypeUpdateRequest.name(), member);
+
+		if (isValidString(colorTypeUpdateRequest.newName())) {
+			isDefaultColorType(colorType);
+		}
+
 		colorType.updateColorType(colorTypeUpdateRequest);
 
-		if (colorTypeUpdateRequest.newColor() != null && !colorTypeUpdateRequest.newColor().isEmpty()) {
+		if (isValidString(colorTypeUpdateRequest.newColor())) {
 			updateAdateColor(colorType.getAdates());
-
 		}
+
 		return ColorTypeResponse.of(colorType);
 	}
 
+	private boolean isValidString(String str) {
+		return str != null && !str.isEmpty();
+	}
+
 	@Transactional
-	public ColorType findColorTypeByMemberAndColor(String color, Member member) {
-		return colorTypeRepository.findColorTypeByColorAndMember(color, member)
+	public ColorType findColorTypeByMemberAndColor(String name, Member member) {
+		return colorTypeRepository.findColorTypeByNameAndMember(name, member)
 			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 	}
 
@@ -90,8 +98,8 @@ public class ColorTypeService {
 	}
 
 	@Transactional
-	public void removeColor(String color, Member member) {
-		ColorType colorType = findColorTypeByMemberAndColor(color, member);
+	public void removeColor(String name, Member member) {
+		ColorType colorType = findColorTypeByMemberAndColor(name, member);
 		isDefaultColorType(colorType);
 		removeAdateColorType(colorType.getAdates());
 		colorTypeRepository.delete(colorType);

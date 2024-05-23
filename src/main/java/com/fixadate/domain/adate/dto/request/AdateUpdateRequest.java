@@ -10,7 +10,7 @@ public record AdateUpdateRequest(
 	String location,
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
-	String color,
+	String colorTypeName,
 	String adateName,
 	@NotNull boolean ifAllDay,
 	LocalDateTime startsWhen,

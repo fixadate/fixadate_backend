@@ -63,7 +63,7 @@ public class ColorTypeServiceTest {
 	@DisplayName("color 삭제하기")
 	@Test
 	void removeColorTest() {
-		given(colorTypeRepository.findColorTypeByColorAndMember(COLOR_TYPE.getColor(), MEMBER)).willReturn(
+		given(colorTypeRepository.findColorTypeByNameAndMember(COLOR_TYPE.getColor(), MEMBER)).willReturn(
 			Optional.of(COLOR_TYPE));
 		assertDoesNotThrow(() -> colorTypeService.removeColor(COLOR_TYPE.getColor(), MEMBER));
 	}

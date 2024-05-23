@@ -11,7 +11,5 @@ import com.fixadate.domain.member.entity.Member;
 public interface ColorTypeRepository extends JpaRepository<ColorType, Long> {
 	List<ColorType> findColorTypesByMember(Member member);
 
-	Optional<ColorType> findColorTypeByColor(String color);
-
-	Optional<ColorType> findColorTypeByColorAndMember(String color, Member member);
+	Optional<ColorType> findColorTypeByNameAndMember(String name, Member member);
 }

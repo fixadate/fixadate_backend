@@ -38,17 +38,17 @@ public class AdateService {
 	private final ColorTypeRepository colorTypeRepository;
 
 	@Transactional
-	public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
+	public void registAdateEvent(AdateRegistRequest adateRegistRequest, String tagName, Member member) {
 		Adate adate = adateRegistRequest.toEntity(member);
-		if (adate.getColor() != null && !adate.getColor().isEmpty()) {
-			setAdateColorType(adate, member);
+		if (tagName != null && !tagName.isEmpty()) {
+			setAdateColorType(adate, member, tagName);
 		}
 		adateRepository.save(adate);
 	}
 
 	@Transactional
-	public void setAdateColorType(Adate adate, Member member) {
-		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(adate.getColor(), member)
+	public void setAdateColorType(Adate adate, Member member, String tagName) {
+		ColorType colorType = colorTypeRepository.findColorTypeByNameAndMember(tagName, member)
 			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 		adate.setColorType(colorType);
 	}
@@ -63,8 +63,8 @@ public class AdateService {
 	}
 
 	public ColorType getGoogleCalendarColorTypeFromMember(Member member) {
-		return colorTypeRepository.findColorTypeByColorAndMember(GOOGLE_CALENDAR_COLOR.getValue(),
-			member).orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+		return colorTypeRepository.findColorTypeByNameAndMember(GOOGLE_CALENDAR.getValue(), member)
+			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 	}
 
 	@Transactional
@@ -127,7 +127,7 @@ public class AdateService {
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
 		adate.updateAdate(adateUpdateRequest);
-		setAdateColorType(adate, member);
+		setAdateColorType(adate, member, adateUpdateRequest.colorTypeName());
 		return AdateCalendarEventResponse.of(adate);
 	}
 

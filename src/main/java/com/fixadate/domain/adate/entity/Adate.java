@@ -92,9 +92,6 @@ public class Adate extends BaseTimeEntity {
 		if (adateUpdateRequest.repeatFreq() != null) {
 			this.repeatFreq = adateUpdateRequest.repeatFreq();
 		}
-		if (adateUpdateRequest.color() != null) {
-			this.color = adateUpdateRequest.color();
-		}
 		if (adateUpdateRequest.adateName() != null) {
 			this.adateName = adateUpdateRequest.adateName();
 		}
@@ -147,6 +144,7 @@ public class Adate extends BaseTimeEntity {
 	}
 
 	public void setColorType(ColorType colorType) {
+		this.color = colorType.getColor();
 		this.colorType = colorType;
 	}
 

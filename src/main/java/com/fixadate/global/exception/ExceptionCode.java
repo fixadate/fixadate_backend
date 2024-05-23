@@ -23,7 +23,7 @@ public enum ExceptionCode {
 	INVALID_STRING_TO_DATETIME(1005, "문자열을 DateTime으로 변환 하는데 실패했습니다."),
 
 	ALREADY_EXISTS_COLORTYPE(2001, "변경하려고 하는 color가 이미 존재합니다."),
-	NOT_FOUND_COLORTYPE_MEMBER_COLOR(2002, "요청한 member, color에 해당하는 colorType가 없습니다."),
+	NOT_FOUND_COLORTYPE_MEMBER_COLOR(2002, "요청한 member, name에 해당하는 colorType가 없습니다."),
 	CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_COLORTYPE(2003, "기본으로 생성된 ColorType을 수정하거나 삭제할 수 없습니다."),
 
 	INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE(3001, "구글 캘린더의 Request에서 파일에 접근할 수 없습니다."),
