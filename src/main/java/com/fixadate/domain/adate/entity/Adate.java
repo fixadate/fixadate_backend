@@ -151,4 +151,9 @@ public class Adate extends BaseTimeEntity {
 	public void updateColor() {
 		this.color = colorType.getColor();
 	}
+
+	public void removeColorTypeAndColor() {
+		this.color = null;
+		this.colorType = null;
+	}
 }

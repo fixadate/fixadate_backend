@@ -33,6 +33,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.entity.ColorType;
@@ -58,6 +59,9 @@ class ColorTypeServiceTest {
 	private MemberRepository memberRepository;
 	@Autowired
 	private ColorTypeService colorTypeService;
+	@Autowired
+	private AdateRepository adateRepository;
+
 	private static final String MESSAGE = "message";
 
 	@Container

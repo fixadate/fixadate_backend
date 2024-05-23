@@ -63,6 +63,7 @@ public class ColorTypeService {
 		return ColorTypeResponse.of(colorType);
 	}
 
+	@Transactional
 	public void updateAdateColor(List<Adate> adates) {
 		adates.forEach(Adate::updateColor);
 		adateRepository.saveAll(adates);
@@ -72,6 +73,14 @@ public class ColorTypeService {
 	public void removeColor(String color, Member member) {
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(color, member)
 			.orElseThrow(() -> new ColorTypeNotFoundException(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+
+		removeAdateColorType(colorType.getAdates());
 		colorTypeRepository.delete(colorType);
+	}
+
+	@Transactional
+	public void removeAdateColorType(List<Adate> adates) {
+		adates.forEach(Adate::removeColorTypeAndColor);
+		adateRepository.saveAll(adates);
 	}
 }
