@@ -55,15 +55,25 @@ public class ColorTypeService {
 
 	@Transactional
 	public ColorTypeResponse updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest, Member member) {
-		checkColor(colorTypeUpdateRequest.newColor(), member);
-		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(colorTypeUpdateRequest.color(), member)
-			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+		if (colorTypeUpdateRequest.newColor() != null && !colorTypeUpdateRequest.newColor().isEmpty()) {
+			checkColor(colorTypeUpdateRequest.newColor(), member);
+		}
+		ColorType colorType = findColorTypeByMemberAndColor(colorTypeUpdateRequest.color(), member);
 
 		isDefaultColorType(colorType);
 		colorType.updateColorType(colorTypeUpdateRequest);
 
-		updateAdateColor(colorType.getAdates());
+		if (colorTypeUpdateRequest.newColor() != null && !colorTypeUpdateRequest.newColor().isEmpty()) {
+			updateAdateColor(colorType.getAdates());
+
+		}
 		return ColorTypeResponse.of(colorType);
+	}
+
+	@Transactional
+	public ColorType findColorTypeByMemberAndColor(String color, Member member) {
+		return colorTypeRepository.findColorTypeByColorAndMember(color, member)
+			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 	}
 
 	@Transactional
@@ -81,8 +91,7 @@ public class ColorTypeService {
 
 	@Transactional
 	public void removeColor(String color, Member member) {
-		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(color, member)
-			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+		ColorType colorType = findColorTypeByMemberAndColor(color, member);
 		isDefaultColorType(colorType);
 		removeAdateColorType(colorType.getAdates());
 		colorTypeRepository.delete(colorType);
