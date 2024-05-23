@@ -36,6 +36,33 @@ VALUES ('yellow', 'ex1'),
        ('magenta', 'ex9'),
        ('maroon', 'ex10');
 
+
+INSERT INTO adate (title, notes, location, alert_when, repeat_freq, color, adate_name, if_all_day, starts_when,
+                   ends_when, calendar_id, reminders, status)
+VALUES ('Meeting1', 'Discuss project status', 'Conference Room A', '2024-04-17T10:00:00', '2024-04-17T11:00:00',
+        'yellow', 'Team Meeting', 1, '2024-05-01T10:00:00', '2024-05-01T11:00:00', 'abc123', 101, 'Scheduled'),
+       ('Meeting2', 'Discuss project status', 'Conference Room B', '2024-04-18T10:00:00', '2024-04-18T11:00:00',
+        'violet',
+        'Client Meeting', 0, '2024-06-01T10:00:00', '2024-06-01T11:00:00', 'def456', 102, 'Scheduled'),
+       ('Meeting3', 'Discuss project status', 'Conference Room C', '2024-04-19T10:00:00', '2024-04-19T11:00:00',
+        'white', 'Board Meeting', 1, '2024-07-04T10:00:00', '2024-07-04T11:00:00', 'ghi789', 103, 'Scheduled'),
+       ('Meeting4', 'Discuss project status', 'Conference Room D', '2024-04-20T10:00:00', '2024-04-20T11:00:00',
+        'orange',
+        'Team Building', 0, '2024-04-20T10:00:00', '2024-04-20T11:00:00', 'jkl012', 104, 'Scheduled'),
+       ('Meeting5', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-21T11:00:00',
+        'brown', 'Product Launch', 1, '2024-04-21T10:00:00', '2024-04-21T11:00:00', 'mno345', 105, 'Scheduled'),
+       ('Meeting6', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-22T11:00:00',
+        'silver', 'Product Launch', 1, '2024-04-21T10:00:00', '2024-04-22T11:00:00', 'ads234', 105, 'Scheduled'),
+       ('Meeting7', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-23T11:00:00',
+        'cyan', 'Product Launch', 1, '2024-04-21T10:00:00', '2024-04-23T11:00:00', 'qew267', 105, 'Scheduled'),
+
+       ('Meeting8', 'Discuss marketing strategy', 'Conference Room F', '2024-04-24T10:00:00', '2024-04-24T11:00:00',
+        'magenta', 'Marketing Meeting', 1, '2024-03-24T10:00:00', '2024-08-24T11:00:00', 'ert567', 106, 'Scheduled'),
+       ('Meeting9', 'Discuss financial report', 'Conference Room G', '2024-04-25T10:00:00', '2024-04-25T11:00:00',
+        'maroon', 'Financial Meeting', 0, '2024-03-25T10:00:00', '2024-08-25T11:00:00', 'fgh890', 107, 'Scheduled');
+
+
+
 UPDATE color_type
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'yellow';
@@ -71,3 +98,64 @@ WHERE color = 'cyan';
 UPDATE color_type
 SET member_id = (SELECT id FROM member WHERE name = 'down')
 WHERE color = 'magenta';
+
+UPDATE adate
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE title = 'Meeting1';
+
+UPDATE adate
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE title = 'Meeting2';
+
+UPDATE adate
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE title = 'Meeting3';
+
+UPDATE adate
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE title = 'Meeting4';
+
+UPDATE adate
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE title = 'Meeting5';
+
+UPDATE adate
+SET member_id = (SELECT id FROM member WHERE name = 'muny')
+WHERE title = 'Meeting6';
+
+UPDATE adate
+SET member_id = (SELECT id FROM member WHERE name = 'kim')
+WHERE title = 'Meeting7';
+
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'violet')
+WHERE title = 'Meeting1';
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'white')
+WHERE title = 'Meeting2';
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'yellow')
+WHERE title = 'Meeting3';
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'green')
+WHERE title = 'Meeting4';
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'white')
+WHERE title = 'Meeting5';
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'green')
+WHERE title = 'Meeting6';
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'yellow')
+WHERE title = 'Meeting7';
+
+UPDATE adate
+SET color_type_id = (SELECT id FROM color_type WHERE color = 'orange')
+WHERE title = 'Meeting8';
