@@ -33,6 +33,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.entity.ColorType;
@@ -44,12 +45,12 @@ import com.fixadate.global.exception.badRequest.ColorTypeBadRequestException;
 import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
 
-import lombok.extern.slf4j.Slf4j;
+import jakarta.transaction.Transactional;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest
 @Testcontainers
-@Slf4j
+@Transactional
 class ColorTypeServiceTest {
 
 	@Autowired
@@ -58,6 +59,9 @@ class ColorTypeServiceTest {
 	private MemberRepository memberRepository;
 	@Autowired
 	private ColorTypeService colorTypeService;
+	@Autowired
+	private AdateRepository adateRepository;
+
 	private static final String MESSAGE = "message";
 
 	@Container
@@ -190,10 +194,13 @@ class ColorTypeServiceTest {
 				colorTypeUpdateRequest.newColor());
 
 			assertAll(
-				() -> assertTrue(colorTypeByColor.isPresent()),
 				() -> assertEquals(colorTypeUpdateRequest.newColor(), colorTypeByColor.get().getColor()),
-				() -> assertEquals(colorTypeUpdateRequest.newName(), colorTypeByColor.get().getName())
+				() -> assertEquals(colorTypeUpdateRequest.newName(), colorTypeByColor.get().getName()),
+				() -> colorTypeByColor.ifPresent(colorType ->
+					colorType.getAdates().forEach(adate ->
+						assertEquals(colorTypeUpdateRequest.newColor(), adate.getColor())))
 			);
+
 		}
 
 		@DisplayName("성공적으로 이름만 업데이트를 한 경우")

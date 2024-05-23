@@ -39,7 +39,9 @@ public class AdateService {
 	@Transactional
 	public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
 		Adate adate = adateRegistRequest.toEntity(member);
-		setAdateColorType(adate, member);
+		if (adate.getColor() != null && !adate.getColor().isEmpty()) {
+			setAdateColorType(adate, member);
+		}
 		adateRepository.save(adate);
 	}
 

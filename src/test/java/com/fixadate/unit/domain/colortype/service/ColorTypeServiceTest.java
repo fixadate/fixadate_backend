@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
@@ -30,6 +31,8 @@ public class ColorTypeServiceTest {
 	private ColorTypeService colorTypeService;
 	@Mock
 	private ColorTypeRepository colorTypeRepository;
+	@Mock
+	private AdateRepository adateRepository;
 
 	@DisplayName("colorType 저장하기")
 	@Test

@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
 import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class ColorTypeService {
 
 	private final ColorTypeRepository colorTypeRepository;
+	private final AdateRepository adateRepository;
 
 	@Transactional
 	public void registColorType(Member member, ColorTypeRequest colorTypeRequest) {
@@ -55,13 +58,29 @@ public class ColorTypeService {
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(colorTypeUpdateRequest.color(), member)
 			.orElseThrow(() -> new ColorTypeNotFoundException(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 		colorType.updateColorType(colorTypeUpdateRequest);
+
+		updateAdateColor(colorType.getAdates());
 		return ColorTypeResponse.of(colorType);
+	}
+
+	@Transactional
+	public void updateAdateColor(List<Adate> adates) {
+		adates.forEach(Adate::updateColor);
+		adateRepository.saveAll(adates);
 	}
 
 	@Transactional
 	public void removeColor(String color, Member member) {
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(color, member)
 			.orElseThrow(() -> new ColorTypeNotFoundException(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+
+		removeAdateColorType(colorType.getAdates());
 		colorTypeRepository.delete(colorType);
+	}
+
+	@Transactional
+	public void removeAdateColorType(List<Adate> adates) {
+		adates.forEach(Adate::removeColorTypeAndColor);
+		adateRepository.saveAll(adates);
 	}
 }
