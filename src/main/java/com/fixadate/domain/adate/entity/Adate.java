@@ -4,8 +4,8 @@ import static com.fixadate.global.util.TimeUtil.*;
 
 import java.time.LocalDateTime;
 
+import com.fixadate.domain.Tag.entity.Tag;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
-import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.google.api.services.calendar.model.Event;
@@ -60,8 +60,8 @@ public class Adate extends BaseTimeEntity {
 	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "colorType_id")
-	private ColorType colorType;
+	@JoinColumn(name = "tag_id")
+	private Tag tag;
 
 	public void updateFrom(Event event) {
 		this.title = event.getSummary();
@@ -106,7 +106,7 @@ public class Adate extends BaseTimeEntity {
 		this.reminders = adateUpdateRequest.reminders();
 	}
 
-	public static Adate getAdateFromEvent(Event event, Member member, ColorType colorType) {
+	public static Adate getAdateFromEvent(Event event, Member member, Tag tag) {
 		return Adate.builder()
 			.title(event.getSummary())
 			.notes(event.getDescription())
@@ -116,11 +116,11 @@ public class Adate extends BaseTimeEntity {
 			.endsWhen(checkEndDateTimeIsNull(event))
 			.ifAllDay(checkEventIsAllDayType(event))
 			.calendarId(event.getId())
-			.color(colorType.getColor())
+			.color(tag.getColor())
 			.etag(event.getEtag())
 			.reminders(event.getReminders().getUseDefault())
 			.status(event.getStatus())
-			.colorType(colorType)
+			.tag(tag)
 			.member(member)
 			.build();
 	}
@@ -143,17 +143,17 @@ public class Adate extends BaseTimeEntity {
 		return event.getStart().getDateTime() == null;
 	}
 
-	public void setColorType(ColorType colorType) {
-		this.color = colorType.getColor();
-		this.colorType = colorType;
+	public void setTag(Tag tag) {
+		this.color = tag.getColor();
+		this.tag = tag;
 	}
 
 	public void updateColor() {
-		this.color = colorType.getColor();
+		this.color = tag.getColor();
 	}
 
-	public void removeColorTypeAndColor() {
+	public void removeTagAndColor() {
 		this.color = null;
-		this.colorType = null;
+		this.tag = null;
 	}
 }

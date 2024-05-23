@@ -11,8 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.colortype.entity.ColorType;
-import com.fixadate.domain.colortype.repository.ColorTypeRepository;
+import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.Tag.repository.TagRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 	private final MemberRepository memberRepository;
-	private final ColorTypeRepository colorTypeRepository;
+	private final TagRepository tagRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	public MemberSigninResponse memberSignIn(MemberOAuthRequest memberOAuthRequest) {
@@ -68,18 +68,18 @@ public class AuthService {
 		member.createMemberId();
 		memberRepository.save(member);
 
-		registGoogleCalendarColorType(member);
+		registGoogleCalendarTag(member);
 	}
 
-	public void registGoogleCalendarColorType(Member member) {
-		ColorType colorType = ColorType.builder()
+	public void registGoogleCalendarTag(Member member) {
+		Tag tag = Tag.builder()
 			.color(GOOGLE_CALENDAR_COLOR.getValue())
 			.name(GOOGLE_CALENDAR.getValue())
 			.isDefault(true)
 			.member(member)
 			.build();
 
-		colorTypeRepository.save(colorType);
+		tagRepository.save(tag);
 	}
 
 	@Transactional

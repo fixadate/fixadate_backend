@@ -1,9 +1,9 @@
-package com.fixadate.domain.colortype.entity;
+package com.fixadate.domain.Tag.entity;
 
 import java.util.List;
 
+import com.fixadate.domain.Tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
 import com.fixadate.domain.member.entity.Member;
 
 import jakarta.persistence.Entity;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ColorType {
+public class Tag {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -37,15 +37,15 @@ public class ColorType {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@OneToMany(mappedBy = "colorType")
+	@OneToMany(mappedBy = "tag")
 	private List<Adate> adates;
 
-	public void updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest) {
-		if (colorTypeUpdateRequest.newName() != null && !colorTypeUpdateRequest.newName().isEmpty()) {
-			this.name = colorTypeUpdateRequest.newName();
+	public void updateTag(TagUpdateRequest tagUpdateRequest) {
+		if (tagUpdateRequest.newName() != null && !tagUpdateRequest.newName().isEmpty()) {
+			this.name = tagUpdateRequest.newName();
 		}
-		if (colorTypeUpdateRequest.newColor() != null && !colorTypeUpdateRequest.newColor().isEmpty()) {
-			this.color = colorTypeUpdateRequest.newColor();
+		if (tagUpdateRequest.newColor() != null && !tagUpdateRequest.newColor().isEmpty()) {
+			this.color = tagUpdateRequest.newColor();
 		}
 	}
 }

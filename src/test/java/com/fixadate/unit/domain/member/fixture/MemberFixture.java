@@ -18,6 +18,6 @@ public class MemberFixture {
 		.role("ROLE_USER")
 		.birth(0000)
 		.adates(Collections.emptyList())
-		.colorTypes(Collections.emptyList())
+		.tags(Collections.emptyList())
 		.build();
 }

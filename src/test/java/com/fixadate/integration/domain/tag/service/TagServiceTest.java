@@ -1,4 +1,4 @@
-package com.fixadate.integration.domain.colortype.service;
+package com.fixadate.integration.domain.tag.service;
 
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -32,16 +32,16 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.domain.Tag.dto.request.TagRequest;
+import com.fixadate.domain.Tag.dto.request.TagUpdateRequest;
+import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.Tag.repository.TagRepository;
+import com.fixadate.domain.Tag.service.TagService;
 import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.colortype.dto.request.ColorTypeRequest;
-import com.fixadate.domain.colortype.dto.request.ColorTypeUpdateRequest;
-import com.fixadate.domain.colortype.entity.ColorType;
-import com.fixadate.domain.colortype.repository.ColorTypeRepository;
-import com.fixadate.domain.colortype.service.ColorTypeService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.exception.badRequest.ColorTypeBadRequestException;
-import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
+import com.fixadate.global.exception.badRequest.TagBadRequestException;
+import com.fixadate.global.exception.notFound.TagNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
 
 import jakarta.transaction.Transactional;
@@ -50,14 +50,14 @@ import jakarta.transaction.Transactional;
 @SpringBootTest
 @Testcontainers
 @Transactional
-class ColorTypeServiceTest {
+class TagServiceTest {
 
 	@Autowired
-	private ColorTypeRepository colorTypeRepository;
+	private TagRepository tagRepository;
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
-	private ColorTypeService colorTypeService;
+	private TagService tagService;
 	@Autowired
 	private AdateRepository adateRepository;
 
@@ -71,7 +71,7 @@ class ColorTypeServiceTest {
 		try (Connection conn = dataSource.getConnection()) {
 			mySQLContainer.start();
 			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/dropTable.sql"));
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/colorType_test.sql"));
+			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/tag_test.sql"));
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -83,11 +83,11 @@ class ColorTypeServiceTest {
 	}
 
 	@Nested
-	@DisplayName("colorType 저장 테스트")
-	class registColorTypeTest {
+	@DisplayName("tag 저장 테스트")
+	class registTagTest {
 
 		@DisplayName("모든 조건에 문제가 없는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"red, 회사",
@@ -96,22 +96,22 @@ class ColorTypeServiceTest {
 			"purple, 프로젝트",
 			"pink, 연애"
 		})
-		void registColorType(@AggregateWith(ColorTypeRequestAggregator.class) ColorTypeRequest colorTypeRequest) {
+		void registTag(@AggregateWith(TagRequestAggregator.class) TagRequest tagRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertDoesNotThrow(() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest));
+			assertDoesNotThrow(() -> tagService.registTag(memberOptional.get(), tagRequest));
 
-			Optional<ColorType> colorTypeOptional = colorTypeRepository.findColorTypeByNameAndMember(
-				colorTypeRequest.name(), memberOptional.get());
+			Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
+				tagRequest.name(), memberOptional.get());
 
 			assertAll(
-				() -> assertTrue(colorTypeOptional.isPresent()),
-				() -> assertEquals(colorTypeRequest.name(), colorTypeOptional.get().getName()),
-				() -> assertEquals(colorTypeRequest.color(), colorTypeOptional.get().getColor())
+				() -> assertTrue(tagOptional.isPresent()),
+				() -> assertEquals(tagRequest.name(), tagOptional.get().getName()),
+				() -> assertEquals(tagRequest.color(), tagOptional.get().getColor())
 			);
 		}
 
 		@DisplayName("중복된 이름이 이미 있는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"yellow, ex1",
@@ -120,57 +120,57 @@ class ColorTypeServiceTest {
 			"green, ex4",
 			"white, ex5"
 		})
-		void registColorTypeTestIfDuplicatedColorExists(
-			@AggregateWith(ColorTypeRequestAggregator.class) ColorTypeRequest colorTypeRequest) {
+		void registTagTestIfDuplicatedColorExists(
+			@AggregateWith(TagRequestAggregator.class) TagRequest tagRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertAll(
-				() -> assertThatThrownBy(() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest))
-					.isInstanceOf(ColorTypeBadRequestException.class)
+				() -> assertThatThrownBy(() -> tagService.registTag(memberOptional.get(), tagRequest))
+					.isInstanceOf(TagBadRequestException.class)
 					.extracting(MESSAGE)
-					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage())
+					.isEqualTo(ALREADY_EXISTS_TAG.getMessage())
 			);
 		}
 	}
 
 	@Nested
-	@DisplayName("member를 이용한 colorType 조회")
+	@DisplayName("member를 이용한 tag 조회")
 	class checkColorTest {
 
-		@DisplayName("member가 저장한 colorType이 존재하는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@DisplayName("member가 저장한 tag이 존재하는 경우")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@ValueSource(strings = {"hong@example.com", "muny@example.com", "kim@example.com", "karina@example.com",
 			"down@example.com"})
-		void checkColorTestIfColorTypeExists(String input) {
+		void checkColorTestIfTagExists(String input) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(input);
 
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertFalse(colorTypeService.getColorTypeResponses(memberOptional.get()).isEmpty())
+				() -> assertFalse(tagService.getTagResponses(memberOptional.get()).isEmpty())
 			);
 		}
 
-		@DisplayName("member가 저장한 colorType이 존재하지 않는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@DisplayName("member가 저장한 tag이 존재하지 않는 경우")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@ValueSource(strings = {"choi@example.com", "lee@example.com", "park@example.com", "cho@example.com",
 			"han@example.com"})
-		void checkColorTestIfColorTypeNotExists(String input) {
+		void checkColorTestIfTagNotExists(String input) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(input);
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertEquals(0, colorTypeService.getColorTypeResponses(memberOptional.get()).size())
+				() -> assertEquals(0, tagService.getTagResponses(memberOptional.get()).size())
 			);
 		}
 	}
 
 	@Nested
-	@DisplayName("updateColorType 테스트")
-	class updateColorTypeTest {
+	@DisplayName("updateTag 테스트")
+	class updateTagTest {
 
 		@DisplayName("성공적으로 업데이트를 한 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"ex1, newColor1, newName1",
@@ -180,24 +180,24 @@ class ColorTypeServiceTest {
 			"ex5, newColor5, newName5"
 		})
 		void updateColorNameIfColorExists(
-			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertDoesNotThrow(() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()));
-			Optional<ColorType> colorTypeByColor = colorTypeRepository.findColorTypeByNameAndMember(
-				colorTypeUpdateRequest.newName(), memberOptional.get());
+			assertDoesNotThrow(() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()));
+			Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
+				tagUpdateRequest.newName(), memberOptional.get());
 
 			assertAll(
-				() -> assertEquals(colorTypeUpdateRequest.newColor(), colorTypeByColor.get().getColor()),
-				() -> assertEquals(colorTypeUpdateRequest.newName(), colorTypeByColor.get().getName()),
-				() -> colorTypeByColor.ifPresent(colorType ->
-					colorType.getAdates().forEach(adate ->
-						assertEquals(colorTypeUpdateRequest.newColor(), adate.getColor())))
+				() -> assertEquals(tagUpdateRequest.newColor(), tagOptional.get().getColor()),
+				() -> assertEquals(tagUpdateRequest.newName(), tagOptional.get().getName()),
+				() -> tagOptional.ifPresent(tag ->
+					tag.getAdates().forEach(adate ->
+						assertEquals(tagUpdateRequest.newColor(), adate.getColor())))
 			);
 
 		}
 
 		@DisplayName("성공적으로 이름만 업데이트를 한 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"ex1,,newColor1",
@@ -207,20 +207,20 @@ class ColorTypeServiceTest {
 			"ex5,,newColor5"
 		})
 		void updateColorNameOnlyNameIfColorExists(
-			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertDoesNotThrow(() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()));
-			Optional<ColorType> colorTypeByColor = colorTypeRepository.findColorTypeByNameAndMember(
-				colorTypeUpdateRequest.newName(), memberOptional.get());
+			assertDoesNotThrow(() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()));
+			Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
+				tagUpdateRequest.newName(), memberOptional.get());
 
 			assertAll(
-				() -> assertTrue(colorTypeByColor.isPresent()),
-				() -> assertEquals(colorTypeUpdateRequest.newName(), colorTypeByColor.get().getName())
+				() -> assertTrue(tagOptional.isPresent()),
+				() -> assertEquals(tagUpdateRequest.newName(), tagOptional.get().getName())
 			);
 		}
 
 		@DisplayName("같은 이름으로 업데이트를 한 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"ex1, yellow, ex1",
@@ -230,22 +230,22 @@ class ColorTypeServiceTest {
 			"ex5, green, ex5"
 		})
 		void updateColorNameToSameName(
-			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertThatThrownBy(
-					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
-					.isInstanceOf(ColorTypeBadRequestException.class)
+					() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()))
+					.isInstanceOf(TagBadRequestException.class)
 					.extracting(MESSAGE)
-					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
+					.isEqualTo(ALREADY_EXISTS_TAG.getMessage()),
 
-				() -> assertTrue(colorTypeRepository
-					.findColorTypeByNameAndMember(colorTypeUpdateRequest.name(), memberOptional.get()).isPresent())
+				() -> assertTrue(tagRepository
+					.findTagByNameAndMember(tagUpdateRequest.name(), memberOptional.get()).isPresent())
 			);
 		}
 
 		@DisplayName("이미 존재하는 이름으로 업데이트를 한 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"ex1, white, ex5",
@@ -255,44 +255,44 @@ class ColorTypeServiceTest {
 			"ex5, violet, ex1"
 		})
 		void updateColorNameToExistsColor(
-			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertAll(
 				() -> assertThatThrownBy(
-					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
-					.isInstanceOf(ColorTypeBadRequestException.class)
+					() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()))
+					.isInstanceOf(TagBadRequestException.class)
 					.extracting(MESSAGE)
-					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
+					.isEqualTo(ALREADY_EXISTS_TAG.getMessage()),
 
-				() -> assertTrue(colorTypeRepository
-					.findColorTypeByNameAndMember(colorTypeUpdateRequest.name(), memberOptional.get()).isPresent())
+				() -> assertTrue(tagRepository
+					.findTagByNameAndMember(tagUpdateRequest.name(), memberOptional.get()).isPresent())
 			);
 		}
 
-		@DisplayName("기본으로 생성된 colorType을 변경하려고 하는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@DisplayName("기본으로 생성된 tag을 변경하려고 하는 경우")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"ex8, NColor, newName1",
 			"ex9, NColor, newName2",
 			"ex10, NColor, newName3"
 		})
-		void updateColorNameIfColorTypeisDefault(
-			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+		void updateColorNameIfTagisDefault(
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertAll(
 				() -> assertThatThrownBy(
-					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
-					.isInstanceOf(ColorTypeBadRequestException.class)
+					() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()))
+					.isInstanceOf(TagBadRequestException.class)
 					.extracting(MESSAGE)
-					.isEqualTo(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_COLORTYPE.getMessage())
+					.isEqualTo(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG.getMessage())
 			);
 		}
 
 		@DisplayName("color가 존재하지 않는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"red, newColor1, newName1",
@@ -302,13 +302,13 @@ class ColorTypeServiceTest {
 			"skyblue, newColor5, newName5"
 		})
 		void updateColorNameIfColorNotExists(
-			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
-			assertThatThrownBy(() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
-				.isInstanceOf(ColorTypeNotFoundException.class)
+			assertThatThrownBy(() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()))
+				.isInstanceOf(TagNotFoundException.class)
 				.extracting(MESSAGE)
-				.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage());
+				.isEqualTo(NOT_FOUND_TAG_MEMBER_NAME.getMessage());
 		}
 	}
 
@@ -316,7 +316,7 @@ class ColorTypeServiceTest {
 	@DisplayName("color 삭제 테스트")
 	class removeColorTest {
 		@DisplayName("모든 조건에 문제가 없는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@ValueSource(strings = {
 			"ex1",
@@ -329,13 +329,13 @@ class ColorTypeServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertDoesNotThrow(() -> colorTypeService.removeColor(name, memberOptional.get())),
-				() -> assertTrue(colorTypeRepository.findColorTypeByNameAndMember(name, memberOptional.get()).isEmpty())
+				() -> assertDoesNotThrow(() -> tagService.removeColor(name, memberOptional.get())),
+				() -> assertTrue(tagRepository.findTagByNameAndMember(name, memberOptional.get()).isEmpty())
 			);
 		}
 
 		@DisplayName("존재하지 않는 color를 삭제하려고 할 때")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@ValueSource(strings = {
 			"red",
@@ -348,50 +348,50 @@ class ColorTypeServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("down@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertThatThrownBy(() -> colorTypeService.removeColor(name, memberOptional.get()))
-					.isInstanceOf(ColorTypeNotFoundException.class)
+				() -> assertThatThrownBy(() -> tagService.removeColor(name, memberOptional.get()))
+					.isInstanceOf(TagNotFoundException.class)
 					.extracting(MESSAGE)
-					.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage()),
+					.isEqualTo(NOT_FOUND_TAG_MEMBER_NAME.getMessage()),
 
-				() -> assertTrue(colorTypeRepository.findColorTypeByNameAndMember(name, memberOptional.get()).isEmpty())
+				() -> assertTrue(tagRepository.findTagByNameAndMember(name, memberOptional.get()).isEmpty())
 			);
 		}
 
-		@DisplayName("기본으로 생성된 ColorType을 삭제하려고 하는 경우")
-		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@DisplayName("기본으로 생성된 Tag을 삭제하려고 하는 경우")
+		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@ValueSource(strings = {
 			"ex8",
 			"ex9",
 			"ex10"
 		})
-		void removeColorIfColorTypeisDefault(String name) {
+		void removeColorIfTagisDefault(String name) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),
-				() -> assertThatThrownBy(() -> colorTypeService.removeColor(name, memberOptional.get()))
-					.isInstanceOf(ColorTypeBadRequestException.class)
+				() -> assertThatThrownBy(() -> tagService.removeColor(name, memberOptional.get()))
+					.isInstanceOf(TagBadRequestException.class)
 					.extracting(MESSAGE)
-					.isEqualTo(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_COLORTYPE.getMessage())
+					.isEqualTo(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG.getMessage())
 			);
 		}
 	}
 
-	static class ColorTypeRequestAggregator implements ArgumentsAggregator {
+	static class TagRequestAggregator implements ArgumentsAggregator {
 		@Override
 		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor,
 			ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
-			return new ColorTypeRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1));
+			return new TagRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1));
 		}
 	}
 
-	static class ColorTypeUpdateRequestAggregator implements ArgumentsAggregator {
+	static class TagUpdateRequestAggregator implements ArgumentsAggregator {
 		@Override
 		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor,
 			ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
-			return new ColorTypeUpdateRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
+			return new TagUpdateRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
 				argumentsAccessor.getString(2));
 		}
 	}

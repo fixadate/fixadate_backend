@@ -11,7 +11,7 @@ VALUES ('101', '123', 'GOOGLE', 'hong', '123123', 'kevin', '0928', 'male', 'stud
        ('105', '5', 'GOOGLE', 'down', '123123', 'mark', '1001', 'female', 'teacher', 'skyblue', 'down@example.com',
         'MEMBER');
 
-INSERT INTO color_type(color, name, is_default)
+INSERT INTO tag(color, name, is_default)
 VALUES ('black', '검정', false),
        ('red', '빨강', false),
        ('white', '하양', false),
@@ -109,22 +109,22 @@ SET member_id = (SELECT id FROM member WHERE name = 'down')
 WHERE title = 'Meeting14';
 
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'black';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'red';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'white';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'blue';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'violet';

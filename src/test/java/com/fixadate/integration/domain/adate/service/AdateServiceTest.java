@@ -43,7 +43,7 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
-import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
+import com.fixadate.global.exception.notFound.TagNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
 
 @ExtendWith(DataClearExtension.class)
@@ -97,7 +97,7 @@ class AdateServiceTest {
 			assertNotNull(memberOptional.get());
 
 			assertDoesNotThrow(
-				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.colorTypeName(),
+				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
 					memberOptional.get()));
 		}
 
@@ -117,11 +117,11 @@ class AdateServiceTest {
 			assertNotNull(memberOptional.get());
 
 			assertThatThrownBy(
-				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.colorTypeName(),
+				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
 					memberOptional.get()))
-				.isInstanceOf(ColorTypeNotFoundException.class)
+				.isInstanceOf(TagNotFoundException.class)
 				.extracting(MESSAGE)
-				.isEqualTo(NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage());
+				.isEqualTo(NOT_FOUND_TAG_MEMBER_NAME.getMessage());
 		}
 	}
 
@@ -410,9 +410,9 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertThatThrownBy(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()))
-				.isInstanceOf(ColorTypeNotFoundException.class)
+				.isInstanceOf(TagNotFoundException.class)
 				.extracting(MESSAGE)
-				.isEqualTo(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR.getMessage());
+				.isEqualTo(ExceptionCode.NOT_FOUND_TAG_MEMBER_NAME.getMessage());
 
 			Optional<Adate> adateOptional = adateService.getAdateByCalendarId("abc123");
 
