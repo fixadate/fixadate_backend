@@ -41,9 +41,11 @@ public class ColorType {
 	private List<Adate> adates;
 
 	public void updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest) {
-		if (colorTypeUpdateRequest.newName() != null) {
+		if (colorTypeUpdateRequest.newName() != null && !colorTypeUpdateRequest.newName().isEmpty()) {
 			this.name = colorTypeUpdateRequest.newName();
 		}
-		this.color = colorTypeUpdateRequest.newColor();
+		if (colorTypeUpdateRequest.newColor() != null && !colorTypeUpdateRequest.newColor().isEmpty()) {
+			this.color = colorTypeUpdateRequest.newColor();
+		}
 	}
 }
