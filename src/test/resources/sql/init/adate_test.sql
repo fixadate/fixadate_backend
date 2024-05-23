@@ -21,7 +21,7 @@ CREATE TABLE member
 );
 
 
-CREATE TABLE color_type
+CREATE TABLE tag
 (
     id         BIGINT NOT NULL AUTO_INCREMENT,
     color      VARCHAR(255),
@@ -53,10 +53,10 @@ CREATE TABLE adate
     version            DATETIME,
     status             VARCHAR(255),
     member_id          VARCHAR(255),
-    color_type_id      BIGINT,
+    tag_id             BIGINT,
     create_date        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id),
-    FOREIGN KEY (color_type_id) REFERENCES color_type (id)
+    FOREIGN KEY (tag_id) REFERENCES tag (id)
 );

@@ -7,8 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fixadate.domain.Tag.entity.Tag;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
@@ -75,7 +75,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	private List<Adate> adates;
 
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-	private List<ColorType> colorTypes;
+	private List<Tag> tags;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "pushKey_id")

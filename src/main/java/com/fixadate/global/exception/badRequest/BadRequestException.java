@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public sealed class BadRequestException extends RuntimeException
-	permits InvalidTimeException, GoogleIOExcetption, EncryptionBadRequestException, ColorTypeBadRequestException,
+	permits InvalidTimeException, GoogleIOExcetption, EncryptionBadRequestException, TagBadRequestException,
 	OAuthPlatformBadRequest {
 	private final int code;
 	private final String message;

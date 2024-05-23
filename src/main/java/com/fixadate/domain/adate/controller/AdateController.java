@@ -34,7 +34,7 @@ public interface AdateController {
 			content = @Content(schema = @Schema(implementation = Void.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
-		@ApiResponse(responseCode = "404", description = "color를 colorType에서 찾을 수 없을 때 생기는 예외",
+		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
 	ResponseEntity<Void> registerAdateEvent(AdateRegistRequest adateRegistRequest, MemberPrincipal memberPrincipal);
@@ -112,7 +112,7 @@ public interface AdateController {
 			content = @Content(schema = @Schema(implementation = AdateCalendarEventResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
-		@ApiResponse(responseCode = "404", description = "color를 colorType에서 찾을 수 없을 때 생기는 예외",
+		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 		@ApiResponse(responseCode = "404", description = "calendarId로 adate를 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))

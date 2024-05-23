@@ -1,8 +1,8 @@
 package com.fixadate.unit.domain.adate.service;
 
 import static com.fixadate.unit.domain.adate.fixture.AdateFixture.*;
-import static com.fixadate.unit.domain.colortype.fixture.ColorTypeFixture.*;
 import static com.fixadate.unit.domain.member.fixture.MemberFixture.*;
+import static com.fixadate.unit.domain.tag.fixture.TagFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.Tag.repository.TagRepository;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
@@ -26,7 +27,6 @@ import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.adate.service.AdateService;
-import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +40,7 @@ public class AdateServiceTest {
 	@Mock
 	private AdateQueryRepository adateQueryRepository;
 	@Mock
-	private ColorTypeRepository colorTypeRepository;
+	private TagRepository tagRepository;
 
 	@DisplayName("Adate를 저장한다.")
 	@Test
@@ -59,20 +59,20 @@ public class AdateServiceTest {
 			ADATE.isReminders()
 		);
 		given(adateRepository.save(any(Adate.class))).willReturn(ADATE);
-		given(colorTypeRepository.findColorTypeByColorAndMember(any(String.class), any(Member.class))).willReturn(
-			Optional.ofNullable(COLOR_TYPE));
+		given(tagRepository.findTagByNameAndMember(any(String.class), any(Member.class))).willReturn(
+			Optional.ofNullable(TAG));
 
-		assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, MEMBER));
+		assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, "ex1", MEMBER));
 	}
 
-	@DisplayName("Adate에 ColorType을 설정한다.")
+	@DisplayName("Adate에 Tag을 설정한다.")
 	@Test
-	void setAdateColorTypeTest() {
-		given(colorTypeRepository.findColorTypeByColorAndMember(any(String.class), any(Member.class))).willReturn(
-			Optional.ofNullable(COLOR_TYPE));
+	void setAdateTagTest() {
+		given(tagRepository.findTagByNameAndMember(any(String.class), any(Member.class))).willReturn(
+			Optional.ofNullable(TAG));
 
-		adateService.setAdateColorType(ADATE, MEMBER);
-		assertEquals(COLOR_TYPE, ADATE.getColorType());
+		adateService.setAdateTag(ADATE, MEMBER, "ex1");
+		assertEquals(TAG, ADATE.getTag());
 	}
 
 	@DisplayName("Adate를 삭제한다.")
@@ -166,8 +166,8 @@ public class AdateServiceTest {
 		);
 
 		given(adateRepository.findAdateByCalendarId(any(String.class))).willReturn(Optional.ofNullable(ADATE));
-		given(colorTypeRepository.findColorTypeByColorAndMember(any(String.class), any(Member.class))).willReturn(
-			Optional.ofNullable(COLOR_TYPE));
+		given(tagRepository.findTagByNameAndMember(any(String.class), any(Member.class))).willReturn(
+			Optional.ofNullable(TAG));
 
 		AdateCalendarEventResponse response = adateService.updateAdate("1", adateUpdateRequest, MEMBER);
 

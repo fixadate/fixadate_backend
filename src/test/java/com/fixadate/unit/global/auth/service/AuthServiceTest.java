@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.fixadate.domain.colortype.repository.ColorTypeRepository;
+import com.fixadate.domain.Tag.repository.TagRepository;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
@@ -31,7 +31,7 @@ public class AuthServiceTest {
 	@Mock
 	private PasswordEncoder passwordEncoder;
 	@Mock
-	private ColorTypeRepository colorTypeRepository;
+	private TagRepository tagRepository;
 
 	@DisplayName("로그인")
 	@Test

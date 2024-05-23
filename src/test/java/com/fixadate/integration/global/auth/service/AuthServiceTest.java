@@ -34,7 +34,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.domain.colortype.repository.ColorTypeRepository;
+import com.fixadate.domain.Tag.repository.TagRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
@@ -57,7 +57,7 @@ class AuthServiceTest {
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
-	private ColorTypeRepository colorTypeRepository;
+	private TagRepository tagRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

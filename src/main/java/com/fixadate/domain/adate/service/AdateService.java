@@ -12,18 +12,18 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.Tag.repository.TagRepository;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.colortype.entity.ColorType;
-import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.exception.badRequest.InvalidTimeException;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
-import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
+import com.fixadate.global.exception.notFound.TagNotFoundException;
 import com.google.api.services.calendar.model.Event;
 
 import lombok.RequiredArgsConstructor;
@@ -35,36 +35,36 @@ import lombok.extern.slf4j.Slf4j;
 public class AdateService {
 	private final AdateRepository adateRepository;
 	private final AdateQueryRepository adateQueryRepository;
-	private final ColorTypeRepository colorTypeRepository;
+	private final TagRepository tagRepository;
 
 	@Transactional
-	public void registAdateEvent(AdateRegistRequest adateRegistRequest, Member member) {
+	public void registAdateEvent(AdateRegistRequest adateRegistRequest, String tagName, Member member) {
 		Adate adate = adateRegistRequest.toEntity(member);
-		if (adate.getColor() != null && !adate.getColor().isEmpty()) {
-			setAdateColorType(adate, member);
+		if (tagName != null && !tagName.isEmpty()) {
+			setAdateTag(adate, member, tagName);
 		}
 		adateRepository.save(adate);
 	}
 
 	@Transactional
-	public void setAdateColorType(Adate adate, Member member) {
-		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(adate.getColor(), member)
-			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
-		adate.setColorType(colorType);
+	public void setAdateTag(Adate adate, Member member, String tagName) {
+		Tag tag = tagRepository.findTagByNameAndMember(tagName, member)
+			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
+		adate.setTag(tag);
 	}
 
 	@Transactional
 	public void registEvents(List<Event> events, Member member) {
-		ColorType colorType = getGoogleCalendarColorTypeFromMember(member);
+		Tag tag = getGoogleCalendarTagFromMember(member);
 		List<Adate> adates = events.stream()
-			.map(event -> Adate.getAdateFromEvent(event, member, colorType))
+			.map(event -> Adate.getAdateFromEvent(event, member, tag))
 			.toList();
 		adateRepository.saveAll(adates);
 	}
 
-	public ColorType getGoogleCalendarColorTypeFromMember(Member member) {
-		return colorTypeRepository.findColorTypeByColorAndMember(GOOGLE_CALENDAR_COLOR.getValue(),
-			member).orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+	public Tag getGoogleCalendarTagFromMember(Member member) {
+		return tagRepository.findTagByNameAndMember(GOOGLE_CALENDAR.getValue(), member)
+			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
 	}
 
 	@Transactional
@@ -127,7 +127,7 @@ public class AdateService {
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
 		adate.updateAdate(adateUpdateRequest);
-		setAdateColorType(adate, member);
+		setAdateTag(adate, member, adateUpdateRequest.tagName());
 		return AdateCalendarEventResponse.of(adate);
 	}
 

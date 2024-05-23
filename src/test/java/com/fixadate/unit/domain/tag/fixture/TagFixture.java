@@ -1,15 +1,15 @@
-package com.fixadate.unit.domain.colortype.fixture;
+package com.fixadate.unit.domain.tag.fixture;
 
 import java.util.Collections;
 import java.util.List;
 
-import com.fixadate.domain.colortype.entity.ColorType;
+import com.fixadate.domain.Tag.entity.Tag;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.OAuthProvider;
 
-public class ColorTypeFixture {
+public class TagFixture {
 
-	public static final ColorType COLOR_TYPE = ColorType.builder()
+	public static final Tag TAG = Tag.builder()
 		.color("red")
 		.name("ex_name")
 		.member(Member.builder()
@@ -25,7 +25,7 @@ public class ColorTypeFixture {
 		.adates(Collections.emptyList())
 		.build();
 
-	public static final ColorType COLOR_TYPE1 = ColorType.builder()
+	public static final Tag TAG1 = Tag.builder()
 		.color("blue")
 		.name("ex_name")
 		.member(Member.builder()
@@ -41,7 +41,7 @@ public class ColorTypeFixture {
 		.adates(Collections.emptyList())
 		.build();
 
-	public static final ColorType COLOR_TYPE2 = ColorType.builder()
+	public static final Tag TAG2 = Tag.builder()
 		.color("green")
 		.name("ex_name")
 		.member(Member.builder()
@@ -57,5 +57,5 @@ public class ColorTypeFixture {
 		.adates(Collections.emptyList())
 		.build();
 
-	public static final List<ColorType> COLOR_TYPES = List.of(COLOR_TYPE1, COLOR_TYPE2);
+	public static final List<Tag> TAGS = List.of(TAG1, TAG2);
 }

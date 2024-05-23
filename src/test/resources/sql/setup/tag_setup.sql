@@ -24,7 +24,7 @@ VALUES ('101', '123', 'GOOGLE', 'hong', '123123', 'kevin', '0928', 'male', 'stud
 
 
 
-INSERT INTO color_type (color, name, is_default)
+INSERT INTO tag (color, name, is_default)
 VALUES ('yellow', 'ex1', false),
        ('violet', 'ex2', false),
        ('white', 'ex3', false),
@@ -66,51 +66,51 @@ VALUES ('Meeting1', 'Discuss project status', 'Conference Room A', '2024-04-17T1
 
 
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'yellow';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'violet';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'white';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'orange';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'green';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'muny')
 WHERE color = 'brown';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'kim')
 WHERE color = 'silver';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'karina')
 WHERE color = 'cyan';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'down')
 WHERE color = 'magenta';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'default1';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'default2';
 
-UPDATE color_type
+UPDATE tag
 SET member_id = (SELECT id FROM member WHERE name = 'hong')
 WHERE color = 'default3';
 
@@ -146,33 +146,33 @@ WHERE title = 'Meeting7';
 
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'violet')
+SET tag_id = (SELECT id FROM tag WHERE color = 'violet')
 WHERE title = 'Meeting1';
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'white')
+SET tag_id = (SELECT id FROM tag WHERE color = 'white')
 WHERE title = 'Meeting2';
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'yellow')
+SET tag_id = (SELECT id FROM tag WHERE color = 'yellow')
 WHERE title = 'Meeting3';
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'green')
+SET tag_id = (SELECT id FROM tag WHERE color = 'green')
 WHERE title = 'Meeting4';
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'white')
+SET tag_id = (SELECT id FROM tag WHERE color = 'white')
 WHERE title = 'Meeting5';
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'green')
+SET tag_id = (SELECT id FROM tag WHERE color = 'green')
 WHERE title = 'Meeting6';
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'yellow')
+SET tag_id = (SELECT id FROM tag WHERE color = 'yellow')
 WHERE title = 'Meeting7';
 
 UPDATE adate
-SET color_type_id = (SELECT id FROM color_type WHERE color = 'orange')
+SET tag_id = (SELECT id FROM tag WHERE color = 'orange')
 WHERE title = 'Meeting8';

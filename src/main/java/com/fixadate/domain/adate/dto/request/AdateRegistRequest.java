@@ -15,7 +15,7 @@ public record AdateRegistRequest(
 	String location,
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
-	String color,
+	String tagName,
 	String adateName,
 	boolean ifAllDay,
 	LocalDateTime startsWhen,
@@ -29,7 +29,6 @@ public record AdateRegistRequest(
 			.location(location)
 			.alertWhen(alertWhen)
 			.repeatFreq(repeatFreq)
-			.color(color)
 			.adateName(adateName)
 			.ifAllDay(ifAllDay)
 			.startsWhen(startsWhen)
