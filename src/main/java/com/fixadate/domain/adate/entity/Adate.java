@@ -4,7 +4,7 @@ import static com.fixadate.global.util.TimeUtil.*;
 
 import java.time.LocalDateTime;
 
-import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.auth.entity.BaseTimeEntity;

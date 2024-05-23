@@ -1,4 +1,4 @@
-package com.fixadate.domain.Tag.service;
+package com.fixadate.domain.tag.service;
 
 import static com.fixadate.global.exception.ExceptionCode.*;
 
@@ -7,11 +7,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.Tag.dto.request.TagRequest;
-import com.fixadate.domain.Tag.dto.request.TagUpdateRequest;
-import com.fixadate.domain.Tag.dto.response.TagResponse;
-import com.fixadate.domain.Tag.entity.Tag;
-import com.fixadate.domain.Tag.repository.TagRepository;
+import com.fixadate.domain.tag.dto.request.TagRequest;
+import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
+import com.fixadate.domain.tag.dto.response.TagResponse;
+import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;

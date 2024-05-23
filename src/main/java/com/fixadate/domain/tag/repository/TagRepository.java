@@ -1,11 +1,11 @@
-package com.fixadate.domain.Tag.repository;
+package com.fixadate.domain.tag.repository;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.member.entity.Member;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {

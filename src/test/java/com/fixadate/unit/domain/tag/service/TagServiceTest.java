@@ -16,10 +16,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.Tag.dto.request.TagRequest;
-import com.fixadate.domain.Tag.dto.response.TagResponse;
-import com.fixadate.domain.Tag.repository.TagRepository;
-import com.fixadate.domain.Tag.service.TagService;
+import com.fixadate.domain.tag.dto.request.TagRequest;
+import com.fixadate.domain.tag.dto.response.TagResponse;
+import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.service.TagService;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 

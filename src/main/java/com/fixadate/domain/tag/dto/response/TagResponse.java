@@ -1,6 +1,6 @@
-package com.fixadate.domain.Tag.dto.response;
+package com.fixadate.domain.tag.dto.response;
 
-import com.fixadate.domain.Tag.entity.Tag;
+import com.fixadate.domain.tag.entity.Tag;
 
 public record TagResponse(String color, String name, boolean isDefault) {
 	public static TagResponse of(Tag tag) {

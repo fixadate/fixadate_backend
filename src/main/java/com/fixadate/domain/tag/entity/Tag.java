@@ -1,8 +1,8 @@
-package com.fixadate.domain.Tag.entity;
+package com.fixadate.domain.tag.entity;
 
 import java.util.List;
 
-import com.fixadate.domain.Tag.dto.request.TagUpdateRequest;
+import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 
