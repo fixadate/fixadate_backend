@@ -1,5 +1,7 @@
 package com.fixadate.domain.colortype.service;
 
+import static com.fixadate.global.exception.ExceptionCode.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,7 +15,6 @@ import com.fixadate.domain.colortype.dto.response.ColorTypeResponse;
 import com.fixadate.domain.colortype.entity.ColorType;
 import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.badRequest.ColorTypeBadRequestException;
 import com.fixadate.global.exception.notFound.ColorTypeNotFoundException;
 
@@ -36,7 +37,7 @@ public class ColorTypeService {
 	@Transactional(readOnly = true)
 	public void checkColor(String color, Member member) {
 		if (colorTypeRepository.findColorTypeByColorAndMember(color, member).isPresent()) {
-			throw new ColorTypeBadRequestException(ExceptionCode.ALREADY_EXISTS_COLORTYPE);
+			throw new ColorTypeBadRequestException(ALREADY_EXISTS_COLORTYPE);
 		}
 	}
 
@@ -56,7 +57,9 @@ public class ColorTypeService {
 	public ColorTypeResponse updateColorType(ColorTypeUpdateRequest colorTypeUpdateRequest, Member member) {
 		checkColor(colorTypeUpdateRequest.newColor(), member);
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(colorTypeUpdateRequest.color(), member)
-			.orElseThrow(() -> new ColorTypeNotFoundException(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+
+		isDefaultColorType(colorType);
 		colorType.updateColorType(colorTypeUpdateRequest);
 
 		updateAdateColor(colorType.getAdates());
@@ -70,10 +73,17 @@ public class ColorTypeService {
 	}
 
 	@Transactional
+	public void isDefaultColorType(ColorType colorType) {
+		if (colorType.isDefault()) {
+			throw new ColorTypeBadRequestException(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_COLORTYPE);
+		}
+	}
+
+	@Transactional
 	public void removeColor(String color, Member member) {
 		ColorType colorType = colorTypeRepository.findColorTypeByColorAndMember(color, member)
-			.orElseThrow(() -> new ColorTypeNotFoundException(ExceptionCode.NOT_FOUND_COLORTYPE_MEMBER_COLOR));
-
+			.orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
+		isDefaultColorType(colorType);
 		removeAdateColorType(colorType.getAdates());
 		colorTypeRepository.delete(colorType);
 	}

@@ -57,7 +57,7 @@ public class AdateService {
 	public void registEvents(List<Event> events, Member member) {
 		ColorType colorType = getGoogleCalendarColorTypeFromMember(member);
 		List<Adate> adates = events.stream()
-			.map((Event event) -> Adate.getAdateFromEvent(event, member, colorType))
+			.map(event -> Adate.getAdateFromEvent(event, member, colorType))
 			.toList();
 		adateRepository.saveAll(adates);
 	}

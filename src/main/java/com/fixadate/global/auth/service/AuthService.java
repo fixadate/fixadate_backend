@@ -75,6 +75,7 @@ public class AuthService {
 		ColorType colorType = ColorType.builder()
 			.color(GOOGLE_CALENDAR_COLOR.getValue())
 			.name(GOOGLE_CALENDAR.getValue())
+			.isDefault(true)
 			.member(member)
 			.build();
 

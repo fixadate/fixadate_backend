@@ -13,6 +13,7 @@ public record ColorTypeRequest(
 		return ColorType.builder()
 			.color(color)
 			.name(name)
+			.isDefault(false)
 			.member(member)
 			.build();
 	}

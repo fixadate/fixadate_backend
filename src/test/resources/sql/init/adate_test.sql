@@ -23,10 +23,11 @@ CREATE TABLE member
 
 CREATE TABLE color_type
 (
-    id        BIGINT NOT NULL AUTO_INCREMENT,
-    color     VARCHAR(255),
-    name      VARCHAR(255),
-    member_id VARCHAR(255),
+    id         BIGINT NOT NULL AUTO_INCREMENT,
+    color      VARCHAR(255),
+    name       VARCHAR(255),
+    is_default BOOLEAN,
+    member_id  VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
