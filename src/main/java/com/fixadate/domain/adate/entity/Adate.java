@@ -109,7 +109,7 @@ public class Adate extends BaseTimeEntity {
 		this.reminders = adateUpdateRequest.reminders();
 	}
 
-	public static Adate getAdateFromEvent(Event event, Member member) {
+	public static Adate getAdateFromEvent(Event event, Member member, ColorType colorType) {
 		return Adate.builder()
 			.title(event.getSummary())
 			.notes(event.getDescription())
@@ -119,9 +119,11 @@ public class Adate extends BaseTimeEntity {
 			.endsWhen(checkEndDateTimeIsNull(event))
 			.ifAllDay(checkEventIsAllDayType(event))
 			.calendarId(event.getId())
+			.color(colorType.getColor())
 			.etag(event.getEtag())
 			.reminders(event.getReminders().getUseDefault())
 			.status(event.getStatus())
+			.colorType(colorType)
 			.member(member)
 			.build();
 	}

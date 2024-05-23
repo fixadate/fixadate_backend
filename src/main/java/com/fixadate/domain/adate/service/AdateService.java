@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.service;
 
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.TimeUtil.*;
+import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -54,10 +55,16 @@ public class AdateService {
 
 	@Transactional
 	public void registEvents(List<Event> events, Member member) {
+		ColorType colorType = getGoogleCalendarColorTypeFromMember(member);
 		List<Adate> adates = events.stream()
-			.map((Event event) -> Adate.getAdateFromEvent(event, member))
+			.map((Event event) -> Adate.getAdateFromEvent(event, member, colorType))
 			.toList();
 		adateRepository.saveAll(adates);
+	}
+
+	public ColorType getGoogleCalendarColorTypeFromMember(Member member) {
+		return colorTypeRepository.findColorTypeByColorAndMember(GOOGLE_CALENDAR_COLOR.getValue(),
+			member).orElseThrow(() -> new ColorTypeNotFoundException(NOT_FOUND_COLORTYPE_MEMBER_COLOR));
 	}
 
 	@Transactional
