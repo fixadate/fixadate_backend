@@ -11,12 +11,12 @@ VALUES ('101', '123', 'GOOGLE', 'hong', '123123', 'kevin', '0928', 'male', 'stud
        ('105', '5', 'GOOGLE', 'down', '123123', 'mark', '1001', 'female', 'teacher', 'skyblue', 'down@example.com',
         'MEMBER');
 
-INSERT INTO color_type(color, name)
-VALUES ('black', '검정'),
-       ('red', '빨강'),
-       ('white', '하양'),
-       ('blue', '파랑'),
-       ('violet', '바이올렛');
+INSERT INTO color_type(color, name, is_default)
+VALUES ('black', '검정', false),
+       ('red', '빨강', false),
+       ('white', '하양', false),
+       ('blue', '파랑', false),
+       ('violet', '바이올렛', false);
 
 INSERT INTO adate (title, notes, location, alert_when, repeat_freq, color, adate_name, if_all_day, starts_when,
                    ends_when, calendar_id, reminders, status)

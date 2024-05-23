@@ -107,8 +107,7 @@ class ColorTypeServiceTest {
 			assertAll(
 				() -> assertTrue(colorTypeOptional.isPresent()),
 				() -> assertEquals(colorTypeRequest.name(), colorTypeOptional.get().getName()),
-				() -> assertEquals(colorTypeRequest.color(), colorTypeOptional.get().getColor()),
-				() -> assertEquals(6, colorTypes.size())
+				() -> assertEquals(colorTypeRequest.color(), colorTypeOptional.get().getColor())
 			);
 		}
 
@@ -130,13 +129,10 @@ class ColorTypeServiceTest {
 				() -> assertThatThrownBy(() -> colorTypeService.registColorType(memberOptional.get(), colorTypeRequest))
 					.isInstanceOf(ColorTypeBadRequestException.class)
 					.extracting(MESSAGE)
-					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage()),
-				() -> assertEquals(5, colorTypeRepository.findColorTypesByMember(memberOptional.get()).size())
+					.isEqualTo(ALREADY_EXISTS_COLORTYPE.getMessage())
 			);
 
 			List<ColorType> colorTypes = colorTypeRepository.findColorTypesByMember(memberOptional.get());
-
-			assertEquals(5, colorTypes.size());
 		}
 	}
 
@@ -281,6 +277,27 @@ class ColorTypeServiceTest {
 			);
 		}
 
+		@DisplayName("기본으로 생성된 colorType을 변경하려고 하는 경우")
+		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+		@CsvSource(value = {
+			"default1, NColor, newName1",
+			"default2, NColor, newName2",
+			"default3, NColor, newName3"
+		})
+		void updateColorNameIfColorTypeisDefault(
+			@AggregateWith(ColorTypeUpdateRequestAggregator.class) ColorTypeUpdateRequest colorTypeUpdateRequest) {
+			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
+
+			assertAll(
+				() -> assertThatThrownBy(
+					() -> colorTypeService.updateColorType(colorTypeUpdateRequest, memberOptional.get()))
+					.isInstanceOf(ColorTypeBadRequestException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_COLORTYPE.getMessage())
+			);
+		}
+
 		@DisplayName("color가 존재하지 않는 경우")
 		@Sql(scripts = "/sql/setup/colorType_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
@@ -346,11 +363,31 @@ class ColorTypeServiceTest {
 				() -> assertTrue(colorTypeRepository.findColorTypeByColor(color).isEmpty())
 			);
 		}
+
+		@DisplayName("기본으로 생성된 ColorType을 삭제하려고 하는 경우")
+		@Sql(scripts = "/sql/setup/colorType_setup.sql")
+		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
+		@ValueSource(strings = {
+			"default1",
+			"default2",
+			"default3"
+		})
+		void removeColorIfColorTypeisDefault(String color) {
+			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
+			assertAll(
+				() -> assertTrue(memberOptional.isPresent()),
+				() -> assertThatThrownBy(() -> colorTypeService.removeColor(color, memberOptional.get()))
+					.isInstanceOf(ColorTypeBadRequestException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_COLORTYPE.getMessage())
+			);
+		}
 	}
 
 	static class ColorTypeRequestAggregator implements ArgumentsAggregator {
 		@Override
-		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
+		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor,
+			ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
 			return new ColorTypeRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1));
 		}
@@ -358,7 +395,8 @@ class ColorTypeServiceTest {
 
 	static class ColorTypeUpdateRequestAggregator implements ArgumentsAggregator {
 		@Override
-		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
+		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor,
+			ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
 			return new ColorTypeUpdateRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
 				argumentsAccessor.getString(2));

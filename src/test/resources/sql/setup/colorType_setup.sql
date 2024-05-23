@@ -24,17 +24,20 @@ VALUES ('101', '123', 'GOOGLE', 'hong', '123123', 'kevin', '0928', 'male', 'stud
 
 
 
-INSERT INTO color_type (color, name)
-VALUES ('yellow', 'ex1'),
-       ('violet', 'ex2'),
-       ('white', 'ex3'),
-       ('orange', 'ex4'),
-       ('green', 'ex5'),
-       ('brown', 'ex6'),
-       ('silver', 'ex7'),
-       ('cyan', 'ex8'),
-       ('magenta', 'ex9'),
-       ('maroon', 'ex10');
+INSERT INTO color_type (color, name, is_default)
+VALUES ('yellow', 'ex1', false),
+       ('violet', 'ex2', false),
+       ('white', 'ex3', false),
+       ('orange', 'ex4', false),
+       ('green', 'ex5', false),
+       ('brown', 'ex6', false),
+       ('silver', 'ex7', false),
+       ('cyan', 'ex8', false),
+       ('magenta', 'ex9', false),
+       ('maroon', 'ex10', false),
+       ('default1', 'ex8', true),
+       ('default2', 'ex9', true),
+       ('default3', 'ex10', true);
 
 
 INSERT INTO adate (title, notes, location, alert_when, repeat_freq, color, adate_name, if_all_day, starts_when,
@@ -98,6 +101,20 @@ WHERE color = 'cyan';
 UPDATE color_type
 SET member_id = (SELECT id FROM member WHERE name = 'down')
 WHERE color = 'magenta';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'default1';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'default2';
+
+UPDATE color_type
+SET member_id = (SELECT id FROM member WHERE name = 'hong')
+WHERE color = 'default3';
+
+
 
 UPDATE adate
 SET member_id = (SELECT id FROM member WHERE name = 'hong')

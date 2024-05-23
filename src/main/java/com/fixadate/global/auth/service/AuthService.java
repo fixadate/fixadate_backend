@@ -2,6 +2,7 @@ package com.fixadate.global.auth.service;
 
 import static com.fixadate.global.auth.entity.OAuthProvider.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
+import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.util.Optional;
 
@@ -10,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.colortype.entity.ColorType;
+import com.fixadate.domain.colortype.repository.ColorTypeRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
@@ -18,7 +21,6 @@ import com.fixadate.global.auth.dto.response.MemberSigninResponse;
 import com.fixadate.global.auth.entity.OAuthProvider;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
-import com.fixadate.global.util.constant.ConstantValue;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 	private final MemberRepository memberRepository;
+	private final ColorTypeRepository colorTypeRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	public MemberSigninResponse memberSignIn(MemberOAuthRequest memberOAuthRequest) {
@@ -64,6 +67,19 @@ public class AuthService {
 		Member member = memberRegistRequest.of(encodedOauthId);
 		member.createMemberId();
 		memberRepository.save(member);
+
+		registGoogleCalendarColorType(member);
+	}
+
+	public void registGoogleCalendarColorType(Member member) {
+		ColorType colorType = ColorType.builder()
+			.color(GOOGLE_CALENDAR_COLOR.getValue())
+			.name(GOOGLE_CALENDAR.getValue())
+			.isDefault(true)
+			.member(member)
+			.build();
+
+		colorTypeRepository.save(colorType);
 	}
 
 	@Transactional
@@ -78,7 +94,7 @@ public class AuthService {
 	}
 
 	public ResponseCookie createHttpOnlyCooke(String token) {
-		return ResponseCookie.from(ConstantValue.REFRESH_TOKEN.getValue(), token)
+		return ResponseCookie.from(REFRESH_TOKEN.getValue(), token)
 			.secure(true)
 			.httpOnly(true)
 			.build();
