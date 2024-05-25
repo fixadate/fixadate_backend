@@ -18,37 +18,37 @@ VALUES ('black', '검정', false),
        ('blue', '파랑', false),
        ('violet', '바이올렛', false);
 
-INSERT INTO adate (title, notes, location, alert_when, repeat_freq, color, adate_name, if_all_day, starts_when,
-                   ends_when, calendar_id, reminders, status)
+INSERT INTO adate (title, notes, location, alert_when, repeat_freq, color, if_all_day, starts_when,
+                   ends_when, calendar_id, reminders)
 VALUES ('Meeting1', 'Discuss project status', 'Conference Room A', '2024-04-17T10:00:00', '2024-04-17T11:00:00',
-        'black', 'Team Meeting', 1, '2024-05-01T10:00:00', '2024-05-01T11:00:00', 'abc123', 101, 'Scheduled'),
+        'black', 1, '2024-05-01T10:00:00', '2024-05-01T11:00:00', 'abc123', 101),
        ('Meeting2', 'Discuss project status', 'Conference Room B', '2024-04-18T10:00:00', '2024-04-18T11:00:00', 'red',
-        'Client Meeting', 0, '2024-06-01T10:00:00', '2024-06-01T11:00:00', 'def456', 102, 'Scheduled'),
+        0, '2024-06-01T10:00:00', '2024-06-01T11:00:00', 'def456', 102),
        ('Meeting3', 'Discuss project status', 'Conference Room C', '2024-04-19T10:00:00', '2024-04-19T11:00:00',
-        'white', 'Board Meeting', 1, '2024-07-04T10:00:00', '2024-07-04T11:00:00', 'ghi789', 103, 'Scheduled'),
+        'white', 1, '2024-07-04T10:00:00', '2024-07-04T11:00:00', 'ghi789', 103),
        ('Meeting4', 'Discuss project status', 'Conference Room D', '2024-04-20T10:00:00', '2024-04-20T11:00:00', 'blue',
-        'Team Building', 0, '2024-04-20T10:00:00', '2024-04-20T11:00:00', 'jkl012', 104, 'Scheduled'),
+        0, '2024-04-20T10:00:00', '2024-04-20T11:00:00', 'jkl012', 104),
        ('Meeting5', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-21T11:00:00',
-        'violet', 'Product Launch', 1, '2024-04-21T10:00:00', '2024-04-21T11:00:00', 'mno345', 105, 'Scheduled'),
+        'violet', 1, '2024-04-21T10:00:00', '2024-04-21T11:00:00', 'mno345', 105),
        ('Meeting6', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-22T11:00:00',
-        'violet', 'Product Launch', 1, '2024-04-21T10:00:00', '2024-04-22T11:00:00', 'ads234', 105, 'Scheduled'),
+        'violet', 1, '2024-04-21T10:00:00', '2024-04-22T11:00:00', 'ads234', 105),
        ('Meeting7', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-23T11:00:00',
-        'violet', 'Product Launch', 1, '2024-04-21T10:00:00', '2024-04-23T11:00:00', 'qew267', 105, 'Scheduled'),
+        'violet', 1, '2024-04-21T10:00:00', '2024-04-23T11:00:00', 'qew267', 105),
 
        ('Meeting8', 'Discuss marketing strategy', 'Conference Room F', '2024-04-24T10:00:00', '2024-04-24T11:00:00',
-        'green', 'Marketing Meeting', 1, '2024-03-24T10:00:00', '2024-08-24T11:00:00', 'ert567', 106, 'Scheduled'),
+        'green', 1, '2024-03-24T10:00:00', '2024-08-24T11:00:00', 'ert567', 106),
        ('Meeting9', 'Discuss financial report', 'Conference Room G', '2024-04-25T10:00:00', '2024-04-25T11:00:00',
-        'yellow', 'Financial Meeting', 0, '2024-03-25T10:00:00', '2024-08-25T11:00:00', 'fgh890', 107, 'Scheduled'),
+        'yellow', 0, '2024-03-25T10:00:00', '2024-08-25T11:00:00', 'fgh890', 107),
        ('Meeting10', 'Discuss HR policies', 'Conference Room H', '2024-04-26T10:00:00', '2024-04-26T11:00:00', 'orange',
-        'HR Meeting', 1, '2024-05-26T10:00:00', '2024-08-26T11:00:00', 'hjk123', 108, 'Scheduled'),
+        1, '2024-05-26T10:00:00', '2024-08-26T11:00:00', 'hjk123', 108),
        ('Meeting11', 'Discuss sales targets', 'Conference Room I', '2024-04-27T10:00:00', '2024-04-27T11:00:00', 'pink',
-        'Sales Meeting', 0, '2024-05-27T10:00:00', '2024-08-27T11:00:00', 'iop456', 109, 'Scheduled'),
+        0, '2024-05-27T10:00:00', '2024-08-27T11:00:00', 'iop456', 109),
        ('Meeting12', 'Discuss IT infrastructure', 'Conference Room J', '2024-04-28T10:00:00', '2024-04-28T11:00:00',
-        'cyan', 'IT Meeting', 1, '2024-06-28T10:00:00', '2024-08-28T11:00:00', 'klm789', 110, 'Scheduled'),
+        'cyan', 1, '2024-06-28T10:00:00', '2024-08-28T11:00:00', 'klm789', 110),
        ('Meeting13', 'Discuss customer feedback', 'Conference Room K', '2024-04-29T10:00:00', '2024-04-29T11:00:00',
-        'brown', 'Customer Meeting', 0, '2024-02-28T10:00:00', '2024-02-29T11:00:00', 'nop012', 111, 'Scheduled'),
+        'brown', 0, '2024-02-28T10:00:00', '2024-02-29T11:00:00', 'nop012', 111),
        ('Meeting14', 'Discuss product roadmap', 'Conference Room L', '2024-04-30T10:00:00', '2024-04-30T11:00:00',
-        'gray', 'Product Meeting', 1, '2024-02-29T10:00:00', '2024-02-29T11:00:00', 'opq345', 112, 'Scheduled');
+        'gray', 1, '2024-02-29T10:00:00', '2024-02-29T11:00:00', 'opq345', 112);
 
 
 

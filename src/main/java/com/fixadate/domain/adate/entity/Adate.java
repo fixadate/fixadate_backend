@@ -4,9 +4,9 @@ import static com.fixadate.global.util.TimeUtil.*;
 
 import java.time.LocalDateTime;
 
-import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.google.api.services.calendar.model.Event;
 
@@ -44,7 +44,6 @@ public class Adate extends BaseTimeEntity {
 	private LocalDateTime alertWhen;
 	private LocalDateTime repeatFreq;
 	private String color;
-	private String adateName;
 	private Boolean ifAllDay;
 	private LocalDateTime startsWhen;
 	private LocalDateTime endsWhen;
@@ -52,8 +51,6 @@ public class Adate extends BaseTimeEntity {
 	private String calendarId;
 	private String etag;
 	private boolean reminders;
-	private LocalDateTime version;
-	private String status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
@@ -73,7 +70,6 @@ public class Adate extends BaseTimeEntity {
 		this.calendarId = event.getId();
 		this.etag = event.getEtag();
 		this.reminders = event.getReminders().getUseDefault();
-		this.status = event.getStatus();
 	}
 
 	public void updateAdate(AdateUpdateRequest adateUpdateRequest) {
@@ -91,9 +87,6 @@ public class Adate extends BaseTimeEntity {
 		}
 		if (adateUpdateRequest.repeatFreq() != null) {
 			this.repeatFreq = adateUpdateRequest.repeatFreq();
-		}
-		if (adateUpdateRequest.adateName() != null) {
-			this.adateName = adateUpdateRequest.adateName();
 		}
 		this.ifAllDay = adateUpdateRequest.ifAllDay();
 
@@ -119,7 +112,6 @@ public class Adate extends BaseTimeEntity {
 			.color(tag.getColor())
 			.etag(event.getEtag())
 			.reminders(event.getReminders().getUseDefault())
-			.status(event.getStatus())
 			.tag(tag)
 			.member(member)
 			.build();

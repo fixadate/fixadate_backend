@@ -41,7 +41,6 @@ CREATE TABLE adate
     alert_when         DATETIME,
     repeat_freq        DATETIME,
     color              VARCHAR(255),
-    adate_name         VARCHAR(255),
     if_all_day         TINYINT(1),
     starts_when        DATETIME,
     ends_when          DATETIME,
