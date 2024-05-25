@@ -86,11 +86,11 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, 검정, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
-			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, 빨강, adateName2, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
-			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, 하양, adateName3, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
-			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, 파랑, adateName4, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, 바이올렛, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
+			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, 검정, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
+			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, 빨강, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
+			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, 하양, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
+			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, 파랑, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
+			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, 바이올렛, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
 		})
 		void registAdateTest(@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
@@ -105,11 +105,11 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, wf, adateName1, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
-			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, wa, adateName2, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
-			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, we, adateName3, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
-			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, ws, adateName4, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, wq, adateName5, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true",
+			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, wf, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
+			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, wa, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
+			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, we, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
+			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, ws, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
+			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, wq, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true",
 		})
 		void registAdateTestIfcolorNotExists(
 			@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
@@ -349,11 +349,11 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, 빨강, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
-			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, 하양, newAdateName2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
-			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, 파랑, newAdateName3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
-			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, 바이올렛, newAdateName4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
-			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, 검정, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, 빨강, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, 하양, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
+			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, 파랑, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
+			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, 바이올렛, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
+			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, 검정, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
 		})
 		void updateAdateTest_Success(
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
@@ -372,11 +372,11 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			",,, 2025-05-17T10:30:00, 2025-05-17T11:30:00, 빨강, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
-			",, , 2025-05-18T10:30:00, 2025-05-18T11:30:00, 하양, newAdateName2, false,,, false",
-			",,,, 2025-05-19T11:30:00, 파랑,, true,, 2025-05-19T13:00:00, false",
-			",,, 2025-05-20T10:30:00, 2025-05-20T11:30:00, 바이올렛, newAdateName4, false, 2025-05-20T12:00:00, , true",
-			",,,, 2025-05-21T11:30:00, 검정,, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+			",,, 2025-05-17T10:30:00, 2025-05-17T11:30:00, 빨강, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+			",, , 2025-05-18T10:30:00, 2025-05-18T11:30:00, 하양, false,,, false",
+			",,,, 2025-05-19T11:30:00, 파랑, true,, 2025-05-19T13:00:00, false",
+			",,, 2025-05-20T10:30:00, 2025-05-20T11:30:00, 바이올렛, false, 2025-05-20T12:00:00, , true",
+			",,,, 2025-05-21T11:30:00, 검정, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
 		})
 		void updateAdateTestIfSomeFieldsMiss(
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
@@ -399,11 +399,11 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, color1, newAdateName1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
-			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, color2, newAdateName2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
-			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, color3, newAdateName3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
-			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, color4, newAdateName4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
-			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, color5, newAdateName5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, color1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, color2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
+			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, color3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
+			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, color4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
+			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, color5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
 		})
 		void updateAdateTestIfColorNotExists(
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
@@ -430,10 +430,9 @@ class AdateServiceTest {
 			return new AdateRegistRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
 				argumentsAccessor.getString(2),
 				argumentsAccessor.get(3, LocalDateTime.class), argumentsAccessor.get(4, LocalDateTime.class),
-				argumentsAccessor.getString(5),
-				argumentsAccessor.getString(6), argumentsAccessor.getBoolean(7),
-				argumentsAccessor.get(8, LocalDateTime.class),
-				argumentsAccessor.get(9, LocalDateTime.class), argumentsAccessor.getBoolean(10));
+				argumentsAccessor.getString(5), argumentsAccessor.getBoolean(6),
+				argumentsAccessor.get(7, LocalDateTime.class),
+				argumentsAccessor.get(8, LocalDateTime.class), argumentsAccessor.getBoolean(9));
 		}
 	}
 
@@ -445,9 +444,9 @@ class AdateServiceTest {
 				argumentsAccessor.getString(2),
 				argumentsAccessor.get(3, LocalDateTime.class), argumentsAccessor.get(4, LocalDateTime.class),
 				argumentsAccessor.getString(5),
-				argumentsAccessor.getString(6), argumentsAccessor.getBoolean(7),
-				argumentsAccessor.get(8, LocalDateTime.class),
-				argumentsAccessor.get(9, LocalDateTime.class), argumentsAccessor.getBoolean(10));
+				argumentsAccessor.getBoolean(6),
+				argumentsAccessor.get(7, LocalDateTime.class),
+				argumentsAccessor.get(8, LocalDateTime.class), argumentsAccessor.getBoolean(9));
 		}
 	}
 }

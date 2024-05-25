@@ -11,7 +11,6 @@ public record AdateUpdateRequest(
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
 	String tagName,
-	String adateName,
 	@NotNull boolean ifAllDay,
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen,

@@ -16,15 +16,12 @@ public class AdateFixture {
 		.alertWhen(LocalDateTime.now())
 		.repeatFreq(LocalDateTime.now())
 		.color("ex_color")
-		.adateName("ex_adateName")
 		.ifAllDay(true)
 		.startsWhen(LocalDateTime.now())
 		.endsWhen(LocalDateTime.now())
 		.calendarId("ex_calendar_id")
 		.etag("ex_etag")
 		.reminders(true)
-		.version(LocalDateTime.now())
-		.status("ex_status")
 		.build();
 
 	public static final Adate ADATE1 = Adate.builder()
@@ -34,15 +31,12 @@ public class AdateFixture {
 		.alertWhen(LocalDateTime.now())
 		.repeatFreq(LocalDateTime.now())
 		.color("ex_color")
-		.adateName("ex_adateName")
 		.ifAllDay(true)
 		.startsWhen(LocalDateTime.now())
 		.endsWhen(LocalDateTime.now())
 		.calendarId("ex_calendar_id")
 		.etag("ex_etag")
 		.reminders(true)
-		.version(LocalDateTime.now())
-		.status("ex_status")
 		.build();
 
 	public static final Adate ADATE2 = Adate.builder()
@@ -52,15 +46,12 @@ public class AdateFixture {
 		.alertWhen(LocalDateTime.now())
 		.repeatFreq(LocalDateTime.now())
 		.color("ex_color")
-		.adateName("ex_adateName")
 		.ifAllDay(true)
 		.startsWhen(LocalDateTime.now())
 		.endsWhen(LocalDateTime.now())
 		.calendarId("ex_calendar_id")
 		.etag("ex_etag")
 		.reminders(true)
-		.version(LocalDateTime.now())
-		.status("ex_status")
 		.build();
 
 	public static final List<Adate> ADATES = List.of(ADATE1, ADATE2);

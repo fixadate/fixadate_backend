@@ -11,13 +11,11 @@ public record AdateCalendarEventResponse(
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
 	String color,
-	String adateName,
 	boolean ifAllDay,
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen,
 	String calendarId,
-	boolean reminders,
-	String status
+	boolean reminders
 ) {
 
 	public static AdateCalendarEventResponse of(Adate adate) {
@@ -28,13 +26,11 @@ public record AdateCalendarEventResponse(
 			adate.getAlertWhen(),
 			adate.getRepeatFreq(),
 			adate.getColor(),
-			adate.getAdateName(),
 			adate.getIfAllDay(),
 			adate.getStartsWhen(),
 			adate.getEndsWhen(),
 			adate.getCalendarId(),
-			adate.isReminders(),
-			adate.getStatus()
+			adate.isReminders()
 		);
 	}
 }

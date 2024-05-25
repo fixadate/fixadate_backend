@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
@@ -28,6 +27,7 @@ import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -52,7 +52,6 @@ public class AdateServiceTest {
 			ADATE.getAlertWhen(),
 			ADATE.getRepeatFreq(),
 			ADATE.getColor(),
-			ADATE.getAdateName(),
 			ADATE.getIfAllDay(),
 			ADATE.getStartsWhen(),
 			ADATE.getEndsWhen(),
@@ -118,7 +117,7 @@ public class AdateServiceTest {
 			LocalDateTime.now());
 
 		assertEquals(ADATES.size(), resultAdates.size());
-		assertEquals(ADATES.get(0).getAdateName(), resultAdates.get(0).adateName());
+		assertEquals(ADATES.get(0).getTitle(), resultAdates.get(0).title());
 	}
 
 	@DisplayName("월(month)로 Adate를 조회한다.")
@@ -131,7 +130,7 @@ public class AdateServiceTest {
 		List<AdateCalendarEventResponse> resultAdates = adateService.getAdatesByMonth(2024, 5, MEMBER);
 
 		assertEquals(ADATES.size(), resultAdates.size());
-		assertEquals(ADATES.get(0).getAdateName(), resultAdates.get(0).adateName());
+		assertEquals(ADATES.get(0).getTitle(), resultAdates.get(0).title());
 	}
 
 	@DisplayName("주(week)로 Adate를 조회한다.")
@@ -145,7 +144,7 @@ public class AdateServiceTest {
 			MEMBER);
 
 		assertEquals(ADATES.size(), resultAdates.size());
-		assertEquals(ADATES.get(0).getAdateName(), resultAdates.get(0).adateName());
+		assertEquals(ADATES.get(0).getTitle(), resultAdates.get(0).title());
 	}
 
 	@DisplayName("Adate를 수정 한다.")
@@ -158,7 +157,6 @@ public class AdateServiceTest {
 			ADATE.getAlertWhen(),
 			ADATE.getRepeatFreq(),
 			ADATE.getColor(),
-			ADATE.getAdateName(),
 			ADATE.getIfAllDay(),
 			ADATE.getStartsWhen(),
 			ADATE.getEndsWhen(),
@@ -171,6 +169,6 @@ public class AdateServiceTest {
 
 		AdateCalendarEventResponse response = adateService.updateAdate("1", adateUpdateRequest, MEMBER);
 
-		assertEquals(ADATE.getAdateName(), response.adateName());
+		assertEquals(ADATE.getTitle(), response.title());
 	}
 }
