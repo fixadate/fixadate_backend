@@ -1,26 +1,14 @@
 name: Build and Test
 
 on:
-  push:
-    branches: [ 'main' ]
-    paths:
-      - '**'
 
   pull_request:
     branches:
       - '**'
     paths:
       - '**'
-
-env:
-  PROJECT_NAME: fixadate
-  BUCKET_NAME: fixadate-bucket
-  CODE_DEPLOY_APP_NAME: fixadate
-  DEPLOYMENT_GROUP_NAME: fixadate_codedeploy_group
-  SPRING_PROFILES_ACTIVE: prod
-
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -56,25 +44,4 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
-
-      - name: Make Zip File
-        run: zip -qq -r ./$GITHUB_SHA.zip .
-        shell: bash
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_FIXAMATE_ACCESSKEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_FIXAMATE_ACCESSKEY }}
-          aws-region: ap-northeast-2
-
-      - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
-
-      - name: Code Deploy To EC2 instance
-        run: aws deploy create-deployment 
-                --application-name $CODE_DEPLOY_APP_NAME 
-                --deployment-config-name CodeDeployDefault.AllAtOnce
-                --deployment-group-name $DEPLOYMENT_GROUP_NAME 
-                --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
 
