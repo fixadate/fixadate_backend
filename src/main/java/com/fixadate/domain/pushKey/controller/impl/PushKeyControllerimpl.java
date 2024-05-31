@@ -13,7 +13,7 @@ import com.fixadate.global.jwt.MemberPrincipal;
 
 import lombok.RequiredArgsConstructor;
 
-@RestControllerWithMapping("/key")
+@RestControllerWithMapping("/v1/key")
 @RequiredArgsConstructor
 public class PushKeyControllerimpl implements PushKeyController {
 

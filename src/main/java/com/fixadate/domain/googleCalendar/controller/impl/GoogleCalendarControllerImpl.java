@@ -28,7 +28,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-@RestControllerWithMapping("/google")
+@RestControllerWithMapping("/v1/google")
 @RequiredArgsConstructor
 public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 	private final GoogleService googleService;

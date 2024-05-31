@@ -26,7 +26,7 @@ import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RestControllerWithMapping("/calendar")
+@RestControllerWithMapping("/v1/calendar")
 @RequiredArgsConstructor
 public class AdateControllerImpl implements AdateController {
 	private final AdateService adateService;
