@@ -6,12 +6,6 @@ on:
     paths:
       - '**'
 
-  pull_request:
-    branches:
-      - '**'
-    paths:
-      - '**'
-
 env:
   PROJECT_NAME: fixadate
   BUCKET_NAME: fixadate-bucket
