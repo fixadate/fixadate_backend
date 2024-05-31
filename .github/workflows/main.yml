@@ -2,16 +2,15 @@ name: Build and Test
 
 on:
   push:
-    branches: [ "main" ]
-
+    branches: [ 'main' ]
     paths:
-      - '**.java'
-      - '**/build.gradle*'
-      - '**/settings.gradle*'
-      - '**/application*.yml'
-      - '**.sql'
-      - '**.sh'
-      - '**.yml'
+      - '**'
+
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**'
 
 env:
   PROJECT_NAME: fixadate
