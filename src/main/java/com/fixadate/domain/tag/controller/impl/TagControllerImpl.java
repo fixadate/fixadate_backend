@@ -23,7 +23,7 @@ import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RestControllerWithMapping("/tag")
+@RestControllerWithMapping("/v1/tag")
 @RequiredArgsConstructor
 public class TagControllerImpl implements TagController {
 

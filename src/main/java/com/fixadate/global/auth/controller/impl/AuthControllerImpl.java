@@ -1,4 +1,4 @@
-package com.fixadate.global.auth.controller;
+package com.fixadate.global.auth.controller.impl;
 
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.global.annotation.RestControllerWithMapping;
+import com.fixadate.global.auth.controller.AuthController;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.dto.response.MemberSigninResponse;
@@ -27,7 +28,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@RestControllerWithMapping("/auth")
+@RestControllerWithMapping("/v1/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthControllerImpl implements AuthController {

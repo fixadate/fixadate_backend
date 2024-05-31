@@ -1,4 +1,4 @@
-package com.fixadate.domain.member.controller;
+package com.fixadate.domain.member.controller.impl;
 
 import java.util.List;
 
@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fixadate.domain.member.controller.MemberController;
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.util.S3Util;
 
 import lombok.RequiredArgsConstructor;
 
-@RestControllerWithMapping("/member")
+@RestControllerWithMapping("/v1/member")
 @RequiredArgsConstructor
 public class MemberControllerImpl implements MemberController {
 	private final MemberService memberService;
