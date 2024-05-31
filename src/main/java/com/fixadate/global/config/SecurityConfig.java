@@ -35,22 +35,22 @@ public class SecurityConfig {
 		"/swagger-ui/index.html/**",
 		"/favicon.ico",
 		/* google calendar */
-		"/google/**",
+		"/v1/google/**",
 		"/oauth2Login/**",
 		"/oauth2callback/**"
 		,
 		/* signIn */
-		"/auth/signin",
-		"/auth/signup",
+		"/v1/auth/signin",
+		"/v1/auth/signup",
 		/* etc */
-		"/member/nickname",
+		"/v1/member/nickname",
 		"/error",
 
 		/* reissue */
-		"/auth/reissue",
+		"/v1/auth/reissue",
 
 		/* logout */
-		"/auth/logout"
+		"/v1/auth/logout"
 	};
 
 	@Bean
