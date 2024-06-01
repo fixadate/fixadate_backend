@@ -1,5 +1,6 @@
 package com.fixadate.domain.tag.service;
 
+import static com.fixadate.domain.tag.mapper.TagMapper.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 
 import java.util.List;
@@ -7,14 +8,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.domain.tag.mapper.TagMapper;
 import com.fixadate.domain.tag.repository.TagRepository;
-import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.exception.badRequest.TagBadRequestException;
 import com.fixadate.global.exception.notFound.TagNotFoundException;
 
@@ -30,7 +32,7 @@ public class TagService {
 	@Transactional
 	public void registTag(Member member, TagRequest tagRequest) {
 		checkColor(tagRequest.name(), member);
-		Tag tag = tagRequest.toEntity(member);
+		Tag tag = toEntity(member, tagRequest);
 		tagRepository.save(tag);
 	}
 
@@ -49,7 +51,7 @@ public class TagService {
 
 	private List<TagResponse> createTagResponsesWithTags(List<Tag> tags) {
 		return tags.stream()
-			.map(TagResponse::of)
+			.map(TagMapper::toResponse)
 			.toList();
 	}
 
@@ -71,7 +73,7 @@ public class TagService {
 			updateAdateColor(tag.getAdates());
 		}
 
-		return TagResponse.of(tag);
+		return toResponse(tag);
 	}
 
 	private boolean isValidString(String str) {
