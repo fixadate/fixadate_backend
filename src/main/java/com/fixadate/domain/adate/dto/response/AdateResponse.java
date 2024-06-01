@@ -2,7 +2,7 @@ package com.fixadate.domain.adate.dto.response;
 
 import java.time.LocalDateTime;
 
-public record AdateCalendarEventResponse(
+public record AdateResponse(
 	String title,
 	String notes,
 	String location,

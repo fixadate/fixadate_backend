@@ -3,7 +3,7 @@ package com.fixadate.domain.adate.mapper;
 import static com.fixadate.domain.adate.entity.Adate.*;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
-import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
+import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
@@ -54,8 +54,8 @@ public class AdateMapper {
 			.build();
 	}
 
-	public static AdateCalendarEventResponse entityToCalendarEventResponse(Adate adate) {
-		return new AdateCalendarEventResponse(
+	public static AdateResponse toResponse(Adate adate) {
+		return new AdateResponse(
 			adate.getTitle(),
 			adate.getNotes(),
 			adate.getLocation(),

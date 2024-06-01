@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
-import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
+import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.global.jwt.MemberPrincipal;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,11 +49,11 @@ public interface AdateController {
 	})
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
-			content = @Content(schema = @Schema(implementation = AdateCalendarEventResponse.class))),
+			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<List<AdateCalendarEventResponse>> getAdates(MemberPrincipal memberPrincipal,
+	ResponseEntity<List<AdateResponse>> getAdates(MemberPrincipal memberPrincipal,
 		LocalDateTime startDateTime, LocalDateTime endDateTime);
 
 	@Operation(summary = "Adate 캘린더 이벤트 조회[월 조회]", description = "해당 월에 존재하는 calendar를 조회합니다.[jwt 필요]")
@@ -66,11 +66,11 @@ public interface AdateController {
 	})
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
-			content = @Content(schema = @Schema(implementation = AdateCalendarEventResponse.class))),
+			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByMonth(MemberPrincipal memberPrincipal, int year,
+	ResponseEntity<List<AdateResponse>> getAdatesByMonth(MemberPrincipal memberPrincipal, int year,
 		int month);
 
 	@Operation(summary = "Adate 캘린더 이벤트 조회[일 조회]", description = "해당 기간에 존재하는 calendar를 조회합니다.[jwt 필요]")
@@ -83,11 +83,11 @@ public interface AdateController {
 	})
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
-			content = @Content(schema = @Schema(implementation = AdateCalendarEventResponse.class))),
+			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByWeeks(MemberPrincipal memberPrincipal,
+	public ResponseEntity<List<AdateResponse>> getAdatesByWeeks(MemberPrincipal memberPrincipal,
 		LocalDate firstDay, LocalDate lastDay);
 
 	@Operation(summary = "adate 삭제", description = "adate를 삭제합니다.[jwt 필요]")
@@ -109,7 +109,7 @@ public interface AdateController {
 		content = @Content(schema = @Schema(implementation = AdateUpdateRequest.class)), required = true)
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
-			content = @Content(schema = @Schema(implementation = AdateCalendarEventResponse.class))),
+			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
@@ -117,6 +117,6 @@ public interface AdateController {
 		@ApiResponse(responseCode = "404", description = "calendarId로 adate를 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	public ResponseEntity<AdateCalendarEventResponse> updateAdate(String calendarId,
+	public ResponseEntity<AdateResponse> updateAdate(String calendarId,
 		AdateUpdateRequest adateUpdateRequest, MemberPrincipal memberPrincipal);
 }
