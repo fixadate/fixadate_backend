@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
+import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
@@ -92,14 +93,14 @@ public class AdateService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
+	public List<AdateViewResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
 		LocalDateTime endDateTime) {
 		List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
-		return getResponseDto(adates);
+		return getResponseDtosFromAdateList(adates);
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateResponse> getAdatesByMonth(int year, int month, Member member) {
+	public List<AdateViewResponse> getAdatesByMonth(int year, int month, Member member) {
 		LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
 		LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
 		checkStartAndEndTime(startTime, endTime);
@@ -108,7 +109,7 @@ public class AdateService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {
+	public List<AdateViewResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {
 		LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
 		LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
 		checkStartAndEndTime(startTime, endTime);
@@ -130,12 +131,12 @@ public class AdateService {
 
 		adate.updateAdate(adateUpdateRequest);
 		setAdateTag(adate, member, adateUpdateRequest.tagName());
-		return toResponse(adate);
+		return toAdateResponse(adate);
 	}
 
-	private List<AdateResponse> getResponseDto(List<Adate> adates) {
+	private List<AdateViewResponse> getResponseDtosFromAdateList(List<Adate> adates) {
 		return adates.stream()
-			.map(AdateMapper::toResponse)
+			.map(AdateMapper::toAdateViewResponse)
 			.toList();
 	}
 }

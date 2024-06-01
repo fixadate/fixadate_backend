@@ -4,6 +4,7 @@ import static com.fixadate.domain.adate.entity.Adate.*;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
+import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
@@ -54,7 +55,7 @@ public class AdateMapper {
 			.build();
 	}
 
-	public static AdateResponse toResponse(Adate adate) {
+	public static AdateResponse toAdateResponse(Adate adate) {
 		return new AdateResponse(
 			adate.getTitle(),
 			adate.getNotes(),
@@ -67,6 +68,17 @@ public class AdateMapper {
 			adate.getEndsWhen(),
 			adate.getCalendarId(),
 			adate.isReminders()
+		);
+	}
+
+	public static AdateViewResponse toAdateViewResponse(Adate adate) {
+		return new AdateViewResponse(
+			adate.getTitle(),
+			adate.getColor(),
+			adate.getIfAllDay(),
+			adate.getStartsWhen(),
+			adate.getEndsWhen(),
+			adate.getCalendarId()
 		);
 	}
 }

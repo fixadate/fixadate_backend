@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
+import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
@@ -112,7 +113,7 @@ public class AdateServiceTest {
 			adateQueryRepository.findByDateRange(any(Member.class), any(LocalDateTime.class), any(LocalDateTime.class)))
 			.willReturn(ADATES);
 
-		List<AdateResponse> resultAdates = adateService.getAdateByStartAndEndTime(MEMBER,
+		List<AdateViewResponse> resultAdates = adateService.getAdateByStartAndEndTime(MEMBER,
 			LocalDateTime.now(),
 			LocalDateTime.now());
 
@@ -127,7 +128,7 @@ public class AdateServiceTest {
 			adateQueryRepository.findByDateRange(any(Member.class), any(LocalDateTime.class), any(LocalDateTime.class)))
 			.willReturn(ADATES);
 
-		List<AdateResponse> resultAdates = adateService.getAdatesByMonth(2024, 5, MEMBER);
+		List<AdateViewResponse> resultAdates = adateService.getAdatesByMonth(2024, 5, MEMBER);
 
 		assertEquals(ADATES.size(), resultAdates.size());
 		assertEquals(ADATES.get(0).getTitle(), resultAdates.get(0).title());
@@ -140,7 +141,7 @@ public class AdateServiceTest {
 			adateQueryRepository.findByDateRange(any(Member.class), any(LocalDateTime.class), any(LocalDateTime.class)))
 			.willReturn(ADATES);
 
-		List<AdateResponse> resultAdates = adateService.getAdatesByWeek(LocalDate.now(), LocalDate.now(),
+		List<AdateViewResponse> resultAdates = adateService.getAdatesByWeek(LocalDate.now(), LocalDate.now(),
 			MEMBER);
 
 		assertEquals(ADATES.size(), resultAdates.size());
