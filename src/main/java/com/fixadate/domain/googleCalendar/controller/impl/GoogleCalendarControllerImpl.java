@@ -4,7 +4,6 @@ import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.googleCalendar.controller.GoogleCalendarController;
-import com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventResponse;
 import com.fixadate.domain.googleCalendar.entity.constant.WebhookHeaders;
 import com.fixadate.domain.googleCalendar.service.GoogleService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
@@ -69,7 +67,7 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 
 	@Override
 	@PostMapping("/notifications")
-	public ResponseEntity<List<GoogleCalendarEventResponse>> printNotification(
+	public ResponseEntity<Void> getPushNotification(
 		@RequestHeader(WebhookHeaders.RESOURCE_ID) String resourceId,
 		@RequestHeader(WebhookHeaders.RESOURCE_URI) String resourceUri,
 		@RequestHeader(WebhookHeaders.CHANNEL_ID) String channelId,

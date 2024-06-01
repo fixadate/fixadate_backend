@@ -99,39 +99,21 @@ public class Adate extends BaseTimeEntity {
 		this.reminders = adateUpdateRequest.reminders();
 	}
 
-	public static Adate getAdateFromEvent(Event event, Member member, Tag tag) {
-		return Adate.builder()
-			.title(event.getSummary())
-			.notes(event.getDescription())
-			.location(event.getLocation())
-			.color(event.getColorId())
-			.startsWhen(checkStartDateTimeIsNull(event))
-			.endsWhen(checkEndDateTimeIsNull(event))
-			.ifAllDay(checkEventIsAllDayType(event))
-			.calendarId(event.getId())
-			.color(tag.getColor())
-			.etag(event.getEtag())
-			.reminders(event.getReminders().getUseDefault())
-			.tag(tag)
-			.member(member)
-			.build();
-	}
-
-	private static LocalDateTime checkStartDateTimeIsNull(Event event) {
+	public static LocalDateTime checkStartDateTimeIsNull(Event event) {
 		if (event.getStart().getDateTime() == null) {
 			return getLocalDateTimeFromDate(event.getStart().getDate());
 		}
 		return getLocalDateTimeFromDateTime(event.getStart().getDateTime());
 	}
 
-	private static LocalDateTime checkEndDateTimeIsNull(Event event) {
+	public static LocalDateTime checkEndDateTimeIsNull(Event event) {
 		if (event.getStart().getDateTime() == null) {
 			return getLocalDateTimeFromDate(event.getEnd().getDate());
 		}
 		return getLocalDateTimeFromDateTime(event.getEnd().getDateTime());
 	}
 
-	private static boolean checkEventIsAllDayType(Event event) {
+	public static boolean checkEventIsAllDayType(Event event) {
 		return event.getStart().getDateTime() == null;
 	}
 

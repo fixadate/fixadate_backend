@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fixadate.domain.adate.controller.AdateController;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
-import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
+import com.fixadate.domain.adate.dto.response.AdateResponse;
+import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.annotation.RestControllerWithMapping;
@@ -43,23 +44,23 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@GetMapping()
-	public ResponseEntity<List<AdateCalendarEventResponse>> getAdates(
+	public ResponseEntity<List<AdateViewResponse>> getAdates(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam LocalDateTime startDateTime,
 		@RequestParam LocalDateTime endDateTime) {
 		Member member = memberPrincipal.getMember();
-		List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
+		List<AdateViewResponse> adateRespons = adateService.
 			getAdateByStartAndEndTime(member, startDateTime, endDateTime);
-		return ResponseEntity.ok(adateCalendarEventResponses);
+		return ResponseEntity.ok(adateRespons);
 	}
 
 	@PatchMapping()
-	public ResponseEntity<AdateCalendarEventResponse> updateAdate(@RequestParam String calendarId,
+	public ResponseEntity<AdateResponse> updateAdate(@RequestParam String calendarId,
 		@Valid @RequestBody AdateUpdateRequest adateUpdateRequest,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-		AdateCalendarEventResponse adateCalendarEventResponse = adateService.updateAdate(calendarId, adateUpdateRequest,
+		AdateResponse adateResponse = adateService.updateAdate(calendarId, adateUpdateRequest,
 			memberPrincipal.getMember());
-		return ResponseEntity.ok(adateCalendarEventResponse);
+		return ResponseEntity.ok(adateResponse);
 	}
 
 	@Override
@@ -71,26 +72,26 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@GetMapping("/month")
-	public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByMonth(
+	public ResponseEntity<List<AdateViewResponse>> getAdatesByMonth(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam int year,
 		@RequestParam int month) {
 		Member member = memberPrincipal.getMember();
-		List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
+		List<AdateViewResponse> adateRespons = adateService.
 			getAdatesByMonth(year, month, member);
-		return ResponseEntity.ok(adateCalendarEventResponses);
+		return ResponseEntity.ok(adateRespons);
 	}
 
 	@Override
 	@GetMapping("/day")
-	public ResponseEntity<List<AdateCalendarEventResponse>> getAdatesByWeeks(
+	public ResponseEntity<List<AdateViewResponse>> getAdatesByWeeks(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam LocalDate firstDay,
 		@RequestParam LocalDate lastDay) {
 		Member member = memberPrincipal.getMember();
-		List<AdateCalendarEventResponse> adateCalendarEventResponses = adateService.
+		List<AdateViewResponse> adateRespons = adateService.
 			getAdatesByWeek(firstDay, lastDay, member);
-		return ResponseEntity.ok(adateCalendarEventResponses);
+		return ResponseEntity.ok(adateRespons);
 	}
 
 }

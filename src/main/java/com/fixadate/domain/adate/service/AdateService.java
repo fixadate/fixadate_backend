@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.service;
 
+import static com.fixadate.domain.adate.mapper.AdateMapper.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.TimeUtil.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
@@ -12,15 +13,17 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
-import com.fixadate.domain.adate.dto.response.AdateCalendarEventResponse;
+import com.fixadate.domain.adate.dto.response.AdateResponse;
+import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.exception.badRequest.InvalidTimeException;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
 import com.fixadate.global.exception.notFound.TagNotFoundException;
@@ -39,7 +42,7 @@ public class AdateService {
 
 	@Transactional
 	public void registAdateEvent(AdateRegistRequest adateRegistRequest, String tagName, Member member) {
-		Adate adate = adateRegistRequest.toEntity(member);
+		Adate adate = registDtoToEntity(adateRegistRequest, member);
 		if (tagName != null && !tagName.isEmpty()) {
 			setAdateTag(adate, member, tagName);
 		}
@@ -57,7 +60,7 @@ public class AdateService {
 	public void registEvents(List<Event> events, Member member) {
 		Tag tag = getGoogleCalendarTagFromMember(member);
 		List<Adate> adates = events.stream()
-			.map(event -> Adate.getAdateFromEvent(event, member, tag))
+			.map(event -> eventToEntity(event, member, tag))
 			.toList();
 		adateRepository.saveAll(adates);
 	}
@@ -90,14 +93,14 @@ public class AdateService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateCalendarEventResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
+	public List<AdateViewResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
 		LocalDateTime endDateTime) {
 		List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
-		return getResponseDto(adates);
+		return getResponseDtosFromAdateList(adates);
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateCalendarEventResponse> getAdatesByMonth(int year, int month, Member member) {
+	public List<AdateViewResponse> getAdatesByMonth(int year, int month, Member member) {
 		LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
 		LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
 		checkStartAndEndTime(startTime, endTime);
@@ -106,7 +109,7 @@ public class AdateService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateCalendarEventResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {
+	public List<AdateViewResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {
 		LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
 		LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
 		checkStartAndEndTime(startTime, endTime);
@@ -121,19 +124,19 @@ public class AdateService {
 	}
 
 	@Transactional
-	public AdateCalendarEventResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest,
+	public AdateResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest,
 		Member member) {
 		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
 		adate.updateAdate(adateUpdateRequest);
 		setAdateTag(adate, member, adateUpdateRequest.tagName());
-		return AdateCalendarEventResponse.of(adate);
+		return toAdateResponse(adate);
 	}
 
-	private List<AdateCalendarEventResponse> getResponseDto(List<Adate> adates) {
+	private List<AdateViewResponse> getResponseDtosFromAdateList(List<Adate> adates) {
 		return adates.stream()
-			.map(AdateCalendarEventResponse::of)
+			.map(AdateMapper::toAdateViewResponse)
 			.toList();
 	}
 }

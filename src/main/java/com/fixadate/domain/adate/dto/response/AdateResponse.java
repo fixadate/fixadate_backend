@@ -1,19 +1,18 @@
-package com.fixadate.domain.adate.dto.request;
+package com.fixadate.domain.adate.dto.response;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.NotBlank;
-
-public record AdateRegistRequest(
-	@NotBlank(message = "Adate title cannot be blank") String title,
+public record AdateResponse(
+	String title,
 	String notes,
 	String location,
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
-	String tagName,
+	String color,
 	boolean ifAllDay,
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen,
+	String calendarId,
 	boolean reminders
 ) {
 }
