@@ -8,10 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.exception.ExceptionCode;
-import com.fixadate.global.exception.notFound.MemberNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,10 +25,5 @@ public class MemberService implements UserDetailsService {
 
 	public String getRandomNickname(List<String> strings) {
 		return strings.get(random.nextInt(strings.size())).trim();
-	}
-
-	public Member getMemberFromId(String memberId) {
-		return memberRepository.findMemberById(memberId)
-			.orElseThrow(() -> new MemberNotFoundException(ExceptionCode.NOT_FOUND_MEMBER_ID));
 	}
 }

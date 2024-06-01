@@ -1,5 +1,6 @@
 package com.fixadate.global.auth.service;
 
+import static com.fixadate.domain.member.mapper.MemberMapper.*;
 import static com.fixadate.global.auth.entity.OAuthProvider.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
@@ -11,10 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.dto.response.MemberSigninResponse;
@@ -39,7 +40,7 @@ public class AuthService {
 			memberOAuthRequest.email(), memberOAuthRequest.memberName()
 		).orElseThrow(() -> new AuthException(NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME));
 		authenticateMember(memberOAuthRequest, member);
-		return MemberSigninResponse.of(member);
+		return toResponse(member);
 	}
 
 	private Optional<Member> findMemberByOAuthProviderAndEmailAndName(OAuthProvider oauthProvider, String email,
@@ -63,8 +64,7 @@ public class AuthService {
 			throw new AuthException(ALREADY_EXISTS_MEMBER);
 		}
 		String encodedOauthId = passwordEncoder.encode(memberRegistRequest.oauthId());
-		//fixme modelmapper 사용해서 구현해보기
-		Member member = memberRegistRequest.of(encodedOauthId);
+		Member member = toEntity(memberRegistRequest, encodedOauthId);
 		member.createMemberId();
 		memberRepository.save(member);
 
