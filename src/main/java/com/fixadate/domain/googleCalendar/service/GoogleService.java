@@ -1,5 +1,6 @@
 package com.fixadate.domain.googleCalendar.service;
 
+import static com.fixadate.domain.googleCalendar.mapper.GoogleMapper.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
@@ -57,7 +58,7 @@ public class GoogleService {
 			request.setSyncToken(syncToken);
 		} else {
 			Date oneYearAgo = GoogleUtil.getRelativeDate(java.util.Calendar.MONTH, -1);
-			request.setTimeMin(new DateTime(oneYearAgo, TimeZone.getTimeZone("UTC")));
+			request.setTimeMin(new DateTime(oneYearAgo, TimeZone.getTimeZone(UTC.getValue())));
 		}
 		String pageToken = null;
 		Events events = null;
@@ -143,9 +144,8 @@ public class GoogleService {
 	@Transactional
 	public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String
 		memberId) {
-		//todo : mapper 사용하는 방향으로 리팩토링 하기
-		GoogleCredentials googleCredentials = GoogleCredentials
-			.getGoogleCredentialsFromCredentials(channel, userId, tokenResponse);
+		GoogleCredentials googleCredentials = getGoogleCredentialsFromCredentials(channel, userId, tokenResponse);
+
 		Member member = findMemberAndSetRelationship(memberId, googleCredentials);
 		googleCredentials.setMember(member);
 
@@ -169,7 +169,8 @@ public class GoogleService {
 		GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByMember(member)
 			.orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER));
 
-		googleUtil.stop(googleCredentials.getUserId(), googleCredentials.toChannel());
+		googleUtil.stop(googleCredentials.getUserId(), toChannel(googleCredentials.getChannelId(), googleCredentials
+			.getResourceId()));
 		googleCredentials.setGoogleCredentialsOrphan();
 	}
 }

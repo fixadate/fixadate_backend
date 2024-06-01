@@ -1,10 +1,7 @@
 package com.fixadate.domain.googleCalendar.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 
-import com.fixadate.domain.googleCalendar.dto.response.GoogleCalendarEventResponse;
 import com.google.api.services.calendar.model.Channel;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +35,7 @@ public interface GoogleCalendarController {
 		@ApiResponse(responseCode = "400", description = "AdateIoException",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<List<GoogleCalendarEventResponse>> printNotification(String resourceId,
+	ResponseEntity<Void> getPushNotification(String resourceId,
 		String resourceUri,
 		String channelId,
 		String channelExpiration,

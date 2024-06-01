@@ -18,27 +18,15 @@ public class TimeUtil {
 	}
 
 	public static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {
-		try {
-			DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER);
-			return LocalDateTime.parse(dateTime.toStringRfc3339(), f);
-		} catch (Exception e) {
-			//fixme 정보를 알려주는 log로 변경할 것
-			e.printStackTrace();
-			return null;
-		}
+		DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER);
+		return LocalDateTime.parse(dateTime.toStringRfc3339(), f);
 	}
 
 	public static LocalDateTime getLocalDateTimeFromDate(DateTime dateTime) {
-		try {
-			DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_FORMATTER);
-			LocalDate localDateTime = LocalDate.parse(dateTime.toStringRfc3339(), f);
-			java.time.LocalTime localTime = LocalTime.MIDNIGHT;
-			return LocalDateTime.of(localDateTime, localTime);
-		} catch (Exception e) {
-			//fixme 정보를 알려주는 log로 변경할 것
-			e.printStackTrace();
-			return null;
-		}
+		DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_FORMATTER);
+		LocalDate localDateTime = LocalDate.parse(dateTime.toStringRfc3339(), f);
+		java.time.LocalTime localTime = LocalTime.MIDNIGHT;
+		return LocalDateTime.of(localDateTime, localTime);
 	}
 
 	public static LocalDateTime getLocalDateTimeFromLocalDate(LocalDate localDate, boolean isFirstDay) {
