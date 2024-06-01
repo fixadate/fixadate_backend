@@ -13,7 +13,7 @@ hooks:
     - location: scripts/deploy.sh
       timeout: 120
       runas: ubuntu
-  ApplicationStart:
-    - location: scripts/deploy_no_stop.sh
-      timeout: 1000
-      runas: ubuntu
+#  ApplicationStart:
+#    - location: scripts/deploy_no_stop.sh
+#      timeout: 1000
+#      runas: ubuntu
