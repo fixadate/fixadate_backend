@@ -107,7 +107,7 @@ public class Adate extends BaseTimeEntity {
 	}
 
 	public static LocalDateTime checkEndDateTimeIsNull(Event event) {
-		if (event.getStart().getDateTime() == null) {
+		if (event.getEnd().getDateTime() == null) {
 			return getLocalDateTimeFromDate(event.getEnd().getDate());
 		}
 		return getLocalDateTimeFromDateTime(event.getEnd().getDateTime());
