@@ -84,7 +84,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.navercorp.fixturemonkey/fixture-monkey
     implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey', version: '1.0.17'
-
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.0.14")
 }
 
 tasks.named('test') {
