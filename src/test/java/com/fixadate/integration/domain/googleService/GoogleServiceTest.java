@@ -68,17 +68,22 @@ public class GoogleServiceTest {
 	@DisplayName("이벤트 동기화 테스트")
 	@Test
 	void syncEventsTest() {
-		List<Adate> adate = EventMapper.createAdates();
+		List<Adate> adates = EventMapper.createAdates();
+		adates.forEach(adate -> System.out.println(adate.getCalendarId()));
 
 		MemberRegistRequest memberRegistRequest = EventMapper.createRegistDto();
 		authService.registMember(memberRegistRequest);
 		Optional<Member> member = memberRepository.findMemberByEmail(memberRegistRequest.email());
-		List<Event> events = adate.stream().map(EventMapper::toEvent).collect(Collectors.toList());
+		List<Event> events = adates.stream().map(EventMapper::toEvent).collect(Collectors.toList());
 
 		assertAll(
 			() -> assertDoesNotThrow(() -> googleService.syncEvents(events, member.get())),
 			() -> assertNotNull(member.get().getAdates())
 		);
+
+		for (Adate adate : adates) {
+			assertNotNull(adateRepository.findAdateByCalendarId(adate.getCalendarId()));
+		}
 	}
 
 }
