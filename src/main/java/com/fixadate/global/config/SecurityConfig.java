@@ -36,6 +36,7 @@ public class SecurityConfig {
 		"/favicon.ico",
 		/* google calendar */
 		"/v1/google/**",
+		"/google/**",
 		"/oauth2Login/**",
 		"/oauth2callback/**"
 		,
