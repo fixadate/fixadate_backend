@@ -11,7 +11,7 @@ public enum ConstantValue {
 	APPLICATION_NAME("fixadate"),
 	CHANNEL_TYPE("web_hook"),
 	BASE_URL("https://api.fixadate.app"),
-	NOTIFICATION_URL("/google/notifications"),
+	NOTIFICATION_URL("/v1/google/notifications"),
 	FILE_PATH("/credentials.json"),
 	TOKEN_DIRECTORY_PATH("tokens"),
 	CALENDAR_ID("primary"),
