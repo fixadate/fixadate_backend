@@ -34,7 +34,7 @@ public class Oauth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
 			.build();
 		resp.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
 		resp.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-		resp.sendRedirect("/google/watch?userId=" + userId + "&memberId=" + memberId);
+		resp.sendRedirect("/v1/google/watch?userId=" + userId + "&memberId=" + memberId);
 	}
 
 	/**
