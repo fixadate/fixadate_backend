@@ -4,7 +4,7 @@ REPOSITORY=/home/ubuntu/fixadate
 cd $REPOSITORY
 
 APP_NAME=fixadate
-JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
+JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
 #CURRENT_PID=$(pgrep -f $APP_NAME)
