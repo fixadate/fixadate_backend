@@ -13,19 +13,19 @@ CURRENT_PID=$(sudo netstat -ntlp | grep :8081 | awk '{print $7}' | cut -d'/' -f1
 
 NEW_PID=0
 
-if [ -z $CURRENT_PID ]
+if [ -z "$CURRENT_PID" ]
 then
   NEW_PID=8081
   echo "> Deploy - $JAR_PATH "
   nohup java -jar $JAR_PATH --server.port=$NEW_PID > /home/ubuntu/deploy.log 2>&1 &
 
-elif [ $CURRENT_PID -eq 8081 ]
+elif [ "$CURRENT_PID" -eq 8081 ]
 then
   NEW_PID=8082
   echo "> Deploy - $JAR_PATH "
   nohup java -jar $JAR_PATH --server.port=$NEW_PID > /home/ubuntu/deploy.log 2>&1 &
 
-elif [ $CURRENT_PID -eq 8082 ]
+elif [ "$CURRENT_PID" -eq 8082 ]
 then
   NEW_PID=8081
   echo "> Deploy - $JAR_PATH "
