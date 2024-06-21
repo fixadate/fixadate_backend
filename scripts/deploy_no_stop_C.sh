@@ -1,6 +1,6 @@
 SUCCESS_HEALTH=health
 WAS_IP=3.37.141.38
-NGINX_IP=$(cat /home/ubuntu/build/nginx_ip.env)
+NGINX_IP=3.37.141.38
 
 CURRENT_PORT=$(sudo ssh -i /home/ubuntu/build/build/libs/hype-ec2-key.pem ubuntu@${NGINX_IP} sudo cat /etc/nginx/conf.d/service_url.inc | grep -Po '[0-9]+' | tail -1)
 TARGET_PORT=0
