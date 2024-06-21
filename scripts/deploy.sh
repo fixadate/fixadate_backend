@@ -7,7 +7,9 @@ APP_NAME=fixadate
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
-CURRENT_PID=$(pgrep -f $APP_NAME)
+#CURRENT_PID=$(pgrep -f $APP_NAME)
+CURRENT_PID=$(sudo netstat -ntlp | grep :8081 | awk '{print $7}' | cut -d'/' -f1)
+CURRENT_PID=$(sudo netstat -ntlp | grep :8082 | awk '{print $7}' | cut -d'/' -f1)
 
 NEW_PID=0
 
