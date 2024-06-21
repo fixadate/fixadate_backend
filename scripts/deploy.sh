@@ -11,7 +11,7 @@ CURRENT_PID=$(pgrep -f $APP_NAME)
 
 NEW_PID=0
 
-if [ -z $CURRENT_PID -eq 8081]
+if [ ${CURRENT_PID} -eq 8081 ]
 then
   NEW_PID=8082
   echo "> Deploy - $JAR_PATH "
