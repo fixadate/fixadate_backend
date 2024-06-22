@@ -7,17 +7,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;
+import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.fixadate.global.auth.entity.OAuthProvider;
-import com.fixadate.global.util.RandomValueUtil;
 
+import IDMaker.idmaker.IDMaker;
+import IDMaker.idmaker.IDMakerEntityListener;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -39,9 +41,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true))
+@EntityListeners(IDMakerEntityListener.class)
 public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
+	@IDMaker(length = 6)
 	private String id;
 
 	@Column(nullable = false)
@@ -96,10 +100,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return AuthorityUtils.commaSeparatedStringToAuthorityList(role);
-	}
-
-	public void createMemberId() {
-		this.id = System.currentTimeMillis() + RandomValueUtil.createRandomString(7);
 	}
 
 	@Override
