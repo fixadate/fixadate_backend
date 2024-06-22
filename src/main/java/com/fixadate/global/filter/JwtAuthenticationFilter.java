@@ -1,4 +1,4 @@
-package com.fixadate.global.jwt.filter;
+package com.fixadate.global.filter;
 
 import java.io.IOException;
 
