@@ -8,8 +8,10 @@ build/
 src/main/resources/credentials.json
 src/main/resources/application-prod.yml
 src/main/resources/application-test.yml
+src/main/resources/application-loadtest.yml
 src/main/java/com/fixadate/global/util/converter/Key.java
 /db
+ngrinder-controller
 
 src/main/generated/
 src/test/resources/application.yml

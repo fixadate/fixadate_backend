@@ -65,7 +65,6 @@ public class AuthService {
 		}
 		String encodedOauthId = passwordEncoder.encode(memberRegistRequest.oauthId());
 		Member member = toEntity(memberRegistRequest, encodedOauthId);
-		member.createMemberId();
 		memberRepository.save(member);
 
 		registGoogleCalendarTag(member);

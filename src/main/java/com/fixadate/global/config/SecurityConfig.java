@@ -67,10 +67,9 @@ public class SecurityConfig {
 			.authorizeHttpRequests((req) -> req
 				.requestMatchers(PERMIT_URL_ARRAY).permitAll()
 				.anyRequest().authenticated())
-			.exceptionHandling()
-			.accessDeniedHandler(jwtAccessDeniedHandler)
-			.authenticationEntryPoint(authenticationEntryPoint)
-			.and()
+			.exceptionHandling(handling -> handling
+				.accessDeniedHandler(jwtAccessDeniedHandler)
+				.authenticationEntryPoint(authenticationEntryPoint))
 			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
 			.build();

@@ -4,7 +4,7 @@ services:
   mysql:
     image: mysql:8.0.35
     ports:
-      - 44135:3306
+      - "44135:3306"
     volumes:
       - ./db/mysql/data:/var/lib/mysql
       - ./db/mysql/init:/docker-entrypoint-initdb.d
@@ -23,4 +23,19 @@ services:
       - "mode=standalone"
     command: redis-server --port 6379 --requirepass fixadate_redis_password
     ports:
-      - 44136:6379
+      - "44136:6379"
+
+  controller:
+    image: ngrinder/controller
+    restart: always
+    ports:
+      - "9000:80"
+      - "16001:16001"
+      - "12000-12009:12000-12009"
+    volumes:
+      - ./ngrinder-controller:/opt/ngrinder-controller
+  agent:
+    image: ngrinder/agent
+    restart: always
+    links:
+      - controller

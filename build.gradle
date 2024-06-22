@@ -83,8 +83,15 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '6.2.1'
 
     // https://mvnrepository.com/artifact/com.navercorp.fixturemonkey/fixture-monkey
-    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey', version: '1.0.17'
-    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.0.14")
+    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey', version: '1.0.20'
+    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey-jakarta-validation', version: '1.0.20'
+
+    // IDMaker
+    implementation 'io.github.yonggoose:IDMaker:0.5.0'
+
+    // https://mvnrepository.com/artifact/org.jeasy/easy-random-core
+    implementation 'org.jeasy:easy-random-core:5.0.0'
+
 }
 
 tasks.named('test') {
