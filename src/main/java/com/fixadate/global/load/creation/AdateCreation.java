@@ -41,9 +41,11 @@ public class AdateCreation implements ApplicationRunner {
 		EasyRandom easyRandom = get();
 
 		ArrayList<Adate> adates = new ArrayList<>();
-		for (int i = 0; i < 1_000; i++) {
+		for (int i = 0; i < 100_000; i++) {
 			adates.add(easyRandom.nextObject(Adate.class));
 		}
+
+		adateRepository.saveAll(adates);
 	}
 
 	public EasyRandom get() {

@@ -30,7 +30,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(indexes = @Index(name = "calendar_id", columnList = "calendarId", unique = true))
+@Table(indexes = {
+	@Index(name = "calendar_id", columnList = "calendarId", unique = true),
+	@Index(name = "date_range", columnList = "startsWhen,endsWhen")
+})
 public class Adate extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
