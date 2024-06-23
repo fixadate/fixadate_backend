@@ -11,10 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fixadate.global.filter.ExceptionHandlerFilter;
+import com.fixadate.global.filter.JwtAuthenticationFilter;
+import com.fixadate.global.filter.NativeAuthenticationFilter;
 import com.fixadate.global.jwt.CustomAuthenticationEntryPoint;
 import com.fixadate.global.jwt.JwtAccessDeniedHandler;
-import com.fixadate.global.jwt.filter.ExceptionHandlerFilter;
-import com.fixadate.global.jwt.filter.JwtAuthenticationFilter;
 import com.fixadate.global.jwt.service.JwtProvider;
 import com.fixadate.global.util.PasswordEncoderFactories;
 
@@ -27,6 +28,7 @@ public class SecurityConfig {
 	private final JwtProvider jwtProvider;
 	private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
 	private static final String[] PERMIT_URL_ARRAY = {
 		/* swagger v3 */
 		"/swagger-ui/**",
@@ -70,7 +72,8 @@ public class SecurityConfig {
 			.exceptionHandling(handling -> handling
 				.accessDeniedHandler(jwtAccessDeniedHandler)
 				.authenticationEntryPoint(authenticationEntryPoint))
-			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new NativeAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), NativeAuthenticationFilter.class)
 			.addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
 			.build();
 	}
