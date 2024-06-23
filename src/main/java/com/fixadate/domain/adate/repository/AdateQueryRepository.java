@@ -22,9 +22,10 @@ public class AdateQueryRepository {
 		return jpaQueryFactory
 			.selectFrom(adate)
 			.where(adate.member.eq(member))
-			.where(adate.endsWhen.goe(startDateTime)
-				.and(adate.startsWhen.loe(endDateTime)))
+			.where(adate.startsWhen.loe(endDateTime)
+				.and(adate.endsWhen.goe(startDateTime)))
 			.orderBy(adate.startsWhen.asc())
+			.setHint("org.hibernate.readOnly", true)
 			.fetch();
 	}
 }
