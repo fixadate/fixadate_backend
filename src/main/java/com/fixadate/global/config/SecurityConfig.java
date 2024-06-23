@@ -72,9 +72,9 @@ public class SecurityConfig {
 			.exceptionHandling(handling -> handling
 				.accessDeniedHandler(jwtAccessDeniedHandler)
 				.authenticationEntryPoint(authenticationEntryPoint))
-			.addFilterBefore(new NativeAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), NativeAuthenticationFilter.class)
+			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
+			.addFilterBefore(new NativeAuthenticationFilter(), ExceptionHandlerFilter.class)
 			.build();
 	}
 }
