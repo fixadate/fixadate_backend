@@ -30,4 +30,15 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 
 		filterChain.doFilter(request, response);
 	}
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		System.out.println(request.getRequestURI());
+		return request.getRequestURI().contains("/v1/member/nickname") || request.getRequestURI().contains("/error")
+			|| request.getRequestURI().contains("/swagger-ui") || request.getRequestURI()
+			.contains("/swagger-resources")
+			|| request.getRequestURI().contains("/v3/api-docs") || request.getRequestURI()
+			.contains("/swagger-ui/index.html")
+			|| request.getRequestURI().contains("/favicon.ico");
+	}
 }
