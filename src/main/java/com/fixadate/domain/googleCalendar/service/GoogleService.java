@@ -5,12 +5,13 @@ import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,8 @@ public class GoogleService {
 	private final AdateService adateService;
 	private final GoogleRepository googleRepository;
 	private final MemberRepository memberRepository;
+
+	private final ApplicationContext applicationContext;
 
 	@Transactional
 	public void listEvents(String channelId) throws IOException {
@@ -86,31 +89,30 @@ public class GoogleService {
 		setNextSyncToken(events, userId);
 	}
 
-	@Transactional
 	public void syncEvents(List<Event> events, Member member) {
-		List<Event> useLessEvents = new ArrayList<>();
-		List<Adate> eventsToRemove = new ArrayList<>();
-
 		for (Event event : events) {
-			Optional<Adate> adateOptional = adateService.getAdateByCalendarId(event.getId());
-			if (event.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
-				adateOptional.ifPresent(eventsToRemove::add);
-				useLessEvents.add(event);
-				continue;
-			}
-			adateOptional.ifPresent(adate -> {
-				if (adate.getEtag().equals(event.getEtag())) {
-					useLessEvents.add(event);
-				} else {
-					adate.updateFrom(event);
-					useLessEvents.add(event);
-				}
-			});
+			applicationContext.getBean(GoogleService.class).processEvent(event, member);
 		}
+	}
 
-		events.removeAll(useLessEvents);
-		adateService.removeEvents(eventsToRemove);
-		adateService.registEvents(events, member);
+	@Async
+	@Transactional
+	public void processEvent(Event event, Member member) {
+		Optional<Adate> adateOptional = adateService.getAdateByCalendarId(event.getId());
+		if (event.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
+
+			adateOptional.ifPresent(adateService::removeAdate);
+			return;
+		}
+		adateOptional.ifPresent(adate -> {
+			if (!adate.getEtag().equals(event.getEtag())) {
+				adate.updateFrom(event);
+			}
+		});
+
+		if (adateOptional.isEmpty()) {
+			adateService.registEvent(event, member);
+		}
 	}
 
 	public Channel executeWatchRequest(String userId) {

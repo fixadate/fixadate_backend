@@ -39,6 +39,7 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 			.contains("/swagger-resources")
 			|| request.getRequestURI().contains("/v3/api-docs") || request.getRequestURI()
 			.contains("/swagger-ui/index.html")
-			|| request.getRequestURI().contains("/favicon.ico");
+			|| request.getRequestURI().contains("/favicon.ico") || request.getRequestURI()
+			.contains("/v1/google/loadtest");
 	}
 }

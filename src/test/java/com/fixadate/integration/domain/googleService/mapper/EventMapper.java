@@ -92,6 +92,13 @@ public class EventMapper {
 			.set("etag", "Random Etag")
 			.set("reminders", true)
 			.sample();
+		// FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.fieldMonkey();
+		// var adates = fixtureMonkey.giveMeBuilder(Adate.class)
+		// 	.setNull("tag")
+		// 	.setNull("member")
+		// 	.set("id", Values.just(CombinableArbitrary.from(() -> Arbitraries.longs().sample()).unique()))
+		// 	.setNotNull("id")
+		// 	.sampleList(1_000);
 	}
 
 	public static List<Adate> createAdates() {

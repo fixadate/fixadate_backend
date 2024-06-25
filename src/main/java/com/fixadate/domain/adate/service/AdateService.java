@@ -65,6 +65,12 @@ public class AdateService {
 		adateRepository.saveAll(adates);
 	}
 
+	public void registEvent(Event event, Member member) {
+		Tag tag = getGoogleCalendarTagFromMember(member);
+		Adate adate = eventToEntity(event, member, tag);
+		adateRepository.save(adate);
+	}
+
 	public Tag getGoogleCalendarTagFromMember(Member member) {
 		return tagRepository.findTagByNameAndMember(GOOGLE_CALENDAR.getValue(), member)
 			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
