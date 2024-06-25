@@ -27,6 +27,7 @@ services:
 
   controller:
     image: ngrinder/controller
+    platform: linux/amd64
     restart: always
     ports:
       - "9000:80"
@@ -34,8 +35,11 @@ services:
       - "12000-12009:12000-12009"
     volumes:
       - ./ngrinder-controller:/opt/ngrinder-controller
+    mem_swappiness: 50
   agent:
     image: ngrinder/agent
+    platform: linux/amd64
     restart: always
     links:
       - controller
+    mem_swappiness: 50

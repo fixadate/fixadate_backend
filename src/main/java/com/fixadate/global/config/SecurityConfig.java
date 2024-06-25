@@ -53,7 +53,8 @@ public class SecurityConfig {
 		"/v1/auth/reissue",
 
 		/* logout */
-		"/v1/auth/logout"
+		"/v1/auth/logout",
+		"/v1/google/loadtest"
 	};
 
 	@Bean

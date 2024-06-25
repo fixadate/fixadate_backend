@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fixadate.domain.googleCalendar.controller.GoogleCalendarController;
 import com.fixadate.domain.googleCalendar.entity.constant.WebhookHeaders;
 import com.fixadate.domain.googleCalendar.service.GoogleService;
+import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.exception.badRequest.GoogleIOExcetption;
+import com.fixadate.global.load.creation.AdateCreation;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.services.calendar.model.Channel;
 
@@ -30,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 	private final GoogleService googleService;
+	private final MemberRepository memberRepository;
 
 	@Override
 	@GetMapping("/watch")
@@ -80,6 +84,15 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE);
 
 		}
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	@PostMapping("/loadtest")
+	public ResponseEntity<Void> loadTest() {
+		Member member = memberRepository.findMemberByEmail("kevin0928@naver.com")
+			.orElseThrow(() -> new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE));
+
+		googleService.syncEvents(AdateCreation.createEvents(), member);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }
