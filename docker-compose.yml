@@ -24,22 +24,3 @@ services:
     command: redis-server --port 6379 --requirepass fixadate_redis_password
     ports:
       - "44136:6379"
-
-  controller:
-    image: ngrinder/controller
-    platform: linux/amd64
-    restart: always
-    ports:
-      - "9000:80"
-      - "16001:16001"
-      - "12000-12009:12000-12009"
-    volumes:
-      - ./ngrinder-controller:/opt/ngrinder-controller
-    mem_swappiness: 50
-  agent:
-    image: ngrinder/agent
-    platform: linux/amd64
-    restart: always
-    links:
-      - controller
-    mem_swappiness: 50
