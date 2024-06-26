@@ -89,18 +89,17 @@ public class GoogleService {
 		setNextSyncToken(events, userId);
 	}
 
+	@Async
 	public void syncEvents(List<Event> events, Member member) {
-		for (Event event : events) {
-			applicationContext.getBean(GoogleService.class).processEvent(event, member);
-		}
+		events.parallelStream().forEach(event ->
+			applicationContext.getBean(GoogleService.class).processEvent(event, member)
+		);
 	}
 
-	@Async
 	@Transactional
 	public void processEvent(Event event, Member member) {
 		Optional<Adate> adateOptional = adateService.getAdateByCalendarId(event.getId());
 		if (event.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
-
 			adateOptional.ifPresent(adateService::removeAdate);
 			return;
 		}
