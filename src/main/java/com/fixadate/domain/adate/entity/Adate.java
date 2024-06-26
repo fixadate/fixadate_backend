@@ -30,10 +30,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(indexes = {
-	@Index(name = "calendar_id", columnList = "calendarId", unique = true),
-	@Index(name = "date_range", columnList = "startsWhen,endsWhen")
-})
+@Table(indexes = {@Index(name = "calendar_id", columnList = "calendarId", unique = true),
+	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")})
+
 public class Adate extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -134,3 +133,8 @@ public class Adate extends BaseTimeEntity {
 		this.tag = null;
 	}
 }
+
+/*
+@Table(indexes = {@Index(name = "calendar_id", columnList = "calendarId", unique = true),
+	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")})
+ */
