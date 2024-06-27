@@ -6,7 +6,7 @@ CREATE TABLE member
     name                  VARCHAR(255) NOT NULL,
     profile_img           VARCHAR(255),
     nickname              VARCHAR(255) NOT NULL,
-    birth                 INT,
+    birth                 VARCHAR(255),
     gender                VARCHAR(255),
     profession            VARCHAR(255),
     email                 VARCHAR(255),

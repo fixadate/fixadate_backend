@@ -61,7 +61,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@Column(nullable = false)
 	private String nickname;
 
-	private Integer birth;
+	private String birth;
 
 	private String gender;
 

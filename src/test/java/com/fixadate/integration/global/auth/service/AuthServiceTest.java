@@ -34,9 +34,9 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.service.AuthService;
@@ -317,7 +317,7 @@ class AuthServiceTest {
 			ArgumentsAggregationException {
 			return new MemberRegistRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
 				argumentsAccessor.getString(2), argumentsAccessor.getString(3),
-				argumentsAccessor.getString(4), argumentsAccessor.getInteger(5),
+				argumentsAccessor.getString(4), argumentsAccessor.getString(5),
 				argumentsAccessor.getString(6), argumentsAccessor.getString(7),
 				argumentsAccessor.getString(8), argumentsAccessor.getString(9),
 				argumentsAccessor.getString(10), argumentsAccessor.getString(11));

@@ -1,7 +1,6 @@
 package com.fixadate.global.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record MemberRegistRequest(
 	@NotBlank String oauthId,
@@ -9,7 +8,7 @@ public record MemberRegistRequest(
 	@NotBlank String name,
 	@NotBlank String profileImg,
 	@NotBlank String nickname,
-	@NotNull int birth,
+	@NotBlank String birth,
 	@NotBlank String gender,
 	@NotBlank String profession,
 	@NotBlank String signatureColor,
