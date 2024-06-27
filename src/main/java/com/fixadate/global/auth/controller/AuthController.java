@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.global.auth.dto.request.MemberRegistRequest;
 import com.fixadate.global.auth.dto.response.MemberSigninResponse;
+import com.fixadate.global.auth.dto.response.MemberSignupResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,7 +49,7 @@ public interface AuthController {
 			content = @Content(schema = @Schema(implementation = Void.class)))
 
 	})
-	ResponseEntity<String> signup(@Valid MemberRegistRequest memberRegistRequest);
+	ResponseEntity<MemberSignupResponse> signup(@Valid MemberRegistRequest memberRegistRequest);
 
 	@Operation(summary = "token 재발급", description = "accessToken, refreshToken 재발급")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
