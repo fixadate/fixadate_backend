@@ -16,7 +16,7 @@ public class MemberFixture {
 		.signatureColor("ex_signature_color")
 		.email("ex_email@example.com")
 		.role("ROLE_USER")
-		.birth(0000)
+		.birth("20000928")
 		.adates(Collections.emptyList())
 		.tags(Collections.emptyList())
 		.build();

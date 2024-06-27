@@ -4,7 +4,7 @@ public record MemberSigninResponse(
 	String id,
 	String name,
 	String nickname,
-	Integer birth,
+	String birth,
 	String gender,
 	String profession,
 	String signatureColor,

@@ -69,7 +69,6 @@ public class GoogleServiceTest {
 	@Test
 	void syncEventsTest() {
 		List<Adate> adates = EventMapper.createAdates();
-		adates.forEach(adate -> System.out.println(adate.getCalendarId()));
 
 		MemberRegistRequest memberRegistRequest = EventMapper.createRegistDto();
 		authService.registMember(memberRegistRequest);

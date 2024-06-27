@@ -63,7 +63,7 @@ public class EventMapper {
 			.set("name", "Random Name")
 			.set("profileImg", "Random Profile Image")
 			.set("nickname", "Random Nickname")
-			.set("birth", 2000)
+			.set("birth", "20000928")
 			.set("gender", "Random Gender")
 			.set("profession", "Random Profession")
 			.set("signatureColor", "Random Color")
@@ -92,13 +92,6 @@ public class EventMapper {
 			.set("etag", "Random Etag")
 			.set("reminders", true)
 			.sample();
-		// FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.fieldMonkey();
-		// var adates = fixtureMonkey.giveMeBuilder(Adate.class)
-		// 	.setNull("tag")
-		// 	.setNull("member")
-		// 	.set("id", Values.just(CombinableArbitrary.from(() -> Arbitraries.longs().sample()).unique()))
-		// 	.setNotNull("id")
-		// 	.sampleList(1_000);
 	}
 
 	public static List<Adate> createAdates() {
