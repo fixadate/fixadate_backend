@@ -21,22 +21,66 @@ then
   echo "> Deploy - $JAR_PATH "
   nohup java -jar $JAR_PATH --server.port=$NEW_PID > /home/ubuntu/deploy.log 2>&1 &
 
-  STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $URL)
+  for RETRY in {1..10}
+  do
+    STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $P8081_URL)
     if [ "$STATUS_CODE" -eq 200 ]; then
-      echo "Service is healthy (HTTP 200)"
-      sudo iptables -t nat -L PREROUTING -v -n --line-numbers
-      sudo iptables -t nat -D PREROUTING 1
-
+      break
+    elif [ ${RETRY} -eq 10 ]
+    then
+      echo "> Health Check Fail"
+      exit 1
     fi
+    echo "> Health Check Retry..."
+    sleep 10
+  done
+
+  sudo iptables -t nat -L PREROUTING -v -n --line-numbers
+  sudo iptables -t nat -D PREROUTING 1
+
 elif [ -z "$P8082_PID" ]
 then
   NEW_PID=8082
   echo "> Deploy - $JAR_PATH "
   nohup java -jar $JAR_PATH --server.port=$NEW_PID > /home/ubuntu/deploy.log 2>&1 &
 
+  for RETRY in {1..10}
+  do
+    STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $P8082_URL)
+    if [ "$STATUS_CODE" -eq 200 ]; then
+      break
+    elif [ ${RETRY} -eq 10 ]
+    then
+      echo "> Health Check Fail"
+      exit 1
+    fi
+    echo "> Health Check Retry..."
+    sleep 10
+  done
+
+  sudo iptables -t nat -L PREROUTING -v -n --line-numbers
+  sudo iptables -t nat -D PREROUTING 1
+
 elif [ -z "$P8081_PID" ]
 then
   NEW_PID=8081
   echo "> Deploy - $JAR_PATH "
   nohup java -jar $JAR_PATH --server.port=$NEW_PID > /home/ubuntu/deploy.log 2>&1 &
+
+  for RETRY in {1..10}
+  do
+    STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $P8081_URL)
+    if [ "$STATUS_CODE" -eq 200 ]; then
+      break
+    elif [ ${RETRY} -eq 10 ]
+    then
+      echo "> Health Check Fail"
+      exit 1
+    fi
+    echo "> Health Check Retry..."
+    sleep 10
+  done
+
+  sudo iptables -t nat -L PREROUTING -v -n --line-numbers
+  sudo iptables -t nat -D PREROUTING 1
 fi
