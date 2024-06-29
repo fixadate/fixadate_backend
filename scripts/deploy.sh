@@ -38,6 +38,8 @@ then
   sudo iptables -t nat -L PREROUTING -v -n --line-numbers
   sudo iptables -t nat -D PREROUTING 1
 
+  sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 8081
+
 elif [ -z "$P8082_PID" ]
 then
   NEW_PID=8082
@@ -61,6 +63,8 @@ then
   sudo iptables -t nat -L PREROUTING -v -n --line-numbers
   sudo iptables -t nat -D PREROUTING 1
 
+  sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 8082
+
 elif [ -z "$P8081_PID" ]
 then
   NEW_PID=8081
@@ -83,4 +87,7 @@ then
 
   sudo iptables -t nat -L PREROUTING -v -n --line-numbers
   sudo iptables -t nat -D PREROUTING 1
+
+  sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 8081
+
 fi
