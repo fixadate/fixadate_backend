@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,12 +33,12 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@PostMapping()
-	public ResponseEntity<Void> registerAdateEvent(
+	public ResponseEntity<AdateRegistRequest> registerAdateEvent(
 		@Valid @RequestBody AdateRegistRequest adateRegistRequest,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 		Member member = memberPrincipal.getMember();
 		adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(), member);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.ok(adateRegistRequest);
 	}
 
 	@Override
