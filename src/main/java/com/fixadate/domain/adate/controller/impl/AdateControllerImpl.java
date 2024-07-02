@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,12 +34,12 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@PostMapping()
-	public ResponseEntity<Void> registerAdateEvent(
+	public ResponseEntity<AdateRegistRequest> registerAdateEvent(
 		@Valid @RequestBody AdateRegistRequest adateRegistRequest,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 		Member member = memberPrincipal.getMember();
 		adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(), member);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.ok(adateRegistRequest);
 	}
 
 	@Override
@@ -52,6 +52,12 @@ public class AdateControllerImpl implements AdateController {
 		List<AdateViewResponse> adateRespons = adateService.
 			getAdateByStartAndEndTime(member, startDateTime, endDateTime);
 		return ResponseEntity.ok(adateRespons);
+	}
+
+	@GetMapping("/{calendarId}")
+	public ResponseEntity<AdateResponse> getAdate(@PathVariable String calendarId) {
+		AdateResponse adateResponse = adateService.getAdateResponseByCalendarId(calendarId);
+		return ResponseEntity.ok(adateResponse);
 	}
 
 	@PatchMapping()
@@ -93,5 +99,4 @@ public class AdateControllerImpl implements AdateController {
 			getAdatesByWeek(firstDay, lastDay, member);
 		return ResponseEntity.ok(adateRespons);
 	}
-
 }

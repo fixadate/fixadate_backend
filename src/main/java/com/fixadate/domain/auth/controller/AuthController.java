@@ -1,11 +1,11 @@
-package com.fixadate.global.auth.controller;
+package com.fixadate.domain.auth.controller;
 
 import org.springframework.http.ResponseEntity;
 
-import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.dto.response.MemberSigninResponse;
-import com.fixadate.global.auth.dto.response.MemberSignupResponse;
+import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
+import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

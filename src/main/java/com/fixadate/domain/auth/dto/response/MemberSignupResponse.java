@@ -1,4 +1,4 @@
-package com.fixadate.global.auth.dto.response;
+package com.fixadate.domain.auth.dto.response;
 
 public record MemberSignupResponse(
 	String url) {

@@ -16,10 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.dto.response.MemberSigninResponse;
-import com.fixadate.global.auth.service.AuthService;
+import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
+import com.fixadate.domain.auth.service.AuthService;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {

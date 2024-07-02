@@ -1,4 +1,4 @@
-package com.fixadate.global.auth.entity;
+package com.fixadate.domain.auth.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 public class BaseTimeEntity {
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createDate;
+	@CreatedDate
+	@Column(updatable = false)
+	private LocalDateTime createDate;
 
-    @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+	@LastModifiedDate
+	private LocalDateTime lastModifiedDate;
 }

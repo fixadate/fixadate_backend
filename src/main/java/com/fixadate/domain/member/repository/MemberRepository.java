@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.auth.entity.OAuthProvider;
+import com.fixadate.domain.auth.entity.OAuthProvider;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findMemberById(String id);

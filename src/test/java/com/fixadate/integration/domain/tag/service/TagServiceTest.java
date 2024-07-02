@@ -14,6 +14,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,19 +33,26 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import net.jqwik.api.Arbitraries;
+
+import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.tag.service.TagService;
-import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.exception.badRequest.TagBadRequestException;
 import com.fixadate.global.exception.notFound.TagNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
+import com.fixadate.integration.config.FixtureMonkeyConfig;
 
 import jakarta.transaction.Transactional;
+
+import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.customizer.Values;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest
@@ -88,26 +96,27 @@ class TagServiceTest {
 
 		@DisplayName("모든 조건에 문제가 없는 경우")
 		@Sql(scripts = "/sql/setup/tag_setup.sql")
-		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-		@CsvSource(value = {
-			"red, 회사",
-			"blue, 동아리",
-			"black, 스터디",
-			"purple, 프로젝트",
-			"pink, 연애"
-		})
-		void registTag(@AggregateWith(TagRequestAggregator.class) TagRequest tagRequest) {
+		@Test
+		void registTag() {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
-			assertDoesNotThrow(() -> tagService.registTag(memberOptional.get(), tagRequest));
 
-			Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
-				tagRequest.name(), memberOptional.get());
+			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
+			var tagRequests = fixtureMonkey.giveMeBuilder(TagRequest.class)
+				.set("name", Values.just(CombinableArbitrary.from(() -> Arbitraries.strings().sample()).unique()))
+				.setNotNull("color")
+				.sampleList(100);
 
-			assertAll(
-				() -> assertTrue(tagOptional.isPresent()),
-				() -> assertEquals(tagRequest.name(), tagOptional.get().getName()),
-				() -> assertEquals(tagRequest.color(), tagOptional.get().getColor())
-			);
+			tagRequests.forEach(tagRequest -> {
+				assertDoesNotThrow(() -> tagService.registTag(memberOptional.get(), tagRequest));
+				Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
+					tagRequest.name(), memberOptional.get());
+
+				assertAll(
+					() -> assertTrue(tagOptional.isPresent()),
+					() -> assertEquals(tagRequest.name(), tagOptional.get().getName()),
+					() -> assertEquals(tagRequest.color(), tagOptional.get().getColor())
+				);
+			});
 		}
 
 		@DisplayName("중복된 이름이 이미 있는 경우")

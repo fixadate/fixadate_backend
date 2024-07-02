@@ -74,6 +74,7 @@ public class AdateMapper {
 	public static AdateViewResponse toAdateViewResponse(Adate adate) {
 		return new AdateViewResponse(
 			adate.getTitle(),
+			adate.getNotes(),
 			adate.getColor(),
 			adate.getIfAllDay(),
 			adate.getStartsWhen(),

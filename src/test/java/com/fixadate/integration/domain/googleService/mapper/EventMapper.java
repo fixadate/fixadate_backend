@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 import com.fixadate.integration.config.FixtureMonkeyConfig;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
