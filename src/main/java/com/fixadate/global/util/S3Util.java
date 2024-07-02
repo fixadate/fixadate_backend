@@ -23,11 +23,10 @@ public class S3Util {
 	private String bucketName;
 
 	//upload
-	public String generatePresignedUrlForUpload(String fileName, String contentType) {
+	public String generatePresignedUrlForUpload(String fileName) {
 		PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 			.bucket(bucketName)
 			.key(fileName)
-			.contentType(contentType)
 			.build();
 
 		PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()

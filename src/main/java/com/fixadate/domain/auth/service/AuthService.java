@@ -1,7 +1,7 @@
 package com.fixadate.domain.auth.service;
 
-import static com.fixadate.domain.member.mapper.MemberMapper.*;
 import static com.fixadate.domain.auth.entity.OAuthProvider.*;
+import static com.fixadate.domain.member.mapper.MemberMapper.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
@@ -12,14 +12,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.entity.OAuthProvider;
+import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
 
@@ -55,7 +55,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public void registMember(MemberRegistRequest memberRegistRequest) {
+	public Member registMember(MemberRegistRequest memberRegistRequest) {
 		Optional<Member> memberOptional = findMemberByOAuthProviderAndEmailAndName(
 			translateStringToOAuthProvider(memberRegistRequest.oauthPlatform()),
 			memberRegistRequest.email(), memberRegistRequest.name()
@@ -68,6 +68,7 @@ public class AuthService {
 		memberRepository.save(member);
 
 		registGoogleCalendarTag(member);
+		return member;
 	}
 
 	public void registGoogleCalendarTag(Member member) {

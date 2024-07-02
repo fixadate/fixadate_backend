@@ -22,7 +22,6 @@ public class CreateMemberRegistRequest {
 			"male",
 			"student",
 			"red",
-			"img",
 			"hong@example.com",
 			"USER"
 		);
@@ -37,7 +36,6 @@ public class CreateMemberRegistRequest {
 			"female",
 			"engineer",
 			"blue",
-			"img",
 			"muny@example.com",
 			"USER"
 		);
@@ -52,7 +50,6 @@ public class CreateMemberRegistRequest {
 			"male",
 			"designer",
 			"green",
-			"img",
 			"kim@example.com",
 			"USER"
 		);
@@ -67,7 +64,6 @@ public class CreateMemberRegistRequest {
 			"female",
 			"developer",
 			"yellow",
-			"img",
 			"karina@example.com",
 			"USER"
 		);
@@ -82,7 +78,6 @@ public class CreateMemberRegistRequest {
 			"female",
 			"manager",
 			"orange",
-			"img",
 			"down@example.com",
 			"USER"
 		);

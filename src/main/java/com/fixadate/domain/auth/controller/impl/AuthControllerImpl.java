@@ -18,6 +18,7 @@ import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 import com.fixadate.domain.auth.service.AuthService;
+import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
@@ -59,10 +60,9 @@ public class AuthControllerImpl implements AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<MemberSignupResponse> signup(
 		@Valid @RequestBody MemberRegistRequest memberRegistRequest) {
-		authService.registMember(memberRegistRequest);
+		Member member = authService.registMember(memberRegistRequest);
 
-		String url = s3Util.generatePresignedUrlForUpload(memberRegistRequest.profileImg(),
-			memberRegistRequest.contentType());
+		String url = s3Util.generatePresignedUrlForUpload(member.getProfileImg());
 
 		MemberSignupResponse memberSignupResponse = new MemberSignupResponse(url);
 		return ResponseEntity.status(HttpStatus.CREATED)

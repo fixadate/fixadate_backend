@@ -14,12 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.fixadate.domain.tag.repository.TagRepository;
-import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.service.AuthService;
+import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.tag.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
@@ -65,7 +65,6 @@ public class AuthServiceTest {
 			MEMBER.getGender(),
 			MEMBER.getProfession(),
 			MEMBER.getSignatureColor(),
-			"image",
 			MEMBER.getEmail(),
 			MEMBER.getRole()
 		);
