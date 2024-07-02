@@ -1,4 +1,4 @@
-package com.fixadate.integration.domain.service;
+package com.fixadate.integration.domain.auth.service;
 
 import static com.fixadate.domain.auth.entity.OAuthProvider.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
@@ -87,11 +87,11 @@ class AuthServiceTest {
 		@DisplayName("잘못된 oauthPlatform 값이 들어간 경우 에러 발생")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"101, naver, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com, MEMBER",
-			"102, git, hannah, 314, alex, 19980512, female, engineer, blue, img, kevin@naver.com, MEMBER",
-			"103, microsoft, david, 415, emma, 20010320, male, designer, green, img, kevin, MEMBER",
-			"104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, img, kev, MEMBER",
-			"105, wooabros, emily, 617, chris, 19921005, female, manager, orange, img, k, MEMBER"})
+			"101, naver, yongjun, 213, kevin, 20000928, male, student, red, kevin0928@naver.com, MEMBER",
+			"102, git, hannah, 314, alex, 19980512, female, engineer, blue, kevin@naver.com, MEMBER",
+			"103, microsoft, david, 415, emma, 20010320, male, designer, green, kevin, MEMBER",
+			"104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, kev, MEMBER",
+			"105, wooabros, emily, 617, chris, 19921005, female, manager, orange, k, MEMBER"})
 		void registMemberTestIfoauthPlatformHasInvalidValue(
 			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
 			assertThatThrownBy(() -> authService.registMember(memberRegistRequest))
@@ -103,11 +103,11 @@ class AuthServiceTest {
 		@DisplayName("저장이 정상적으로 되는 경우")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"100, google, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com, MEMBER",
-			"101, google, kevin, 314, alex, 19980512, female, engineer, blue, img, kevin09288715@google.com, MEMBER",
-			"102, apple, david, 415, emma, 20010320, male, designer, green, img, kevin0928@apache.com, MEMBER",
-			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, img, kevin0928@mit.com, MEMBER",
-			"104, google, emily, 617, chris, 19921005, female, manager, orange, img, kevin0928@daum.net, MEMBER",})
+			"100, google, yongjun, 213, kevin, 20000928, male, student, red, kevin0928@naver.com, MEMBER",
+			"101, google, kevin, 314, alex, 19980512, female, engineer, blue, kevin09288715@google.com, MEMBER",
+			"102, apple, david, 415, emma, 20010320, male, designer, green, kevin0928@apache.com, MEMBER",
+			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
+			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER",})
 		void registMemberTestIfEveryThingsIsOk(
 			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
 			assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
@@ -130,11 +130,11 @@ class AuthServiceTest {
 		@DisplayName("정상적으로 암호화가 되는 경우")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"100, google, yongjun, 213, kevin, 20000928, male, student, red, img, kevin0928@naver.com, MEMBER",
-			"101, google, kevin, 314, alex, 19980512, female, engineer, blue, img, kevin09288715@google.com, MEMBER",
-			"102, apple, david, 415, emma, 20010320, male, designer, green, img, kevin0928@apache.com, MEMBER",
-			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, img, kevin0928@mit.com, MEMBER",
-			"104, google, emily, 617, chris, 19921005, female, manager, orange, img, kevin0928@daum.net, MEMBER",})
+			"100, google, yongjun, 213, kevin, 20000928, male, student, red, kevin0928@naver.com, MEMBER",
+			"101, google, kevin, 314, alex, 19980512, female, engineer, blue, kevin09288715@google.com, MEMBER",
+			"102, apple, david, 415, emma, 20010320, male, designer, green, kevin0928@apache.com, MEMBER",
+			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
+			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER",})
 		void registMemberTestencryption(
 			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
 			assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
@@ -319,7 +319,7 @@ class AuthServiceTest {
 				argumentsAccessor.getString(4), argumentsAccessor.getString(5),
 				argumentsAccessor.getString(6), argumentsAccessor.getString(7),
 				argumentsAccessor.getString(8), argumentsAccessor.getString(9),
-				argumentsAccessor.getString(10), argumentsAccessor.getString(11));
+				argumentsAccessor.getString(10));
 		}
 	}
 

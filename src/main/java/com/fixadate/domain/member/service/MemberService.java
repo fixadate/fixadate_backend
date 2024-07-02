@@ -45,8 +45,7 @@ public class MemberService implements UserDetailsService {
 
 		String url = null;
 		if (member.updateMember(memberInfoUpdateRequest)) {
-			System.out.println("URL 변경 되어야 함.");
-			url = s3Util.generatePresignedUrlForUpload(member.getProfileImg(), memberInfoUpdateRequest.contentType());
+			url = s3Util.generatePresignedUrlForUpload(member.getProfileImg());
 		}
 		return MemberMapper.toInfoResponse(member, url);
 	}

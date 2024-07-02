@@ -9,7 +9,6 @@ public record MemberInfoUpdateRequest(
 	String nickname,
 	String signatureColor,
 	String profession,
-	String profileImg,
-	String contentType
+	String profileImg
 ) {
 }

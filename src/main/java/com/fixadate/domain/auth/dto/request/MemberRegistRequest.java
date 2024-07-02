@@ -1,5 +1,7 @@
 package com.fixadate.domain.auth.dto.request;
 
+import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
 
 public record MemberRegistRequest(
@@ -12,8 +14,10 @@ public record MemberRegistRequest(
 	@NotBlank String gender,
 	@NotBlank String profession,
 	@NotBlank String signatureColor,
-	@NotBlank String contentType,
 	@NotBlank String email,
 	@NotBlank String role
 ) {
+	public String getProfileImg() {
+		return this.profileImg + UUID.randomUUID();
+	}
 }

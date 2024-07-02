@@ -67,7 +67,6 @@ public class EventMapper {
 			.set("gender", "Random Gender")
 			.set("profession", "Random Profession")
 			.set("signatureColor", "Random Color")
-			.set("contentType", "Random Content Type")
 			.set("email", "random@example.com")
 			.set("role", "Random Role")
 			.sample();

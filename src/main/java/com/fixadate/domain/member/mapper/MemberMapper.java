@@ -22,7 +22,7 @@ public class MemberMapper {
 			.oauthId(oauthId)
 			.oauthPlatform(translateStringToOAuthProvider(request.oauthPlatform()))
 			.name(request.name())
-			.profileImg(request.profileImg())
+			.profileImg(request.getProfileImg())
 			.nickname(request.nickname())
 			.birth(request.birth())
 			.gender(request.gender())

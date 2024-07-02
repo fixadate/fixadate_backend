@@ -1,6 +1,7 @@
 package com.fixadate.domain.member.entity;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -133,17 +134,13 @@ public class Member extends BaseTimeEntity implements UserDetails {
 		if (memberInfoUpdateRequest.profession() != null) {
 			this.profession = memberInfoUpdateRequest.profession();
 		}
-		
+
 		boolean isUpdated = false;
-		if (!this.profileImg.equals(memberInfoUpdateRequest.profileImg()) && !memberInfoUpdateRequest.contentType()
-			.isEmpty()) {
+		if (memberInfoUpdateRequest.profileImg() != null && !this.profileImg.equals(
+			memberInfoUpdateRequest.profileImg())) {
 			isUpdated = true;
+			this.profileImg = memberInfoUpdateRequest.profileImg() + UUID.randomUUID();
 		}
-
-		if (memberInfoUpdateRequest.profileImg() != null) {
-			this.profileImg = memberInfoUpdateRequest.profileImg();
-		}
-
 		return isUpdated;
 	}
 }
