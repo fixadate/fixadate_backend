@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.pushKey.entity.PushKey;
 
 import IDMaker.idmaker.IDMaker;
@@ -120,5 +121,29 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return false;
+	}
+
+	public boolean updateMember(MemberInfoUpdateRequest memberInfoUpdateRequest) {
+		if (memberInfoUpdateRequest.nickname() != null) {
+			this.nickname = memberInfoUpdateRequest.nickname();
+		}
+		if (memberInfoUpdateRequest.signatureColor() != null) {
+			this.signatureColor = memberInfoUpdateRequest.signatureColor();
+		}
+		if (memberInfoUpdateRequest.profession() != null) {
+			this.profession = memberInfoUpdateRequest.profession();
+		}
+		
+		boolean isUpdated = false;
+		if (!this.profileImg.equals(memberInfoUpdateRequest.profileImg()) && !memberInfoUpdateRequest.contentType()
+			.isEmpty()) {
+			isUpdated = true;
+		}
+
+		if (memberInfoUpdateRequest.profileImg() != null) {
+			this.profileImg = memberInfoUpdateRequest.profileImg();
+		}
+
+		return isUpdated;
 	}
 }

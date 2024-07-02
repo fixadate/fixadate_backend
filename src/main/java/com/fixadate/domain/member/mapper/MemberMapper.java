@@ -2,9 +2,10 @@ package com.fixadate.domain.member.mapper;
 
 import static com.fixadate.domain.auth.entity.OAuthProvider.*;
 
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
+import com.fixadate.domain.member.dto.response.MemberInfoResponse;
+import com.fixadate.domain.member.entity.Member;
 
 /**
  *
@@ -43,6 +44,18 @@ public class MemberMapper {
 			member.getProfession(),
 			member.getSignatureColor(),
 			member.getEmail()
+		);
+	}
+
+	public static MemberInfoResponse toInfoResponse(Member member, String url) {
+		return new MemberInfoResponse(
+			member.getName(),
+			member.getNickname(),
+			member.getBirth(),
+			member.getGender(),
+			member.getSignatureColor(),
+			member.getProfession(),
+			url
 		);
 	}
 }

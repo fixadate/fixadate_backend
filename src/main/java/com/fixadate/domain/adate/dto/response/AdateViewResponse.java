@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
  */
 public record AdateViewResponse(
 	String title,
+	String notes,
 	String color,
 	boolean ifAllDay,
 	LocalDateTime startsWhen,

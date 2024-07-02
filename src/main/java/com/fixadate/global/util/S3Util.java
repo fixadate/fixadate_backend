@@ -5,8 +5,6 @@ import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
-
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -25,7 +23,7 @@ public class S3Util {
 	private String bucketName;
 
 	//upload
-	public MemberSignupResponse generatePresignedUrlForUpload(String fileName, String contentType) {
+	public String generatePresignedUrlForUpload(String fileName, String contentType) {
 		PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 			.bucket(bucketName)
 			.key(fileName)
@@ -36,8 +34,7 @@ public class S3Util {
 			.signatureDuration(Duration.ofMinutes(5))
 			.putObjectRequest(putObjectRequest)
 			.build();
-		String url = s3Presigner.presignPutObject(presignRequest).url().toString();
-		return new MemberSignupResponse(url);
+		return s3Presigner.presignPutObject(presignRequest).url().toString();
 	}
 
 	//download
