@@ -3,7 +3,7 @@ package com.fixadate.integration.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 
 import lombok.RequiredArgsConstructor;
 

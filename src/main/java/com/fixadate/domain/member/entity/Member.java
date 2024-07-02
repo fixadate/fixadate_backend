@@ -11,8 +11,8 @@ import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.global.auth.entity.BaseTimeEntity;
-import com.fixadate.global.auth.entity.OAuthProvider;
+import com.fixadate.domain.auth.entity.BaseTimeEntity;
+import com.fixadate.domain.auth.entity.OAuthProvider;
 
 import IDMaker.idmaker.IDMaker;
 import IDMaker.idmaker.IDMakerEntityListener;

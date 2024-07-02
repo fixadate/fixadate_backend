@@ -1,4 +1,4 @@
-package com.fixadate.global.auth.controller.impl;
+package com.fixadate.domain.auth.controller.impl;
 
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fixadate.domain.auth.controller.AuthController;
+import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
+import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
-import com.fixadate.global.auth.controller.AuthController;
-import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.dto.response.MemberSigninResponse;
-import com.fixadate.global.auth.dto.response.MemberSignupResponse;
-import com.fixadate.global.auth.service.AuthService;
+import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
 import com.fixadate.global.util.S3Util;

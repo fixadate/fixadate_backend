@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.auth.entity.OAuthProvider;
+import com.fixadate.domain.auth.entity.OAuthProvider;
 
 public class TagFixture {
 

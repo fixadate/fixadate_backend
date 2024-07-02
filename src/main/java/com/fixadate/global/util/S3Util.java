@@ -5,7 +5,7 @@ import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fixadate.global.auth.dto.response.MemberSignupResponse;
+import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;

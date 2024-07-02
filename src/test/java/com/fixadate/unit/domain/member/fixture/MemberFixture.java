@@ -3,7 +3,7 @@ package com.fixadate.unit.domain.member.fixture;
 import java.util.Collections;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.auth.entity.OAuthProvider;
+import com.fixadate.domain.auth.entity.OAuthProvider;
 
 public class MemberFixture {
 

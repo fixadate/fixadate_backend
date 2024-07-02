@@ -1,10 +1,10 @@
 package com.fixadate.domain.member.mapper;
 
-import static com.fixadate.global.auth.entity.OAuthProvider.*;
+import static com.fixadate.domain.auth.entity.OAuthProvider.*;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.dto.response.MemberSigninResponse;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 
 /**
  *
