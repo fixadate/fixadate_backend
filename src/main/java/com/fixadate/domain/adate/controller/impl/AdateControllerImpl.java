@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,6 +54,12 @@ public class AdateControllerImpl implements AdateController {
 		return ResponseEntity.ok(adateRespons);
 	}
 
+	@GetMapping("/{calendarId}")
+	public ResponseEntity<AdateResponse> getAdate(@PathVariable String calendarId) {
+		AdateResponse adateResponse = adateService.getAdateResponseByCalendarId(calendarId);
+		return ResponseEntity.ok(adateResponse);
+	}
+
 	@PatchMapping()
 	public ResponseEntity<AdateResponse> updateAdate(@RequestParam String calendarId,
 		@Valid @RequestBody AdateUpdateRequest adateUpdateRequest,
@@ -92,5 +99,4 @@ public class AdateControllerImpl implements AdateController {
 			getAdatesByWeek(firstDay, lastDay, member);
 		return ResponseEntity.ok(adateRespons);
 	}
-
 }
