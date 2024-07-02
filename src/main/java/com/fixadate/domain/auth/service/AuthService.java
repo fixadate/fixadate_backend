@@ -1,7 +1,7 @@
-package com.fixadate.global.auth.service;
+package com.fixadate.domain.auth.service;
 
 import static com.fixadate.domain.member.mapper.MemberMapper.*;
-import static com.fixadate.global.auth.entity.OAuthProvider.*;
+import static com.fixadate.domain.auth.entity.OAuthProvider.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
@@ -16,10 +16,10 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.repository.TagRepository;
-import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.dto.response.MemberSigninResponse;
-import com.fixadate.global.auth.entity.OAuthProvider;
+import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
+import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
 

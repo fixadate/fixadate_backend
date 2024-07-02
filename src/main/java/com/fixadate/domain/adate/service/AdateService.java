@@ -56,15 +56,6 @@ public class AdateService {
 		adate.setTag(tag);
 	}
 
-	@Transactional
-	public void registEvents(List<Event> events, Member member) {
-		Tag tag = getGoogleCalendarTagFromMember(member);
-		List<Adate> adates = events.stream()
-			.map(event -> eventToEntity(event, member, tag))
-			.toList();
-		adateRepository.saveAll(adates);
-	}
-
 	public void registEvent(Event event, Member member) {
 		Tag tag = getGoogleCalendarTagFromMember(member);
 		Adate adate = eventToEntity(event, member, tag);
@@ -130,8 +121,7 @@ public class AdateService {
 	}
 
 	@Transactional
-	public AdateResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest,
-		Member member) {
+	public AdateResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest, Member member) {
 		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
@@ -141,8 +131,6 @@ public class AdateService {
 	}
 
 	private List<AdateViewResponse> getResponseDtosFromAdateList(List<Adate> adates) {
-		return adates.stream()
-			.map(AdateMapper::toAdateViewResponse)
-			.toList();
+		return adates.stream().map(AdateMapper::toAdateViewResponse).toList();
 	}
 }

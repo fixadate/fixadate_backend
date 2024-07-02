@@ -23,11 +23,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.googleCalendar.service.GoogleService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.integration.config.DataClearExtension;
 import com.fixadate.integration.domain.googleService.mapper.EventMapper;
 import com.google.api.services.calendar.model.Event;
@@ -76,9 +76,7 @@ public class GoogleServiceTest {
 		List<Event> events = adates.stream().map(EventMapper::toEvent).collect(Collectors.toList());
 
 		assertAll(
-			() -> assertDoesNotThrow(() -> googleService.syncEvents(events, member.get())),
-			() -> assertNotNull(member.get().getAdates())
-		);
+			() -> assertDoesNotThrow(() -> googleService.syncEvents(events, member.get())));
 
 		for (Adate adate : adates) {
 			assertNotNull(adateRepository.findAdateByCalendarId(adate.getCalendarId()));

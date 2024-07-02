@@ -1,18 +1,15 @@
 package com.fixadate.domain.member.entity;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.auth.entity.BaseTimeEntity;
+import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushKey.entity.PushKey;
-import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.global.auth.entity.BaseTimeEntity;
-import com.fixadate.global.auth.entity.OAuthProvider;
 
 import IDMaker.idmaker.IDMaker;
 import IDMaker.idmaker.IDMakerEntityListener;
@@ -26,7 +23,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -75,13 +71,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
 	private String role;
 
-	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-	private List<Adate> adates;
-
-	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-	private List<Tag> tags;
-
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "pushKey_id")
 	private PushKey pushKey;
 

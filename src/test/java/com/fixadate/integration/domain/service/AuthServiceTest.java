@@ -1,6 +1,6 @@
-package com.fixadate.integration.global.auth.service;
+package com.fixadate.integration.domain.service;
 
-import static com.fixadate.global.auth.entity.OAuthProvider.*;
+import static com.fixadate.domain.auth.entity.OAuthProvider.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,12 +34,12 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.tag.repository.TagRepository;
-import com.fixadate.global.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.global.auth.dto.request.MemberRegistRequest;
-import com.fixadate.global.auth.service.AuthService;
 import com.fixadate.global.exception.badRequest.BadRequestException;
 import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
@@ -123,8 +123,7 @@ class AuthServiceTest {
 				() -> assertEquals(memberRegistRequest.name(), member.getName()),
 				() -> assertEquals(memberRegistRequest.birth(), member.getBirth()),
 				() -> assertEquals(memberRegistRequest.nickname(), member.getNickname()),
-				() -> assertEquals(memberRegistRequest.gender(), member.getGender()),
-				() -> memberRepository.delete(member)
+				() -> assertEquals(memberRegistRequest.gender(), member.getGender())
 			);
 		}
 

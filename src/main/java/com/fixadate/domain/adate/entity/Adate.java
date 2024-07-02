@@ -4,10 +4,13 @@ import static com.fixadate.global.util.TimeUtil.*;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
+import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.global.auth.entity.BaseTimeEntity;
 import com.google.api.services.calendar.model.Event;
 
 import jakarta.persistence.Column;
@@ -32,7 +35,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(indexes = {@Index(name = "calendar_id", columnList = "calendarId", unique = true),
 	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")})
-
 public class Adate extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,7 +57,8 @@ public class Adate extends BaseTimeEntity {
 	private boolean reminders;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
+	@JoinColumn(name = "member_id", referencedColumnName = "id")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -133,8 +136,3 @@ public class Adate extends BaseTimeEntity {
 		this.tag = null;
 	}
 }
-
-/*
-@Table(indexes = {@Index(name = "calendar_id", columnList = "calendarId", unique = true),
-	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")})
- */

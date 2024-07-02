@@ -1,4 +1,4 @@
-package com.fixadate.global.auth.dto.request;
+package com.fixadate.domain.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

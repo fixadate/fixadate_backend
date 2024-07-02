@@ -1,4 +1,4 @@
-package com.fixadate.global.auth.entity;
+package com.fixadate.domain.auth.entity;
 
 import static com.fixadate.global.exception.ExceptionCode.*;
 
