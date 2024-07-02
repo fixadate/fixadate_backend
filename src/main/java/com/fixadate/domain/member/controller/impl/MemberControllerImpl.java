@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.member.controller.MemberController;
+import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.util.S3Util;
@@ -36,6 +38,11 @@ public class MemberControllerImpl implements MemberController {
 		String noun = memberService.getRandomNickname(nouns);
 		String randomNickname = adj + " " + noun;
 		return ResponseEntity.ok(randomNickname);
+	}
+
+	@GetMapping("/{memberId}")
+	public ResponseEntity<MemberInfoResponse> getMemberNickname(@PathVariable String memberId) {
+		return ResponseEntity.ok(memberService.getMemberInfo(memberId));
 	}
 
 	@Override
