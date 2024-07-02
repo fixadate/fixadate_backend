@@ -7,7 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.mapper.MemberMapper;
@@ -34,6 +36,19 @@ public class MemberService implements UserDetailsService {
 		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
 			ExceptionCode.NOT_FOUND_MEMBER_ID));
 		return MemberMapper.toInfoResponse(member, s3Util.generatePresignedUrlForDownload(member.getProfileImg()));
+	}
+
+	@Transactional
+	public MemberInfoResponse updateMemberInfo(String memberId, MemberInfoUpdateRequest memberInfoUpdateRequest) {
+		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
+			ExceptionCode.NOT_FOUND_MEMBER_ID));
+
+		String url = null;
+		if (member.updateMember(memberInfoUpdateRequest)) {
+			System.out.println("URL 변경 되어야 함.");
+			url = s3Util.generatePresignedUrlForUpload(member.getProfileImg(), memberInfoUpdateRequest.contentType());
+		}
+		return MemberMapper.toInfoResponse(member, url);
 	}
 
 	public String getRandomNickname(List<String> strings) {

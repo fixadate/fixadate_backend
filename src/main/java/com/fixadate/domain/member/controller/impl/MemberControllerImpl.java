@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.member.controller.MemberController;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
@@ -43,6 +46,12 @@ public class MemberControllerImpl implements MemberController {
 	@GetMapping("/{memberId}")
 	public ResponseEntity<MemberInfoResponse> getMemberNickname(@PathVariable String memberId) {
 		return ResponseEntity.ok(memberService.getMemberInfo(memberId));
+	}
+
+	@PatchMapping("/{memberId}")
+	public ResponseEntity<MemberInfoResponse> updateMemberNickname(@PathVariable String memberId,
+		@RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
+		return ResponseEntity.ok(memberService.updateMemberInfo(memberId, memberInfoUpdateRequest));
 	}
 
 	@Override
