@@ -17,6 +17,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +35,8 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import net.jqwik.api.Arbitraries;
+
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
@@ -45,6 +48,9 @@ import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
 import com.fixadate.global.exception.notFound.TagNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
+import com.fixadate.integration.config.FixtureMonkeyConfig;
+
+import com.navercorp.fixturemonkey.FixtureMonkey;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest
@@ -84,44 +90,43 @@ class AdateServiceTest {
 
 		@DisplayName("모든 조건이 문제 없는 경우 / 저장")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
-		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-		@CsvSource(value = {
-			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, 검정, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
-			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, 빨강, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
-			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, 하양, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
-			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, 파랑, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, 바이올렛, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true"
-		})
-		void registAdateTest(@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
+		@Test
+		void registAdateTest() {
+			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
+			var adates = fixtureMonkey.giveMeBuilder(AdateRegistRequest.class)
+				.set("tagName", Arbitraries.of("검정", "빨강", "하양", "파랑", "바이올렛"))
+				.sampleList(100);
+
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			assertDoesNotThrow(
-				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
-					memberOptional.get()));
+			adates.forEach(adateRegistRequest -> {
+				assertDoesNotThrow(
+					() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
+						memberOptional.get()));
+			});
 		}
 
 		@DisplayName("color가 존재하지 않는 경우")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
-		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
-		@CsvSource(value = {
-			"title1, notes1, location1, 2024-04-17T10:30:00, 2024-04-17T11:30:00, wf, true, 2024-04-17T12:00:00, 2024-04-17T13:00:00, true",
-			"title2, notes2, location2, 2024-04-18T10:30:00, 2024-04-18T11:30:00, wa, false, 2024-04-18T12:00:00, 2024-04-18T13:00:00, false",
-			"title3, notes3, location3, 2024-04-19T10:30:00, 2024-04-19T11:30:00, we, true, 2024-04-19T12:00:00, 2024-04-19T13:00:00, false",
-			"title4, notes4, location4, 2024-04-20T10:30:00, 2024-04-20T11:30:00, ws, false, 2024-04-20T12:00:00, 2024-04-20T13:00:00, true",
-			"title5, notes5, location5, 2024-04-21T10:30:00, 2024-04-21T11:30:00, wq, true, 2024-04-21T12:00:00, 2024-04-21T13:00:00, true",
-		})
-		void registAdateTestIfcolorNotExists(
-			@AggregateWith(AdateRegistDtoAggregator.class) AdateRegistRequest adateRegistRequest) {
+		@Test
+		void registAdateTestIfcolorNotExists() {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			assertThatThrownBy(
-				() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
-					memberOptional.get()))
-				.isInstanceOf(TagNotFoundException.class)
-				.extracting(MESSAGE)
-				.isEqualTo(NOT_FOUND_TAG_MEMBER_NAME.getMessage());
+			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
+			var adateRequests = fixtureMonkey.giveMeBuilder(AdateRegistRequest.class)
+				.set("tagName", Arbitraries.just("NU"))
+				.sampleList(100);
+
+			adateRequests.forEach(adateRegistRequest -> {
+				assertThatThrownBy(
+					() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
+						memberOptional.get()))
+					.isInstanceOf(TagNotFoundException.class)
+					.extracting(MESSAGE)
+					.isEqualTo(NOT_FOUND_TAG_MEMBER_NAME.getMessage());
+			});
 		}
 	}
 
@@ -143,7 +148,8 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
 
-			assertFalse(adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
+			assertFalse(
+				adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
 		}
 
 		@DisplayName("범위에 adate가 없는 경우")
@@ -163,7 +169,8 @@ class AdateServiceTest {
 			String email) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 
-			assertTrue(adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
+			assertTrue(
+				adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
 		}
 
 		@DisplayName("member가 저장한 adate가 없는 경우")
@@ -183,7 +190,8 @@ class AdateServiceTest {
 			String email) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
 			assertNotNull(memberOptional.get());
-			assertTrue(adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
+			assertTrue(
+				adateService.getAdateByStartAndEndTime(memberOptional.get(), startsWhen, endsWhen).isEmpty());
 		}
 	}
 
@@ -345,6 +353,7 @@ class AdateServiceTest {
 	@Nested
 	@DisplayName("adate 수정 테스트")
 	class updateAdate {
+
 		@DisplayName("모든 값이 문제 없는 경우 / 수정")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
@@ -359,7 +368,8 @@ class AdateServiceTest {
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
-			assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
+			assertDoesNotThrow(
+				() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
 			Optional<Adate> adateOptional = adateService.getAdateByCalendarId("abc123");
 
 			assertAll(
@@ -385,7 +395,8 @@ class AdateServiceTest {
 			Optional<Adate> oldAdateOptional = adateService.getAdateByCalendarId("abc123");
 			Adate oldAdate = oldAdateOptional.get();
 
-			assertDoesNotThrow(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
+			assertDoesNotThrow(
+				() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()));
 			Optional<Adate> newAdateOptional = adateService.getAdateByCalendarId("abc123");
 			Adate newAdate = newAdateOptional.get();
 
@@ -409,7 +420,8 @@ class AdateServiceTest {
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
-			assertThatThrownBy(() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()))
+			assertThatThrownBy(
+				() -> adateService.updateAdate("abc123", adateUpdateRequest, memberOptional.get()))
 				.isInstanceOf(TagNotFoundException.class)
 				.extracting(MESSAGE)
 				.isEqualTo(ExceptionCode.NOT_FOUND_TAG_MEMBER_NAME.getMessage());
@@ -423,22 +435,10 @@ class AdateServiceTest {
 		}
 	}
 
-	static class AdateRegistDtoAggregator implements ArgumentsAggregator {
-		@Override
-		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
-			ArgumentsAggregationException {
-			return new AdateRegistRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
-				argumentsAccessor.getString(2),
-				argumentsAccessor.get(3, LocalDateTime.class), argumentsAccessor.get(4, LocalDateTime.class),
-				argumentsAccessor.getString(5), argumentsAccessor.getBoolean(6),
-				argumentsAccessor.get(7, LocalDateTime.class),
-				argumentsAccessor.get(8, LocalDateTime.class), argumentsAccessor.getBoolean(9));
-		}
-	}
-
 	static class AdateUpdateDtoAggregator implements ArgumentsAggregator {
 		@Override
-		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
+		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor,
+			ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
 			return new AdateUpdateRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
 				argumentsAccessor.getString(2),
@@ -450,3 +450,6 @@ class AdateServiceTest {
 		}
 	}
 }
+
+
+

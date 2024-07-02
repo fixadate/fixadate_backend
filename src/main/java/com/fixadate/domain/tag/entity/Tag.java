@@ -2,9 +2,12 @@ package com.fixadate.domain.tag.entity;
 
 import java.util.List;
 
-import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,7 +37,8 @@ public class Tag {
 	private boolean isDefault;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
+	@JoinColumn(name = "member_id", referencedColumnName = "id")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Member member;
 
 	@OneToMany(mappedBy = "tag")

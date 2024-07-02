@@ -1,9 +1,7 @@
 package com.fixadate.unit.domain.member.fixture;
 
-import java.util.Collections;
-
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.auth.entity.OAuthProvider;
+import com.fixadate.domain.member.entity.Member;
 
 public class MemberFixture {
 
@@ -17,7 +15,5 @@ public class MemberFixture {
 		.email("ex_email@example.com")
 		.role("ROLE_USER")
 		.birth("20000928")
-		.adates(Collections.emptyList())
-		.tags(Collections.emptyList())
 		.build();
 }

@@ -4,10 +4,11 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikPlugin;
+import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 
 /**
@@ -32,9 +33,25 @@ public class FixtureMonkeyConfig {
 			.build();
 	}
 
-	public static FixtureMonkey beanMonkey() {
+	public static FixtureMonkey recodeMonkey() {
 		return FixtureMonkey.builder()
-			.objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.plugin(
+				new JqwikPlugin()
+					.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+						@Override
+						public StringArbitrary strings() {
+							return Arbitraries.strings().alpha().ofMaxLength(10);
+						}
+					})
+			)
+			.plugin(new JakartaValidationPlugin())
+			.build();
+	}
+
+	public static FixtureMonkey LocalDateTimeMonkey() {
+		return FixtureMonkey.builder()
+			.plugin(new SimpleValueJqwikPlugin())
 			.build();
 	}
 }
