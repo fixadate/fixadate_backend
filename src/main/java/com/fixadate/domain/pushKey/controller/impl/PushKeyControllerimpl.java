@@ -1,6 +1,5 @@
 package com.fixadate.domain.pushKey.controller.impl;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +24,6 @@ public class PushKeyControllerimpl implements PushKeyController {
 		String memberId = memberPrincipal.getMemberId();
 		pushKeyService.registPushKey(pushKey, memberId);
 
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.noContent().build();
 	}
 }
