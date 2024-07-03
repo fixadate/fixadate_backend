@@ -54,6 +54,12 @@ public class AdateControllerImpl implements AdateController {
 		return ResponseEntity.ok(adateRespons);
 	}
 
+	@PostMapping("/restore/{calendarId}")
+	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable String calendarId) {
+		AdateResponse adateResponse = adateService.restoreAdateByCalendarId(calendarId);
+		return ResponseEntity.ok(adateResponse);
+	}
+
 	@GetMapping("/{calendarId}")
 	public ResponseEntity<AdateResponse> getAdate(@PathVariable String calendarId) {
 		AdateResponse adateResponse = adateService.getAdateResponseByCalendarId(calendarId);

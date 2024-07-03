@@ -21,6 +21,10 @@ public enum ExceptionCode {
 	INVALID_LOCALDATE(1003, "잘못된 LocalDate 값입니다."),
 	INVALID_START_END_TIME(1004, "종료 시간은 시작 시간보다 빠르면 안됩니다."),
 	INVALID_STRING_TO_DATETIME(1005, "문자열을 DateTime으로 변환 하는데 실패했습니다."),
+	FAIL_TO_CONNECT_REDIS(1006, "Redis와 연결하는데 실패했습니다."),
+	FAIL_TO_SERIALIZATION(1007, "직렬화 하는데 실패했습니다."),
+	FAIL_TO_EXECUTE_REDIS_COMMAND(1008, "Redis 명령을 실행하는데 실패했습니다."),
+	UNKNOWN_REDIS_EXCEPTION(1009, "Redis 예외가 발생했습니다."),
 
 	ALREADY_EXISTS_TAG(2001, "변경하려고 하는 이름이 이미 존재합니다."),
 	NOT_FOUND_TAG_MEMBER_NAME(2002, "요청한 member, name에 해당하는 tag가 없습니다."),
@@ -44,7 +48,7 @@ public enum ExceptionCode {
 
 	NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME(8001, "요청한 oauthPlatform, email, name에 해당하는 member가 없습니다."),
 	FAIL_TO_SIGNIN(8002, "member의 oauthId와 일치하지 않습니다."),
-	ALREADY_EXISTS_MEMBER(8002, "member가 이미 존재합니다."),
+	ALREADY_EXISTS_MEMBER(8003, "member가 이미 존재합니다."),
 
 	NOT_FOUND_PADDING_OR_ALGORITHM(9001, "AES 알고리즘에서 Cipher 객체를 가져오는데 실패했습니다."),
 	INVALID_ALGORITHM_OR_KEY(9002, "AES 알고리즘에서 Cipher를 초기화 하는데 실패했습니다."),

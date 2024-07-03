@@ -30,6 +30,7 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.exception.badRequest.InvalidTimeException;
+import com.fixadate.global.exception.badRequest.RedisRequestException;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
 import com.fixadate.global.exception.notFound.TagNotFoundException;
 import com.google.api.services.calendar.model.Event;
@@ -64,6 +65,19 @@ public class AdateService {
 		adate.setTag(tag);
 	}
 
+	public AdateResponse restoreAdateByCalendarId(String calendarId) {
+		try {
+			Adate adate = objectMapper.convertValue(
+				redisJsonTemplate.opsForValue().getAndDelete(ADATE + calendarId),
+				Adate.class
+			);
+			return toAdateResponse(adateRepository.save(adate));
+		} catch (Exception e) {
+			RedisRequestException.handleRedisException(e);
+			return null;
+		}
+	}
+
 	public void registEvent(Event event, Member member) {
 		Tag tag = getGoogleCalendarTagFromMember(member);
 		Adate adate = eventToEntity(event, member, tag);
@@ -88,7 +102,11 @@ public class AdateService {
 		adateRepository.delete(adate);
 
 		AdateService adateService = adateServiceObjectProvider.getObject();
-		adateService.setAdateOnRedis(adate);
+		try {
+			adateService.setAdateOnRedis(adate);
+		} catch (Exception e) {
+			RedisRequestException.handleRedisException(e);
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
