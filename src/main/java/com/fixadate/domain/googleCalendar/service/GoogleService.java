@@ -102,7 +102,7 @@ public class GoogleService {
 	public void processEvent(Event event, Member member) {
 		Optional<Adate> adateOptional = adateService.getAdateByCalendarId(event.getId());
 		if (event.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
-			adateOptional.ifPresent(adateRepository::delete);
+			adateOptional.ifPresent(adateService::removeAdate);
 			return;
 		}
 		adateOptional.ifPresent(adate -> {

@@ -94,12 +94,16 @@ public class AdateService {
 		adateRepository.deleteAll(adates);
 	}
 
+	public void removeAdate(Adate adate) {
+		adateRepository.delete(adate);
+	}
+
 	@Transactional
 	public void removeAdateByCalendarId(String calendarId) {
 		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
-		adateRepository.delete(adate);
+		removeAdate(adate);
 
 		AdateService adateService = adateServiceObjectProvider.getObject();
 		try {

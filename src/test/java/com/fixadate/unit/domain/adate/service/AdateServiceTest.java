@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
@@ -42,6 +43,8 @@ public class AdateServiceTest {
 	private AdateQueryRepository adateQueryRepository;
 	@Mock
 	private TagRepository tagRepository;
+	@Mock
+	private ObjectProvider<AdateService> adateServiceObjectProvider;
 
 	@DisplayName("Adate를 저장한다.")
 	@Test
@@ -83,12 +86,19 @@ public class AdateServiceTest {
 		assertDoesNotThrow(() -> adateService.removeEvents(adates));
 	}
 
-	@DisplayName("calendarId로 삭제한다.")
+	@DisplayName("calendarId로 Adate를 삭제하고 Redis에 저장한다.")
 	@Test
-	void removeAdateByCalendarIdTest() {
-		given(adateRepository.findAdateByCalendarId(any(String.class))).willReturn(Optional.ofNullable(ADATE));
+	void removeAdateByCalendarIdAndSetOnRedisTest() {
+		String calendarId = ADATE.getCalendarId();
+		given(adateRepository.findAdateByCalendarId(calendarId)).willReturn(Optional.of(ADATE));
+		AdateService mockAdateService = mock(AdateService.class);
+		given(adateServiceObjectProvider.getObject()).willReturn(mockAdateService);
 
-		assertDoesNotThrow(() -> adateService.removeAdateByCalendarId(ADATE.getCalendarId()));
+		assertDoesNotThrow(() -> adateService.removeAdateByCalendarId(calendarId));
+
+		verify(adateRepository).findAdateByCalendarId(calendarId);
+		verify(adateRepository).delete(ADATE);
+		verify(mockAdateService).setAdateOnRedis(ADATE);
 	}
 
 	@DisplayName("adate를 삭제한다.")
