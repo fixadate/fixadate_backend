@@ -8,9 +8,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.tag.controller.TagController;
 import com.fixadate.domain.tag.dto.request.TagRequest;
@@ -58,8 +58,8 @@ public class TagControllerImpl implements TagController {
 	}
 
 	@Override
-	@DeleteMapping()
-	public ResponseEntity<Void> removeTag(@RequestParam String name,
+	@DeleteMapping("/{name}")
+	public ResponseEntity<Void> removeTag(@PathVariable String name,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 		tagService.removeColor(name, memberPrincipal.getMember());
 		return ResponseEntity.noContent().build();

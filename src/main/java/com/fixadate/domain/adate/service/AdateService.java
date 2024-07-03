@@ -5,14 +5,19 @@ import static com.fixadate.global.exception.ExceptionCode.*;
 import static com.fixadate.global.util.TimeUtil.*;
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
@@ -25,6 +30,7 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.exception.badRequest.InvalidTimeException;
+import com.fixadate.global.exception.badRequest.RedisRequestException;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
 import com.fixadate.global.exception.notFound.TagNotFoundException;
 import com.google.api.services.calendar.model.Event;
@@ -39,6 +45,9 @@ public class AdateService {
 	private final AdateRepository adateRepository;
 	private final AdateQueryRepository adateQueryRepository;
 	private final TagRepository tagRepository;
+	private final RedisTemplate<String, Object> redisJsonTemplate;
+	private final ObjectMapper objectMapper;
+	private final ObjectProvider<AdateService> adateServiceObjectProvider;
 
 	@Transactional
 	public void registAdateEvent(AdateRegistRequest adateRegistRequest, String tagName, Member member) {
@@ -54,6 +63,19 @@ public class AdateService {
 		Tag tag = tagRepository.findTagByNameAndMember(tagName, member)
 			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
 		adate.setTag(tag);
+	}
+
+	public AdateResponse restoreAdateByCalendarId(String calendarId) {
+		try {
+			Adate adate = objectMapper.convertValue(
+				redisJsonTemplate.opsForValue().getAndDelete(ADATE + calendarId),
+				Adate.class
+			);
+			return toAdateResponse(adateRepository.save(adate));
+		} catch (Exception e) {
+			RedisRequestException.handleRedisException(e);
+			return null;
+		}
 	}
 
 	public void registEvent(Event event, Member member) {
@@ -72,16 +94,29 @@ public class AdateService {
 		adateRepository.deleteAll(adates);
 	}
 
-	@Transactional
-	public void removeAdateByCalendarId(String calendarId) {
-		Adate adate = getAdateByCalendarId(calendarId).
-			orElseThrow(() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
-		removeAdate(adate);
+	public void removeAdate(Adate adate) {
+		adateRepository.delete(adate);
 	}
 
 	@Transactional
-	public void removeAdate(Adate adate) {
-		adateRepository.delete(adate);
+	public void removeAdateByCalendarId(String calendarId) {
+		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
+
+		removeAdate(adate);
+
+		AdateService adateService = adateServiceObjectProvider.getObject();
+		try {
+			adateService.setAdateOnRedis(adate);
+		} catch (Exception e) {
+			RedisRequestException.handleRedisException(e);
+		}
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void setAdateOnRedis(Adate adate) {
+		Duration duration = Duration.ofDays(20);
+		redisJsonTemplate.opsForValue().set(ADATE + adate.getCalendarId(), adate, duration);
 	}
 
 	@Transactional(readOnly = true)

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.googleCalendar.repository.GoogleRepository;
@@ -46,6 +47,7 @@ public class GoogleService {
 	private final MemberRepository memberRepository;
 
 	private final ApplicationContext applicationContext;
+	private final AdateRepository adateRepository;
 
 	@Transactional
 	public void listEvents(String channelId) throws IOException {

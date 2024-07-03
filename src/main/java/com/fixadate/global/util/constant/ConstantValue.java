@@ -29,7 +29,8 @@ public enum ConstantValue {
 	CIPHER_INSTANCE("AES/CBC/PKCS5Padding"),
 	GOOGLE_CALENDAR("Google Calendar"),
 	GOOGLE_CALENDAR_COLOR("9D4CCC"),
-	UTC("UTC");
+	UTC("UTC"),
+	ADATE("adate");
 
 	private final String value;
 

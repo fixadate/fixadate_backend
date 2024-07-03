@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.member.entity.Member;
@@ -63,6 +64,7 @@ public class Adate extends BaseTimeEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tag_id")
+	@JsonIgnore
 	private Tag tag;
 
 	public void updateFrom(Event event) {
