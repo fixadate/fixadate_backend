@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
@@ -103,7 +102,7 @@ public interface AdateController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<Void> removeAdate(@RequestParam String calendarId);
+	ResponseEntity<Void> removeAdate(String calendarId);
 
 	@Operation(summary = "Adate 수정", description = "Adate를 수정합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)

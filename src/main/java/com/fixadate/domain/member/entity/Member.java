@@ -7,6 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
@@ -40,6 +42,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true))
 @EntityListeners(IDMakerEntityListener.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
@@ -90,6 +93,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	}
 
 	@Override
+	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return AuthorityUtils.commaSeparatedStringToAuthorityList(role);
 	}
