@@ -29,6 +29,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,7 +41,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true))
+@Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true),
+	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"}))
 @EntityListeners(IDMakerEntityListener.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends BaseTimeEntity implements UserDetails {
