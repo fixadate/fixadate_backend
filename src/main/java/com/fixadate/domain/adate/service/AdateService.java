@@ -45,7 +45,7 @@ public class AdateService {
 	private final AdateRepository adateRepository;
 	private final AdateQueryRepository adateQueryRepository;
 	private final TagRepository tagRepository;
-	private final RedisTemplate<String, Object> redisJsonTemplate;
+	private final RedisTemplate<Object, Object> redisJsonTemplate;
 	private final ObjectMapper objectMapper;
 	private final ObjectProvider<AdateService> adateServiceObjectProvider;
 
@@ -68,7 +68,7 @@ public class AdateService {
 	public AdateResponse restoreAdateByCalendarId(String calendarId) {
 		try {
 			Adate adate = objectMapper.convertValue(
-				redisJsonTemplate.opsForValue().getAndDelete(ADATE + calendarId),
+				redisJsonTemplate.opsForValue().getAndDelete(ADATE_WITH_COLON.getValue() + calendarId),
 				Adate.class
 			);
 			return toAdateResponse(adateRepository.save(adate));
@@ -116,7 +116,7 @@ public class AdateService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void setAdateOnRedis(Adate adate) {
 		Duration duration = Duration.ofDays(20);
-		redisJsonTemplate.opsForValue().set(ADATE + adate.getCalendarId(), adate, duration);
+		redisJsonTemplate.opsForValue().set(ADATE_WITH_COLON.getValue() + adate.getCalendarId(), adate, duration);
 	}
 
 	@Transactional(readOnly = true)

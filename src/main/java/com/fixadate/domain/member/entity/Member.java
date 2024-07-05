@@ -1,5 +1,7 @@
 package com.fixadate.domain.member.entity;
 
+import static com.fixadate.global.util.UUIDUtil.*;
+
 import java.util.Collection;
 import java.util.UUID;
 
@@ -29,6 +31,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,7 +43,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true))
+@Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true),
+	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"}))
 @EntityListeners(IDMakerEntityListener.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends BaseTimeEntity implements UserDetails {
@@ -140,7 +144,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 		}
 
 		boolean isUpdated = false;
-		if (memberInfoUpdateRequest.profileImg() != null && !this.profileImg.equals(
+		if (memberInfoUpdateRequest.profileImg() != null && !removeUUID(this.profileImg).equals(
 			memberInfoUpdateRequest.profileImg())) {
 			isUpdated = true;
 			this.profileImg = memberInfoUpdateRequest.profileImg() + UUID.randomUUID();
