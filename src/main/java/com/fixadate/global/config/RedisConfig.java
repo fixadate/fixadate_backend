@@ -45,8 +45,8 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisTemplate<String, Object> redisJsonTemplate() {
-		RedisTemplate<String, Object> template = new RedisTemplate<>();
+	public RedisTemplate<Object, Object> redisJsonTemplate() {
+		RedisTemplate<Object, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory());
 
 		ObjectMapper objectMapper = new ObjectMapper();
