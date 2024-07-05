@@ -58,6 +58,7 @@ public enum ExceptionCode {
 	NOT_SUPPORTED_OAUTH_SERVICE(9005, "해당 OAuth 서비스는 제공하지 않습니다."),
 	NOT_FOUND_MEMBER_ID_IN_HEADER(9006, "header에서 memberId를 찾을 수 없습니다."),
 	INVALID_SQL(9007, "sql 문에서 예외가 발생했습니다."),
+	NOT_FOUND_S3_IMG(9008, "저장소에 해당 S3 이미지가 없습니다."),
 
 	EXPIRED_PERIOD_TOKEN(401, "기한이 만료된 토큰입니다."),
 	FAIL_TO_VALIDATE_TOKEN(400, "토큰 유효성 검사 중 오류가 발생했습니다."),

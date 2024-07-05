@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public sealed class NotFoundException extends RuntimeException
 	permits AdateNotFoundException, GoogleNotFoundException, EncryptionNotFoundException, TagNotFoundException,
-	MemberNotFoundException {
+	MemberNotFoundException, S3ImgNotFound {
 	private final int code;
 	private final String message;
 

@@ -1,5 +1,7 @@
 package com.fixadate.domain.member.entity;
 
+import static com.fixadate.global.util.UUIDUtil.*;
+
 import java.util.Collection;
 import java.util.UUID;
 
@@ -142,7 +144,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 		}
 
 		boolean isUpdated = false;
-		if (memberInfoUpdateRequest.profileImg() != null && !this.profileImg.equals(
+		if (memberInfoUpdateRequest.profileImg() != null && !removeUUID(this.profileImg).equals(
 			memberInfoUpdateRequest.profileImg())) {
 			isUpdated = true;
 			this.profileImg = memberInfoUpdateRequest.profileImg() + UUID.randomUUID();
