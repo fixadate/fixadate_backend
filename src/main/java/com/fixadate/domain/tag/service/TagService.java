@@ -5,11 +5,11 @@ import static com.fixadate.global.exception.ExceptionCode.*;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
@@ -27,10 +27,10 @@ import lombok.RequiredArgsConstructor;
 public class TagService {
 
 	private final TagRepository tagRepository;
-	private final AdateRepository adateRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional
-	public void registTag(Member member, TagRequest tagRequest) {
+	public void registerTag(Member member, TagRequest tagRequest) {
 		checkColor(tagRequest.name(), member);
 		Tag tag = toEntity(member, tagRequest);
 		tagRepository.save(tag);
@@ -70,7 +70,7 @@ public class TagService {
 		tag.updateTag(tagUpdateRequest);
 
 		if (isValidString(tagUpdateRequest.newColor())) {
-			updateAdateColor(tag.getAdates());
+			applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(tag.getAdates(), true));
 		}
 
 		return toResponse(tag);
@@ -87,12 +87,6 @@ public class TagService {
 	}
 
 	@Transactional
-	public void updateAdateColor(List<Adate> adates) {
-		adates.forEach(Adate::updateColor);
-		adateRepository.saveAll(adates);
-	}
-
-	@Transactional
 	public void isDefaultTag(Tag tag) {
 		if (tag.isDefault()) {
 			throw new TagBadRequestException(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG);
@@ -103,13 +97,7 @@ public class TagService {
 	public void removeColor(String name, Member member) {
 		Tag tag = findTagByMemberAndColor(name, member);
 		isDefaultTag(tag);
-		removeAdateTag(tag.getAdates());
 		tagRepository.delete(tag);
-	}
-
-	@Transactional
-	public void removeAdateTag(List<Adate> adates) {
-		adates.forEach(Adate::removeTagAndColor);
-		adateRepository.saveAll(adates);
+		applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(tag.getAdates(), false));
 	}
 }

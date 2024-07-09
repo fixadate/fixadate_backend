@@ -2,13 +2,16 @@ package com.fixadate.domain.adate.event.handler;
 
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
+import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.google.api.services.calendar.model.Event;
@@ -45,5 +48,17 @@ public class AdateHandler {
 		if (adateOptional.isEmpty()) {
 			adateService.registEvent(googleEvent, member);
 		}
+	}
+
+	@Async
+	@EventListener
+	public void updateAdateTagEvent(AdateTagUpdateEvent adateTagUpdateEvent) {
+		List<Adate> adates = adateTagUpdateEvent.adates();
+
+		if (adateTagUpdateEvent.isUpdate()) {
+			adates.forEach(Adate::updateColor);
+			return;
+		}
+		adates.forEach(Adate::removeTagAndColor);
 	}
 }
