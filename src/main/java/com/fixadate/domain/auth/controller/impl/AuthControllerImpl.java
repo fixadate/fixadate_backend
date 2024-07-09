@@ -18,11 +18,9 @@ import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 import com.fixadate.domain.auth.service.AuthService;
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
-import com.fixadate.global.util.S3Util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthControllerImpl implements AuthController {
 	private final AuthService authService;
-	private final S3Util s3Util;
 	private final JwtProvider jwtProvider;
 
 	@Override
@@ -60,11 +57,8 @@ public class AuthControllerImpl implements AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<MemberSignupResponse> signup(
 		@Valid @RequestBody MemberRegistRequest memberRegistRequest) {
-		Member member = authService.registMember(memberRegistRequest);
 
-		String url = s3Util.generatePresignedUrlForUpload(member.getProfileImg());
-
-		MemberSignupResponse memberSignupResponse = new MemberSignupResponse(url);
+		MemberSignupResponse memberSignupResponse = authService.registMember(memberRegistRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(memberSignupResponse);
 	}
@@ -72,7 +66,7 @@ public class AuthControllerImpl implements AuthController {
 	@Override
 	@PostMapping("/reissue")
 	public ResponseEntity<Void> reissueAccessToken(
-		@CookieValue(value = "refreshToken", required = true) Cookie cookie) {
+		@CookieValue(value = "refreshToken") Cookie cookie) {
 		TokenResponse tokenResponse = jwtProvider.reIssueToken(cookie);
 		ResponseCookie ncookie = authService.createHttpOnlyCooke(tokenResponse.getRefreshToken());
 

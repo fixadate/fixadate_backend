@@ -16,12 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
+import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
+import com.fixadate.global.util.S3Util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ public class AuthService {
 	private final MemberRepository memberRepository;
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final PasswordEncoder passwordEncoder;
+	private final S3Util s3Util;
 
 	public MemberSigninResponse memberSignIn(MemberOAuthRequest memberOAuthRequest) {
 		Member member = findMemberByOAuthProviderAndEmailAndName(
@@ -55,7 +58,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public Member registMember(MemberRegistRequest memberRegistRequest) {
+	public MemberSignupResponse registMember(MemberRegistRequest memberRegistRequest) {
 		Optional<Member> memberOptional = findMemberByOAuthProviderAndEmailAndName(
 			translateStringToOAuthProvider(memberRegistRequest.oauthPlatform()),
 			memberRegistRequest.email(), memberRegistRequest.name()
@@ -68,7 +71,7 @@ public class AuthService {
 		memberRepository.save(member);
 
 		applicationEventPublisher.publishEvent(new TagMemberSettingEvent(member));
-		return member;
+		return new MemberSignupResponse(s3Util.generatePresignedUrlForUpload(member.getProfileImg()));
 	}
 
 	@Transactional
