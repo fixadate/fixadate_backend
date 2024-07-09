@@ -11,14 +11,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
@@ -30,9 +26,9 @@ import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.global.exception.badRequest.InvalidTimeException;
-import com.fixadate.global.exception.badRequest.RedisRequestException;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
 import com.fixadate.global.exception.notFound.TagNotFoundException;
+import com.fixadate.global.facade.RedisFacade;
 import com.google.api.services.calendar.model.Event;
 
 import lombok.RequiredArgsConstructor;
@@ -44,9 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdateService {
 	private final AdateRepository adateRepository;
 	private final AdateQueryRepository adateQueryRepository;
-	private final RedisTemplate<Object, Object> redisJsonTemplate;
-	private final ObjectMapper objectMapper;
-	private final ObjectProvider<AdateService> adateServiceObjectProvider;
+	private final RedisFacade redisFacade;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
@@ -59,17 +53,10 @@ public class AdateService {
 		}
 	}
 
+	@Transactional
 	public AdateResponse restoreAdateByCalendarId(String calendarId) {
-		try {
-			Adate adate = objectMapper.convertValue(
-				redisJsonTemplate.opsForValue().getAndDelete(ADATE_WITH_COLON.getValue() + calendarId),
-				Adate.class
-			);
-			return toAdateResponse(adateRepository.save(adate));
-		} catch (Exception e) {
-			RedisRequestException.handleRedisException(e);
-			return null;
-		}
+		Adate adate = redisFacade.getAndDeleteObjectRedis(ADATE_WITH_COLON.getValue() + calendarId, Adate.class);
+		return toAdateResponse(adateRepository.save(adate));
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
@@ -95,19 +82,7 @@ public class AdateService {
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
 		removeAdate(adate);
-
-		AdateService adateService = adateServiceObjectProvider.getObject();
-		try {
-			adateService.setAdateOnRedis(adate);
-		} catch (Exception e) {
-			RedisRequestException.handleRedisException(e);
-		}
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void setAdateOnRedis(Adate adate) {
-		Duration duration = Duration.ofDays(20);
-		redisJsonTemplate.opsForValue().set(ADATE_WITH_COLON.getValue() + adate.getCalendarId(), adate, duration);
+		redisFacade.setObjectRedis(ADATE_WITH_COLON.getValue() + calendarId, adate, Duration.ofDays(20));
 	}
 
 	@Transactional(readOnly = true)
