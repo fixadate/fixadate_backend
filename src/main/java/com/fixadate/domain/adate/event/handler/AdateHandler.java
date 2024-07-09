@@ -1,0 +1,49 @@
+package com.fixadate.domain.adate.event.handler;
+
+import static com.fixadate.global.util.constant.ConstantValue.*;
+
+import java.util.Optional;
+
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
+import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
+import com.fixadate.domain.adate.service.AdateService;
+import com.fixadate.domain.member.entity.Member;
+import com.google.api.services.calendar.model.Event;
+
+import lombok.RequiredArgsConstructor;
+
+/**
+ *
+ * @author yongjunhong
+ * @since 2024. 7. 9.
+ */
+@Component
+@RequiredArgsConstructor
+public class AdateHandler {
+	private final AdateService adateService;
+
+	@EventListener
+	public void setAdateEvent(AdateCalendarSettingEvent event) {
+		Event googleEvent = event.event();
+		Member member = event.member();
+
+		Optional<Adate> adateOptional = adateService.getAdateByCalendarId(googleEvent.getId());
+
+		if (googleEvent.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
+			adateOptional.ifPresent(adateService::removeAdate);
+			return;
+		}
+		adateOptional.ifPresent(adate -> {
+			if (!adate.getEtag().equals(googleEvent.getEtag())) {
+				adate.updateFrom(googleEvent);
+			}
+		});
+
+		if (adateOptional.isEmpty()) {
+			adateService.registEvent(googleEvent, member);
+		}
+	}
+}
