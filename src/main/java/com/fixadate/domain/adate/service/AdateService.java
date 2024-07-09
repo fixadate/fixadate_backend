@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,8 +28,7 @@ import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.global.exception.badRequest.InvalidTimeException;
 import com.fixadate.global.exception.badRequest.RedisRequestException;
 import com.fixadate.global.exception.notFound.AdateNotFoundException;
@@ -44,25 +44,19 @@ import lombok.extern.slf4j.Slf4j;
 public class AdateService {
 	private final AdateRepository adateRepository;
 	private final AdateQueryRepository adateQueryRepository;
-	private final TagRepository tagRepository;
 	private final RedisTemplate<Object, Object> redisJsonTemplate;
 	private final ObjectMapper objectMapper;
 	private final ObjectProvider<AdateService> adateServiceObjectProvider;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
-	@Transactional
+	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public void registAdateEvent(AdateRegistRequest adateRegistRequest, String tagName, Member member) {
 		Adate adate = registDtoToEntity(adateRegistRequest, member);
-		if (tagName != null && !tagName.isEmpty()) {
-			setAdateTag(adate, member, tagName);
-		}
 		adateRepository.save(adate);
-	}
 
-	@Transactional
-	public void setAdateTag(Adate adate, Member member, String tagName) {
-		Tag tag = tagRepository.findTagByNameAndMember(tagName, member)
-			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
-		adate.setTag(tag);
+		if (tagName != null && !tagName.isEmpty()) {
+			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, tagName));
+		}
 	}
 
 	public AdateResponse restoreAdateByCalendarId(String calendarId) {
@@ -78,15 +72,12 @@ public class AdateService {
 		}
 	}
 
+	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public void registEvent(Event event, Member member) {
-		Tag tag = getGoogleCalendarTagFromMember(member);
-		Adate adate = eventToEntity(event, member, tag);
+		Adate adate = eventToEntity(event);
 		adateRepository.save(adate);
-	}
 
-	public Tag getGoogleCalendarTagFromMember(Member member) {
-		return tagRepository.findTagByNameAndMember(GOOGLE_CALENDAR.getValue(), member)
-			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
+		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, GOOGLE_CALENDAR.getValue()));
 	}
 
 	@Transactional
@@ -162,13 +153,15 @@ public class AdateService {
 		}
 	}
 
-	@Transactional
+	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest, Member member) {
 		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
 		adate.updateAdate(adateUpdateRequest);
-		setAdateTag(adate, member, adateUpdateRequest.tagName());
+		adateRepository.save(adate);
+
+		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, adateUpdateRequest.tagName()));
 		return toAdateResponse(adate);
 	}
 
