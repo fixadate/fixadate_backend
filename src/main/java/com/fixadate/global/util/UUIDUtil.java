@@ -19,11 +19,4 @@ public class UUIDUtil {
 		}
 		return input;
 	}
-
-	public static void main(String[] args) {
-		String profileImgWithUUID = "profileImg123-123e4567-e89b-12d3-a456-426614174000";
-		String cleanedProfileImg = removeUUID(profileImgWithUUID);
-		System.out.println("Original: " + profileImgWithUUID);
-		System.out.println("Cleaned: " + cleanedProfileImg);
-	}
 }
