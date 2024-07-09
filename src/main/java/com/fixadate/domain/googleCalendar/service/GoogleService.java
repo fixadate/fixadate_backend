@@ -124,25 +124,14 @@ public class GoogleService {
 		memberId) {
 		GoogleCredentials googleCredentials = getGoogleCredentialsFromCredentials(channel, userId, tokenResponse);
 
-		Member member = findMemberAndSetRelationship(memberId, googleCredentials);
-		googleCredentials.setMember(member);
-
+		memberFacade.setMemberGoogleCredentials(memberId, googleCredentials);
 		googleUtil.registerCredential(tokenResponse, userId);
 		googleRepository.save(googleCredentials);
 	}
 
 	@Transactional
-	public Member findMemberAndSetRelationship(String memberId, GoogleCredentials googleCredentials) {
-		Member member = memberFacade.getMemberById(memberId);
-		googleCredentials.setMember(member);
-		return member;
-	}
-
-	@Transactional
 	public void stopChannelAndRemoveGoogleCredentials(String memberId) {
-		Member member = memberFacade.getMemberById(memberId);
-		GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByMember(member)
-			.orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER));
+		GoogleCredentials googleCredentials = memberFacade.getGoogleCredentialsByMemberId(memberId);
 
 		googleUtil.stop(googleCredentials.getUserId(), toChannel(googleCredentials.getChannelId(), googleCredentials
 			.getResourceId()));

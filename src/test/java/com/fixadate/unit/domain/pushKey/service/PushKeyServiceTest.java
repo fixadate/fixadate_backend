@@ -1,6 +1,5 @@
 package com.fixadate.unit.domain.pushKey.service;
 
-import static com.fixadate.unit.domain.member.fixture.MemberFixture.*;
 import static com.fixadate.unit.domain.pushKey.fixture.PushKeyFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -52,7 +51,7 @@ public class PushKeyServiceTest {
 	@DisplayName("pushKey 객체를 생성하고 저장한다.")
 	@Test
 	void generateAndRegisterPushKey() {
-		given(memberFacade.getMemberById(any(String.class))).willReturn(MEMBER);
+		given(memberFacade.getPushKeyAndRegisterMember(any(String.class), any())).willReturn(PUSH_KEY);
 		assertDoesNotThrow(
 			() -> pushKeyService.generateAndRegisterPushKey(PUSH_KEY.getPushKey(), PUSH_KEY.getMemberId()));
 	}
