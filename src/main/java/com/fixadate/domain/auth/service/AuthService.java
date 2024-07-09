@@ -7,6 +7,7 @@ import static com.fixadate.global.util.constant.ConstantValue.*;
 
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,7 @@ import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
 
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 	private final MemberRepository memberRepository;
-	private final TagRepository tagRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 	private final PasswordEncoder passwordEncoder;
 
 	public MemberSigninResponse memberSignIn(MemberOAuthRequest memberOAuthRequest) {
@@ -67,19 +67,8 @@ public class AuthService {
 		Member member = toEntity(memberRegistRequest, encodedOauthId);
 		memberRepository.save(member);
 
-		registGoogleCalendarTag(member);
+		applicationEventPublisher.publishEvent(new TagMemberSettingEvent(member));
 		return member;
-	}
-
-	public void registGoogleCalendarTag(Member member) {
-		Tag tag = Tag.builder()
-			.color(GOOGLE_CALENDAR_COLOR.getValue())
-			.name(GOOGLE_CALENDAR.getValue())
-			.isDefault(true)
-			.member(member)
-			.build();
-
-		tagRepository.save(tag);
 	}
 
 	@Transactional
