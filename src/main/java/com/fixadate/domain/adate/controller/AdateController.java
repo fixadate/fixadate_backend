@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
@@ -28,7 +28,7 @@ public interface AdateController {
 
 	@Operation(summary = "Adate 이벤트 등록", description = "Adate 이벤트를 등록합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
-	@RequestBody(content = @Content(schema = @Schema(implementation = AdateRegistRequest.class)), required = true)
+	@RequestBody(content = @Content(schema = @Schema(implementation = AdateRegisterRequest.class)), required = true)
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "created",
 			content = @Content(schema = @Schema(implementation = Void.class))),
@@ -37,7 +37,7 @@ public interface AdateController {
 		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<AdateRegistRequest> registerAdateEvent(AdateRegistRequest adateRegistRequest,
+	ResponseEntity<AdateRegisterRequest> registerAdateEvent(AdateRegisterRequest adateRegisterRequest,
 		MemberPrincipal memberPrincipal);
 
 	@Operation(summary = "Adate 캘린더 이벤트 조회[시간 조회]", description = "지정된 범위에 해당하는 calendar를 조회합니다.[jwt 필요]")

@@ -60,7 +60,6 @@ public class MemberService implements UserDetailsService {
 			try {
 				memberServices.getObject().deleteS3Img(profileImg);
 			} catch (Exception e) {
-				System.out.println("여기 보세요!!!");
 				throw new S3ImgNotFound(NOT_FOUND_S3_IMG);
 			}
 			url = s3Util.generatePresignedUrlForUpload(member.getProfileImg());

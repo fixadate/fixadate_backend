@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.googleCalendar.service.GoogleService;
 import com.fixadate.domain.member.entity.Member;
@@ -70,9 +70,9 @@ public class GoogleServiceTest {
 	void syncEventsTest() {
 		List<Adate> adates = EventMapper.createAdates();
 
-		MemberRegistRequest memberRegistRequest = EventMapper.createRegistDto();
-		authService.registMember(memberRegistRequest);
-		Optional<Member> member = memberRepository.findMemberByEmail(memberRegistRequest.email());
+		MemberRegisterRequest memberRegisterRequest = EventMapper.createRegisterDto();
+		authService.registerMember(memberRegisterRequest);
+		Optional<Member> member = memberRepository.findMemberByEmail(memberRegisterRequest.email());
 		List<Event> events = adates.stream().map(EventMapper::toEvent).collect(Collectors.toList());
 
 		assertAll(

@@ -12,14 +12,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.global.util.S3Util;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
@@ -31,7 +32,9 @@ public class AuthServiceTest {
 	@Mock
 	private PasswordEncoder passwordEncoder;
 	@Mock
-	private TagRepository tagRepository;
+	private S3Util s3Util;
+	@Mock
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	@DisplayName("로그인")
 	@Test
@@ -54,8 +57,8 @@ public class AuthServiceTest {
 
 	@DisplayName("회원 가입")
 	@Test
-	void registMemberTest() {
-		MemberRegistRequest memberRegistRequest = new MemberRegistRequest(
+	void registerMemberTest() {
+		MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest(
 			MEMBER.getOauthId(),
 			MEMBER.getOauthPlatform().getProvider(),
 			MEMBER.getName(),
@@ -70,7 +73,7 @@ public class AuthServiceTest {
 		);
 		given(passwordEncoder.encode(any(String.class))).willReturn(MEMBER.getOauthId());
 
-		assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
+		assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
 	}
 
 	@DisplayName("탈퇴")

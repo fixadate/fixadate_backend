@@ -33,7 +33,7 @@ public class TagControllerImpl implements TagController {
 	@PostMapping()
 	public ResponseEntity<Void> createTag(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@Valid @RequestBody TagRequest tagRequest) {
-		tagService.registTag(memberPrincipal.getMember(), tagRequest);
+		tagService.registerTag(memberPrincipal.getMember(), tagRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 

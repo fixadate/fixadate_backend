@@ -7,24 +7,20 @@ import static com.fixadate.global.util.constant.ConstantValue.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.TimeZone;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.adate.service.AdateService;
+import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
 import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
 import com.fixadate.domain.googleCalendar.repository.GoogleRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.exception.badRequest.GoogleIOExcetption;
 import com.fixadate.global.exception.notFound.GoogleNotFoundException;
-import com.fixadate.global.exception.notFound.MemberNotFoundException;
+import com.fixadate.global.facade.MemberFacade;
 import com.fixadate.global.util.GoogleUtil;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -42,12 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GoogleService {
 	private final GoogleUtil googleUtil;
-	private final AdateService adateService;
 	private final GoogleRepository googleRepository;
-	private final MemberRepository memberRepository;
-
-	private final ApplicationContext applicationContext;
-	private final AdateRepository adateRepository;
+	private final MemberFacade memberFacade;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional
 	public void listEvents(String channelId) throws IOException {
@@ -94,26 +87,8 @@ public class GoogleService {
 	@Async
 	public void syncEvents(List<Event> events, Member member) {
 		events.parallelStream().forEach(event ->
-			applicationContext.getBean(GoogleService.class).processEvent(event, member)
+			applicationEventPublisher.publishEvent(new AdateCalendarSettingEvent(event, member))
 		);
-	}
-
-	@Transactional
-	public void processEvent(Event event, Member member) {
-		Optional<Adate> adateOptional = adateService.getAdateByCalendarId(event.getId());
-		if (event.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
-			adateOptional.ifPresent(adateService::removeAdate);
-			return;
-		}
-		adateOptional.ifPresent(adate -> {
-			if (!adate.getEtag().equals(event.getEtag())) {
-				adate.updateFrom(event);
-			}
-		});
-
-		if (adateOptional.isEmpty()) {
-			adateService.registEvent(event, member);
-		}
 	}
 
 	public Channel executeWatchRequest(String userId) {
@@ -145,30 +120,27 @@ public class GoogleService {
 	}
 
 	@Transactional
-	public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String
+	public void registerGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String
 		memberId) {
 		GoogleCredentials googleCredentials = getGoogleCredentialsFromCredentials(channel, userId, tokenResponse);
 
 		Member member = findMemberAndSetRelationship(memberId, googleCredentials);
 		googleCredentials.setMember(member);
 
-		googleUtil.registCredential(tokenResponse, userId);
+		googleUtil.registerCredential(tokenResponse, userId);
 		googleRepository.save(googleCredentials);
 	}
 
 	@Transactional
 	public Member findMemberAndSetRelationship(String memberId, GoogleCredentials googleCredentials) {
-		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
-			NOT_FOUND_MEMBER_ID));
+		Member member = memberFacade.getMemberById(memberId);
 		googleCredentials.setMember(member);
 		return member;
 	}
 
 	@Transactional
 	public void stopChannelAndRemoveGoogleCredentials(String memberId) {
-		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
-			NOT_FOUND_MEMBER_ID));
-
+		Member member = memberFacade.getMemberById(memberId);
 		GoogleCredentials googleCredentials = googleRepository.findGoogleCredentialsByMember(member)
 			.orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER));
 

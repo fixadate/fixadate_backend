@@ -3,7 +3,7 @@ package com.fixadate.domain.auth.controller;
 import org.springframework.http.ResponseEntity;
 
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 
@@ -41,7 +41,7 @@ public interface AuthController {
 	ResponseEntity<MemberSigninResponse> signin(@Valid MemberOAuthRequest memberOAuthRequest);
 
 	@Operation(summary = "회원가입", description = "회원가입을 합니다..")
-	@RequestBody(description = "회원가입", content = @Content(schema = @Schema(implementation = MemberRegistRequest.class)))
+	@RequestBody(description = "회원가입", content = @Content(schema = @Schema(implementation = MemberRegisterRequest.class)))
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "회원 가입 성공, profile 이미지 등록을 위해 링크 발급",
 			content = @Content(schema = @Schema(implementation = String.class))),
@@ -49,7 +49,7 @@ public interface AuthController {
 			content = @Content(schema = @Schema(implementation = Void.class)))
 
 	})
-	ResponseEntity<MemberSignupResponse> signup(@Valid MemberRegistRequest memberRegistRequest);
+	ResponseEntity<MemberSignupResponse> signup(@Valid MemberRegisterRequest memberRegisterRequest);
 
 	@Operation(summary = "token 재발급", description = "accessToken, refreshToken 재발급")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)

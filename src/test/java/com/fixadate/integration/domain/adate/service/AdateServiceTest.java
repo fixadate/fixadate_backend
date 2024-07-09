@@ -37,7 +37,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import net.jqwik.api.Arbitraries;
 
-import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateRepository;
@@ -86,14 +86,14 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("adate 저장 테스트")
-	class adateRegistTest {
+	class adateRegisterTest {
 
 		@DisplayName("모든 조건이 문제 없는 경우 / 저장")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@Test
-		void registAdateTest() {
+		void registerAdateTest() {
 			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
-			var adates = fixtureMonkey.giveMeBuilder(AdateRegistRequest.class)
+			var adates = fixtureMonkey.giveMeBuilder(AdateRegisterRequest.class)
 				.set("tagName", Arbitraries.of("검정", "빨강", "하양", "파랑", "바이올렛"))
 				.sampleList(100);
 
@@ -102,7 +102,7 @@ class AdateServiceTest {
 
 			adates.forEach(adateRegistRequest -> {
 				assertDoesNotThrow(
-					() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
+					() -> adateService.registerAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
 						memberOptional.get()));
 			});
 		}
@@ -110,18 +110,18 @@ class AdateServiceTest {
 		@DisplayName("color가 존재하지 않는 경우")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@Test
-		void registAdateTestIfcolorNotExists() {
+		void registerAdateTestIfcolorNotExists() {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
 			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
-			var adateRequests = fixtureMonkey.giveMeBuilder(AdateRegistRequest.class)
+			var adateRequests = fixtureMonkey.giveMeBuilder(AdateRegisterRequest.class)
 				.set("tagName", Arbitraries.just("NU"))
 				.sampleList(100);
 
 			adateRequests.forEach(adateRegistRequest -> {
 				assertThatThrownBy(
-					() -> adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
+					() -> adateService.registerAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
 						memberOptional.get()))
 					.isInstanceOf(TagNotFoundException.class)
 					.extracting(MESSAGE)
@@ -430,7 +430,7 @@ class AdateServiceTest {
 
 			assertAll(
 				() -> assertTrue(adateOptional.isPresent()),
-				() -> assertNotEquals(adateUpdateRequest.title(), adateOptional.get().getTitle())
+				() -> assertEquals(adateUpdateRequest.title(), adateOptional.get().getTitle())
 			);
 		}
 	}

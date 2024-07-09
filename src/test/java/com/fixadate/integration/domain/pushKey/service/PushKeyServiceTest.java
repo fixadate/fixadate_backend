@@ -62,10 +62,10 @@ class PushKeyServiceTest {
 
 	@Nested
 	@DisplayName("pushKey 생성 테스트")
-	class registPushKeyTest {
+	class registerPushKeyTest {
 
 		@DisplayName("pushKey 정상 저장되는 경우")
-		@Sql(scripts = "/sql/setup/member_regist_setup.sql")
+		@Sql(scripts = "/sql/setup/member_register_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"'examplePushKey1','101'",
@@ -77,13 +77,13 @@ class PushKeyServiceTest {
 		})
 		void generatePushKeyTestSuccess(String pushKey, String memberId) {
 			assertAll(
-				() -> assertDoesNotThrow(() -> pushKeyService.registPushKey(pushKey, memberId)),
+				() -> assertDoesNotThrow(() -> pushKeyService.registerPushKey(pushKey, memberId)),
 				() -> assertTrue(pushKeyRepository.findPushKeyByPushKey(pushKey).isPresent())
 			);
 		}
 
 		@DisplayName("pushKey 업데이트 하는 경우")
-		@Sql(scripts = {"/sql/setup/pushKey_setup.sql", "/sql/setup/member_regist_setup.sql"})
+		@Sql(scripts = {"/sql/setup/pushKey_setup.sql", "/sql/setup/member_register_setup.sql"})
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"'examplePushKey6','101'",
@@ -95,13 +95,13 @@ class PushKeyServiceTest {
 		})
 		void generatePushKeyTestUpdate(String pushKey, String memberId) {
 			assertAll(
-				() -> assertDoesNotThrow(() -> pushKeyService.registPushKey(pushKey, memberId)),
+				() -> assertDoesNotThrow(() -> pushKeyService.registerPushKey(pushKey, memberId)),
 				() -> assertTrue(pushKeyRepository.findPushKeyByPushKey(pushKey).isPresent())
 			);
 		}
 
 		@DisplayName("pushKey member가 존재하지 않는 경우")
-		@Sql(scripts = "/sql/setup/member_regist_setup.sql")
+		@Sql(scripts = "/sql/setup/member_register_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
 			"'examplePushKey1','1'",
@@ -112,7 +112,7 @@ class PushKeyServiceTest {
 		})
 		void generatePushKeyTestIfMemberNotExists(String pushKey, String memberId) {
 			assertAll(
-				() -> assertThatThrownBy(() -> pushKeyService.registPushKey(pushKey, memberId))
+				() -> assertThatThrownBy(() -> pushKeyService.registerPushKey(pushKey, memberId))
 					.isInstanceOf(MemberNotFoundException.class)
 					.extracting(MESSAGE)
 					.isEqualTo(NOT_FOUND_MEMBER_ID.getMessage()),

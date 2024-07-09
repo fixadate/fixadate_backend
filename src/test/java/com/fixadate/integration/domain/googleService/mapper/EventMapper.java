@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.integration.config.FixtureMonkeyConfig;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
@@ -54,9 +54,9 @@ public class EventMapper {
 		return eventDateTime;
 	}
 
-	public static MemberRegistRequest createRegistDto() {
+	public static MemberRegisterRequest createRegisterDto() {
 		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.fieldMonkey();
-		return fixtureMonkey.giveMeBuilder(MemberRegistRequest.class)
+		return fixtureMonkey.giveMeBuilder(MemberRegisterRequest.class)
 			.instantiate(Instantiator.constructor())
 			.set("oauthPlatform", "google")
 			.set("oauthId", "123123123")

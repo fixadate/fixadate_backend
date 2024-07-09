@@ -14,14 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.tag.service.TagService;
-import com.fixadate.domain.adate.repository.AdateRepository;
-import com.fixadate.domain.member.entity.Member;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -32,16 +32,16 @@ public class TagServiceTest {
 	@Mock
 	private TagRepository tagRepository;
 	@Mock
-	private AdateRepository adateRepository;
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	@DisplayName("tag 저장하기")
 	@Test
-	void registTageTest() {
+	void registerTageTest() {
 		TagRequest tagRequest = new TagRequest(
 			TAG.getColor(),
 			TAG.getName()
 		);
-		assertDoesNotThrow(() -> tagService.registTag(MEMBER, tagRequest));
+		assertDoesNotThrow(() -> tagService.registerTag(MEMBER, tagRequest));
 	}
 
 	@DisplayName("tag 존재하는지 확인하기")

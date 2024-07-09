@@ -2,7 +2,6 @@ package com.fixadate.unit.domain.adate.service;
 
 import static com.fixadate.unit.domain.adate.fixture.AdateFixture.*;
 import static com.fixadate.unit.domain.member.fixture.MemberFixture.*;
-import static com.fixadate.unit.domain.tag.fixture.TagFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -17,10 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
@@ -29,7 +28,7 @@ import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.global.facade.RedisFacade;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -42,14 +41,14 @@ public class AdateServiceTest {
 	@Mock
 	private AdateQueryRepository adateQueryRepository;
 	@Mock
-	private TagRepository tagRepository;
+	private RedisFacade redisFacade;
 	@Mock
-	private ObjectProvider<AdateService> adateServiceObjectProvider;
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	@DisplayName("Adate를 저장한다.")
 	@Test
-	void registAdateEventTest() {
-		AdateRegistRequest adateRegistRequest = new AdateRegistRequest(
+	void registerAdateEventTest() {
+		AdateRegisterRequest adateRegisterRequest = new AdateRegisterRequest(
 			ADATE.getTitle(),
 			ADATE.getNotes(),
 			ADATE.getLocation(),
@@ -62,20 +61,8 @@ public class AdateServiceTest {
 			ADATE.isReminders()
 		);
 		given(adateRepository.save(any(Adate.class))).willReturn(ADATE);
-		given(tagRepository.findTagByNameAndMember(any(String.class), any(Member.class))).willReturn(
-			Optional.ofNullable(TAG));
 
-		assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, "ex1", MEMBER));
-	}
-
-	@DisplayName("Adate에 Tag을 설정한다.")
-	@Test
-	void setAdateTagTest() {
-		given(tagRepository.findTagByNameAndMember(any(String.class), any(Member.class))).willReturn(
-			Optional.ofNullable(TAG));
-
-		adateService.setAdateTag(ADATE, MEMBER, "ex1");
-		assertEquals(TAG, ADATE.getTag());
+		assertDoesNotThrow(() -> adateService.registerAdateEvent(adateRegisterRequest, "ex1", MEMBER));
 	}
 
 	@DisplayName("Adate를 삭제한다.")
@@ -91,14 +78,10 @@ public class AdateServiceTest {
 	void removeAdateByCalendarIdAndSetOnRedisTest() {
 		String calendarId = ADATE.getCalendarId();
 		given(adateRepository.findAdateByCalendarId(calendarId)).willReturn(Optional.of(ADATE));
-		AdateService mockAdateService = mock(AdateService.class);
-		given(adateServiceObjectProvider.getObject()).willReturn(mockAdateService);
-
 		assertDoesNotThrow(() -> adateService.removeAdateByCalendarId(calendarId));
 
 		verify(adateRepository).findAdateByCalendarId(calendarId);
 		verify(adateRepository).delete(ADATE);
-		verify(mockAdateService).setAdateOnRedis(ADATE);
 	}
 
 	@DisplayName("adate를 삭제한다.")
@@ -175,8 +158,6 @@ public class AdateServiceTest {
 		);
 
 		given(adateRepository.findAdateByCalendarId(any(String.class))).willReturn(Optional.ofNullable(ADATE));
-		given(tagRepository.findTagByNameAndMember(any(String.class), any(Member.class))).willReturn(
-			Optional.ofNullable(TAG));
 
 		AdateResponse response = adateService.updateAdate("1", adateUpdateRequest, MEMBER);
 
