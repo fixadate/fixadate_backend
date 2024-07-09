@@ -5,6 +5,7 @@ import static com.fixadate.unit.domain.member.fixture.MemberFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,29 +66,19 @@ public class AdateServiceTest {
 		assertDoesNotThrow(() -> adateService.registerAdateEvent(adateRegisterRequest, "ex1", MEMBER));
 	}
 
-	@DisplayName("Adate를 삭제한다.")
-	@Test
-	void removeEventsTest() {
-		List<Adate> adates = ADATES;
-
-		assertDoesNotThrow(() -> adateService.removeEvents(adates));
-	}
-
 	@DisplayName("calendarId로 Adate를 삭제하고 Redis에 저장한다.")
 	@Test
 	void removeAdateByCalendarIdAndSetOnRedisTest() {
 		String calendarId = ADATE.getCalendarId();
 		given(adateRepository.findAdateByCalendarId(calendarId)).willReturn(Optional.of(ADATE));
+
+		doNothing().when(redisFacade).removeAndRegisterObject(anyString(), any(Adate.class), any(Duration.class));
+
 		assertDoesNotThrow(() -> adateService.removeAdateByCalendarId(calendarId));
 
 		verify(adateRepository).findAdateByCalendarId(calendarId);
 		verify(adateRepository).delete(ADATE);
-	}
-
-	@DisplayName("adate를 삭제한다.")
-	@Test
-	void deleteAdateTest() {
-		assertDoesNotThrow(() -> adateService.removeAdate(ADATE));
+		verify(redisFacade).removeAndRegisterObject(anyString(), eq(ADATE), any(Duration.class));
 	}
 
 	@DisplayName("calendarId로 Adate를 조회한다.")
