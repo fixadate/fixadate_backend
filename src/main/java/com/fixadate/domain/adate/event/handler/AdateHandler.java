@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
@@ -52,6 +54,7 @@ public class AdateHandler {
 
 	@Async
 	@EventListener
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public void updateAdateTagEvent(AdateTagUpdateEvent adateTagUpdateEvent) {
 		List<Adate> adates = adateTagUpdateEvent.adates();
 

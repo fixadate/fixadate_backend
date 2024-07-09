@@ -15,10 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.domain.pushKey.repository.PushKeyRepository;
 import com.fixadate.domain.pushKey.service.PushKeyService;
+import com.fixadate.global.facade.MemberFacade;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -29,7 +29,7 @@ public class PushKeyServiceTest {
 	@Mock
 	private PushKeyRepository pushKeyRepository;
 	@Mock
-	private MemberRepository memberRepository;
+	private MemberFacade memberFacade;
 
 	@DisplayName("PushKey을 저장한다.")
 	@Test
@@ -52,7 +52,7 @@ public class PushKeyServiceTest {
 	@DisplayName("pushKey 객체를 생성하고 저장한다.")
 	@Test
 	void generateAndRegisterPushKey() {
-		given(memberRepository.findMemberById(any(String.class))).willReturn(Optional.ofNullable(MEMBER));
+		given(memberFacade.getMemberById(any(String.class))).willReturn(MEMBER);
 		assertDoesNotThrow(
 			() -> pushKeyService.generateAndRegisterPushKey(PUSH_KEY.getPushKey(), PUSH_KEY.getMemberId()));
 	}

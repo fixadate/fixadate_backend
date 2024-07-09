@@ -3,6 +3,7 @@ package com.fixadate.domain.tag.service;
 import static com.fixadate.domain.tag.mapper.TagMapper.*;
 import static com.fixadate.global.exception.ExceptionCode.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -70,7 +71,7 @@ public class TagService {
 		tag.updateTag(tagUpdateRequest);
 
 		if (isValidString(tagUpdateRequest.newColor())) {
-			applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(tag.getAdates(), true));
+			applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(new ArrayList<>(tag.getAdates()), true));
 		}
 
 		return toResponse(tag);
@@ -98,6 +99,7 @@ public class TagService {
 		Tag tag = findTagByMemberAndColor(name, member);
 		isDefaultTag(tag);
 		tagRepository.delete(tag);
-		applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(tag.getAdates(), false));
+
+		applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(new ArrayList<>(tag.getAdates()), false));
 	}
 }

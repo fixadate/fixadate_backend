@@ -39,11 +39,11 @@ import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.exception.badRequest.BadRequestException;
 import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
+import com.fixadate.global.util.S3Util;
 import com.fixadate.integration.config.DataClearExtension;
 import com.fixadate.integration.util.CreateMemberRegisterRequest;
 
@@ -54,13 +54,16 @@ class AuthServiceTest {
 
 	@Autowired
 	private AuthService authService;
+	
 	@Autowired
 	private MemberRepository memberRepository;
-	@Autowired
-	private TagRepository tagRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private S3Util s3Util;
+
 	private static final String MESSAGE = "message";
 	@Container
 	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");

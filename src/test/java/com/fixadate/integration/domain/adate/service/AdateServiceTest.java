@@ -430,7 +430,7 @@ class AdateServiceTest {
 
 			assertAll(
 				() -> assertTrue(adateOptional.isPresent()),
-				() -> assertNotEquals(adateUpdateRequest.title(), adateOptional.get().getTitle())
+				() -> assertEquals(adateUpdateRequest.title(), adateOptional.get().getTitle())
 			);
 		}
 	}
