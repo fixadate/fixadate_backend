@@ -45,7 +45,7 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 		headers.add(AUTHORIZATION.getValue(), accessToken);
 
 		Channel channel = googleService.executeWatchRequest(userId);
-		googleService.registGoogleCredentials(channel, tokenResponse, userId, memberId);
+		googleService.registerGoogleCredentials(channel, tokenResponse, userId, memberId);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.headers(headers).build();
 	}

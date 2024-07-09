@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.member.repository.MemberRepository;
@@ -54,8 +54,8 @@ public class AuthServiceTest {
 
 	@DisplayName("회원 가입")
 	@Test
-	void registMemberTest() {
-		MemberRegistRequest memberRegistRequest = new MemberRegistRequest(
+	void registerMemberTest() {
+		MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest(
 			MEMBER.getOauthId(),
 			MEMBER.getOauthPlatform().getProvider(),
 			MEMBER.getName(),
@@ -70,7 +70,7 @@ public class AuthServiceTest {
 		);
 		given(passwordEncoder.encode(any(String.class))).willReturn(MEMBER.getOauthId());
 
-		assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
+		assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
 	}
 
 	@DisplayName("탈퇴")

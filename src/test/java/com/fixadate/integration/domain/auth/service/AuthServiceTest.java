@@ -35,7 +35,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
@@ -45,7 +45,7 @@ import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
 import com.fixadate.global.exception.notFound.MemberNotFoundException;
 import com.fixadate.global.exception.unAuthorized.AuthException;
 import com.fixadate.integration.config.DataClearExtension;
-import com.fixadate.integration.util.CreateMemberRegistRequest;
+import com.fixadate.integration.util.CreateMemberRegisterRequest;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest
@@ -83,7 +83,7 @@ class AuthServiceTest {
 
 	@Nested
 	@DisplayName("Member 저장 테스트")
-	class registMemberTest {
+	class registerMemberTest {
 		@DisplayName("잘못된 oauthPlatform 값이 들어간 경우 에러 발생")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
@@ -92,9 +92,9 @@ class AuthServiceTest {
 			"103, microsoft, david, 415, emma, 20010320, male, designer, green, kevin, MEMBER",
 			"104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, kev, MEMBER",
 			"105, wooabros, emily, 617, chris, 19921005, female, manager, orange, k, MEMBER"})
-		void registMemberTestIfoauthPlatformHasInvalidValue(
-			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
-			assertThatThrownBy(() -> authService.registMember(memberRegistRequest))
+		void registerMemberTestIfoauthPlatformHasInvalidValue(
+			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
+			assertThatThrownBy(() -> authService.registerMember(memberRegisterRequest))
 				.isInstanceOf(BadRequestException.class)
 				.extracting(MESSAGE)
 				.isEqualTo(NOT_SUPPORTED_OAUTH_SERVICE.getMessage());
@@ -108,22 +108,22 @@ class AuthServiceTest {
 			"102, apple, david, 415, emma, 20010320, male, designer, green, kevin0928@apache.com, MEMBER",
 			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
 			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER",})
-		void registMemberTestIfEveryThingsIsOk(
-			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
-			assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
+		void registerMemberTestIfEveryThingsIsOk(
+			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
+			assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
 
 			Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
-				translateStringToOAuthProvider(memberRegistRequest.oauthPlatform()),
-				memberRegistRequest.email(), memberRegistRequest.name());
+				translateStringToOAuthProvider(memberRegisterRequest.oauthPlatform()),
+				memberRegisterRequest.email(), memberRegisterRequest.name());
 
 			assertTrue(memberOptional.isPresent());
 			Member member = memberOptional.get();
 
 			assertAll(
-				() -> assertEquals(memberRegistRequest.name(), member.getName()),
-				() -> assertEquals(memberRegistRequest.birth(), member.getBirth()),
-				() -> assertEquals(memberRegistRequest.nickname(), member.getNickname()),
-				() -> assertEquals(memberRegistRequest.gender(), member.getGender())
+				() -> assertEquals(memberRegisterRequest.name(), member.getName()),
+				() -> assertEquals(memberRegisterRequest.birth(), member.getBirth()),
+				() -> assertEquals(memberRegisterRequest.nickname(), member.getNickname()),
+				() -> assertEquals(memberRegisterRequest.gender(), member.getGender())
 			);
 		}
 
@@ -135,19 +135,19 @@ class AuthServiceTest {
 			"102, apple, david, 415, emma, 20010320, male, designer, green, kevin0928@apache.com, MEMBER",
 			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
 			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER",})
-		void registMemberTestencryption(
-			@AggregateWith(MemberAggregator.class) MemberRegistRequest memberRegistRequest) {
-			assertDoesNotThrow(() -> authService.registMember(memberRegistRequest));
+		void registerMemberTestencryption(
+			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
+			assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
 
 			Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
-				translateStringToOAuthProvider(memberRegistRequest.oauthPlatform()),
-				memberRegistRequest.email(), memberRegistRequest.name());
+				translateStringToOAuthProvider(memberRegisterRequest.oauthPlatform()),
+				memberRegisterRequest.email(), memberRegisterRequest.name());
 
 			assertTrue(memberOptional.isPresent());
 			Member member = memberOptional.get();
 			assertAll(
 				() -> assertTrue(member.getOauthId().startsWith("{bcrypt}"), "oauthId doesn't start with {bcrypt}"),
-				() -> assertTrue(passwordEncoder.matches(memberRegistRequest.oauthId(), member.getOauthId()))
+				() -> assertTrue(passwordEncoder.matches(memberRegisterRequest.oauthId(), member.getOauthId()))
 			);
 		}
 	}
@@ -165,7 +165,7 @@ class AuthServiceTest {
 			"5, spring, down@example.com, apple"
 		})
 		void signinTestIfNameNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
-			registMember();
+			registerMember();
 			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
 				.isInstanceOf(AuthException.class)
 				.extracting(MESSAGE)
@@ -182,7 +182,7 @@ class AuthServiceTest {
 			"5, down', down@mit.com, apple"
 		})
 		void signinTestIfEmailNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
-			registMember();
+			registerMember();
 			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
 				.isInstanceOf(AuthException.class)
 				.extracting(MESSAGE)
@@ -199,7 +199,7 @@ class AuthServiceTest {
 			"890, song, frost@example.com, micosoft"
 		})
 		void signinTestIfMemberNotExists(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
-			registMember();
+			registerMember();
 			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
 				.isInstanceOf(OAuthPlatformBadRequest.class)
 				.extracting(MESSAGE)
@@ -216,7 +216,7 @@ class AuthServiceTest {
 			"105, down, down@example.com, google"
 		})
 		void signinTestIfOAuthIdIsInvalid(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
-			registMember();
+			registerMember();
 			assertThatThrownBy(() -> authService.memberSignIn(memberOAuthRequest))
 				.isInstanceOf(AuthException.class)
 				.extracting(MESSAGE)
@@ -233,7 +233,7 @@ class AuthServiceTest {
 			"5, down, down@example.com, google"
 		})
 		void signinTestIfSuccess(@AggregateWith(OAuthAggregator.class) MemberOAuthRequest memberOAuthRequest) {
-			registMember();
+			registerMember();
 			assertAll(
 				() -> assertDoesNotThrow(() -> authService.memberSignIn(memberOAuthRequest)),
 				() -> assertTrue(memberRepository.findMemberByEmail(memberOAuthRequest.email()).isPresent())
@@ -245,7 +245,7 @@ class AuthServiceTest {
 	@DisplayName("회원 탈퇴 테스트")
 	class signoutTest {
 		@DisplayName("성공적으로 탈퇴를 한 경우")
-		@Sql(scripts = "/sql/setup/member_regist_setup.sql")
+		@Sql(scripts = "/sql/setup/member_register_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource({
 			"101, hong@example.com",
@@ -262,7 +262,7 @@ class AuthServiceTest {
 		}
 
 		@DisplayName("Id가 잘못된 값인 경우")
-		@Sql(scripts = "/sql/setup/member_regist_setup.sql")
+		@Sql(scripts = "/sql/setup/member_register_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource({
 			"106, hong@example.com",
@@ -282,7 +282,7 @@ class AuthServiceTest {
 		}
 
 		@DisplayName("email이 잘못된 값인 경우")
-		@Sql(scripts = "/sql/setup/member_regist_setup.sql")
+		@Sql(scripts = "/sql/setup/member_register_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource({
 			"101, hing@example.com",
@@ -303,10 +303,10 @@ class AuthServiceTest {
 		}
 	}
 
-	private void registMember() {
-		List<MemberRegistRequest> dto = CreateMemberRegistRequest.registMember();
-		for (MemberRegistRequest m : dto) {
-			assertDoesNotThrow(() -> authService.registMember(m));
+	private void registerMember() {
+		List<MemberRegisterRequest> dto = CreateMemberRegisterRequest.registerMember();
+		for (MemberRegisterRequest m : dto) {
+			assertDoesNotThrow(() -> authService.registerMember(m));
 		}
 	}
 
@@ -314,7 +314,7 @@ class AuthServiceTest {
 		@Override
 		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
-			return new MemberRegistRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
+			return new MemberRegisterRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
 				argumentsAccessor.getString(2), argumentsAccessor.getString(3),
 				argumentsAccessor.getString(4), argumentsAccessor.getString(5),
 				argumentsAccessor.getString(6), argumentsAccessor.getString(7),

@@ -2,7 +2,7 @@ package com.fixadate.domain.member.mapper;
 
 import static com.fixadate.domain.auth.entity.OAuthProvider.*;
 
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
@@ -17,7 +17,7 @@ public class MemberMapper {
 	private MemberMapper() {
 	}
 
-	public static Member toEntity(MemberRegistRequest request, String oauthId) {
+	public static Member toEntity(MemberRegisterRequest request, String oauthId) {
 		return Member.builder()
 			.oauthId(oauthId)
 			.oauthPlatform(translateStringToOAuthProvider(request.oauthPlatform()))

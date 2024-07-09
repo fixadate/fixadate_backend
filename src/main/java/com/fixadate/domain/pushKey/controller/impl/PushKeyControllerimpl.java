@@ -22,7 +22,7 @@ public class PushKeyControllerimpl implements PushKeyController {
 	public ResponseEntity<Void> registPushKey(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam String pushKey) {
 		String memberId = memberPrincipal.getMemberId();
-		pushKeyService.registPushKey(pushKey, memberId);
+		pushKeyService.registerPushKey(pushKey, memberId);
 
 		return ResponseEntity.noContent().build();
 	}

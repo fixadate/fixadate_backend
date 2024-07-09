@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
@@ -44,8 +44,8 @@ public class AdateService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registAdateEvent(AdateRegistRequest adateRegistRequest, String tagName, Member member) {
-		Adate adate = registDtoToEntity(adateRegistRequest, member);
+	public void registerAdateEvent(AdateRegisterRequest adateRegisterRequest, String tagName, Member member) {
+		Adate adate = registerDtoToEntity(adateRegisterRequest, member);
 		adateRepository.save(adate);
 
 		if (tagName != null && !tagName.isEmpty()) {
@@ -60,7 +60,7 @@ public class AdateService {
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registEvent(Event event, Member member) {
+	public void registerEvent(Event event, Member member) {
 		Adate adate = eventToEntity(event);
 		adateRepository.save(adate);
 

@@ -92,12 +92,12 @@ class TagServiceTest {
 
 	@Nested
 	@DisplayName("tag 저장 테스트")
-	class registTagTest {
+	class registerTagTest {
 
 		@DisplayName("모든 조건에 문제가 없는 경우")
 		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@Test
-		void registTag() {
+		void registerTag() {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
@@ -107,7 +107,7 @@ class TagServiceTest {
 				.sampleList(100);
 
 			tagRequests.forEach(tagRequest -> {
-				assertDoesNotThrow(() -> tagService.registTag(memberOptional.get(), tagRequest));
+				assertDoesNotThrow(() -> tagService.registerTag(memberOptional.get(), tagRequest));
 				Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
 					tagRequest.name(), memberOptional.get());
 
@@ -129,12 +129,12 @@ class TagServiceTest {
 			"green, ex4",
 			"white, ex5"
 		})
-		void registTagTestIfDuplicatedColorExists(
+		void registerTagTestIfDuplicatedColorExists(
 			@AggregateWith(TagRequestAggregator.class) TagRequest tagRequest) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertAll(
-				() -> assertThatThrownBy(() -> tagService.registTag(memberOptional.get(), tagRequest))
+				() -> assertThatThrownBy(() -> tagService.registerTag(memberOptional.get(), tagRequest))
 					.isInstanceOf(TagBadRequestException.class)
 					.extracting(MESSAGE)
 					.isEqualTo(ALREADY_EXISTS_TAG.getMessage())

@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
@@ -48,8 +48,8 @@ public class AdateServiceTest {
 
 	@DisplayName("Adate를 저장한다.")
 	@Test
-	void registAdateEventTest() {
-		AdateRegistRequest adateRegistRequest = new AdateRegistRequest(
+	void registerAdateEventTest() {
+		AdateRegisterRequest adateRegisterRequest = new AdateRegisterRequest(
 			ADATE.getTitle(),
 			ADATE.getNotes(),
 			ADATE.getLocation(),
@@ -65,7 +65,7 @@ public class AdateServiceTest {
 		given(tagRepository.findTagByNameAndMember(any(String.class), any(Member.class))).willReturn(
 			Optional.ofNullable(TAG));
 
-		assertDoesNotThrow(() -> adateService.registAdateEvent(adateRegistRequest, "ex1", MEMBER));
+		assertDoesNotThrow(() -> adateService.registerAdateEvent(adateRegisterRequest, "ex1", MEMBER));
 	}
 
 	@DisplayName("Adate에 Tag을 설정한다.")

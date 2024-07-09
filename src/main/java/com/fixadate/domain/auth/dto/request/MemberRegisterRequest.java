@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record MemberRegistRequest(
+public record MemberRegisterRequest(
 	@NotBlank String oauthId,
 	@NotBlank String oauthPlatform,
 	@NotBlank String name,

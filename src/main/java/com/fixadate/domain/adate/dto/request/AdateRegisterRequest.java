@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record AdateRegistRequest(
+public record AdateRegisterRequest(
 	@NotBlank(message = "Adate title cannot be blank") String title,
 	String notes,
 	String location,

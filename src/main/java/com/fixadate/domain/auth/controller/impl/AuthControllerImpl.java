@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.auth.controller.AuthController;
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 import com.fixadate.domain.auth.service.AuthService;
@@ -56,9 +56,9 @@ public class AuthControllerImpl implements AuthController {
 	@Override
 	@PostMapping("/signup")
 	public ResponseEntity<MemberSignupResponse> signup(
-		@Valid @RequestBody MemberRegistRequest memberRegistRequest) {
+		@Valid @RequestBody MemberRegisterRequest memberRegisterRequest) {
 
-		MemberSignupResponse memberSignupResponse = authService.registMember(memberRegistRequest);
+		MemberSignupResponse memberSignupResponse = authService.registerMember(memberRegisterRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(memberSignupResponse);
 	}

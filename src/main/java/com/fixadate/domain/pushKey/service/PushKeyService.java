@@ -20,14 +20,14 @@ public class PushKeyService {
 	private final MemberFacade memberFacade;
 
 	@Transactional
-	public void registPushKey(String pushKey, String memberId) {
+	public void registerPushKey(String pushKey, String memberId) {
 		Optional<PushKey> pushKeyOptional = findPushKeyByKey(pushKey);
 
 		if (pushKeyOptional.isPresent()) {
 			pushKeyOptional.get().compareAndChangeKey(pushKey);
 			return;
 		}
-		generateAndRegistPushKey(pushKey, memberId);
+		generateAndRegisterPushKey(pushKey, memberId);
 	}
 
 	@Transactional
@@ -36,7 +36,7 @@ public class PushKeyService {
 	}
 
 	@Transactional
-	public void generateAndRegistPushKey(String pushKey, String memberId) {
+	public void generateAndRegisterPushKey(String pushKey, String memberId) {
 		PushKey newPushKey = PushKey.builder()
 			.memberId(memberId)
 			.pushKey(pushKey)

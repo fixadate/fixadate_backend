@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
-import com.fixadate.domain.auth.dto.request.MemberRegistRequest;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 import com.fixadate.domain.auth.entity.OAuthProvider;
@@ -58,16 +58,16 @@ public class AuthService {
 	}
 
 	@Transactional
-	public MemberSignupResponse registMember(MemberRegistRequest memberRegistRequest) {
+	public MemberSignupResponse registerMember(MemberRegisterRequest memberRegisterRequest) {
 		Optional<Member> memberOptional = findMemberByOAuthProviderAndEmailAndName(
-			translateStringToOAuthProvider(memberRegistRequest.oauthPlatform()),
-			memberRegistRequest.email(), memberRegistRequest.name()
+			translateStringToOAuthProvider(memberRegisterRequest.oauthPlatform()),
+			memberRegisterRequest.email(), memberRegisterRequest.name()
 		);
 		if (memberOptional.isPresent()) {
 			throw new AuthException(ALREADY_EXISTS_MEMBER);
 		}
-		String encodedOauthId = passwordEncoder.encode(memberRegistRequest.oauthId());
-		Member member = toEntity(memberRegistRequest, encodedOauthId);
+		String encodedOauthId = passwordEncoder.encode(memberRegisterRequest.oauthId());
+		Member member = toEntity(memberRegisterRequest, encodedOauthId);
 		memberRepository.save(member);
 
 		applicationEventPublisher.publishEvent(new TagMemberSettingEvent(member));

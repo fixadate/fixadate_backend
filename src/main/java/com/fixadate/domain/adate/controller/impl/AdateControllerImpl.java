@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.adate.controller.AdateController;
-import com.fixadate.domain.adate.dto.request.AdateRegistRequest;
+import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
@@ -34,12 +34,12 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@PostMapping()
-	public ResponseEntity<AdateRegistRequest> registerAdateEvent(
-		@Valid @RequestBody AdateRegistRequest adateRegistRequest,
+	public ResponseEntity<AdateRegisterRequest> registerAdateEvent(
+		@Valid @RequestBody AdateRegisterRequest adateRegisterRequest,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 		Member member = memberPrincipal.getMember();
-		adateService.registAdateEvent(adateRegistRequest, adateRegistRequest.tagName(), member);
-		return ResponseEntity.ok(adateRegistRequest);
+		adateService.registerAdateEvent(adateRegisterRequest, adateRegisterRequest.tagName(), member);
+		return ResponseEntity.ok(adateRegisterRequest);
 	}
 
 	@Override

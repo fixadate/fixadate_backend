@@ -131,7 +131,7 @@ public class GoogleUtil {
 
 	}
 
-	public void registCredential(TokenResponse tokenResponse, String userId) {
+	public void registerCredential(TokenResponse tokenResponse, String userId) {
 		try {
 			flow.createAndStoreCredential(tokenResponse, userId);
 		} catch (IOException e) {

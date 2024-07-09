@@ -46,7 +46,7 @@ public class AdateHandler {
 		});
 
 		if (adateOptional.isEmpty()) {
-			adateService.registEvent(googleEvent, member);
+			adateService.registerEvent(googleEvent, member);
 		}
 	}
 

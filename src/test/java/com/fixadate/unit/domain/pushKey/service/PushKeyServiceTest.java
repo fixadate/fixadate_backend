@@ -33,10 +33,10 @@ public class PushKeyServiceTest {
 
 	@DisplayName("PushKey을 저장한다.")
 	@Test
-	void registPushKeyTest() {
+	void registerPushKeyTest() {
 		given(pushKeyRepository.findPushKeyByPushKey(any(String.class))).willReturn(Optional.ofNullable(PUSH_KEY));
 
-		assertDoesNotThrow(() -> pushKeyService.registPushKey(PUSH_KEY.getPushKey(), PUSH_KEY.getMemberId()));
+		assertDoesNotThrow(() -> pushKeyService.registerPushKey(PUSH_KEY.getPushKey(), PUSH_KEY.getMemberId()));
 	}
 
 	@DisplayName("pushKey로 PushKey 객체를 찾는다.")
@@ -51,9 +51,9 @@ public class PushKeyServiceTest {
 
 	@DisplayName("pushKey 객체를 생성하고 저장한다.")
 	@Test
-	void generateAndRegistPushKey() {
+	void generateAndRegisterPushKey() {
 		given(memberRepository.findMemberById(any(String.class))).willReturn(Optional.ofNullable(MEMBER));
 		assertDoesNotThrow(
-			() -> pushKeyService.generateAndRegistPushKey(PUSH_KEY.getPushKey(), PUSH_KEY.getMemberId()));
+			() -> pushKeyService.generateAndRegisterPushKey(PUSH_KEY.getPushKey(), PUSH_KEY.getMemberId()));
 	}
 }

@@ -120,14 +120,14 @@ public class GoogleService {
 	}
 
 	@Transactional
-	public void registGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String
+	public void registerGoogleCredentials(Channel channel, TokenResponse tokenResponse, String userId, String
 		memberId) {
 		GoogleCredentials googleCredentials = getGoogleCredentialsFromCredentials(channel, userId, tokenResponse);
 
 		Member member = findMemberAndSetRelationship(memberId, googleCredentials);
 		googleCredentials.setMember(member);
 
-		googleUtil.registCredential(tokenResponse, userId);
+		googleUtil.registerCredential(tokenResponse, userId);
 		googleRepository.save(googleCredentials);
 	}
 
