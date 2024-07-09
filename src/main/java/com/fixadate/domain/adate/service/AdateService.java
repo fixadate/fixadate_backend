@@ -67,11 +67,6 @@ public class AdateService {
 		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, GOOGLE_CALENDAR.getValue()));
 	}
 
-	@Transactional
-	public void removeEvents(List<Adate> adates) {
-		adateRepository.deleteAll(adates);
-	}
-
 	public void removeAdate(Adate adate) {
 		adateRepository.delete(adate);
 	}
@@ -80,9 +75,9 @@ public class AdateService {
 	public void removeAdateByCalendarId(String calendarId) {
 		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
+		adateRepository.delete(adate);
 
-		removeAdate(adate);
-		redisFacade.setObjectRedis(ADATE_WITH_COLON.getValue() + calendarId, adate, Duration.ofDays(20));
+		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, Duration.ofDays(20));
 	}
 
 	@Transactional(readOnly = true)
@@ -94,14 +89,14 @@ public class AdateService {
 	public AdateResponse getAdateResponseByCalendarId(String calendarId) {
 		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
-		return getAdateResponse(adate);
+		return toAdateResponse(adate);
 	}
 
 	@Transactional(readOnly = true)
 	public List<AdateViewResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
 		LocalDateTime endDateTime) {
 		List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
-		return getResponseDtosFromAdateList(adates);
+		return adates.stream().map(AdateMapper::toAdateViewResponse).toList();
 	}
 
 	@Transactional(readOnly = true)
@@ -140,11 +135,4 @@ public class AdateService {
 		return toAdateResponse(adate);
 	}
 
-	private List<AdateViewResponse> getResponseDtosFromAdateList(List<Adate> adates) {
-		return adates.stream().map(AdateMapper::toAdateViewResponse).toList();
-	}
-
-	private AdateResponse getAdateResponse(Adate adate) {
-		return toAdateResponse(adate);
-	}
 }

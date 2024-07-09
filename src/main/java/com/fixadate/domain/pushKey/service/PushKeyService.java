@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.pushKey.entity.PushKey;
 import com.fixadate.domain.pushKey.repository.PushKeyRepository;
 import com.fixadate.global.facade.MemberFacade;
@@ -37,18 +36,7 @@ public class PushKeyService {
 
 	@Transactional
 	public void generateAndRegisterPushKey(String pushKey, String memberId) {
-		PushKey newPushKey = PushKey.builder()
-			.memberId(memberId)
-			.pushKey(pushKey)
-			.build();
-
-		Member member = findMemberById(memberId);
-		member.setMemberPushKey(newPushKey);
-		pushKeyRepository.save(newPushKey);
+		pushKeyRepository.save(memberFacade.getPushKeyAndRegisterMember(memberId, pushKey));
 	}
 
-	@Transactional(readOnly = true)
-	public Member findMemberById(String id) {
-		return memberFacade.getMemberById(id);
-	}
 }
