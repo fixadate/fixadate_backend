@@ -37,7 +37,7 @@ public class RedisFacade {
 			return objectMapper.convertValue(redisJsonTemplate.opsForValue().getAndDelete(key), type);
 		} catch (Exception e) {
 			RedisRequestException.handleRedisException(e);
-			return null;
+			return null; // Never reached.
 		}
 	}
 }
