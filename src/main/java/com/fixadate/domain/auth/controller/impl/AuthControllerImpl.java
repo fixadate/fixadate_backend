@@ -38,6 +38,10 @@ public class AuthControllerImpl implements AuthController {
 	@Override
 	@PostMapping("/signin")
 	public ResponseEntity<MemberSigninResponse> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest) {
+		if ((memberOAuthRequest.email().isBlank()) && (memberOAuthRequest.memberName().isBlank())) {
+			return (ResponseEntity<MemberSigninResponse>) ResponseEntity.status(HttpStatus.PARTIAL_CONTENT);
+		}
+
 		MemberSigninResponse response = authService.memberSignIn(memberOAuthRequest);
 
 		TokenResponse tokenResponse = jwtProvider.getTokenResponse(response.id());
