@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.0'
     id 'io.spring.dependency-management' version '1.1.3'
+    id 'checkstyle'
 }
 
 group = 'com'
@@ -100,10 +101,23 @@ dependencies {
 
 
 }
+checkstyle {
+    maxWarnings = 0
+    toolVersion = '9.3'
+    configFile = file("${rootDir}/tool/naver-checkstyle-rules.xml")
+    configProperties = ["suppressionFile": "${rootDir}/tool/naver-checkstyle-suppressions.xml"]
 
-tasks.named('test') {
-    useJUnitPlatform()
 }
+
+tasks.named('build') {
+    dependsOn 'checkstyleMain'
+}
+
+test {
+    useJUnitPlatform()
+    dependsOn 'checkstyleTest'
+}
+
 
 def querydslSrcDir = 'src/main/generated'
 clean {
