@@ -11,8 +11,12 @@ public record AdateUpdateRequest(
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
 	String tagName,
-	@NotNull boolean ifAllDay,
+	@NotNull
+	boolean ifAllDay,
+	@NotNull(message = "Adate startsWhen cannot be null")
 	LocalDateTime startsWhen,
+	@NotNull(message = "Adate endsWhen cannot be null")
 	LocalDateTime endsWhen,
-	@NotNull boolean reminders) {
+	@NotNull
+	boolean reminders) {
 }
