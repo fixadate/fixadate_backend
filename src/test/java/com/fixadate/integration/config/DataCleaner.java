@@ -38,5 +38,4 @@ public class DataCleaner {
 		//외래키 체크 활성화
 		entityManager.createNativeQuery(String.format(FOREIGN_KEY_CHECK_FORMAT, 1)).executeUpdate();
 	}
-
 }

@@ -1,0 +1,9 @@
+package com.fixadate.global.exception.badrequest;
+
+import com.fixadate.global.exception.ExceptionCode;
+
+public non-sealed class InvalidTimeException extends BadRequestException {
+	public InvalidTimeException(ExceptionCode exceptionCode) {
+		super(exceptionCode);
+	}
+}

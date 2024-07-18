@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import com.fixadate.global.exception.ExceptionCode;
-import com.fixadate.global.exception.badRequest.InvalidTimeException;
+import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.google.api.client.util.DateTime;
 
 public class TimeUtil {
@@ -18,13 +18,13 @@ public class TimeUtil {
 	}
 
 	public static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {
-		DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER);
-		return LocalDateTime.parse(dateTime.toStringRfc3339(), f);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER);
+		return LocalDateTime.parse(dateTime.toStringRfc3339(), formatter);
 	}
 
 	public static LocalDateTime getLocalDateTimeFromDate(DateTime dateTime) {
-		DateTimeFormatter f = DateTimeFormatter.ofPattern(DATE_FORMATTER);
-		LocalDate localDateTime = LocalDate.parse(dateTime.toStringRfc3339(), f);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMATTER);
+		LocalDate localDateTime = LocalDate.parse(dateTime.toStringRfc3339(), formatter);
 		java.time.LocalTime localTime = LocalTime.MIDNIGHT;
 		return LocalDateTime.of(localDateTime, localTime);
 	}

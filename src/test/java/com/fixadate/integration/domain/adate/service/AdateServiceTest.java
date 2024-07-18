@@ -45,8 +45,8 @@ import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.exception.ExceptionCode;
-import com.fixadate.global.exception.notFound.AdateNotFoundException;
-import com.fixadate.global.exception.notFound.TagNotFoundException;
+import com.fixadate.global.exception.notfound.AdateNotFoundException;
+import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
 import com.fixadate.integration.config.FixtureMonkeyConfig;
 
@@ -86,7 +86,7 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("adate 저장 테스트")
-	class adateRegisterTest {
+	class AdateRegisterTest {
 
 		@DisplayName("모든 조건이 문제 없는 경우 / 저장")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
@@ -132,7 +132,7 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("adate 범위 조회")
-	class getAdateEventsTest {
+	class GetAdateEventsTest {
 
 		@DisplayName("정상 조회")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
@@ -197,7 +197,7 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("월 별로 adate 조회")
-	class getAdatesByMonth {
+	class GetAdatesByMonth {
 		@DisplayName("해당 월에 adate가 존재하는 경우")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
@@ -263,7 +263,7 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("주 별로 adate 조회")
-	class getAdatesByWeeks {
+	class GetAdatesByWeeks {
 		@DisplayName("해당 주에 adate가 존재하는 경우")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
@@ -297,7 +297,7 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("calendarId로 adate 조회")
-	class getAdateFromRepositoryTest {
+	class GetAdateFromRepositoryTest {
 		@DisplayName("calendarId로 조회가 가능한 경우")
 		@ParameterizedTest
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
@@ -320,7 +320,7 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("adate 삭제 테스트")
-	class removeAdateByCalendarId {
+	class RemoveAdateByCalendarId {
 		@DisplayName("정상적으로 삭제를 한 경우")
 		@ParameterizedTest
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
@@ -352,17 +352,22 @@ class AdateServiceTest {
 
 	@Nested
 	@DisplayName("adate 수정 테스트")
-	class updateAdate {
+	class UpdateAdate {
 
 		@DisplayName("모든 값이 문제 없는 경우 / 수정")
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, 빨강, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
-			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, 하양, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
-			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, 파랑, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
-			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, 바이올렛, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
-			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, 검정, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, "
+				+ "빨강, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, "
+				+ "하양, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
+			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, "
+				+ "파랑, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
+			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, "
+				+ "바이올렛, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
+			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, "
+				+ "검정, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
 		})
 		void updateAdateTest_Success(
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {
@@ -410,11 +415,16 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
-			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, color1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
-			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, color2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
-			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, color3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
-			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, color4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
-			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, color5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
+			"newTitle1, newNotes1, newLocation1, 2025-05-17T10:30:00, 2025-05-17T11:30:00, "
+				+ "color1, true, 2025-05-17T12:00:00, 2025-05-17T13:00:00, true",
+			"newTitle2, newNotes2, newLocation2, 2025-05-18T10:30:00, 2025-05-18T11:30:00, "
+				+ "color2, false, 2025-05-18T12:00:00, 2025-05-18T13:00:00, false",
+			"newTitle3, newNotes3, newLocation3, 2025-05-19T10:30:00, 2025-05-19T11:30:00, "
+				+ "color3, true, 2025-05-19T12:00:00, 2025-05-19T13:00:00, false",
+			"newTitle4, newNotes4, newLocation4, 2025-05-20T10:30:00, 2025-05-20T11:30:00, "
+				+ "color4, false, 2025-05-20T12:00:00, 2025-05-20T13:00:00, true",
+			"newTitle5, newNotes5, newLocation5, 2025-05-21T10:30:00, 2025-05-21T11:30:00, "
+				+ "color5, true, 2025-05-21T12:00:00, 2025-05-21T13:00:00, true"
 		})
 		void updateAdateTestIfColorNotExists(
 			@AggregateWith(AdateUpdateDtoAggregator.class) AdateUpdateRequest adateUpdateRequest) {

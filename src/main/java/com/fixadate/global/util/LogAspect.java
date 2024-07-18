@@ -82,11 +82,11 @@ public class LogAspect {
 	}
 
 	@Profile({"test", "dev"})
-	@AfterThrowing(value = "all() && exceptUtil()", throwing = "e")
-	public void afterThrowingLogic(JoinPoint joinPoint, Throwable e) {
+	@AfterThrowing(value = "all() && exceptUtil()", throwing = "exception")
+	public void afterThrowingLogic(JoinPoint joinPoint, Throwable exception) {
 		MethodSignature methodSignature = (MethodSignature)joinPoint.getSignature();
 		Method method = methodSignature.getMethod();
 		log.info("method = {}", method.getName());
-		e.printStackTrace();
+		exception.printStackTrace();
 	}
 }

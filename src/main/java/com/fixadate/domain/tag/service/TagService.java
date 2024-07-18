@@ -18,8 +18,8 @@ import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.mapper.TagMapper;
 import com.fixadate.domain.tag.repository.TagRepository;
-import com.fixadate.global.exception.badRequest.TagBadRequestException;
-import com.fixadate.global.exception.notFound.TagNotFoundException;
+import com.fixadate.global.exception.badrequest.TagBadRequestException;
+import com.fixadate.global.exception.notfound.TagNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 

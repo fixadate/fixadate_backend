@@ -1,4 +1,5 @@
-package com.fixadate.global.util;//
+package com.fixadate.global.util;
+//
 // Source code recreated from a .class file by IntelliJ IDEA
 // (powered by FernFlower decompiler)
 //

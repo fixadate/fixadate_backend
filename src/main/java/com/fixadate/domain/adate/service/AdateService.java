@@ -25,9 +25,9 @@ import com.fixadate.domain.adate.repository.AdateQueryRepository;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
-import com.fixadate.global.exception.badRequest.InvalidTimeException;
-import com.fixadate.global.exception.notFound.AdateNotFoundException;
-import com.fixadate.global.exception.notFound.TagNotFoundException;
+import com.fixadate.global.exception.badrequest.InvalidTimeException;
+import com.fixadate.global.exception.notfound.AdateNotFoundException;
+import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.global.facade.RedisFacade;
 import com.google.api.services.calendar.model.Event;
 

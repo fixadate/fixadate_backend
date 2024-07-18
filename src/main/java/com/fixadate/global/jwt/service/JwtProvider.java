@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.exception.unAuthorized.TokenException;
+import com.fixadate.global.exception.unauthorized.TokenException;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.entity.TokenResponse;
 

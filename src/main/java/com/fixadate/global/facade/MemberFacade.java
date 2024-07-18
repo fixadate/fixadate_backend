@@ -6,16 +6,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
-import com.fixadate.domain.googleCalendar.repository.GoogleRepository;
+import com.fixadate.domain.googlecalendar.entity.GoogleCredentials;
+import com.fixadate.domain.googlecalendar.repository.GoogleRepository;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.mapper.MemberMapper;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.domain.pushKey.entity.PushKey;
-import com.fixadate.global.exception.notFound.GoogleNotFoundException;
-import com.fixadate.global.exception.notFound.MemberNotFoundException;
+import com.fixadate.domain.pushkey.entity.PushKey;
+import com.fixadate.global.exception.notfound.GoogleNotFoundException;
+import com.fixadate.global.exception.notfound.MemberNotFoundException;
 import com.fixadate.global.util.S3Util;
 
 import lombok.RequiredArgsConstructor;

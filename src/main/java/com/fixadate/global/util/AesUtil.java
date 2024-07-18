@@ -20,8 +20,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.fixadate.global.exception.badRequest.EncryptionBadRequestException;
-import com.fixadate.global.exception.notFound.EncryptionNotFoundException;
+import com.fixadate.global.exception.badrequest.EncryptionBadRequestException;
+import com.fixadate.global.exception.notfound.EncryptionNotFoundException;
 
 @Component
 public final class AesUtil {
@@ -42,14 +42,14 @@ public final class AesUtil {
 
 	}
 
-	public static String aesCBCEncode(String plainText) {
+	public static String aesCbcEncode(String plainText) {
 		try {
 			SecretKeySpec secretKey = new SecretKeySpec(privateKey_256.getBytes(StandardCharsets.UTF_8),
 				AES_ALGORITHM.getValue());
 			IvParameterSpec iv = new IvParameterSpec(private_iv.getBytes());
-			Cipher c = Cipher.getInstance(CIPHER_INSTANCE.getValue());
-			c.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-			byte[] encryptionByte = c.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+			Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE.getValue());
+			cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
+			byte[] encryptionByte = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
 
 			return Hex.encodeHexString(encryptionByte);
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
@@ -63,16 +63,16 @@ public final class AesUtil {
 		}
 	}
 
-	public static String aesCBCDecode(String encodedText) {
+	public static String aesCbcDecode(String encodedText) {
 		try {
 			SecretKeySpec secretKey = new SecretKeySpec(privateKey_256.getBytes(StandardCharsets.UTF_8),
 				AES_ALGORITHM.getValue());
 			IvParameterSpec iv = new IvParameterSpec(private_iv.getBytes());
-			Cipher c = Cipher.getInstance(CIPHER_INSTANCE.getValue());
-			c.init(Cipher.DECRYPT_MODE, secretKey, iv);
+			Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE.getValue());
+			cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
 			byte[] decodedByte = Hex.decodeHex(encodedText.toCharArray());
 
-			return new String(c.doFinal(decodedByte), StandardCharsets.UTF_8);
+			return new String(cipher.doFinal(decodedByte), StandardCharsets.UTF_8);
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
 			throw new EncryptionNotFoundException(NOT_FOUND_PADDING_OR_ALGORITHM);
 		} catch (InvalidAlgorithmParameterException | InvalidKeyException e) {

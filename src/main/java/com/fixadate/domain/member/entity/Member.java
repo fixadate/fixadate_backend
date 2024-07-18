@@ -1,6 +1,6 @@
 package com.fixadate.domain.member.entity;
 
-import static com.fixadate.global.util.UUIDUtil.*;
+import static com.fixadate.global.util.UuidUtil.*;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -13,9 +13,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.auth.entity.OAuthProvider;
-import com.fixadate.domain.googleCalendar.entity.GoogleCredentials;
+import com.fixadate.domain.googlecalendar.entity.GoogleCredentials;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
-import com.fixadate.domain.pushKey.entity.PushKey;
+import com.fixadate.domain.pushkey.entity.PushKey;
 
 import IDMaker.idmaker.IDMaker;
 import IDMaker.idmaker.IDMakerEntityListener;
@@ -144,7 +144,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 		}
 
 		boolean isUpdated = false;
-		if (memberInfoUpdateRequest.profileImg() != null && !removeUUID(this.profileImg).equals(
+		if (memberInfoUpdateRequest.profileImg() != null && !removeUuid(this.profileImg).equals(
 			memberInfoUpdateRequest.profileImg())) {
 			isUpdated = true;
 			this.profileImg = memberInfoUpdateRequest.profileImg() + UUID.randomUUID();

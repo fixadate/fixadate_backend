@@ -74,7 +74,8 @@ public interface AdateController {
 	ResponseEntity<List<AdateViewResponse>> getAdatesByMonth(MemberPrincipal memberPrincipal, int year,
 		int month);
 
-	@Operation(summary = "Adate 캘린더 이벤트 조회[일 조회]", description = "해당 기간에 존재하는 calendar를 조회합니다.[jwt 필요]")
+	@Operation(summary = "Adate 캘린더 이벤트 조회[일 조회]",
+		description = "해당 기간에 존재하는 calendar를 조회합니다.[jwt 필요]")
 	@Parameters({
 		@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
 		@Parameter(name = "firstDay", required = true, description = "시작 일를 보내면 됩니다.",
@@ -94,7 +95,8 @@ public interface AdateController {
 	@Operation(summary = "adate 삭제", description = "adate를 삭제합니다.[jwt 필요]")
 	@Parameters({
 		@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
-		@Parameter(name = "calendarId", required = true, description = "calendarId / id(pk)와 다름 / calendar를 생성할 때 서버에서 생성하는 10글자의 문자열")
+		@Parameter(name = "calendarId", required = true,
+			description = "calendarId / id(pk)와 다름 / calendar를 생성할 때 서버에서 생성하는 10글자의 문자열")
 	})
 	@ApiResponses({
 		@ApiResponse(responseCode = "204", description = "No Content",
@@ -106,7 +108,9 @@ public interface AdateController {
 
 	@Operation(summary = "Adate 수정", description = "Adate를 수정합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
-	@RequestBody(description = "adate를 수정 내용 / boolean 값인 ifAllDay와 reminders는 값을 반드시 보내야함. 만약 사용자가 입력하지 않으면 이전의 값을 보내야함.",
+	@RequestBody(
+		description = "adate를 수정 내용 / boolean 값인 ifAllDay와 reminders는 값을 반드시 보내야함. "
+			+ "만약 사용자가 입력하지 않으면 이전의 값을 보내야함.",
 		content = @Content(schema = @Schema(implementation = AdateUpdateRequest.class)), required = true)
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",

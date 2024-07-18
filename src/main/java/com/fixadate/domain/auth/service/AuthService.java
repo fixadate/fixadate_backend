@@ -21,8 +21,8 @@ import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
-import com.fixadate.global.exception.notFound.MemberNotFoundException;
-import com.fixadate.global.exception.unAuthorized.AuthException;
+import com.fixadate.global.exception.notfound.MemberNotFoundException;
+import com.fixadate.global.exception.unauthorized.AuthException;
 import com.fixadate.global.util.S3Util;
 
 import lombok.RequiredArgsConstructor;

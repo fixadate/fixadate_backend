@@ -14,7 +14,7 @@ import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.domain.tag.repository.TagRepository;
-import com.fixadate.global.exception.notFound.TagNotFoundException;
+import com.fixadate.global.exception.notfound.TagNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 

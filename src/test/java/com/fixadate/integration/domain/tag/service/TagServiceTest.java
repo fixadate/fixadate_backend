@@ -43,8 +43,8 @@ import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.tag.service.TagService;
-import com.fixadate.global.exception.badRequest.TagBadRequestException;
-import com.fixadate.global.exception.notFound.TagNotFoundException;
+import com.fixadate.global.exception.badrequest.TagBadRequestException;
+import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.integration.config.DataClearExtension;
 import com.fixadate.integration.config.FixtureMonkeyConfig;
 
@@ -92,7 +92,7 @@ class TagServiceTest {
 
 	@Nested
 	@DisplayName("tag 저장 테스트")
-	class registerTagTest {
+	class RegisterTagTest {
 
 		@DisplayName("모든 조건에 문제가 없는 경우")
 		@Sql(scripts = "/sql/setup/tag_setup.sql")
@@ -144,7 +144,7 @@ class TagServiceTest {
 
 	@Nested
 	@DisplayName("member를 이용한 tag 조회")
-	class checkColorTest {
+	class CheckColorTest {
 
 		@DisplayName("member가 저장한 tag이 존재하는 경우")
 		@Sql(scripts = "/sql/setup/tag_setup.sql")
@@ -176,7 +176,7 @@ class TagServiceTest {
 
 	@Nested
 	@DisplayName("updateTag 테스트")
-	class updateTagTest {
+	class UpdateTagTest {
 
 		@DisplayName("성공적으로 업데이트를 한 경우")
 		@Sql(scripts = "/sql/setup/tag_setup.sql")
@@ -323,7 +323,7 @@ class TagServiceTest {
 
 	@Nested
 	@DisplayName("color 삭제 테스트")
-	class removeColorTest {
+	class RemoveColorTest {
 		@DisplayName("모든 조건에 문제가 없는 경우")
 		@Sql(scripts = "/sql/setup/tag_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")

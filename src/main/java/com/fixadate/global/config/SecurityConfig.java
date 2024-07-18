@@ -40,8 +40,8 @@ public class SecurityConfig {
 		"/v1/google/**",
 		"/google/**",
 		"/oauth2Login/**",
-		"/oauth2callback/**"
-		,
+		"/oauth2callback/**",
+
 		/* signIn */
 		"/v1/auth/signin",
 		"/v1/auth/signup",
