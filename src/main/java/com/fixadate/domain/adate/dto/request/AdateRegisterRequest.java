@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record AdateRegisterRequest(
-	@NotBlank(message = "Adate title cannot be blank") String title,
+	@NotBlank(message = "Adate title cannot be blank")
+	String title,
 	String notes,
 	String location,
 	LocalDateTime alertWhen,
