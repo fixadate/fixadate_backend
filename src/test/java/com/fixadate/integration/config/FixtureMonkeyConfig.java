@@ -49,7 +49,7 @@ public class FixtureMonkeyConfig {
 			.build();
 	}
 
-	public static FixtureMonkey LocalDateTimeMonkey() {
+	public static FixtureMonkey localDateTimeMonkey() {
 		return FixtureMonkey.builder()
 			.plugin(new SimpleValueJqwikPlugin())
 			.build();

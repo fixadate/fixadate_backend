@@ -19,7 +19,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.global.exception.unAuthorized.TokenException;
+import com.fixadate.global.exception.unauthorized.TokenException;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
 import com.fixadate.integration.config.DataClearExtension;
@@ -115,7 +115,7 @@ class JwtProviderTest {
 
 	@Nested
 	@DisplayName("토큰 재발급 테스트")
-	class reIssueToken {
+	class ReIssueToken {
 		@DisplayName("RefreshToken이 만료되지 않으면 토큰을 재발급한다.")
 		@Test
 		void reIssueToken_Success() {

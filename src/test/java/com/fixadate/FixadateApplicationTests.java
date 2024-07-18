@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class FixadateApplicationTests {
-    @Test
-    void contextLoads() {
-    }
+	@Test
+	void contextLoads() {
+	}
 }

@@ -79,6 +79,7 @@ public class AuthControllerImpl implements AuthController {
 			.build();
 	}
 
+	@Override
 	@PostMapping("/logout")
 	public ResponseEntity<Void> logout(HttpServletRequest httpServletRequest) {
 		String accessToken = jwtProvider.retrieveToken(httpServletRequest);
@@ -87,6 +88,7 @@ public class AuthControllerImpl implements AuthController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Override
 	@DeleteMapping("/signout")
 	public ResponseEntity<Void> signout(@RequestParam String email, HttpServletRequest httpServletRequest) {
 		String accessToken = jwtProvider.retrieveToken(httpServletRequest);

@@ -39,10 +39,10 @@ import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.global.exception.badRequest.BadRequestException;
-import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
-import com.fixadate.global.exception.notFound.MemberNotFoundException;
-import com.fixadate.global.exception.unAuthorized.AuthException;
+import com.fixadate.global.exception.badrequest.BadRequestException;
+import com.fixadate.global.exception.badrequest.OAuthPlatformBadRequest;
+import com.fixadate.global.exception.notfound.MemberNotFoundException;
+import com.fixadate.global.exception.unauthorized.AuthException;
 import com.fixadate.global.util.S3Util;
 import com.fixadate.integration.config.DataClearExtension;
 import com.fixadate.integration.util.CreateMemberRegisterRequest;
@@ -54,7 +54,7 @@ class AuthServiceTest {
 
 	@Autowired
 	private AuthService authService;
-	
+
 	@Autowired
 	private MemberRepository memberRepository;
 
@@ -86,7 +86,7 @@ class AuthServiceTest {
 
 	@Nested
 	@DisplayName("Member 저장 테스트")
-	class registerMemberTest {
+	class RegisterMemberTest {
 		@DisplayName("잘못된 oauthPlatform 값이 들어간 경우 에러 발생")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
@@ -110,7 +110,7 @@ class AuthServiceTest {
 			"101, google, kevin, 314, alex, 19980512, female, engineer, blue, kevin09288715@google.com, MEMBER",
 			"102, apple, david, 415, emma, 20010320, male, designer, green, kevin0928@apache.com, MEMBER",
 			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
-			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER",})
+			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER"})
 		void registerMemberTestIfEveryThingsIsOk(
 			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
 			assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
@@ -137,8 +137,8 @@ class AuthServiceTest {
 			"101, google, kevin, 314, alex, 19980512, female, engineer, blue, kevin09288715@google.com, MEMBER",
 			"102, apple, david, 415, emma, 20010320, male, designer, green, kevin0928@apache.com, MEMBER",
 			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
-			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER",})
-		void registerMemberTestencryption(
+			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER"})
+		void registerMemberTestEncryption(
 			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
 			assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
 
@@ -149,7 +149,8 @@ class AuthServiceTest {
 			assertTrue(memberOptional.isPresent());
 			Member member = memberOptional.get();
 			assertAll(
-				() -> assertTrue(member.getOauthId().startsWith("{bcrypt}"), "oauthId doesn't start with {bcrypt}"),
+				() -> assertTrue(member.getOauthId().startsWith("{bcrypt}"),
+					"oauthId doesn't start with {bcrypt}"),
 				() -> assertTrue(passwordEncoder.matches(memberRegisterRequest.oauthId(), member.getOauthId()))
 			);
 		}
@@ -157,7 +158,7 @@ class AuthServiceTest {
 
 	@Nested
 	@DisplayName("signin 테스트")
-	class signinTest {
+	class SigninTest {
 		@DisplayName("멤버의 이름이 존재하지 않는 경우")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")
 		@CsvSource(value = {
@@ -246,7 +247,7 @@ class AuthServiceTest {
 
 	@Nested
 	@DisplayName("회원 탈퇴 테스트")
-	class signoutTest {
+	class SignoutTest {
 		@DisplayName("성공적으로 탈퇴를 한 경우")
 		@Sql(scripts = "/sql/setup/member_register_setup.sql")
 		@ParameterizedTest(name = "{index}번째 입력 값 -> {argumentsWithNames}")

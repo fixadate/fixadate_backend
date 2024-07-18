@@ -20,7 +20,7 @@ public class S3Config {
 	private String secretKey;
 
 	@Bean
-	public AwsCredentials basicAWSCredentials() {
+	public AwsCredentials basicAwsCredentials() {
 		return AwsBasicCredentials.create(accessKey, secretKey);
 	}
 

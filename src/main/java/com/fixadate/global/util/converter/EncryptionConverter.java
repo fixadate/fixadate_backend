@@ -13,7 +13,7 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
 		if (attribute.isBlank()) {
 			return attribute;
 		}
-		return AesUtil.aesCBCEncode(attribute);
+		return AesUtil.aesCbcEncode(attribute);
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
 		if (dbData.isBlank()) {
 			return dbData;
 		}
-		return AesUtil.aesCBCDecode(dbData);
+		return AesUtil.aesCbcDecode(dbData);
 	}
 
 }

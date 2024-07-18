@@ -13,7 +13,7 @@ import io.swagger.v3.oas.models.info.Info;
 public class SwaggerConfig {
 
 	@Bean
-	public OpenAPI openAPI() {
+	public OpenAPI openApi() {
 		return new OpenAPI()
 			.info(new Info()
 				.title("Fixadate API 명세서")

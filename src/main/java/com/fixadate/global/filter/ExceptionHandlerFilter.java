@@ -9,7 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.global.exception.ExceptionCode;
-import com.fixadate.global.exception.unAuthorized.TokenException;
+import com.fixadate.global.exception.unauthorized.TokenException;
 import com.fixadate.global.jwt.exception.JwtExceptionResponse;
 
 import io.jsonwebtoken.ExpiredJwtException;

@@ -15,7 +15,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import com.fixadate.global.exception.badRequest.GoogleIOExcetption;
+import com.fixadate.global.exception.badrequest.GoogleIoExcetption;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -90,7 +90,7 @@ public class GoogleUtil {
 			clientSecrets.getDetails().setClientSecret(CLIENT_SECRET);
 			return clientSecrets;
 		} catch (IOException e) {
-			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_LOAD_SECRETS);
+			throw new GoogleIoExcetption(INVALID_GOOGLE_CALENDAR_LOAD_SECRETS);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class GoogleUtil {
 				.watch(CALENDAR_ID.getValue(), channel);
 			return watch.execute();
 		} catch (IOException e) {
-			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_WATCH_EXECUTE);
+			throw new GoogleIoExcetption(INVALID_GOOGLE_CALENDAR_WATCH_EXECUTE);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class GoogleUtil {
 		try {
 			return flow.loadCredential(userId);
 		} catch (IOException e) {
-			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_LOAD_CREDENTIALS);
+			throw new GoogleIoExcetption(INVALID_GOOGLE_CALENDAR_LOAD_CREDENTIALS);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class GoogleUtil {
 			Calendar calendar = calendarService(userId);
 			calendar.channels().stop(channel).execute();
 		} catch (IOException e) {
-			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_STOP);
+			throw new GoogleIoExcetption(INVALID_GOOGLE_CALENDAR_STOP);
 		}
 
 	}
@@ -135,7 +135,7 @@ public class GoogleUtil {
 		try {
 			flow.createAndStoreCredential(tokenResponse, userId);
 		} catch (IOException e) {
-			throw new GoogleIOExcetption(INVALID_GOOGLE_CALENDAR_CREATE_AND_STORE_CREDENTIALS);
+			throw new GoogleIoExcetption(INVALID_GOOGLE_CALENDAR_CREATE_AND_STORE_CREDENTIALS);
 		}
 	}
 

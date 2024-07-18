@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.global.exception.badRequest.RedisRequestException;
+import com.fixadate.global.exception.badrequest.RedisRequestException;
 
 import lombok.RequiredArgsConstructor;
 

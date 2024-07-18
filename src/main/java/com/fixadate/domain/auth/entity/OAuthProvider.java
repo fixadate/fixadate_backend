@@ -2,7 +2,7 @@ package com.fixadate.domain.auth.entity;
 
 import static com.fixadate.global.exception.ExceptionCode.*;
 
-import com.fixadate.global.exception.badRequest.OAuthPlatformBadRequest;
+import com.fixadate.global.exception.badrequest.OAuthPlatformBadRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

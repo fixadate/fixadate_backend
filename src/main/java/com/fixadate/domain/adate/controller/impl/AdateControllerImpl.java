@@ -49,23 +49,26 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam LocalDateTime startDateTime,
 		@RequestParam LocalDateTime endDateTime) {
 		Member member = memberPrincipal.getMember();
-		List<AdateViewResponse> adateRespons = adateService.
-			getAdateByStartAndEndTime(member, startDateTime, endDateTime);
+		List<AdateViewResponse> adateRespons = adateService
+			.getAdateByStartAndEndTime(member, startDateTime, endDateTime);
 		return ResponseEntity.ok(adateRespons);
 	}
 
+	@Override
 	@PostMapping("/restore/{calendarId}")
 	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable String calendarId) {
 		AdateResponse adateResponse = adateService.restoreAdateByCalendarId(calendarId);
 		return ResponseEntity.ok(adateResponse);
 	}
 
+	@Override
 	@GetMapping("/{calendarId}")
 	public ResponseEntity<AdateResponse> getAdate(@PathVariable String calendarId) {
 		AdateResponse adateResponse = adateService.getAdateResponseByCalendarId(calendarId);
 		return ResponseEntity.ok(adateResponse);
 	}
 
+	@Override
 	@PatchMapping("/{calendarId}")
 	public ResponseEntity<AdateResponse> updateAdate(@PathVariable String calendarId,
 		@Valid @RequestBody AdateUpdateRequest adateUpdateRequest,
@@ -89,8 +92,8 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam int year,
 		@RequestParam int month) {
 		Member member = memberPrincipal.getMember();
-		List<AdateViewResponse> adateRespons = adateService.
-			getAdatesByMonth(year, month, member);
+		List<AdateViewResponse> adateRespons = adateService
+			.getAdatesByMonth(year, month, member);
 		return ResponseEntity.ok(adateRespons);
 	}
 
@@ -101,8 +104,8 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam LocalDate firstDay,
 		@RequestParam LocalDate lastDay) {
 		Member member = memberPrincipal.getMember();
-		List<AdateViewResponse> adateRespons = adateService.
-			getAdatesByWeek(firstDay, lastDay, member);
+		List<AdateViewResponse> adateRespons = adateService
+			.getAdatesByWeek(firstDay, lastDay, member);
 		return ResponseEntity.ok(adateRespons);
 	}
 }
