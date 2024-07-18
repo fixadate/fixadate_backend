@@ -1,4 +1,4 @@
-package com.fixadate.global.versioncheck.dto.response;
+package com.fixadate.domain.versioncheck.dto.response;
 
 /**
  *

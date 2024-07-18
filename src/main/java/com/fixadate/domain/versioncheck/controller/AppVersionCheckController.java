@@ -1,13 +1,13 @@
-package com.fixadate.global.versioncheck.controller;
+package com.fixadate.domain.versioncheck.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fixadate.global.versioncheck.dto.request.AppVersionCheckRequest;
-import com.fixadate.global.versioncheck.dto.response.AppVersionCheckResponse;
-import com.fixadate.global.versioncheck.service.AppVersionCheckService;
+import com.fixadate.domain.versioncheck.dto.request.AppVersionCheckRequest;
+import com.fixadate.domain.versioncheck.dto.response.AppVersionCheckResponse;
+import com.fixadate.domain.versioncheck.service.AppVersionCheckService;
 
 import lombok.RequiredArgsConstructor;
 

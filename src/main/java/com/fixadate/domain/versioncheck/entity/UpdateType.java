@@ -1,4 +1,4 @@
-package com.fixadate.global.versioncheck.entity;
+package com.fixadate.domain.versioncheck.entity;
 
 /**
  *

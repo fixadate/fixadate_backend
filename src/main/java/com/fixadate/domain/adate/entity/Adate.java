@@ -95,14 +95,10 @@ public class Adate extends BaseTimeEntity {
 		if (adateUpdateRequest.repeatFreq() != null) {
 			this.repeatFreq = adateUpdateRequest.repeatFreq();
 		}
-		this.ifAllDay = adateUpdateRequest.ifAllDay();
 
-		if (adateUpdateRequest.startsWhen() != null) {
-			this.startsWhen = adateUpdateRequest.startsWhen();
-		}
-		if (adateUpdateRequest.endsWhen() != null) {
-			this.endsWhen = adateUpdateRequest.endsWhen();
-		}
+		this.ifAllDay = adateUpdateRequest.ifAllDay();
+		this.startsWhen = adateUpdateRequest.startsWhen();
+		this.endsWhen = adateUpdateRequest.endsWhen();
 		this.reminders = adateUpdateRequest.reminders();
 	}
 

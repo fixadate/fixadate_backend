@@ -2,6 +2,7 @@ package com.fixadate.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -33,5 +34,12 @@ public class ControllerAdvice {
 	public ResponseEntity<ExceptionResponse> handleUnAuthorizedRequest(final UnAuthorizedException exception) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 			.body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(
+		MethodArgumentNotValidException exception) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()));
 	}
 }
