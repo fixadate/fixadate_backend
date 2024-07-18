@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
@@ -18,17 +22,16 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Tag(name = "AdateController", description = "AdateController 입니다.")
 public interface AdateController {
 
 	@Operation(summary = "Adate 이벤트 등록", description = "Adate 이벤트를 등록합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
-	@RequestBody(content = @Content(schema = @Schema(implementation = AdateRegisterRequest.class)), required = true)
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "created",
 			content = @Content(schema = @Schema(implementation = Void.class))),
@@ -37,16 +40,15 @@ public interface AdateController {
 		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<AdateRegisterRequest> registerAdateEvent(AdateRegisterRequest adateRegisterRequest,
-		MemberPrincipal memberPrincipal);
+	ResponseEntity<AdateRegisterRequest> registerAdateEvent(
+		@Valid @RequestBody AdateRegisterRequest adateRegisterRequest,
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal);
 
 	@Operation(summary = "Adate 캘린더 이벤트 조회[시간 조회]", description = "지정된 범위에 해당하는 calendar를 조회합니다.[jwt 필요]")
 	@Parameters({
 		@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
-		@Parameter(name = "startDateTime", required = true, description = "00-00-00 ~ 23-59-59",
-			content = @Content(schema = @Schema(implementation = LocalDateTime.class))),
-		@Parameter(name = "endDateTime", required = true, description = "00-00-00 ~ 23-59-59",
-			content = @Content(schema = @Schema(implementation = LocalDateTime.class)))
+		@Parameter(name = "startDateTime", required = true, description = "00-00-00 ~ 23-59-59"),
+		@Parameter(name = "endDateTime", required = true, description = "00-00-00 ~ 23-59-59")
 	})
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
@@ -54,43 +56,33 @@ public interface AdateController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<List<AdateViewResponse>> getAdates(MemberPrincipal memberPrincipal,
-		LocalDateTime startDateTime, LocalDateTime endDateTime);
+	ResponseEntity<List<AdateViewResponse>> getAdates(
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+		@RequestParam LocalDateTime startDateTime,
+		@RequestParam LocalDateTime endDateTime);
 
-	@Operation(summary = "Adate 캘린더 이벤트 조회[월 조회]", description = "해당 월에 존재하는 calendar를 조회합니다.[jwt 필요]")
-	@Parameters({
-		@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
-		@Parameter(name = "year", required = true, description = "해당 년도를 보내면 됩니다.",
-			content = @Content(schema = @Schema(implementation = Integer.class))),
-		@Parameter(name = "month", required = true, description = "해당 월를 보내면 됩니다.",
-			content = @Content(schema = @Schema(implementation = Integer.class)))
-	})
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "OK",
-			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
-		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
-			content = @Content(schema = @Schema(implementation = Void.class))),
-	})
-	ResponseEntity<List<AdateViewResponse>> getAdatesByMonth(MemberPrincipal memberPrincipal, int year,
-		int month);
+	@Operation(summary = "Adate 복원", description = "삭제된 Adate를 복원합니다.")
+	ResponseEntity<AdateResponse> restoreAdate(@PathVariable String calendarId);
 
-	@Operation(summary = "Adate 캘린더 이벤트 조회[일 조회]",
-		description = "해당 기간에 존재하는 calendar를 조회합니다.[jwt 필요]")
-	@Parameters({
-		@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
-		@Parameter(name = "firstDay", required = true, description = "시작 일를 보내면 됩니다.",
-			content = @Content(schema = @Schema(implementation = LocalDate.class))),
-		@Parameter(name = "lastDay", required = true, description = "마지막 일를 보내면 됩니다.",
-			content = @Content(schema = @Schema(implementation = LocalDate.class))),
-	})
+	@Operation(summary = "Adate 조회", description = "특정 Adate를 조회합니다.")
+	ResponseEntity<AdateResponse> getAdate(@PathVariable String calendarId);
+
+	@Operation(summary = "Adate 수정", description = "Adate를 수정합니다.")
+	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
 			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
+		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
+			content = @Content(schema = @Schema(implementation = Void.class))),
+		@ApiResponse(responseCode = "404", description = "calendarId로 adate를 찾을 수 없을 때 생기는 예외",
+			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	public ResponseEntity<List<AdateViewResponse>> getAdatesByWeeks(MemberPrincipal memberPrincipal,
-		LocalDate firstDay, LocalDate lastDay);
+	ResponseEntity<AdateResponse> updateAdate(
+		@PathVariable String calendarId,
+		@Valid @RequestBody AdateUpdateRequest adateUpdateRequest,
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal);
 
 	@Operation(summary = "adate 삭제", description = "adate를 삭제합니다.[jwt 필요]")
 	@Parameters({
@@ -104,24 +96,39 @@ public interface AdateController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<Void> removeAdate(String calendarId);
+	ResponseEntity<Void> removeAdate(@PathVariable String calendarId);
 
-	@Operation(summary = "Adate 수정", description = "Adate를 수정합니다.")
-	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
-	@RequestBody(
-		description = "adate를 수정 내용 / boolean 값인 ifAllDay와 reminders는 값을 반드시 보내야함. "
-			+ "만약 사용자가 입력하지 않으면 이전의 값을 보내야함.",
-		content = @Content(schema = @Schema(implementation = AdateUpdateRequest.class)), required = true)
+	@Operation(summary = "Adate 캘린더 이벤트 조회[월 조회]", description = "해당 월에 존재하는 calendar를 조회합니다.[jwt 필요]")
+	@Parameters({
+		@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
+		@Parameter(name = "year", required = true, description = "해당 년도를 보내면 됩니다."),
+		@Parameter(name = "month", required = true, description = "해당 월을 보내면 됩니다.")
+	})
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
 			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
-		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
-			content = @Content(schema = @Schema(implementation = Void.class))),
-		@ApiResponse(responseCode = "404", description = "calendarId로 adate를 찾을 수 없을 때 생기는 예외",
-			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	public ResponseEntity<AdateResponse> updateAdate(String calendarId,
-		AdateUpdateRequest adateUpdateRequest, MemberPrincipal memberPrincipal);
+	ResponseEntity<List<AdateViewResponse>> getAdatesByMonth(
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+		@RequestParam int year,
+		@RequestParam int month);
+
+	@Operation(summary = "Adate 캘린더 이벤트 조회[일 조회]", description = "해당 기간에 존재하는 calendar를 조회합니다.[jwt 필요]")
+	@Parameters({
+		@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER),
+		@Parameter(name = "firstDay", required = true, description = "시작 일을 보내면 됩니다."),
+		@Parameter(name = "lastDay", required = true, description = "마지막 일을 보내면 됩니다.")
+	})
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "OK",
+			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
+		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+			content = @Content(schema = @Schema(implementation = Void.class))),
+	})
+	ResponseEntity<List<AdateViewResponse>> getAdatesByWeeks(
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+		@RequestParam LocalDate firstDay,
+		@RequestParam LocalDate lastDay);
 }

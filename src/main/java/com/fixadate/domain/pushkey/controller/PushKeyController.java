@@ -1,6 +1,8 @@
 package com.fixadate.domain.pushkey.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.global.jwt.MemberPrincipal;
 
@@ -24,13 +26,13 @@ public interface PushKeyController {
 			content = @Content(schema = @Schema(implementation = String.class)), in = ParameterIn.QUERY)
 	})
 	@ApiResponses({
-		@ApiResponse(responseCode = "201", description = "created",
+		@ApiResponse(responseCode = "204", description = "No Content",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 		@ApiResponse(responseCode = "404", description = "securityContext에 있는 값으로 member를 찾을 수 없는 경우",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	public ResponseEntity<Void> registPushKey(MemberPrincipal memberPrincipal,
-		String pushKey);
+	ResponseEntity<Void> registPushKey(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+		@RequestParam String pushKey);
 }

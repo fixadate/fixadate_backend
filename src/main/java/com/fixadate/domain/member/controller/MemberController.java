@@ -1,8 +1,14 @@
 package com.fixadate.domain.member.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
+import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,4 +24,21 @@ public interface MemberController {
 			content = @Content(schema = @Schema(implementation = String.class)))
 	})
 	ResponseEntity<String> getRandomNickname();
+
+	@Operation(summary = "회원 정보 조회", description = "회원의 정보를 조회합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "ok",
+			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
+	})
+	ResponseEntity<MemberInfoResponse> getMemberNickname(
+		@Parameter(description = "회원 ID") @PathVariable String memberId);
+
+	@Operation(summary = "회원 정보 수정", description = "회원의 정보를 수정합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "ok",
+			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
+	})
+	ResponseEntity<MemberInfoResponse> updateMemberNickname(
+		@Parameter(description = "회원 ID") @PathVariable String memberId,
+		@Parameter(description = "수정할 회원 정보") @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest);
 }

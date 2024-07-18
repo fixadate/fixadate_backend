@@ -3,7 +3,8 @@ package com.fixadate.domain.tag.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
@@ -35,7 +36,8 @@ public interface TagController {
 		@ApiResponse(responseCode = "400", description = "name이 이미 존재할 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	public ResponseEntity<Void> createTag(MemberPrincipal memberPrincipal, TagRequest tagRequest);
+	public ResponseEntity<Void> createTag(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+		@RequestBody TagRequest tagRequest);
 
 	@Operation(summary = "색상 유형 조회", description = "사용자의 색상 유형을 조회합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
@@ -45,7 +47,7 @@ public interface TagController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	public ResponseEntity<List<TagResponse>> findTags(MemberPrincipal memberPrincipal);
+	public ResponseEntity<List<TagResponse>> findTags(@AuthenticationPrincipal MemberPrincipal memberPrincipal);
 
 	@Operation(summary = "색상 유형 업데이트", description = "색상 유형을 업데이트합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
@@ -61,19 +63,19 @@ public interface TagController {
 		@ApiResponse(responseCode = "404", description = "변경하고자 하는 color가 조회되지 않을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<TagResponse> updateTag(TagUpdateRequest tagUpdateRequest,
-		MemberPrincipal memberPrincipal);
+	ResponseEntity<TagResponse> updateTag(@RequestBody TagUpdateRequest tagUpdateRequest,
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal);
 
 	@Operation(summary = "색상 유형 삭제", description = "색상 유형을 삭제.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
-	@Parameter(name = "color", in = ParameterIn.QUERY)
+	@Parameter(name = "name", in = ParameterIn.PATH, required = true, description = "삭제할 색상 유형의 이름")
 	@ApiResponses({
 		@ApiResponse(responseCode = "204", description = "no content",
-			content = @Content(schema = @Schema(implementation = TagResponse.class))),
+			content = @Content(schema = @Schema(implementation = Void.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 		@ApiResponse(responseCode = "404", description = "삭제하고자 하는 color가 조회되지 않을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<Void> removeTag(@RequestParam String name, MemberPrincipal memberPrincipal);
+	ResponseEntity<Void> removeTag(@PathVariable String name, @AuthenticationPrincipal MemberPrincipal memberPrincipal);
 }

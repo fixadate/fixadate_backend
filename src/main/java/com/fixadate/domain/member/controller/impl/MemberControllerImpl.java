@@ -39,11 +39,13 @@ public class MemberControllerImpl implements MemberController {
 		return ResponseEntity.ok(randomNickname);
 	}
 
+	@Override
 	@GetMapping("/{memberId}")
 	public ResponseEntity<MemberInfoResponse> getMemberNickname(@PathVariable String memberId) {
 		return ResponseEntity.ok(memberService.getMemberInfo(memberId));
 	}
 
+	@Override
 	@PatchMapping("/{memberId}")
 	public ResponseEntity<MemberInfoResponse> updateMemberNickname(@PathVariable String memberId,
 		@RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {

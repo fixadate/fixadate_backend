@@ -18,6 +18,7 @@ public class PushKeyControllerimpl implements PushKeyController {
 
 	private final PushKeyService pushKeyService;
 
+	@Override
 	@PostMapping()
 	public ResponseEntity<Void> registPushKey(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam String pushKey) {
