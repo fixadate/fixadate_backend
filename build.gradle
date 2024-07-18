@@ -109,12 +109,9 @@ checkstyle {
 
 }
 
-tasks.named('build') {
-    dependsOn 'checkstyleMain'
-}
-
 test {
     useJUnitPlatform()
+    dependsOn 'checkstyleMain'
     dependsOn 'checkstyleTest'
 }
 
