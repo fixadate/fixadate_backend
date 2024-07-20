@@ -2,6 +2,8 @@ package com.fixadate.domain.adate.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.fixadate.domain.tag.dto.response.TagResponse;
+
 /**
  *
  * @author yongjunhong
@@ -10,9 +12,9 @@ import java.time.LocalDateTime;
 public record AdateViewResponse(
 	String title,
 	String notes,
-	String color,
 	boolean ifAllDay,
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen,
-	String calendarId) {
+	String calendarId,
+	TagResponse tagResponse) {
 }
