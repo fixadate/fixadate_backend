@@ -1,12 +1,15 @@
 package com.fixadate.domain.adate.mapper;
 
 import static com.fixadate.domain.adate.entity.Adate.*;
+import static com.fixadate.domain.tag.mapper.TagMapper.*;
 
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.dto.response.TagResponse;
+import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
 
@@ -71,11 +74,18 @@ public class AdateMapper {
 		return new AdateViewResponse(
 			adate.getTitle(),
 			adate.getNotes(),
-			adate.getColor(),
 			adate.getIfAllDay(),
 			adate.getStartsWhen(),
 			adate.getEndsWhen(),
-			adate.getCalendarId()
+			adate.getCalendarId(),
+			getTagResponse(adate.getTag())
 		);
+	}
+
+	private static TagResponse getTagResponse(Tag tag) {
+		if (tag == null) {
+			return null;
+		}
+		return toResponse(tag);
 	}
 }
