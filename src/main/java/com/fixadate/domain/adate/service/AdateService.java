@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
@@ -37,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class AdateService {
 	private final AdateRepository adateRepository;
 	private final AdateQueryRepository adateQueryRepository;

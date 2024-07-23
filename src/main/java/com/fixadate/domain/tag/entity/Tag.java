@@ -52,4 +52,8 @@ public class Tag {
 			this.color = tagUpdateRequest.newColor();
 		}
 	}
+
+	public void deleteTag() {
+		this.adates.forEach(Adate::removeTagAndColor);
+	}
 }
