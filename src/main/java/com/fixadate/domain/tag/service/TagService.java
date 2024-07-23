@@ -87,7 +87,6 @@ public class TagService {
 			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
 	}
 
-	@Transactional
 	public void isDefaultTag(Tag tag) {
 		if (tag.isDefault()) {
 			throw new TagBadRequestException(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG);
@@ -97,9 +96,11 @@ public class TagService {
 	@Transactional
 	public void removeColor(String name, Member member) {
 		Tag tag = findTagByMemberAndColor(name, member);
-		isDefaultTag(tag);
-		tagRepository.delete(tag);
 
+		isDefaultTag(tag);
+		tag.deleteTag();
+
+		tagRepository.delete(tag);
 		applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(new ArrayList<>(tag.getAdates()), false));
 	}
 }
