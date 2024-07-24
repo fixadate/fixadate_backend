@@ -1,25 +1,29 @@
 name: Build and Deploy (Push)
-
 on:
   push:
     branches: [ 'main' ]
     paths:
       - '**'
-
 env:
   PROJECT_NAME: fixadate
   BUCKET_NAME: fixadate-bucket
   CODE_DEPLOY_APP_NAME: fixadate
   DEPLOYMENT_GROUP_NAME: fixadate_codedeploy_group
   SPRING_PROFILES_ACTIVE: prod
-
 jobs:
   build:
+    uses: ./.github/workflows/common-steps.yml
+    secrets: inherit
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - name: Reuse Common Steps
-        uses: ./.github/workflows/common-steps.yml
+      - uses: actions/checkout@v2
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifact
+          path: .
       - name: Make Zip File
         run: zip -qq -r ./$GITHUB_SHA.zip .
         shell: bash
@@ -32,8 +36,9 @@ jobs:
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
       - name: Code Deploy To EC2 instance
-        run: aws deploy create-deployment 
-                --application-name $CODE_DEPLOY_APP_NAME 
-                --deployment-config-name CodeDeployDefault.AllAtOnce
-                --deployment-group-name $DEPLOYMENT_GROUP_NAME 
-                --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+        run: |
+          aws deploy create-deployment \
+            --application-name $CODE_DEPLOY_APP_NAME \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name $DEPLOYMENT_GROUP_NAME \
+            --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
