@@ -9,5 +9,5 @@ import com.fixadate.domain.adate.entity.Adate;
  * @author yongjunhong
  * @since 2024. 7. 9.
  */
-public record AdateTagUpdateEvent(List<Adate> adates, boolean isUpdate) {
+public record AdateTagUpdateEvent(List<Adate> adates) {
 }

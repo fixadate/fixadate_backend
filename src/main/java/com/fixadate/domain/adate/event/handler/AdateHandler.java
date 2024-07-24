@@ -2,7 +2,6 @@ package com.fixadate.domain.adate.event.handler;
 
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.event.EventListener;
@@ -56,12 +55,6 @@ public class AdateHandler {
 	@EventListener
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public void updateAdateTagEvent(AdateTagUpdateEvent adateTagUpdateEvent) {
-		List<Adate> adates = adateTagUpdateEvent.adates();
-
-		if (adateTagUpdateEvent.isUpdate()) {
-			adates.forEach(Adate::updateColor);
-			return;
-		}
-		adates.forEach(Adate::removeTagAndColor);
+		adateTagUpdateEvent.adates().forEach(Adate::removeTagAndColor);
 	}
 }

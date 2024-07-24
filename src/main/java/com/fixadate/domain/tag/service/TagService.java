@@ -71,7 +71,7 @@ public class TagService {
 		tag.updateTag(tagUpdateRequest);
 
 		if (isValidString(tagUpdateRequest.newColor())) {
-			applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(new ArrayList<>(tag.getAdates()), true));
+			applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(new ArrayList<>(tag.getAdates())));
 		}
 
 		return toResponse(tag);
@@ -101,6 +101,5 @@ public class TagService {
 		tag.deleteTag();
 
 		tagRepository.delete(tag);
-		applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(new ArrayList<>(tag.getAdates()), false));
 	}
 }
