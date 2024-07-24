@@ -1,0 +1,17 @@
+name: Build and Test (Pull Request)
+
+on:
+  pull_request:
+    branches-ignore:
+      - 'HOTFIX'
+      - 'hotfix/**'
+    paths:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Reuse Common Steps
+        uses: ./.github/workflows/common-steps.yml
