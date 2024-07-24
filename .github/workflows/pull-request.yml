@@ -9,3 +9,4 @@ on:
 jobs:
   test:
     uses: ./.github/workflows/common-steps.yml
+    secrets: inherit

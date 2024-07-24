@@ -13,6 +13,7 @@ env:
 jobs:
   build:
     uses: ./.github/workflows/common-steps.yml
+    secrets: inherit
   deploy:
     needs: build
     runs-on: ubuntu-latest
