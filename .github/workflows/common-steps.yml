@@ -1,16 +1,11 @@
-name: Build and Test
+name: Common Steps
 
 on:
+  workflow_call:
 
-  pull_request:
-    branches:
-      - '**'
-    paths:
-      - '**'
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 17
@@ -18,30 +13,24 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
-
       - name: Set YML AND Credentials
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
           find src
-
       - name: SET Credentials
         uses: jsdaniell/create-json@1.1.2
         with:
           name: "credentials.json"
           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
           dir: './src/main/resources/'
-
       - name: Set TEST YML
         run: |
           mkdir -p src/test/resources
           echo "${{ secrets.FIXADATE_TEST_CREDENTIALS }}" | base64 --decode > src/test/resources/application.yml
           find src
-
       - name: Build with Gradle
         run: ./gradlew build
-
