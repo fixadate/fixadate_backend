@@ -55,6 +55,6 @@ public class AdateHandler {
 	@EventListener
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public void updateAdateTagEvent(AdateTagUpdateEvent adateTagUpdateEvent) {
-		adateTagUpdateEvent.adates().forEach(Adate::removeTagAndColor);
+		adateTagUpdateEvent.adates().forEach(Adate::updateColor);
 	}
 }
