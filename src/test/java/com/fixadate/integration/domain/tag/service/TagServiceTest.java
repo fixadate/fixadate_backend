@@ -100,7 +100,7 @@ class TagServiceTest {
 		void registerTag() {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
-			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
+			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
 			var tagRequests = fixtureMonkey.giveMeBuilder(TagRequest.class)
 				.set("name", Values.just(CombinableArbitrary.from(() -> Arbitraries.strings().sample()).unique()))
 				.setNotNull("color")

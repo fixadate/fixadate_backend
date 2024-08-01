@@ -1,57 +1,46 @@
 package com.fixadate.integration.config;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.arbitraries.StringArbitrary;
-
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.jqwik.JqwikPlugin;
 import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
+import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 
-/**
- *
- * @author yongjunhong
- * @since 2024. 6. 5.
- */
 public class FixtureMonkeyConfig {
-	public static FixtureMonkey fieldMonkey() {
-		return FixtureMonkey.builder()
-			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-			.plugin(
-				new JqwikPlugin()
-					.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-						@Override
-						public StringArbitrary strings() {
-							return Arbitraries.strings().alpha().ofMaxLength(10);
-						}
-					})
-			)
-			.plugin(new JakartaValidationPlugin())
-			.build();
-	}
 
-	public static FixtureMonkey recodeMonkey() {
+	/*
+	simpleValueJqwikMonkey는 읽을 수 있고 극단적이지 않은 값을 생성해주는 플러그인
+	문자열의 길이, 숫자의 최대 값등 극단적이지 않게 값을 생성할 수 있게 도와줌
+	 */
+	public static FixtureMonkey simpleValueJqwikMonkey() {
 		return FixtureMonkey.builder()
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-			.plugin(
-				new JqwikPlugin()
-					.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-						@Override
-						public StringArbitrary strings() {
-							return Arbitraries.strings().alpha().ofMaxLength(10);
-						}
-					})
+			.plugin(new SimpleValueJqwikPlugin()
+				.maxStringLength(10)
+				.maxNumberValue(10_000)
 			)
-			.plugin(new JakartaValidationPlugin())
 			.build();
 	}
 
-	public static FixtureMonkey localDateTimeMonkey() {
+	/*
+	Jackson 어노테이션을 인식하여 객체 생성 시 적용하는 플러그인
+	JSON 직렬화/역직렬화 규칙을 테스트 객체 생성에 반영함
+	 */
+	public static FixtureMonkey jacksonMonkey() {
 		return FixtureMonkey.builder()
-			.plugin(new SimpleValueJqwikPlugin())
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.plugin(new JacksonPlugin())
+			.build();
+	}
+
+	/*
+	@NotNull, @Size, @Min, @Max 등의 제약 조건을 인식하고 적용하는 플러그인
+	생성된 객체가 유효성 검사를 통과하도록 보장
+	 */
+	public static FixtureMonkey jakartaValidationMonkey() {
+		return FixtureMonkey.builder()
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.plugin(new JakartaValidationPlugin())
 			.build();
 	}
 }

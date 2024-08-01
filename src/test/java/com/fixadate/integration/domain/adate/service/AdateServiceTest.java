@@ -92,7 +92,7 @@ class AdateServiceTest {
 		@Sql(scripts = "/sql/setup/adate_setup.sql")
 		@Test
 		void registerAdateTest() {
-			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
+			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
 			var adates = fixtureMonkey.giveMeBuilder(AdateRegisterRequest.class)
 				.set("tagName", Arbitraries.of("검정", "빨강", "하양", "파랑", "바이올렛"))
 				.sampleList(100);
@@ -114,7 +114,7 @@ class AdateServiceTest {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertNotNull(memberOptional.get());
 
-			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.recodeMonkey();
+			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
 			var adateRequests = fixtureMonkey.giveMeBuilder(AdateRegisterRequest.class)
 				.set("tagName", Arbitraries.just("NU"))
 				.sampleList(100);
