@@ -55,7 +55,8 @@ public class EventMapper {
 	}
 
 	public static MemberRegisterRequest createRegisterDto() {
-		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.fieldMonkey();
+		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
+		// todo : set으로 값을 생성하지 말고 랜덤하게 생성할 수 있게 수정할 것
 		return fixtureMonkey.giveMeBuilder(MemberRegisterRequest.class)
 			.instantiate(Instantiator.constructor())
 			.set("oauthPlatform", "google")
@@ -75,7 +76,9 @@ public class EventMapper {
 	public static Adate createAdate() {
 		Random random = new Random();
 		Long randomId = random.nextLong();
-		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.fieldMonkey();
+
+		// todo : set으로 값을 생성하지 말고 랜덤하게 생성할 수 있게 수정할 것
+		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
 		return fixtureMonkey.giveMeBuilder(Adate.class)
 			.set("id", randomId)
 			.set("title", "Random Title")
