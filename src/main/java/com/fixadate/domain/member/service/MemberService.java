@@ -1,8 +1,10 @@
 package com.fixadate.domain.member.service;
 
-import java.util.List;
-import java.util.Random;
+import static com.fixadate.global.util.RandomUtil.current;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,12 +19,25 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MemberService implements UserDetailsService {
-	private final Random random = new Random(System.currentTimeMillis());
+
 	private final MemberFacade memberFacade;
+
+	@Value("${randNick.adjs}")
+	private String adjs;
+
+	@Value("${randNick.nouns}")
+	private String nouns;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return null;
+	}
+
+	public String generateRandomNickname() {
+		List<String> adjs = List.of(this.adjs.split(","));
+		List<String> nouns = List.of(this.nouns.split(","));
+
+		return getRandomNickname(adjs) + " " + getRandomNickname(nouns);
 	}
 
 	public MemberInfoResponse getMemberInfo(String memberId) {
@@ -34,6 +49,6 @@ public class MemberService implements UserDetailsService {
 	}
 
 	public String getRandomNickname(List<String> strings) {
-		return strings.get(random.nextInt(strings.size())).trim();
+		return strings.get(current().nextInt(strings.size())).trim();
 	}
 }
