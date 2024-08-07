@@ -49,12 +49,12 @@ public class GoogleCredentials {
 	public void setMember(Member member) {
 		this.member = member;
 		if (member != null && member.getGoogleCredentials() != this) {
-			member.setGoogleCredentials(this);
+			member.updateGoogleCredentials(this);
 		}
 	}
 
 	public void setGoogleCredentialsOrphan() {
-		member.setGoogleCredentials(null);
+		member.updateGoogleCredentials(null);
 		this.member = null;
 	}
 }
