@@ -35,7 +35,7 @@ public class MemberFacade {
 	@Value("${cloud.aws.bucket-name}")
 	private String bucket;
 
-	public GoogleCredentials getGoogleCredentialsByMemberId(String memberId) {
+	public GoogleCredentials getGoogleCredentialsByMemberId(final String memberId) {
 		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
 			NOT_FOUND_MEMBER_ID));
 
@@ -43,14 +43,14 @@ public class MemberFacade {
 							   .orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER));
 	}
 
-	public void setMemberGoogleCredentials(String memberId, GoogleCredentials googleCredentials) {
+	public void setMemberGoogleCredentials(final String memberId, final GoogleCredentials googleCredentials) {
 		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
 			NOT_FOUND_MEMBER_ID));
 
-		member.setGoogleCredentials(googleCredentials);
+		member.updateGoogleCredentials(googleCredentials);
 	}
 
-	public PushKey getPushKeyAndRegisterMember(String memberId, String pushKey) {
+	public PushKey getPushKeyAndRegisterMember(final String memberId, final String pushKey) {
 		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
 			NOT_FOUND_MEMBER_ID));
 
@@ -58,13 +58,13 @@ public class MemberFacade {
 									.memberId(memberId)
 									.pushKey(pushKey)
 									.build();
-		member.setMemberPushKey(newPushKey);
+		member.updateMemberPushKey(newPushKey);
 
 		return newPushKey;
 	}
 
 	@Transactional
-	public MemberInfoResponse deleteAndGetUploadUrl(MemberInfoUpdateDto memberInfoUpdateDto) {
+	public MemberInfoResponse deleteAndGetUploadUrl(final MemberInfoUpdateDto memberInfoUpdateDto) {
 		Member member = memberRepository.findMemberById(memberInfoUpdateDto.memberId())
 										.orElseThrow(() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID));
 
@@ -74,7 +74,7 @@ public class MemberFacade {
 		return MemberMapper.toInfoResponse(member, url);
 	}
 
-	private void updateMemberInfo(Member member, MemberInfoUpdateDto memberInfoUpdateDto) {
+	private void updateMemberInfo(final Member member, final MemberInfoUpdateDto memberInfoUpdateDto) {
 		if (memberInfoUpdateDto.nickname() != null) {
 			member.updateNickname(memberInfoUpdateDto.nickname());
 		}
@@ -88,7 +88,7 @@ public class MemberFacade {
 		}
 	}
 
-	private String handleProfileImageUpdate(Member member, MemberInfoUpdateDto memberInfoUpdateDto) {
+	private String handleProfileImageUpdate(final Member member, final MemberInfoUpdateDto memberInfoUpdateDto) {
 		String url = null;
 
 		if (memberInfoUpdateDto.profileImg() != null) {
@@ -100,7 +100,7 @@ public class MemberFacade {
 		return url;
 	}
 
-	private void deleteCurrentProfileImage(String profileImg) {
+	private void deleteCurrentProfileImage(final String profileImg) {
 		try {
 			s3Client.deleteObject(builder -> builder.bucket(bucket).key(profileImg));
 		} catch (Exception e) {
@@ -108,7 +108,7 @@ public class MemberFacade {
 		}
 	}
 
-	public MemberInfoResponse getMemberInfo(String memberId) {
+	public MemberInfoResponse getMemberInfo(final String memberId) {
 		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
 			NOT_FOUND_MEMBER_ID));
 

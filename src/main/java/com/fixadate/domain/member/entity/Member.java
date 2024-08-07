@@ -86,15 +86,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@JoinColumn(name = "google_credentials_id")
 	private GoogleCredentials googleCredentials;
 
-	//todo : set 메서드 이름 변경하기
-	public void setMemberPushKey(PushKey pushKey) {
-		this.pushKey = pushKey;
-	}
-
-	public void setGoogleCredentials(GoogleCredentials googleCredentials) {
-		this.googleCredentials = googleCredentials;
-	}
-
 	@Override
 	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -131,19 +122,27 @@ public class Member extends BaseTimeEntity implements UserDetails {
 		return false;
 	}
 
-	public void updateNickname(String nickname) {
+	public void updateMemberPushKey(final PushKey pushKey) {
+		this.pushKey = pushKey;
+	}
+
+	public void updateGoogleCredentials(final GoogleCredentials googleCredentials) {
+		this.googleCredentials = googleCredentials;
+	}
+
+	public void updateNickname(final String nickname) {
 		this.nickname = nickname;
 	}
 
-	public void updateProfileImg(String profileImg) {
+	public void updateProfileImg(final String profileImg) {
 		this.profileImg = profileImg;
 	}
 
-	public void updateSignatureColor(String signatureColor) {
+	public void updateSignatureColor(final String signatureColor) {
 		this.signatureColor = signatureColor;
 	}
 
-	public void updateProfession(String profession) {
+	public void updateProfession(final String profession) {
 		this.profession = profession;
 	}
 }

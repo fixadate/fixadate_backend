@@ -29,7 +29,7 @@ public class MemberService implements UserDetailsService {
 	private String nouns;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
 		return null;
 	}
 
@@ -40,15 +40,15 @@ public class MemberService implements UserDetailsService {
 		return getRandomNickname(adjs) + " " + getRandomNickname(nouns);
 	}
 
-	public MemberInfoResponse getMemberInfo(String memberId) {
+	public MemberInfoResponse getMemberInfo(final String memberId) {
 		return memberFacade.getMemberInfo(memberId);
 	}
 
-	public MemberInfoResponse updateMemberInfo(MemberInfoUpdateDto memberInfoUpdateDto) {
+	public MemberInfoResponse updateMemberInfo(final MemberInfoUpdateDto memberInfoUpdateDto) {
 		return memberFacade.deleteAndGetUploadUrl(memberInfoUpdateDto);
 	}
 
-	public String getRandomNickname(List<String> strings) {
+	public String getRandomNickname(final List<String> strings) {
 		return strings.get(current().nextInt(strings.size())).trim();
 	}
 }

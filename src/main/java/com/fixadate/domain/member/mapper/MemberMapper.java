@@ -12,7 +12,7 @@ public class MemberMapper {
 	private MemberMapper() {
 	}
 
-	public static Member toEntity(MemberRegisterRequest request, String oauthId) {
+	public static Member toEntity(final MemberRegisterRequest request, final String oauthId) {
 		return Member.builder()
 					 .oauthId(oauthId)
 					 .oauthPlatform(translateStringToOAuthProvider(request.oauthPlatform()))
@@ -29,7 +29,7 @@ public class MemberMapper {
 
 	}
 
-	public static MemberSigninResponse toResponse(Member member) {
+	public static MemberSigninResponse toResponse(final Member member) {
 		return new MemberSigninResponse(
 			member.getId(),
 			member.getName(),
@@ -42,7 +42,7 @@ public class MemberMapper {
 		);
 	}
 
-	public static MemberInfoResponse toInfoResponse(Member member, String url) {
+	public static MemberInfoResponse toInfoResponse(final Member member, final String url) {
 		return new MemberInfoResponse(
 			member.getName(),
 			member.getNickname(),

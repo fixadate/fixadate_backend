@@ -10,13 +10,16 @@ import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.member.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-	Optional<Member> findMemberById(String id);
 
-	Optional<Member> findMemberByEmail(String email);
+	Optional<Member> findMemberById(final String id);
+
+	Optional<Member> findMemberByEmail(final String email);
 
 	@Query("SELECT m FROM Member m WHERE m.oauthPlatform = :oauthPlatform "
-		+ "AND m.email = :email AND m.name = :memberName")
-	Optional<Member> findMemberByOauthPlatformAndEmailAndName(@Param("oauthPlatform") OAuthProvider oauthPlatform,
-		@Param("email") String email,
-		@Param("memberName") String memberName);
+		   + "AND m.email = :email AND m.name = :memberName")
+	Optional<Member> findMemberByOauthPlatformAndEmailAndName(
+		@Param("oauthPlatform") final OAuthProvider oauthPlatform,
+		@Param("email") final String email,
+		@Param("memberName") final String memberName
+	);
 }
