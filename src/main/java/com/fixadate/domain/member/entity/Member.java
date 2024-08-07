@@ -1,9 +1,6 @@
 package com.fixadate.domain.member.entity;
 
-import static com.fixadate.global.util.UuidUtil.*;
-
 import java.util.Collection;
-import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -14,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.googlecalendar.entity.GoogleCredentials;
-import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.pushkey.entity.PushKey;
 
 import IDMaker.idmaker.IDMaker;
@@ -43,8 +39,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true),
-	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"}))
+@Table(
+	indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true),
+	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"})
+)
 @EntityListeners(IDMakerEntityListener.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends BaseTimeEntity implements UserDetails {
@@ -88,6 +86,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@JoinColumn(name = "google_credentials_id")
 	private GoogleCredentials googleCredentials;
 
+	//todo : set 메서드 이름 변경하기
 	public void setMemberPushKey(PushKey pushKey) {
 		this.pushKey = pushKey;
 	}
@@ -132,23 +131,19 @@ public class Member extends BaseTimeEntity implements UserDetails {
 		return false;
 	}
 
-	public boolean updateMember(MemberInfoUpdateRequest memberInfoUpdateRequest) {
-		if (memberInfoUpdateRequest.nickname() != null) {
-			this.nickname = memberInfoUpdateRequest.nickname();
-		}
-		if (memberInfoUpdateRequest.signatureColor() != null) {
-			this.signatureColor = memberInfoUpdateRequest.signatureColor();
-		}
-		if (memberInfoUpdateRequest.profession() != null) {
-			this.profession = memberInfoUpdateRequest.profession();
-		}
+	public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
 
-		boolean isUpdated = false;
-		if (memberInfoUpdateRequest.profileImg() != null && !removeUuid(this.profileImg).equals(
-			memberInfoUpdateRequest.profileImg())) {
-			isUpdated = true;
-			this.profileImg = memberInfoUpdateRequest.profileImg() + UUID.randomUUID();
-		}
-		return isUpdated;
+	public void updateProfileImg(String profileImg) {
+		this.profileImg = profileImg;
+	}
+
+	public void updateSignatureColor(String signatureColor) {
+		this.signatureColor = signatureColor;
+	}
+
+	public void updateProfession(String profession) {
+		this.profession = profession;
 	}
 }

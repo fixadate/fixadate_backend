@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fixadate.domain.member.controller.MemberController;
+import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.MemberService;
@@ -28,16 +29,18 @@ public class MemberControllerImpl implements MemberController {
 
 	@Override
 	@GetMapping("/{memberId}")
-	public ResponseEntity<MemberInfoResponse> getMemberNickname(@PathVariable String memberId) {
+	public ResponseEntity<MemberInfoResponse> getMemberNickname(@PathVariable final String memberId) {
 		return ResponseEntity.ok(memberService.getMemberInfo(memberId));
 	}
 
 	@Override
 	@PatchMapping("/{memberId}")
 	public ResponseEntity<MemberInfoResponse> updateMemberNickname(
-		@PathVariable String memberId,
-		@RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest
+		@PathVariable final String memberId,
+		@RequestBody final MemberInfoUpdateRequest memberInfoUpdateRequest
 	) {
-		return ResponseEntity.ok(memberService.updateMemberInfo(memberId, memberInfoUpdateRequest));
+		return ResponseEntity.ok(
+			memberService.updateMemberInfo(MemberInfoUpdateDto.of(memberId, memberInfoUpdateRequest))
+		);
 	}
 }

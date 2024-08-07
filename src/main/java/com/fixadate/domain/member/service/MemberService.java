@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
+import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.global.facade.MemberFacade;
 
@@ -44,8 +44,8 @@ public class MemberService implements UserDetailsService {
 		return memberFacade.getMemberInfo(memberId);
 	}
 
-	public MemberInfoResponse updateMemberInfo(String memberId, MemberInfoUpdateRequest memberInfoUpdateRequest) {
-		return memberFacade.deleteAndGetUploadUrl(memberId, memberInfoUpdateRequest);
+	public MemberInfoResponse updateMemberInfo(MemberInfoUpdateDto memberInfoUpdateDto) {
+		return memberFacade.deleteAndGetUploadUrl(memberInfoUpdateDto);
 	}
 
 	public String getRandomNickname(List<String> strings) {
