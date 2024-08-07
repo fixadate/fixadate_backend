@@ -2,7 +2,7 @@ package com.fixadate.integration.config;
 
 import org.testcontainers.containers.MySQLContainer;
 
-abstract class MySqlContainerProvider {
+final class MySqlContainerProvider {
 
 	private static final MySQLContainer MY_SQL_CONTAINER;
 	private static final String IMAGE_VERSION = "mysql:8.0.31";

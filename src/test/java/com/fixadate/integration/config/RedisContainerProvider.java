@@ -5,14 +5,14 @@ import org.springframework.test.context.DynamicPropertySource;
 
 import com.redis.testcontainers.RedisContainer;
 
-public abstract class RedisContainerProvider {
+final class RedisContainerProvider {
 
 	private static final String IMAGE_VERSION = "redis:5.0.7-alpine";
 	private static final String REDIS_PASSWORD = "REDIS_PASSWORD";
 	private static final Integer REDIS_PORT = 6379;
 	private static final RedisContainer REDIS_CONTAINER;
 
-	public RedisContainerProvider() {
+	private RedisContainerProvider() {
 	}
 
 	static {
