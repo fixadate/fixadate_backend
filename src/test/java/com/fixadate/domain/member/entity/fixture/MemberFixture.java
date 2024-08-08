@@ -10,7 +10,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 public class MemberFixture {
 
 	protected Member member;
-	protected FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
+	protected FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.entityMonkey();
 
 	@BeforeEach
 	void setUp() {
