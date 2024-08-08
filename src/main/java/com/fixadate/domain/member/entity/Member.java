@@ -61,6 +61,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	private String name;
 
 	private String profileImg;
+
 	@Column(nullable = false)
 	private String nickname;
 
@@ -98,7 +99,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	}
 
 	@Override
-	public String getUsername() { //memberPrincipal에서 getUsername을 통해 snsId를 얻을 수 있게 함
+	public String getUsername() {
 		return name;
 	}
 
