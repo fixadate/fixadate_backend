@@ -1,21 +1,33 @@
+# General files
 HELP.md
 .gradle
 build/
+db
+.tokens
+.jqwik-database
+ngrinder-controller
+
+# Gradle Wrapper
 !gradle/wrapper/gradle-wrapper.jar
+
+# Gradle build directories
 !**/src/main/**/build/
 !**/src/test/**/build/
-/tokens
+
+# Source code output directories
+src/main/generated/
 src/main/resources/credentials.json
 src/main/resources/application-prod.yml
 src/main/resources/application-test.yml
 src/main/resources/application-loadtest.yml
 src/main/java/com/fixadate/global/util/converter/Key.java
-/db
-ngrinder-controller
-.jqwik-database
-src/main/generated/
-src/test/resources/application.yml
-### STS ###
+
+# Temporary files
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# STS (Spring Tool Suite)
 .apt_generated
 .classpath
 .factorypath
@@ -23,13 +35,8 @@ src/test/resources/application.yml
 .settings
 .springBeans
 .sts4-cache
-bin/
-!**/src/main/resources/application.yml
-!**/src/main/**/bin/
-!**/src/resources/application.yml
-!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
+# IntelliJ IDEA
 .idea
 *.iws
 *.iml
@@ -38,13 +45,12 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
+# VS Code
 .vscode/
-src/main/resources/application.yml
