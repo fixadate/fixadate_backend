@@ -10,7 +10,7 @@ import com.fixadate.integration.config.FixtureMonkeyConfig;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
 @SuppressWarnings("NonAsciiCharacters")
-public class AdateTestFixture {
+public class AdateFixture {
 
 	protected final FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.entityMonkey();
 	protected Member 일정_주인;

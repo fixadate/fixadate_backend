@@ -10,11 +10,11 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 
-import com.fixadate.domain.adate.entity.fixture.AdateTestFixture;
+import com.fixadate.domain.adate.entity.fixture.AdateFixture;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class AdateTest extends AdateTestFixture {
+class AdateTest extends AdateFixture {
 
 	@Test
 	void 일정의_주인이라면_참을_반환한다() {
