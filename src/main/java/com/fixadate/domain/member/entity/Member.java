@@ -35,6 +35,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,6 +48,7 @@ import lombok.NoArgsConstructor;
 	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"}))
 @EntityListeners(IDMakerEntityListener.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id

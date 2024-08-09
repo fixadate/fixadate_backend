@@ -18,11 +18,6 @@ import com.fixadate.global.exception.notfound.TagNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- *
- * @author yongjunhong
- * @since 2024. 7. 8.
- */
 @Component
 @RequiredArgsConstructor
 public class TagHandler {
@@ -32,7 +27,7 @@ public class TagHandler {
 	@EventListener
 	public void setTagEvent(TagSettingEvent event) {
 		Adate adate = event.adate();
-		Member member = event.member();
+		Member member = adate.getMember();
 		String tagName = event.tagName();
 
 		Tag tag = tagRepository.findTagByNameAndMember(tagName, member)

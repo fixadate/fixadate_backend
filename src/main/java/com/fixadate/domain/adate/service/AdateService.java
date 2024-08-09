@@ -1,6 +1,5 @@
 package com.fixadate.domain.adate.service;
 
-import static com.fixadate.domain.adate.mapper.AdateMapper.eventToEntity;
 import static com.fixadate.domain.adate.mapper.AdateMapper.registerDtoToEntity;
 import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateResponse;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
@@ -33,7 +32,6 @@ import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.fixadate.global.exception.notfound.AdateNotFoundException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.global.facade.RedisFacade;
-import com.google.api.services.calendar.model.Event;
 
 import lombok.RequiredArgsConstructor;
 
@@ -52,23 +50,23 @@ public class AdateService {
 
 		final String tagName = adateRegisterRequest.tagName();
 		if (tagName != null && !tagName.isEmpty()) {
-			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, tagName));
+			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, tagName));
 		}
 	}
 
 	@Transactional
 	public AdateResponse restoreAdateByCalendarId(final String calendarId) {
-		final Adate adate = redisFacade.getAndDeleteObjectRedis(ADATE_WITH_COLON.getValue() + calendarId, Adate.class);
+		final String key = ADATE_WITH_COLON.getValue() + calendarId;
+		final Adate adate = redisFacade.getAndDeleteObjectRedis(key, Adate.class);
 
 		return toAdateResponse(adateRepository.save(adate));
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerEvent(final Event event, final Member member) {
-		final Adate adate = eventToEntity(event);
-		adateRepository.save(adate);
+	public void registerEvent(final Adate adate) {
+		final Adate saveAdate = adateRepository.save(adate);
 
-		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, GOOGLE_CALENDAR.getValue()));
+		applicationEventPublisher.publishEvent(new TagSettingEvent(saveAdate, GOOGLE_CALENDAR.getValue()));
 	}
 
 	public void removeAdate(final Adate adate) {
@@ -150,15 +148,22 @@ public class AdateService {
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
 		);
 
+		validateUserCanUpdate(adate, member);
 		updateIfNotNull(adate, adateUpdateRequest);
-		adateRepository.save(adate);
-
-		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, adateUpdateRequest.tagName()));
 
 		return toAdateResponse(adate);
 	}
 
+	private void validateUserCanUpdate(final Adate adate, final Member member) {
+		if (adate.isOwner(member)) {
+
+		}
+	}
+
 	private void updateIfNotNull(final Adate adate, final AdateUpdateRequest adateUpdateRequest) {
+		if (adateUpdateRequest.tagName() != null) {
+			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, adateUpdateRequest.tagName()));
+		}
 		if (adateUpdateRequest.title() != null) {
 			adate.updateTitle(adateUpdateRequest.title());
 		}
