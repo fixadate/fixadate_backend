@@ -93,29 +93,6 @@ public class Adate extends BaseTimeEntity {
 		this.reminders = event.getReminders().getUseDefault();
 	}
 
-	public void updateAdate(AdateUpdateRequest adateUpdateRequest) {
-		if (adateUpdateRequest.title() != null) {
-			this.title = adateUpdateRequest.title();
-		}
-		if (adateUpdateRequest.notes() != null) {
-			this.notes = adateUpdateRequest.notes();
-		}
-		if (adateUpdateRequest.location() != null) {
-			this.location = adateUpdateRequest.location();
-		}
-		if (adateUpdateRequest.alertWhen() != null) {
-			this.alertWhen = adateUpdateRequest.alertWhen();
-		}
-		if (adateUpdateRequest.repeatFreq() != null) {
-			this.repeatFreq = adateUpdateRequest.repeatFreq();
-		}
-
-		this.ifAllDay = adateUpdateRequest.ifAllDay();
-		this.startsWhen = adateUpdateRequest.startsWhen();
-		this.endsWhen = adateUpdateRequest.endsWhen();
-		this.reminders = adateUpdateRequest.reminders();
-	}
-
 	public static LocalDateTime checkStartDateTimeIsNull(Event event) {
 		if (event.getStart().getDateTime() == null) {
 			return getLocalDateTimeFromDate(event.getStart().getDate());
@@ -134,17 +111,53 @@ public class Adate extends BaseTimeEntity {
 		return event.getStart().getDateTime() == null;
 	}
 
-	public void setTag(Tag tag) {
+	public void removeTagAndColor() {
+		this.color = null;
+		this.tag = null;
+	}
+
+	public void updateTitle(final String title) {
+		this.title = title;
+	}
+
+	public void updateNotes(final String notes) {
+		this.notes = notes;
+	}
+
+	public void updateLocation(final String location) {
+		this.location = location;
+	}
+
+	public void updateAlertWhen(final LocalDateTime alertWhen) {
+		this.alertWhen = alertWhen;
+	}
+
+	public void updateRepeatFreq(final LocalDateTime repeatFreq) {
+		this.repeatFreq = repeatFreq;
+	}
+
+	public void updateIfAllDay(final boolean ifAllDay) {
+		this.ifAllDay = ifAllDay;
+	}
+
+	public void updateStartsWhen(final LocalDateTime startsWhen) {
+		this.startsWhen = startsWhen;
+	}
+
+	public void updateEndsWhen(final LocalDateTime endsWhen) {
+		this.endsWhen = endsWhen;
+	}
+
+	public void updateReminders(final boolean reminders) {
+		this.reminders = reminders;
+	}
+
+	public void updateTag(Tag tag) {
 		this.color = tag.getColor();
 		this.tag = tag;
 	}
 
 	public void updateColor() {
 		this.color = tag.getColor();
-	}
-
-	public void removeTagAndColor() {
-		this.color = null;
-		this.tag = null;
 	}
 }

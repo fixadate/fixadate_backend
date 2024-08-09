@@ -37,7 +37,7 @@ public class TagHandler {
 
 		Tag tag = tagRepository.findTagByNameAndMember(tagName, member)
 			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
-		adate.setTag(tag);
+		adate.updateTag(tag);
 	}
 
 	@EventListener

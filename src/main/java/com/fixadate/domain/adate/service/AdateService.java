@@ -1,9 +1,14 @@
 package com.fixadate.domain.adate.service;
 
-import static com.fixadate.domain.adate.mapper.AdateMapper.*;
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.TimeUtil.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.domain.adate.mapper.AdateMapper.eventToEntity;
+import static com.fixadate.domain.adate.mapper.AdateMapper.registerDtoToEntity;
+import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateResponse;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
+import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromLocalDate;
+import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
+import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
+import static com.fixadate.global.util.constant.ConstantValue.GOOGLE_CALENDAR;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -95,8 +100,11 @@ public class AdateService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
-		LocalDateTime endDateTime) {
+	public List<AdateViewResponse> getAdateByStartAndEndTime(
+		Member member,
+		LocalDateTime startDateTime,
+		LocalDateTime endDateTime
+	) {
 		List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
 		return adates.stream().map(AdateMapper::toAdateViewResponse).toList();
 	}
@@ -130,11 +138,34 @@ public class AdateService {
 		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
 
-		adate.updateAdate(adateUpdateRequest);
+		updateIfNotNull(adate, adateUpdateRequest);
 		adateRepository.save(adate);
 
 		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, adateUpdateRequest.tagName()));
 		return toAdateResponse(adate);
+	}
+
+	private void updateIfNotNull(final Adate adate, final AdateUpdateRequest adateUpdateRequest) {
+		if (adateUpdateRequest.title() != null) {
+			adate.updateTitle(adateUpdateRequest.title());
+		}
+		if (adateUpdateRequest.notes() != null) {
+			adate.updateNotes(adateUpdateRequest.notes());
+		}
+		if (adateUpdateRequest.location() != null) {
+			adate.updateLocation(adateUpdateRequest.location());
+		}
+		if (adateUpdateRequest.alertWhen() != null) {
+			adate.updateAlertWhen(adateUpdateRequest.alertWhen());
+		}
+		if (adateUpdateRequest.repeatFreq() != null) {
+			adate.updateRepeatFreq(adateUpdateRequest.repeatFreq());
+		}
+
+		adate.updateIfAllDay(adateUpdateRequest.ifAllDay());
+		adate.updateStartsWhen(adateUpdateRequest.startsWhen());
+		adate.updateEndsWhen(adateUpdateRequest.endsWhen());
+		adate.updateReminders(adateUpdateRequest.reminders());
 	}
 
 }
