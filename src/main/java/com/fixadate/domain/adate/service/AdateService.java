@@ -19,7 +19,6 @@ import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
@@ -27,8 +26,7 @@ import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.mapper.AdateMapper;
-import com.fixadate.domain.adate.repository.AdateQueryRepository;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
@@ -38,15 +36,12 @@ import com.fixadate.global.facade.RedisFacade;
 import com.google.api.services.calendar.model.Event;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Validated
 public class AdateService {
+
 	private final AdateRepository adateRepository;
-	private final AdateQueryRepository adateQueryRepository;
 	private final RedisFacade redisFacade;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -105,7 +100,7 @@ public class AdateService {
 		LocalDateTime startDateTime,
 		LocalDateTime endDateTime
 	) {
-		List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
+		List<Adate> adates = adateRepository.findByDateRange(member, startDateTime, endDateTime);
 		return adates.stream().map(AdateMapper::toAdateViewResponse).toList();
 	}
 
@@ -167,5 +162,4 @@ public class AdateService {
 		adate.updateEndsWhen(adateUpdateRequest.endsWhen());
 		adate.updateReminders(adateUpdateRequest.reminders());
 	}
-
 }

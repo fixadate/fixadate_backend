@@ -1,8 +1,14 @@
 package com.fixadate.integration.domain.adate.service;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TAG_MEMBER_NAME;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -40,7 +46,7 @@ import net.jqwik.api.Arbitraries;
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
@@ -58,7 +64,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 class AdateServiceTest {
 
 	@Autowired
-	private AdateRepository adateRepository;
+	private AdateJpaRepository adateJpaRepository;
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
@@ -329,7 +335,7 @@ class AdateServiceTest {
 
 			assertAll(
 				() -> assertDoesNotThrow(() -> adateService.removeAdateByCalendarId(calendarId)),
-				() -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isEmpty())
+				() -> assertTrue(adateJpaRepository.findAdateByCalendarId(calendarId).isEmpty())
 			);
 		}
 
@@ -345,7 +351,7 @@ class AdateServiceTest {
 					.isInstanceOf(AdateNotFoundException.class)
 					.extracting(MESSAGE)
 					.isEqualTo(NOT_FOUND_ADATE_CALENDAR_ID.getMessage()),
-				() -> assertTrue(adateRepository.findAdateByCalendarId(calendarId).isEmpty())
+				() -> assertTrue(adateJpaRepository.findAdateByCalendarId(calendarId).isEmpty())
 			);
 		}
 	}

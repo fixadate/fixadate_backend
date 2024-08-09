@@ -22,7 +22,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.googlecalendar.service.GoogleService;
@@ -48,7 +48,7 @@ public class GoogleServiceTest {
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
-	private AdateRepository adateRepository;
+	private AdateJpaRepository adateJpaRepository;
 	@Autowired
 	private AuthService authService;
 
@@ -79,7 +79,7 @@ public class GoogleServiceTest {
 			() -> assertDoesNotThrow(() -> googleService.syncEvents(events, member.get())));
 
 		for (Adate adate : adates) {
-			assertNotNull(adateRepository.findAdateByCalendarId(adate.getCalendarId()));
+			assertNotNull(adateJpaRepository.findAdateByCalendarId(adate.getCalendarId()));
 		}
 	}
 

@@ -1,9 +1,16 @@
 package com.fixadate.unit.domain.adate.service;
 
-import static com.fixadate.unit.domain.adate.fixture.AdateFixture.*;
-import static com.fixadate.unit.domain.member.fixture.MemberFixture.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static com.fixadate.unit.domain.adate.fixture.AdateFixture.ADATE;
+import static com.fixadate.unit.domain.adate.fixture.AdateFixture.ADATES;
+import static com.fixadate.unit.domain.member.fixture.MemberFixture.MEMBER;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.doNothing;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -25,8 +32,8 @@ import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.adate.repository.AdateQueryRepository;
-import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.facade.RedisFacade;
@@ -38,7 +45,7 @@ public class AdateServiceTest {
 	private AdateService adateService;
 
 	@Mock
-	private AdateRepository adateRepository;
+	private AdateJpaRepository adateJpaRepository;
 	@Mock
 	private AdateQueryRepository adateQueryRepository;
 	@Mock
@@ -61,7 +68,7 @@ public class AdateServiceTest {
 			ADATE.getEndsWhen(),
 			ADATE.isReminders()
 		);
-		given(adateRepository.save(any(Adate.class))).willReturn(ADATE);
+		given(adateJpaRepository.save(any(Adate.class))).willReturn(ADATE);
 
 		assertDoesNotThrow(() -> adateService.registerAdateEvent(adateRegisterRequest, "ex1", MEMBER));
 	}
@@ -70,21 +77,21 @@ public class AdateServiceTest {
 	@Test
 	void removeAdateByCalendarIdAndSetOnRedisTest() {
 		String calendarId = ADATE.getCalendarId();
-		given(adateRepository.findAdateByCalendarId(calendarId)).willReturn(Optional.of(ADATE));
+		given(adateJpaRepository.findAdateByCalendarId(calendarId)).willReturn(Optional.of(ADATE));
 
 		doNothing().when(redisFacade).removeAndRegisterObject(anyString(), any(Adate.class), any(Duration.class));
 
 		assertDoesNotThrow(() -> adateService.removeAdateByCalendarId(calendarId));
 
-		verify(adateRepository).findAdateByCalendarId(calendarId);
-		verify(adateRepository).delete(ADATE);
+		verify(adateJpaRepository).findAdateByCalendarId(calendarId);
+		verify(adateJpaRepository).delete(ADATE);
 		verify(redisFacade).removeAndRegisterObject(anyString(), eq(ADATE), any(Duration.class));
 	}
 
 	@DisplayName("calendarId로 Adate를 조회한다.")
 	@Test
 	void getAdateByCalendarIdTest() {
-		given(adateRepository.findAdateByCalendarId(ADATE.getCalendarId())).willReturn(Optional.of(ADATE));
+		given(adateJpaRepository.findAdateByCalendarId(ADATE.getCalendarId())).willReturn(Optional.of(ADATE));
 
 		Optional<Adate> adate = adateService.getAdateByCalendarId(ADATE.getCalendarId());
 		assertEquals(ADATE, adate.get());
@@ -148,7 +155,7 @@ public class AdateServiceTest {
 			ADATE.isReminders()
 		);
 
-		given(adateRepository.findAdateByCalendarId(any(String.class))).willReturn(Optional.ofNullable(ADATE));
+		given(adateJpaRepository.findAdateByCalendarId(any(String.class))).willReturn(Optional.ofNullable(ADATE));
 
 		AdateResponse response = adateService.updateAdate("1", adateUpdateRequest, MEMBER);
 

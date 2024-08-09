@@ -35,7 +35,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import net.jqwik.api.Arbitraries;
 
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.tag.dto.request.TagRequest;
@@ -67,7 +67,7 @@ class TagServiceTest {
 	@Autowired
 	private TagService tagService;
 	@Autowired
-	private AdateRepository adateRepository;
+	private AdateJpaRepository adateJpaRepository;
 
 	private static final String MESSAGE = "message";
 

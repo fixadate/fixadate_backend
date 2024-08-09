@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
 import com.google.api.client.util.DateTime;
@@ -45,7 +45,7 @@ public class AdateCreation implements ApplicationRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(AdateCreation.class);
 	private static final Random RANDOM = new Random();
-	private final AdateRepository adateRepository;
+	private final AdateJpaRepository adateJpaRepository;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -55,7 +55,7 @@ public class AdateCreation implements ApplicationRunner {
 		for (int i = 0; i < 100_000; i++) {
 			adates.add(easyRandom.nextObject(Adate.class));
 		}
-		adateRepository.saveAll(adates);
+		adateJpaRepository.saveAll(adates);
 	}
 
 	public static List<Event> createEvents() {
