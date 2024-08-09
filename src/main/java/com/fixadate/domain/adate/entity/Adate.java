@@ -1,8 +1,5 @@
 package com.fixadate.domain.adate.entity;
 
-import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromDate;
-import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromDateTime;
-
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.OnDelete;
@@ -12,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
-import com.google.api.services.calendar.model.Event;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,6 +22,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,11 +30,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Table(indexes = {
 	@Index(name = "calendar_id", columnList = "calendarId", unique = true),
 	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")
 })
+@Getter
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Adate extends BaseTimeEntity {
 
 	@Id
@@ -81,39 +79,21 @@ public class Adate extends BaseTimeEntity {
 	@JsonIgnore
 	private Tag tag;
 
-	public void updateFrom(Event event) {
-		this.title = event.getSummary();
-		this.notes = event.getDescription();
-		this.location = event.getLocation();
-		this.color = event.getColorId();
-		this.startsWhen = checkStartDateTimeIsNull(event);
-		this.endsWhen = checkEndDateTimeIsNull(event);
-		this.calendarId = event.getId();
-		this.etag = event.getEtag();
-		this.reminders = event.getReminders().getUseDefault();
-	}
-
-	public static LocalDateTime checkStartDateTimeIsNull(Event event) {
-		if (event.getStart().getDateTime() == null) {
-			return getLocalDateTimeFromDate(event.getStart().getDate());
-		}
-		return getLocalDateTimeFromDateTime(event.getStart().getDateTime());
-	}
-
-	public static LocalDateTime checkEndDateTimeIsNull(Event event) {
-		if (event.getEnd().getDateTime() == null) {
-			return getLocalDateTimeFromDate(event.getEnd().getDate());
-		}
-		return getLocalDateTimeFromDateTime(event.getEnd().getDateTime());
-	}
-
-	public static boolean checkEventIsAllDayType(Event event) {
-		return event.getStart().getDateTime() == null;
-	}
-
 	public void removeTagAndColor() {
 		this.color = null;
 		this.tag = null;
+	}
+
+	public void updateFrom(final Adate adate) {
+		this.title = adate.title;
+		this.notes = adate.notes;
+		this.location = adate.location;
+		this.color = adate.color;
+		this.startsWhen = adate.startsWhen;
+		this.endsWhen = adate.endsWhen;
+		this.calendarId = adate.calendarId;
+		this.etag = adate.etag;
+		this.reminders = adate.reminders;
 	}
 
 	public void updateTitle(final String title) {
@@ -152,7 +132,7 @@ public class Adate extends BaseTimeEntity {
 		this.reminders = reminders;
 	}
 
-	public void updateTag(Tag tag) {
+	public void updateTag(final Tag tag) {
 		this.color = tag.getColor();
 		this.tag = tag;
 	}

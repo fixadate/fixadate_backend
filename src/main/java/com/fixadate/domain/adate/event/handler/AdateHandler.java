@@ -1,6 +1,7 @@
 package com.fixadate.domain.adate.event.handler;
 
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.domain.adate.mapper.AdateMapper.eventToEntity;
+import static com.fixadate.global.util.constant.ConstantValue.CALENDAR_CANCELLED;
 
 import java.util.Optional;
 
@@ -20,7 +21,6 @@ import com.google.api.services.calendar.model.Event;
 import lombok.RequiredArgsConstructor;
 
 /**
- *
  * @author yongjunhong
  * @since 2024. 7. 9.
  */
@@ -40,9 +40,10 @@ public class AdateHandler {
 			adateOptional.ifPresent(adateService::removeAdate);
 			return;
 		}
+
 		adateOptional.ifPresent(adate -> {
 			if (!adate.getEtag().equals(googleEvent.getEtag())) {
-				adate.updateFrom(googleEvent);
+				adate.updateFrom(eventToEntity(googleEvent));
 			}
 		});
 
