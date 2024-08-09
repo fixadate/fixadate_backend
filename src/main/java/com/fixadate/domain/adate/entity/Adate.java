@@ -83,6 +83,10 @@ public class Adate extends BaseTimeEntity {
 	@JsonIgnore
 	private Tag tag;
 
+	public boolean isOwner(final Member member) {
+		return this.member.equals(member);
+	}
+
 	public void removeTagAndColor() {
 		this.color = null;
 		this.tag = null;

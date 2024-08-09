@@ -17,11 +17,27 @@ import com.fixadate.domain.adate.entity.fixture.AdateTestFixture;
 class AdateTest extends AdateTestFixture {
 
 	@Test
+	void 일정의_주인이라면_참을_반환한다() {
+		// when
+		final boolean actual = 일정.isOwner(일정_주인);
+
+		// then
+		assertThat(actual).isTrue();
+	}
+
+	@Test
+	void 일정의_주인이라면_거짓을_반환한다() {
+		// when
+		final boolean actual = 일정.isOwner(다른_회원);
+
+		// then
+		assertThat(actual).isFalse();
+	}
+
+	@Test
 	void 일정의_태그와_색상_삭제_테스트() {
 		// when
 		일정.removeTagAndColor();
-
-		System.out.println(일정.toString());
 
 		// then
 		assertSoftly(softly -> {
