@@ -70,7 +70,7 @@ public class AdateServiceTest {
 		);
 		given(adateJpaRepository.save(any(Adate.class))).willReturn(ADATE);
 
-		assertDoesNotThrow(() -> adateService.registerAdateEvent(adateRegisterRequest, "ex1", MEMBER));
+		assertDoesNotThrow(() -> adateService.registerAdateEvent(adateRegisterRequest, MEMBER));
 	}
 
 	@DisplayName("calendarId로 Adate를 삭제하고 Redis에 저장한다.")

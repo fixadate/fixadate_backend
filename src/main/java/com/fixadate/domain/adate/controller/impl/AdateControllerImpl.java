@@ -38,7 +38,7 @@ public class AdateControllerImpl implements AdateController {
 		@Valid @RequestBody AdateRegisterRequest adateRegisterRequest,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 		Member member = memberPrincipal.getMember();
-		adateService.registerAdateEvent(adateRegisterRequest, adateRegisterRequest.tagName(), member);
+		adateService.registerAdateEvent(adateRegisterRequest, member);
 		return ResponseEntity.ok(adateRegisterRequest);
 	}
 

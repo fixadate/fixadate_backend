@@ -108,8 +108,7 @@ class AdateServiceTest {
 
 			adates.forEach(adateRegistRequest -> {
 				assertDoesNotThrow(
-					() -> adateService.registerAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
-						memberOptional.get()));
+					() -> adateService.registerAdateEvent(adateRegistRequest, memberOptional.get()));
 			});
 		}
 
@@ -127,8 +126,7 @@ class AdateServiceTest {
 
 			adateRequests.forEach(adateRegistRequest -> {
 				assertThatThrownBy(
-					() -> adateService.registerAdateEvent(adateRegistRequest, adateRegistRequest.tagName(),
-						memberOptional.get()))
+					() -> adateService.registerAdateEvent(adateRegistRequest, memberOptional.get()))
 					.isInstanceOf(TagNotFoundException.class)
 					.extracting(MESSAGE)
 					.isEqualTo(NOT_FOUND_TAG_MEMBER_NAME.getMessage());

@@ -46,97 +46,115 @@ public class AdateService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerAdateEvent(AdateRegisterRequest adateRegisterRequest, String tagName, Member member) {
+	public void registerAdateEvent(final AdateRegisterRequest adateRegisterRequest, final Member member) {
 		Adate adate = registerDtoToEntity(adateRegisterRequest, member);
 		adateRepository.save(adate);
 
+		final String tagName = adateRegisterRequest.tagName();
 		if (tagName != null && !tagName.isEmpty()) {
 			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, tagName));
 		}
 	}
 
 	@Transactional
-	public AdateResponse restoreAdateByCalendarId(String calendarId) {
-		Adate adate = redisFacade.getAndDeleteObjectRedis(ADATE_WITH_COLON.getValue() + calendarId, Adate.class);
+	public AdateResponse restoreAdateByCalendarId(final String calendarId) {
+		final Adate adate = redisFacade.getAndDeleteObjectRedis(ADATE_WITH_COLON.getValue() + calendarId, Adate.class);
+
 		return toAdateResponse(adateRepository.save(adate));
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerEvent(Event event, Member member) {
-		Adate adate = eventToEntity(event);
+	public void registerEvent(final Event event, final Member member) {
+		final Adate adate = eventToEntity(event);
 		adateRepository.save(adate);
 
 		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, GOOGLE_CALENDAR.getValue()));
 	}
 
-	public void removeAdate(Adate adate) {
+	public void removeAdate(final Adate adate) {
 		adateRepository.delete(adate);
 	}
 
 	@Transactional
-	public void removeAdateByCalendarId(String calendarId) {
-		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
-			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
+	public void removeAdateByCalendarId(final String calendarId) {
+		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
+		);
 		adateRepository.delete(adate);
 
 		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, Duration.ofDays(20));
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<Adate> getAdateByCalendarId(String calendarId) {
+	public Optional<Adate> getAdateByCalendarId(final String calendarId) {
 		return adateRepository.findAdateByCalendarId(calendarId);
 	}
 
 	@Transactional(readOnly = true)
-	public AdateResponse getAdateResponseByCalendarId(String calendarId) {
-		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
-			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
+	public AdateResponse getAdateResponseByCalendarId(final String calendarId) {
+		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
+		);
+
 		return toAdateResponse(adate);
 	}
 
 	@Transactional(readOnly = true)
 	public List<AdateViewResponse> getAdateByStartAndEndTime(
-		Member member,
-		LocalDateTime startDateTime,
-		LocalDateTime endDateTime
+		final Member member,
+		final LocalDateTime startDateTime,
+		final LocalDateTime endDateTime
 	) {
-		List<Adate> adates = adateRepository.findByDateRange(member, startDateTime, endDateTime);
-		return adates.stream().map(AdateMapper::toAdateViewResponse).toList();
+		final List<Adate> adates = adateRepository.findByDateRange(member, startDateTime, endDateTime);
+
+		return adates.stream()
+					 .map(AdateMapper::toAdateViewResponse)
+					 .toList();
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdatesByMonth(int year, int month, Member member) {
-		LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
-		LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
+	public List<AdateViewResponse> getAdatesByMonth(final int year, final int month, final Member member) {
+		final LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
+		final LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
 		checkStartAndEndTime(startTime, endTime);
 
 		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {
-		LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
-		LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
+	public List<AdateViewResponse> getAdatesByWeek(
+		final LocalDate firstDay,
+		final LocalDate lastDay,
+		final Member member
+	) {
+		final LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
+		final LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
 		checkStartAndEndTime(startTime, endTime);
 
 		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
 
-	private void checkStartAndEndTime(LocalDateTime startTime, LocalDateTime endTime) {
+	private void checkStartAndEndTime(final LocalDateTime startTime, final LocalDateTime endTime) {
 		if (startTime.isAfter(endTime)) {
 			throw new InvalidTimeException(INVALID_START_END_TIME);
 		}
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public AdateResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest, Member member) {
-		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
-			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
+	public AdateResponse updateAdate(
+		final String calendarId,
+		final AdateUpdateRequest adateUpdateRequest,
+		final Member member
+	) {
+		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
+		);
 
 		updateIfNotNull(adate, adateUpdateRequest);
 		adateRepository.save(adate);
 
 		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, adateUpdateRequest.tagName()));
+
 		return toAdateResponse(adate);
 	}
 
