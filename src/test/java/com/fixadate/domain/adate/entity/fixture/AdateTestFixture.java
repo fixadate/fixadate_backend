@@ -12,7 +12,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 @SuppressWarnings("NonAsciiCharacters")
 public class AdateTestFixture {
 
-	protected final FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
+	protected final FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.entityMonkey();
 	protected Member 일정_주인;
 	protected Member 다른_회원;
 	protected Adate 일정;
