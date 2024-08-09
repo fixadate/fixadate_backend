@@ -1,6 +1,7 @@
 package com.fixadate.domain.adate.entity;
 
-import static com.fixadate.global.util.TimeUtil.*;
+import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromDate;
+import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromDateTime;
 
 import java.time.LocalDateTime;
 
@@ -8,7 +9,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
@@ -34,27 +34,41 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(indexes = {@Index(name = "calendar_id", columnList = "calendarId", unique = true),
-	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")})
+@Table(indexes = {
+	@Index(name = "calendar_id", columnList = "calendarId", unique = true),
+	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")
+})
 public class Adate extends BaseTimeEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	private String title;
+
 	@Column(length = 500)
 	private String notes;
+
 	@Column(length = 300)
 	private String location;
 
 	private LocalDateTime alertWhen;
+
 	private LocalDateTime repeatFreq;
+
 	private String color;
+
 	private Boolean ifAllDay;
+
 	private LocalDateTime startsWhen;
+
 	private LocalDateTime endsWhen;
+
 	@Column(unique = true)
 	private String calendarId;
+
 	private String etag;
+
 	private boolean reminders;
 
 	@ManyToOne(fetch = FetchType.LAZY)
