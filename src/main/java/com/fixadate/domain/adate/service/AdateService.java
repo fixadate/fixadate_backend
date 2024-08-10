@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.service;
 
 import static com.fixadate.domain.adate.mapper.AdateMapper.registerDtoToEntity;
 import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateResponse;
+import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_ADATE;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromLocalDate;
@@ -29,6 +30,7 @@ import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
+import com.fixadate.global.exception.forbidden.AdateUpdateForbiddenException;
 import com.fixadate.global.exception.notfound.AdateNotFoundException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.global.facade.RedisFacade;
@@ -155,8 +157,8 @@ public class AdateService {
 	}
 
 	private void validateUserCanUpdate(final Adate adate, final Member member) {
-		if (adate.isOwner(member)) {
-
+		if (!adate.isOwner(member)) {
+			throw new AdateUpdateForbiddenException(FORBIDDEN_UPDATE_ADATE);
 		}
 	}
 
