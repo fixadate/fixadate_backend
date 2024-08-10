@@ -10,5 +10,5 @@ import com.fixadate.domain.adate.entity.Adate;
 @Repository
 public interface AdateJpaRepository extends JpaRepository<Adate, Long> {
 
-	Optional<Adate> findAdateByCalendarId(String calendarId);
+	Optional<Adate> findAdateByCalendarId(final String calendarId);
 }

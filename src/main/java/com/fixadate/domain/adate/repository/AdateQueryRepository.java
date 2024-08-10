@@ -1,6 +1,6 @@
 package com.fixadate.domain.adate.repository;
 
-import static com.fixadate.domain.adate.entity.QAdate.*;
+import static com.fixadate.domain.adate.entity.QAdate.adate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,9 +16,14 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class AdateQueryRepository {
+
 	private final JPAQueryFactory jpaQueryFactory;
 
-	public List<Adate> findByDateRange(Member member, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+	public List<Adate> findByDateRange(
+		final Member member,
+		final LocalDateTime startDateTime,
+		final LocalDateTime endDateTime
+	) {
 		return jpaQueryFactory
 			.selectFrom(adate)
 			.where(
