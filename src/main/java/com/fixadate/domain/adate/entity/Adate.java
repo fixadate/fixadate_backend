@@ -59,7 +59,7 @@ public class Adate extends BaseTimeEntity {
 	private String color;
 
 	// TODO: [의견] if 대신 is는 어떤가요? api 등 고려해야 할 게 많을까봐 변경은 하지 않았습니다.
-	// TODO: ifAllday는 참조타입이고 reminders는 원시 타입인 이유가 무엇인가요? 구글 캘린더 때문일까요?
+	// TODO: [질문] ifAllday는 참조타입이고 reminders는 원시 타입인 이유가 무엇인가요? 구글 캘린더 때문일까요?
 	private Boolean ifAllDay;
 
 	private LocalDateTime startsWhen;
