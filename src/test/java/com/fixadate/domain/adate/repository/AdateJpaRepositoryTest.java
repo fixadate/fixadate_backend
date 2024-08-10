@@ -5,6 +5,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -28,6 +29,7 @@ class AdateJpaRepositoryTest extends AdateJpaRepositoryFixture {
 	private AdateJpaRepository adateJpaRepository;
 
 	@Nested
+	@DisplayName("캘린더 아이디를 통해 일정 조회 테스트")
 	class FindAdateByCalendarIdTest {
 
 		@Test
