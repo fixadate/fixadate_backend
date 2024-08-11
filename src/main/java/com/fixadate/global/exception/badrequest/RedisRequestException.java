@@ -7,17 +7,15 @@ import com.fixadate.global.exception.ExceptionCode;
 
 import io.lettuce.core.RedisCommandExecutionException;
 
-/**
- *
- * @author yongjunhong
- * @since 2024. 7. 3.
- */
 public class RedisRequestException {
 
+	// TODO: [문제점] 내부 클래스의 SerializationExceptoin으로 인식해 redis의 직렬화 예외를 못잡고 있었습니다.
+	//  클래스명이 동일해 아래와 같이 되는데 어떻게 생각하시나요?
 	public static void handleRedisException(Exception exception) {
 		if (exception instanceof RedisConnectionFailureException || exception instanceof RedisConnectionException) {
 			throw new RedisConnectionException(ExceptionCode.FAIL_TO_CONNECT_REDIS);
-		} else if (exception instanceof SerializationException || exception instanceof IllegalArgumentException) {
+		} else if (exception instanceof org.springframework.data.redis.serializer.SerializationException
+				   || exception instanceof IllegalArgumentException) {
 			throw new SerializationException(ExceptionCode.FAIL_TO_SERIALIZATION);
 		} else if (exception instanceof RedisSystemException || exception instanceof RedisCommandExecutionException) {
 			throw new RedisExecutionException(ExceptionCode.FAIL_TO_EXECUTE_REDIS_COMMAND);
