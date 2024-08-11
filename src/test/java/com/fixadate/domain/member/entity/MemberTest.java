@@ -8,10 +8,11 @@ import org.junit.jupiter.api.Test;
 import com.fixadate.domain.member.entity.fixture.MemberFixture;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 class MemberTest extends MemberFixture {
 
 	@Test
-	void 멤버_닉네임_수정_테스트() {
+	void 멤버_닉네임_수정() {
 		//when
 		member.updateNickname("new_nickname");
 		String actual = member.getNickname();
@@ -21,7 +22,7 @@ class MemberTest extends MemberFixture {
 	}
 
 	@Test
-	void 멤버_이미지_수정_테스트() {
+	void 멤버_이미지_수정() {
 		//when
 		member.updateProfileImg("new_image");
 		String actual = member.getProfileImg();
@@ -31,7 +32,7 @@ class MemberTest extends MemberFixture {
 	}
 
 	@Test
-	void 멤버_색상_수정_테스트() {
+	void 멤버_색상_수정() {
 		//when
 		member.updateSignatureColor("new_color");
 		String actual = member.getSignatureColor();

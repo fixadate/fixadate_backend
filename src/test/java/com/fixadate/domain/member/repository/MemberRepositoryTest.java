@@ -22,7 +22,7 @@ import com.fixadate.domain.member.repository.fixture.MemberRepositoryFixture;
 class MemberRepositoryTest extends MemberRepositoryFixture {
 
 	@Test
-	void 멤버_저장_테스트() {
+	void 멤버_저장() {
 		//when
 		memberRepository.save(멤버);
 
@@ -31,7 +31,7 @@ class MemberRepositoryTest extends MemberRepositoryFixture {
 	}
 
 	@Test
-	void 멤버_이메일로_멤버_조회_테스트() {
+	void 멤버_이메일로_멤버_조회() {
 		//when
 		final Optional<Member> actual = memberRepository.findMemberByEmail(저장된_멤버.getEmail());
 
@@ -41,7 +41,7 @@ class MemberRepositoryTest extends MemberRepositoryFixture {
 	}
 
 	@Test
-	void 멤버_아이디로_멤버_조회_테스트() {
+	void 멤버_아이디로_멤버_조회() {
 		//when
 		final Optional<Member> actual = memberRepository.findMemberById(저장된_멤버.getId());
 
@@ -51,7 +51,7 @@ class MemberRepositoryTest extends MemberRepositoryFixture {
 	}
 
 	@Test
-	void 멤버_소셜_플랫폼_이메일_이름으로_멤버_조회_테스트() {
+	void 멤버_소셜_플랫폼_이메일_이름으로_멤버_조회() {
 		//when
 		final Optional<Member> actual = memberRepository.findMemberByOauthPlatformAndEmailAndName(
 			저장된_멤버.getOauthPlatform(),
