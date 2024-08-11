@@ -1,4 +1,4 @@
-package com.fixadate.integration.config;
+package com.fixadate.config;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;

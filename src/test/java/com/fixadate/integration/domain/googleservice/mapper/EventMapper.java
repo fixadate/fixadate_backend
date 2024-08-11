@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
-import com.fixadate.integration.config.FixtureMonkeyConfig;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
@@ -19,7 +19,6 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 
 /**
- *
  * @author yongjunhong
  * @since 2024. 6. 6.
  */
@@ -58,19 +57,19 @@ public class EventMapper {
 		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
 		// todo : set으로 값을 생성하지 말고 랜덤하게 생성할 수 있게 수정할 것
 		return fixtureMonkey.giveMeBuilder(MemberRegisterRequest.class)
-			.instantiate(Instantiator.constructor())
-			.set("oauthPlatform", "google")
-			.set("oauthId", "123123123")
-			.set("name", "Random Name")
-			.set("profileImg", "Random Profile Image")
-			.set("nickname", "Random Nickname")
-			.set("birth", "20000928")
-			.set("gender", "Random Gender")
-			.set("profession", "Random Profession")
-			.set("signatureColor", "Random Color")
-			.set("email", "random@example.com")
-			.set("role", "Random Role")
-			.sample();
+							.instantiate(Instantiator.constructor())
+							.set("oauthPlatform", "google")
+							.set("oauthId", "123123123")
+							.set("name", "Random Name")
+							.set("profileImg", "Random Profile Image")
+							.set("nickname", "Random Nickname")
+							.set("birth", "20000928")
+							.set("gender", "Random Gender")
+							.set("profession", "Random Profession")
+							.set("signatureColor", "Random Color")
+							.set("email", "random@example.com")
+							.set("role", "Random Role")
+							.sample();
 	}
 
 	public static Adate createAdate() {
@@ -80,20 +79,20 @@ public class EventMapper {
 		// todo : set으로 값을 생성하지 말고 랜덤하게 생성할 수 있게 수정할 것
 		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
 		return fixtureMonkey.giveMeBuilder(Adate.class)
-			.set("id", randomId)
-			.set("title", "Random Title")
-			.set("notes", "Random Notes")
-			.set("location", "Random Location")
-			.set("alertWhen", LocalDateTime.now())
-			.set("repeatFreq", LocalDateTime.now())
-			.set("color", "Random Color")
-			.set("ifAllDay", true)
-			.set("startsWhen", LocalDateTime.now())
-			.set("endsWhen", LocalDateTime.now())
-			.set("calendarId", UUID.randomUUID().toString())
-			.set("etag", "Random Etag")
-			.set("reminders", true)
-			.sample();
+							.set("id", randomId)
+							.set("title", "Random Title")
+							.set("notes", "Random Notes")
+							.set("location", "Random Location")
+							.set("alertWhen", LocalDateTime.now())
+							.set("repeatFreq", LocalDateTime.now())
+							.set("color", "Random Color")
+							.set("ifAllDay", true)
+							.set("startsWhen", LocalDateTime.now())
+							.set("endsWhen", LocalDateTime.now())
+							.set("calendarId", UUID.randomUUID().toString())
+							.set("etag", "Random Etag")
+							.set("reminders", true)
+							.sample();
 	}
 
 	public static List<Adate> createAdates() {

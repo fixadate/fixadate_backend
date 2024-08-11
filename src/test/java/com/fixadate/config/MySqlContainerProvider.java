@@ -1,4 +1,4 @@
-package com.fixadate.integration.config;
+package com.fixadate.config;
 
 import org.testcontainers.containers.MySQLContainer;
 
