@@ -4,6 +4,8 @@ import static com.fixadate.domain.auth.entity.OAuthProvider.translateStringToOAu
 
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
+import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
 
@@ -51,6 +53,19 @@ public class MemberMapper {
 			member.getSignatureColor(),
 			member.getProfession(),
 			url
+		);
+	}
+
+	public static MemberInfoUpdateDto toUpdateDto(
+		final String memberId,
+		final MemberInfoUpdateRequest memberInfoUpdateRequest
+	) {
+		return new MemberInfoUpdateDto(
+			memberId,
+			memberInfoUpdateRequest.nickname(),
+			memberInfoUpdateRequest.signatureColor(),
+			memberInfoUpdateRequest.profession(),
+			memberInfoUpdateRequest.profileImg()
 		);
 	}
 }

@@ -20,25 +20,30 @@ public interface MemberController {
 
 	@Operation(summary = "랜덤 닉네임 생성", description = "랜덤 닉네임을 생성합니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "ok",
+		@ApiResponse(
+			responseCode = "200", description = "ok",
 			content = @Content(schema = @Schema(implementation = String.class)))
 	})
 	ResponseEntity<String> getRandomNickname();
 
 	@Operation(summary = "회원 정보 조회", description = "회원의 정보를 조회합니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "ok",
+		@ApiResponse(
+			responseCode = "200", description = "ok",
 			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
 	})
-	ResponseEntity<MemberInfoResponse> getMemberNickname(
-		@Parameter(description = "회원 ID") @PathVariable String memberId);
+	ResponseEntity<MemberInfoResponse> getMemberInfo(
+		@Parameter(description = "회원 ID") @PathVariable String memberId
+	);
 
 	@Operation(summary = "회원 정보 수정", description = "회원의 정보를 수정합니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "ok",
+		@ApiResponse(
+			responseCode = "200", description = "ok",
 			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
 	})
-	ResponseEntity<MemberInfoResponse> updateMemberNickname(
+	ResponseEntity<MemberInfoResponse> updateMemberInfo(
 		@Parameter(description = "회원 ID") @PathVariable String memberId,
-		@Parameter(description = "수정할 회원 정보") @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest);
+		@Parameter(description = "수정할 회원 정보") @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest
+	);
 }
