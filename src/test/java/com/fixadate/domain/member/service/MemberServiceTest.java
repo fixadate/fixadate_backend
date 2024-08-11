@@ -1,0 +1,101 @@
+package com.fixadate.domain.member.service;
+
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+
+import org.assertj.core.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import com.fixadate.domain.member.dto.response.MemberInfoResponse;
+import com.fixadate.domain.member.service.fixture.MemberServiceFixture;
+import com.fixadate.global.exception.notfound.MemberNotFoundException;
+
+@SpringBootTest
+@Testcontainers
+@Transactional
+@SuppressWarnings("NonAsciiCharacters")
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+class MemberServiceTest extends MemberServiceFixture {
+
+	@Autowired
+	private MemberService memberService;
+
+	@RepeatedTest(100)
+	void 멤버_닉네임_생성() {
+		// when
+		final String actual = memberService.generateRandomNickname();
+
+		// then
+		SoftAssertions.assertSoftly(softly -> {
+			softly.assertThat(actual).isNotNull();
+			softly.assertThat(actual.length()).isGreaterThan(4);
+		});
+	}
+
+	@DisplayName("멤버 정보 조회")
+	@Nested
+	class GetMemberInfoTest {
+
+		@RepeatedTest(100)
+		void 멤버_정보_조회() {
+			// when
+			System.out.println("멤버_아이디: " + 멤버_아이디);
+			System.out.println("멤버: " + 멤버.getProfileImg());
+
+			final MemberInfoResponse actual = memberService.getMemberInfo(멤버_아이디);
+
+			// then
+			SoftAssertions.assertSoftly(softly -> {
+				softly.assertThat(actual).isNotNull();
+				softly.assertThat(actual.name()).isEqualTo(멤버.getName());
+				softly.assertThat(actual.nickname()).isEqualTo(멤버.getNickname());
+				softly.assertThat(actual.birth()).isEqualTo(멤버.getBirth());
+				softly.assertThat(actual.gender()).isEqualTo(멤버.getGender());
+				softly.assertThat(actual.signatureColor()).isEqualTo(멤버.getSignatureColor());
+				softly.assertThat(actual.profession()).isEqualTo(멤버.getProfession());
+				softly.assertThat(actual.url()).isNotBlank();
+			});
+		}
+
+		@RepeatedTest(100)
+		void 멤버가_없는_경우_404_반환() {
+			// given
+			final String memberId = 멤버_아이디 + "extra";
+
+			// when & then
+			Assertions.assertThatThrownBy(() -> memberService.getMemberInfo(memberId))
+					  .isInstanceOf(MemberNotFoundException.class)
+					  .hasMessage(NOT_FOUND_MEMBER_ID.getMessage());
+		}
+	}
+
+	@DisplayName("멤버 정보 수정")
+	@Nested
+	class UpdateMemberInfoTest {
+
+		@RepeatedTest(100)
+		void 멤버_정보_수정() {
+			// when
+			final MemberInfoResponse actual = memberService.updateMemberInfo(멤버_정보_수정_요청);
+
+			// then
+			SoftAssertions.assertSoftly(softly -> {
+				softly.assertThat(actual).isNotNull();
+				softly.assertThat(actual.name()).isEqualTo(멤버.getName());
+				softly.assertThat(actual.nickname()).isEqualTo(멤버.getNickname());
+				softly.assertThat(actual.birth()).isEqualTo(멤버.getBirth());
+				softly.assertThat(actual.gender()).isEqualTo(멤버.getGender());
+				softly.assertThat(actual.signatureColor()).isEqualTo(멤버.getSignatureColor());
+				softly.assertThat(actual.profession()).isEqualTo(멤버.getProfession());
+				softly.assertThat(actual.url()).isNotBlank();
+			});
+		}
+	}
+}
