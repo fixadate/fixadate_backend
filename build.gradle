@@ -100,7 +100,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-hibernate5
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
 
-
+    // https://mvnrepository.com/artifact/org.testcontainers/localstack
+    testImplementation "org.testcontainers:localstack:1.15.3"
 }
 checkstyle {
     maxWarnings = 0
