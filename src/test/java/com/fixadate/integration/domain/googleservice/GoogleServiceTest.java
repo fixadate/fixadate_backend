@@ -1,6 +1,8 @@
 package com.fixadate.integration.domain.googleservice;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,6 +23,7 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
@@ -28,12 +31,10 @@ import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.googlecalendar.service.GoogleService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.integration.config.DataClearExtension;
 import com.fixadate.integration.domain.googleservice.mapper.EventMapper;
 import com.google.api.services.calendar.model.Event;
 
 /**
- *
  * @author yongjunhong
  * @since 2024. 6. 5.
  */

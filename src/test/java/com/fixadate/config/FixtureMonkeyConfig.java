@@ -1,7 +1,8 @@
-package com.fixadate.integration.config;
+package com.fixadate.config;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
@@ -14,12 +15,12 @@ public class FixtureMonkeyConfig {
 	 */
 	public static FixtureMonkey simpleValueJqwikMonkey() {
 		return FixtureMonkey.builder()
-			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-			.plugin(new SimpleValueJqwikPlugin()
-				.maxStringLength(10)
-				.maxNumberValue(10_000)
-			)
-			.build();
+							.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+							.plugin(new SimpleValueJqwikPlugin()
+										.maxStringLength(10)
+										.maxNumberValue(10_000)
+							)
+							.build();
 	}
 
 	/*
@@ -28,9 +29,9 @@ public class FixtureMonkeyConfig {
 	 */
 	public static FixtureMonkey jacksonMonkey() {
 		return FixtureMonkey.builder()
-			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-			.plugin(new JacksonPlugin())
-			.build();
+							.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+							.plugin(new JacksonPlugin())
+							.build();
 	}
 
 	/*
@@ -39,8 +40,19 @@ public class FixtureMonkeyConfig {
 	 */
 	public static FixtureMonkey jakartaValidationMonkey() {
 		return FixtureMonkey.builder()
-			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-			.plugin(new JakartaValidationPlugin())
-			.build();
+							.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+							.plugin(new JakartaValidationPlugin())
+							.build();
+	}
+
+	/*
+	인자가 없는 생성자와 getter 또는 setter 중 하나를 이용해 객체를 생성하는 Introspector
+	entity에서는 인자가 없는 생성자와 getter가 있기 때문에 하기의 Introspector을 사용해야 함.
+	 */
+	public static FixtureMonkey entityMonkey() {
+		return FixtureMonkey.builder()
+							.plugin(new JakartaValidationPlugin())
+							.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+							.build();
 	}
 }

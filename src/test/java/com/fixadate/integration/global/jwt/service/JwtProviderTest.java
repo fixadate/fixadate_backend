@@ -1,9 +1,17 @@
 package com.fixadate.integration.global.jwt.service;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_TOKEN_BLACKLIST;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_REFRESHTOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.BLACK_LIST;
+import static com.fixadate.global.util.constant.ConstantValue.REFRESH_TOKEN;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,10 +27,10 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.config.DataClearExtension;
 import com.fixadate.global.exception.unauthorized.TokenException;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
-import com.fixadate.integration.config.DataClearExtension;
 import com.redis.testcontainers.RedisContainer;
 
 import io.jsonwebtoken.Claims;

@@ -1,8 +1,11 @@
 package com.fixadate.integration.domain.pushkey.service;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,10 +28,10 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.pushkey.repository.PushKeyRepository;
 import com.fixadate.domain.pushkey.service.PushKeyService;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
-import com.fixadate.integration.config.DataClearExtension;
 
 @ExtendWith(DataClearExtension.class)
 @SpringBootTest
