@@ -34,11 +34,6 @@ jobs:
           name: "credentials.json"
           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
           dir: './src/main/resources/'
-      - name: Set TEST YML
-        run: |
-          mkdir -p src/test/resources
-          echo "${{ secrets.FIXADATE_TEST_CREDENTIALS }}" | base64 --decode > src/test/resources/application.yml
-          find src
       - name: Build with Gradle
         run: ./gradlew build
       - name: Make Zip File
