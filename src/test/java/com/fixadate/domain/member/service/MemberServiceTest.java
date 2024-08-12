@@ -1,8 +1,9 @@
 package com.fixadate.domain.member.service;
 
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import org.assertj.core.api.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -10,16 +11,21 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.config.LocalStackContainerProvider;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.fixture.MemberServiceFixture;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 
+import software.amazon.awssdk.services.s3.S3Client;
+
 @SpringBootTest
-@Testcontainers
+@Import(LocalStackContainerProvider.class)
 @Transactional
+@Testcontainers
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class MemberServiceTest extends MemberServiceFixture {
@@ -27,13 +33,16 @@ class MemberServiceTest extends MemberServiceFixture {
 	@Autowired
 	private MemberService memberService;
 
+	@Autowired
+	private S3Client s3Client;
+
 	@RepeatedTest(100)
 	void 멤버_닉네임_생성() {
 		// when
 		final String actual = memberService.generateRandomNickname();
 
 		// then
-		SoftAssertions.assertSoftly(softly -> {
+		assertSoftly(softly -> {
 			softly.assertThat(actual).isNotNull();
 			softly.assertThat(actual.length()).isGreaterThan(4);
 		});
@@ -46,13 +55,10 @@ class MemberServiceTest extends MemberServiceFixture {
 		@RepeatedTest(100)
 		void 멤버_정보_조회() {
 			// when
-			System.out.println("멤버_아이디: " + 멤버_아이디);
-			System.out.println("멤버: " + 멤버.getProfileImg());
-
 			final MemberInfoResponse actual = memberService.getMemberInfo(멤버_아이디);
 
 			// then
-			SoftAssertions.assertSoftly(softly -> {
+			assertSoftly(softly -> {
 				softly.assertThat(actual).isNotNull();
 				softly.assertThat(actual.name()).isEqualTo(멤버.getName());
 				softly.assertThat(actual.nickname()).isEqualTo(멤버.getNickname());
@@ -70,9 +76,9 @@ class MemberServiceTest extends MemberServiceFixture {
 			final String memberId = 멤버_아이디 + "extra";
 
 			// when & then
-			Assertions.assertThatThrownBy(() -> memberService.getMemberInfo(memberId))
-					  .isInstanceOf(MemberNotFoundException.class)
-					  .hasMessage(NOT_FOUND_MEMBER_ID.getMessage());
+			assertThatThrownBy(() -> memberService.getMemberInfo(memberId))
+				.isInstanceOf(MemberNotFoundException.class)
+				.hasMessage(NOT_FOUND_MEMBER_ID.getMessage());
 		}
 	}
 
@@ -82,19 +88,34 @@ class MemberServiceTest extends MemberServiceFixture {
 
 		@RepeatedTest(100)
 		void 멤버_정보_수정() {
+			// given
+			s3Client.putObject(입력_요청, 입력_바디);
+
 			// when
 			final MemberInfoResponse actual = memberService.updateMemberInfo(멤버_정보_수정_요청);
 
 			// then
-			SoftAssertions.assertSoftly(softly -> {
+			assertSoftly(softly -> {
 				softly.assertThat(actual).isNotNull();
 				softly.assertThat(actual.name()).isEqualTo(멤버.getName());
-				softly.assertThat(actual.nickname()).isEqualTo(멤버.getNickname());
+				softly.assertThat(actual.nickname()).isEqualTo(멤버_정보_수정_요청.nickname());
 				softly.assertThat(actual.birth()).isEqualTo(멤버.getBirth());
 				softly.assertThat(actual.gender()).isEqualTo(멤버.getGender());
-				softly.assertThat(actual.signatureColor()).isEqualTo(멤버.getSignatureColor());
-				softly.assertThat(actual.profession()).isEqualTo(멤버.getProfession());
+				softly.assertThat(actual.signatureColor()).isEqualTo(멤버_정보_수정_요청.signatureColor());
+				softly.assertThat(actual.profession()).isEqualTo(멤버_정보_수정_요청.profession());
 				softly.assertThat(actual.url()).isNotBlank();
+			});
+		}
+
+		@RepeatedTest(100)
+		void 이미지를_변경하지_않는_경우_Url_null_반환() {
+			// when
+			final MemberInfoResponse actual = memberService.updateMemberInfo(멤버_정보_수정_요청_이미지_없는_경우);
+
+			// then
+			assertSoftly(softly -> {
+				softly.assertThat(actual).isNotNull();
+				softly.assertThat(actual.url()).isNull();
 			});
 		}
 	}

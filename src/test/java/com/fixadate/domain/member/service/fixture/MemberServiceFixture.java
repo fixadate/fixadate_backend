@@ -1,17 +1,22 @@
 package com.fixadate.domain.member.service.fixture;
 
+import java.io.File;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import net.jqwik.api.Arbitraries;
 
+import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.integration.config.FixtureMonkeyConfig;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
@@ -26,6 +31,11 @@ public class MemberServiceFixture {
 	@Autowired
 	private MemberRepository memberRepository;
 
+	@Value("${cloud.aws.bucket-name}")
+	private String bucket;
+
+	protected PutObjectRequest 입력_요청;
+	protected RequestBody 입력_바디;
 	protected Member 멤버;
 	protected String 멤버_아이디;
 	protected MemberInfoUpdateDto 멤버_정보_수정_요청;
@@ -54,17 +64,35 @@ public class MemberServiceFixture {
 
 		멤버_아이디 = 멤버.getId();
 		memberRepository.save(멤버);
-		em.flush();
-		em.clear();
 
 		멤버_정보_수정_요청 = DTO_몽키.giveMeBuilder(MemberInfoUpdateDto.class)
 							.set("memberId", 멤버_아이디)
-							.setNotNull("profileImg")
+							.set("profileImg", Values.just(CombinableArbitrary.from(
+								() -> Arbitraries.strings().alpha().ofMinLength(5).sample())
+							))
+							.setNotNull("nickname")
+							.setNotNull("signatureColor")
+							.setNotNull("profession")
 							.sample();
 
 		멤버_정보_수정_요청_이미지_없는_경우 = DTO_몽키.giveMeBuilder(MemberInfoUpdateDto.class)
 									  .set("memberId", 멤버_아이디)
 									  .setNull("profileImg")
+									  .setNotNull("nickname")
+									  .setNotNull("signatureColor")
+									  .setNotNull("profession")
 									  .sample();
+
+
+		입력_요청 = PutObjectRequest.builder()
+								.bucket(bucket)
+								.key(멤버.getProfileImg())
+								.build();
+
+		File file = new File("src/test/resources/application.yml");
+		입력_바디 = RequestBody.fromFile(file);
+
+		em.flush();
+		em.clear();
 	}
 }
