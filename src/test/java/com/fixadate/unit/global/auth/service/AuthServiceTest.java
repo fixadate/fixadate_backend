@@ -1,8 +1,10 @@
 package com.fixadate.unit.global.auth.service;
 
-import static com.fixadate.unit.domain.member.fixture.MemberFixture.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static com.fixadate.unit.domain.member.fixture.MemberFixture.MEMBER;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
 
@@ -19,7 +21,7 @@ import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.service.AuthService;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.global.util.S3Util;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +48,8 @@ public class AuthServiceTest {
 			MEMBER.getOauthPlatform().getProvider()
 		);
 		given(memberRepository.findMemberByOauthPlatformAndEmailAndName(MEMBER.getOauthPlatform(), MEMBER.getEmail(),
-			MEMBER.getName())).willReturn(Optional.of(MEMBER));
+																		MEMBER.getName()
+		)).willReturn(Optional.of(MEMBER));
 
 		given(passwordEncoder.matches(any(String.class), any(String.class))).willReturn(true);
 

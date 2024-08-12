@@ -13,7 +13,7 @@ import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.mapper.MemberMapper;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.pushkey.entity.PushKey;
 import com.fixadate.global.exception.notfound.GoogleNotFoundException;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;

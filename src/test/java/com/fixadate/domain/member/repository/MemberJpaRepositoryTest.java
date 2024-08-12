@@ -19,21 +19,12 @@ import com.fixadate.domain.member.repository.fixture.MemberRepositoryFixture;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
-class MemberRepositoryTest extends MemberRepositoryFixture {
-
-	@Test
-	void 멤버_저장() {
-		//when
-		memberRepository.save(멤버);
-
-		//then
-		assertThat(멤버.getId()).isNotNull();
-	}
+class MemberJpaRepositoryTest extends MemberRepositoryFixture {
 
 	@Test
 	void 멤버_이메일로_멤버_조회() {
 		//when
-		final Optional<Member> actual = memberRepository.findMemberByEmail(저장된_멤버.getEmail());
+		final Optional<Member> actual = memberJpaRepository.findMemberByEmail(저장된_멤버.getEmail());
 
 		//then
 		assertThat(actual.isPresent()).isTrue();
@@ -43,7 +34,7 @@ class MemberRepositoryTest extends MemberRepositoryFixture {
 	@Test
 	void 멤버_아이디로_멤버_조회() {
 		//when
-		final Optional<Member> actual = memberRepository.findMemberById(저장된_멤버.getId());
+		final Optional<Member> actual = memberJpaRepository.findMemberById(저장된_멤버.getId());
 
 		//then
 		assertThat(actual.isPresent()).isTrue();
@@ -53,7 +44,7 @@ class MemberRepositoryTest extends MemberRepositoryFixture {
 	@Test
 	void 멤버_소셜_플랫폼_이메일_이름으로_멤버_조회() {
 		//when
-		final Optional<Member> actual = memberRepository.findMemberByOauthPlatformAndEmailAndName(
+		final Optional<Member> actual = memberJpaRepository.findMemberByOauthPlatformAndEmailAndName(
 			저장된_멤버.getOauthPlatform(),
 			저장된_멤버.getEmail(),
 			저장된_멤버.getName()

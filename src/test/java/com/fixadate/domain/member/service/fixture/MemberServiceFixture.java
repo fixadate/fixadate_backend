@@ -11,7 +11,7 @@ import net.jqwik.api.Arbitraries;
 import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

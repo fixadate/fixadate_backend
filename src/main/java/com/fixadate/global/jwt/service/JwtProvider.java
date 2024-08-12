@@ -1,7 +1,12 @@
 package com.fixadate.global.jwt.service;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_TOKEN_BLACKLIST;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_IDENTIFIER;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_REFRESHTOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.AUTHORIZATION;
+import static com.fixadate.global.util.constant.ConstantValue.AUTHORIZATION_BEARER;
+import static com.fixadate.global.util.constant.ConstantValue.BLACK_LIST;
+import static com.fixadate.global.util.constant.ConstantValue.ID;
 
 import java.security.Key;
 import java.time.Duration;
@@ -16,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.global.exception.unauthorized.TokenException;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.entity.TokenResponse;
@@ -107,11 +112,11 @@ public class JwtProvider {
 
 	public String createToken(Claims claims, long expirationPeriod) {
 		return Jwts.builder()
-			.setClaims(claims)
-			.setIssuedAt(issuedAt())
-			.setExpiration(expiredAt(expirationPeriod))
-			.signWith(key, SignatureAlgorithm.HS256)
-			.compact();
+				   .setClaims(claims)
+				   .setIssuedAt(issuedAt())
+				   .setExpiration(expiredAt(expirationPeriod))
+				   .signWith(key, SignatureAlgorithm.HS256)
+				   .compact();
 	}
 
 	private Date issuedAt() {
@@ -135,7 +140,8 @@ public class JwtProvider {
 	public UsernamePasswordAuthenticationToken getAuthentication(String token) {
 		String id = getIdFromToken(token);
 		Member member = memberRepository.findMemberById(id).orElseThrow(() ->
-			new TokenException(NOT_FOUND_MEMBER_IDENTIFIER));
+																			new TokenException(
+																				NOT_FOUND_MEMBER_IDENTIFIER));
 		MemberPrincipal memberPrincipal = new MemberPrincipal(member);
 		return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
 	}
@@ -150,9 +156,9 @@ public class JwtProvider {
 
 	public String getIdFromToken(String token) {
 		return Jwts.parser()
-			.setSigningKey(secret.getBytes())
-			.parseClaimsJws(token)
-			.getBody()
-			.get(ID.getValue(), String.class);
+				   .setSigningKey(secret.getBytes())
+				   .parseClaimsJws(token)
+				   .getBody()
+				   .get(ID.getValue(), String.class);
 	}
 }

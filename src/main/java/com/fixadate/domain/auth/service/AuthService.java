@@ -1,9 +1,14 @@
 package com.fixadate.domain.auth.service;
 
-import static com.fixadate.domain.auth.entity.OAuthProvider.*;
-import static com.fixadate.domain.member.mapper.MemberMapper.*;
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.domain.auth.entity.OAuthProvider.translateStringToOAuthProvider;
+import static com.fixadate.domain.member.mapper.MemberMapper.toEntity;
+import static com.fixadate.domain.member.mapper.MemberMapper.toResponse;
+import static com.fixadate.global.exception.ExceptionCode.ALREADY_EXISTS_MEMBER;
+import static com.fixadate.global.exception.ExceptionCode.FAIL_TO_SIGNIN;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_EMAIL;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME;
+import static com.fixadate.global.util.constant.ConstantValue.REFRESH_TOKEN;
 
 import java.util.Optional;
 
@@ -19,7 +24,7 @@ import com.fixadate.domain.auth.dto.response.MemberSigninResponse;
 import com.fixadate.domain.auth.dto.response.MemberSignupResponse;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 import com.fixadate.global.exception.unauthorized.AuthException;
@@ -46,8 +51,10 @@ public class AuthService {
 		return toResponse(member);
 	}
 
-	private Optional<Member> findMemberByOAuthProviderAndEmailAndName(OAuthProvider oauthProvider, String email,
-		String name) {
+	private Optional<Member> findMemberByOAuthProviderAndEmailAndName(
+		OAuthProvider oauthProvider, String email,
+		String name
+	) {
 		return memberRepository.findMemberByOauthPlatformAndEmailAndName(oauthProvider, email, name);
 	}
 
@@ -77,7 +84,7 @@ public class AuthService {
 	@Transactional
 	public void memberSignout(String email, String id) {
 		Member member = memberRepository.findMemberById(id)
-			.orElseThrow(() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID));
+										.orElseThrow(() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID));
 
 		if (!member.getEmail().equals(email)) {
 			throw new MemberNotFoundException(NOT_FOUND_MEMBER_EMAIL);
@@ -87,8 +94,8 @@ public class AuthService {
 
 	public ResponseCookie createHttpOnlyCooke(String token) {
 		return ResponseCookie.from(REFRESH_TOKEN.getValue(), token)
-			.secure(true)
-			.httpOnly(true)
-			.build();
+							 .secure(true)
+							 .httpOnly(true)
+							 .build();
 	}
 }

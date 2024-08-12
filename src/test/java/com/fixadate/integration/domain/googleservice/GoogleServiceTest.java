@@ -30,7 +30,7 @@ import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.googlecalendar.service.GoogleService;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.integration.domain.googleservice.mapper.EventMapper;
 import com.google.api.services.calendar.model.Event;
 
