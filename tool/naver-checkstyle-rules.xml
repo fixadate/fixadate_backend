@@ -218,14 +218,14 @@ The following rules in the Naver coding convention cannot be checked by this con
 
         <!-- [block-indentation][indentation-after-line-wrapping] -->
         <!-- checkstyle 6.16 이상을 써야지 탭을 쓸때의 인덴트 체크가 제대로 동작함 -->
-        <module name="Indentation">
-            <property name="basicOffset" value="4"/>
-            <property name="braceAdjustment" value="0"/>
-            <property name="caseIndent" value="4"/>
-            <property name="throwsIndent" value="4"/>
-            <property name="lineWrappingIndentation" value="4"/>
-            <property name="arrayInitIndent" value="4"/>
-        </module>
+        <!--        <module name="Indentation">-->
+        <!--            <property name="basicOffset" value="4"/>-->
+        <!--            <property name="braceAdjustment" value="0"/>-->
+        <!--            <property name="caseIndent" value="4"/>-->
+        <!--            <property name="throwsIndent" value="4"/>-->
+        <!--            <property name="lineWrappingIndentation" value="4"/>-->
+        <!--            <property name="arrayInitIndent" value="4"/>-->
+        <!--        </module>-->
 
         <!-- [line-wrapping-position] -->
         <module name="SeparatorWrap">

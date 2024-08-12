@@ -1,6 +1,7 @@
 package com.fixadate.domain.member.entity;
 
-import org.assertj.core.api.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ class MemberTest extends MemberFixture {
 		String actual = member.getNickname();
 
 		//then
-		Assertions.assertThat(actual).isEqualTo("new_nickname");
+		assertThat(actual).isEqualTo("new_nickname");
 	}
 
 	@Test
@@ -28,7 +29,7 @@ class MemberTest extends MemberFixture {
 		String actual = member.getProfileImg();
 
 		//then
-		Assertions.assertThat(actual).isEqualTo("new_image");
+		assertThat(actual).isEqualTo("new_image");
 	}
 
 	@Test
@@ -38,6 +39,6 @@ class MemberTest extends MemberFixture {
 		String actual = member.getSignatureColor();
 
 		//then
-		Assertions.assertThat(actual).isEqualTo("new_color");
+		assertThat(actual).isEqualTo("new_color");
 	}
 }

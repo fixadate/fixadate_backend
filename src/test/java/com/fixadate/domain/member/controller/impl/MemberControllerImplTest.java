@@ -45,10 +45,7 @@ class MemberControllerImplTest extends CommonControllerSliceTest {
 		given(memberService.generateRandomNickname()).willReturn(nickname);
 
 		// when & then
-		mockMvc.perform(
-				   get("/v1/member/nickname")
-					   .contentType("application/json")
-			   )
+		mockMvc.perform(get("/v1/member/nickname").contentType("application/json"))
 			   .andExpectAll(
 				   status().isOk(),
 				   content().string(nickname)
@@ -57,7 +54,7 @@ class MemberControllerImplTest extends CommonControllerSliceTest {
 
 	@DisplayName("멤버 정보 조회")
 	@Nested
-	class getMemberInfoTest {
+	class GetMemberInfoTest {
 
 		@Test
 		void 멤버_정보_조회() throws Exception {
