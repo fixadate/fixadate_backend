@@ -1,8 +1,8 @@
 package com.fixadate.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -12,7 +12,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-@TestConfiguration
+@Configuration
 public class LocalStackContainerProvider {
 	private static final DockerImageName DOCKER_IMAGE_NAME = DockerImageName.parse("localstack/localstack:0.12.18");
 
