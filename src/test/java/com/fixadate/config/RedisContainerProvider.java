@@ -1,10 +1,10 @@
 package com.fixadate.config;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
-@Configuration
+@Component
 @SuppressWarnings("NonAsciiCharacters")
 public class RedisContainerProvider {
 
