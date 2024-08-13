@@ -22,16 +22,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
+import com.fixadate.config.RedisContainerProvider;
 import com.fixadate.global.exception.unauthorized.TokenException;
 import com.fixadate.global.jwt.entity.TokenResponse;
 import com.fixadate.global.jwt.service.JwtProvider;
-import com.redis.testcontainers.RedisContainer;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -39,14 +40,13 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 
 @ExtendWith(DataClearExtension.class)
+@Import(RedisContainerProvider.class)
 @SpringBootTest
 @Testcontainers
 class JwtProviderTest {
 	private static final String SAMPLE_SUBJECT = "20240504Absegd";
 	private static final Long SAMPLE_EXPIRATION_TIME = 60000L;
 	private static final Long SAMPLE_EXPIRED_TIME = 0L;
-	private static final String REDIS_IMAGE = "redis:5.0.7-alpine";
-	private static final int REDIS_PORT = 6379;
 	private static final String MESSAGE = "message";
 	private static Claims claims;
 
@@ -57,21 +57,17 @@ class JwtProviderTest {
 
 	@Container
 	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
-	@Container
-	static RedisContainer redisContainer = new RedisContainer(REDIS_IMAGE).withExposedPorts(REDIS_PORT);
 
 	@BeforeAll
 	static void startContainers() {
 		claims = Jwts.claims();
 		claims.put("id", SAMPLE_SUBJECT);
 		mySQLContainer.start();
-		redisContainer.start();
 	}
 
 	@AfterAll
 	static void stopContainers() {
 		mySQLContainer.stop();
-		redisContainer.stop();
 	}
 
 	@BeforeEach

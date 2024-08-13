@@ -11,11 +11,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.config.LocalStackContainerProvider;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.fixture.MemberServiceFixture;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
@@ -23,7 +21,6 @@ import com.fixadate.global.exception.notfound.MemberNotFoundException;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
-@Import(LocalStackContainerProvider.class)
 @Transactional
 @Testcontainers
 @SuppressWarnings("NonAsciiCharacters")
