@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fixadate.domain.member.controller.MemberController;
+import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.MemberService;
@@ -40,8 +41,8 @@ public class MemberControllerImpl implements MemberController {
 		@PathVariable final String memberId,
 		@RequestBody final MemberInfoUpdateRequest memberInfoUpdateRequest
 	) {
-		return ResponseEntity.ok(
-			memberService.updateMemberInfo(toUpdateDto(memberId, memberInfoUpdateRequest))
-		);
+		MemberInfoUpdateDto memberInfoUpdateDto = toUpdateDto(memberId, memberInfoUpdateRequest);
+
+		return ResponseEntity.ok(memberService.updateMemberInfo(memberInfoUpdateDto));
 	}
 }

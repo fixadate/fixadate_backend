@@ -17,7 +17,7 @@ public interface MemberJpaRepository extends JpaRepository<Member, Long> {
 
 	@Query("""
 			SELECT m
-			FROM Member m 
+			FROM Member m
 			WHERE m.oauthPlatform = :oauthPlatform AND m.email = :email AND m.name = :memberName
 		""")
 	Optional<Member> findMemberByOauthPlatformAndEmailAndName(

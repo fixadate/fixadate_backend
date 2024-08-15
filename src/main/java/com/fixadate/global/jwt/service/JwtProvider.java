@@ -64,6 +64,7 @@ public class JwtProvider {
 	public String createAccessToken(String id) {
 		Claims claims = Jwts.claims();
 		claims.put(ID.getValue(), id);
+
 		return createToken(claims, accesesTokenexpirationPeriod);
 	}
 
@@ -72,6 +73,7 @@ public class JwtProvider {
 		claims.put(ID.getValue(), id);
 		String refreshToken = createToken(claims, refreshTokenexpirationPeriod);
 		registRefreshTokenInRedis(refreshToken, id);
+
 		return refreshToken;
 	}
 
@@ -89,6 +91,7 @@ public class JwtProvider {
 			throw new TokenException(NOT_FOUND_REFRESHTOKEN);
 		}
 		redisTemplate.delete(id);
+
 		return getTokenResponse(id);
 	}
 
@@ -107,6 +110,7 @@ public class JwtProvider {
 		if (value != null && value.equals(BLACK_LIST.getValue())) {
 			throw new TokenException(INVALID_TOKEN_BLACKLIST);
 		}
+
 		return false;
 	}
 
@@ -121,11 +125,13 @@ public class JwtProvider {
 
 	private Date issuedAt() {
 		LocalDateTime now = LocalDateTime.now();
+
 		return Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	private Date expiredAt(long expirationPeriod) {
 		LocalDateTime now = LocalDateTime.now();
+
 		return Date.from(now.plusSeconds(expirationPeriod).atZone(ZoneId.systemDefault()).toInstant());
 	}
 
@@ -134,23 +140,27 @@ public class JwtProvider {
 			.setSigningKey(secret.getBytes())
 			.parseClaimsJws(token)
 			.getBody();
+
 		return true;
 	}
 
 	public UsernamePasswordAuthenticationToken getAuthentication(String token) {
 		String id = getIdFromToken(token);
-		Member member = memberRepository.findMemberById(id).orElseThrow(() ->
-																			new TokenException(
-																				NOT_FOUND_MEMBER_IDENTIFIER));
+		Member member = memberRepository.findMemberById(id).orElseThrow(
+			() -> new TokenException(NOT_FOUND_MEMBER_IDENTIFIER)
+		);
 		MemberPrincipal memberPrincipal = new MemberPrincipal(member);
+
 		return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
 	}
 
 	public String retrieveToken(HttpServletRequest httpServletRequest) {
 		String bearerToken = httpServletRequest.getHeader(AUTHORIZATION.getValue());
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(AUTHORIZATION_BEARER.getValue())) {
+
 			return bearerToken.substring(7);
 		}
+
 		return null;
 	}
 

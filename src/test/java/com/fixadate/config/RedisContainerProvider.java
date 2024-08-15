@@ -5,7 +5,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Component
-@SuppressWarnings("NonAsciiCharacters")
 public class RedisContainerProvider {
 
 	private static final DockerImageName DOCKER_IMAGE_NAME = DockerImageName.parse("redis:7.0.15-alpine");
@@ -13,9 +12,7 @@ public class RedisContainerProvider {
 	private static final GenericContainer<?> REDIS_CONTAINER;
 
 	static {
-		REDIS_CONTAINER = new GenericContainer<>(DOCKER_IMAGE_NAME)
-			.withExposedPorts(REDIS_PORT);
-
+		REDIS_CONTAINER = new GenericContainer<>(DOCKER_IMAGE_NAME).withExposedPorts(REDIS_PORT);
 		REDIS_CONTAINER.start();
 
 		System.setProperty("spring.data.redis.host", REDIS_CONTAINER.getHost());

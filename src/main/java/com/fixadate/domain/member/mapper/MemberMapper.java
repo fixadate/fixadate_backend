@@ -44,7 +44,7 @@ public class MemberMapper {
 		);
 	}
 
-	public static MemberInfoResponse toInfoResponse(final Member member, final String url) {
+	public static MemberInfoResponse toInfoResponse(final Member member, final String profileImageUrl) {
 		return new MemberInfoResponse(
 			member.getName(),
 			member.getNickname(),
@@ -52,7 +52,7 @@ public class MemberMapper {
 			member.getGender(),
 			member.getSignatureColor(),
 			member.getProfession(),
-			url
+			profileImageUrl
 		);
 	}
 

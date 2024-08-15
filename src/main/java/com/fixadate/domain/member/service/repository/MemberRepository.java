@@ -17,7 +17,7 @@ public interface MemberRepository {
 		final String memberName
 	);
 
-	void save(Member member);
+	Member save(final Member member);
 
-	void delete(Member member);
+	void delete(final Member member);
 }

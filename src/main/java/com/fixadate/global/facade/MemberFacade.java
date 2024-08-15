@@ -27,6 +27,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 @Component
 @RequiredArgsConstructor
 public class MemberFacade {
+
 	private final MemberRepository memberRepository;
 	private final GoogleRepository googleRepository;
 	private final S3Util s3Util;
@@ -36,23 +37,27 @@ public class MemberFacade {
 	private String bucket;
 
 	public GoogleCredentials getGoogleCredentialsByMemberId(final String memberId) {
-		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
-			NOT_FOUND_MEMBER_ID));
+		Member member = memberRepository.findMemberById(memberId).orElseThrow(
+			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
+		);
 
-		return googleRepository.findGoogleCredentialsByMember(member)
-							   .orElseThrow(() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER));
+		return googleRepository.findGoogleCredentialsByMember(member).orElseThrow(
+			() -> new GoogleNotFoundException(NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER)
+		);
 	}
 
 	public void setMemberGoogleCredentials(final String memberId, final GoogleCredentials googleCredentials) {
-		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
-			NOT_FOUND_MEMBER_ID));
+		Member member = memberRepository.findMemberById(memberId).orElseThrow(
+			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
+		);
 
 		member.updateGoogleCredentials(googleCredentials);
 	}
 
 	public PushKey getPushKeyAndRegisterMember(final String memberId, final String pushKey) {
-		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
-			NOT_FOUND_MEMBER_ID));
+		Member member = memberRepository.findMemberById(memberId).orElseThrow(
+			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
+		);
 
 		PushKey newPushKey = PushKey.builder()
 									.memberId(memberId)
@@ -65,8 +70,9 @@ public class MemberFacade {
 
 	@Transactional
 	public MemberInfoResponse deleteAndGetUploadUrl(final MemberInfoUpdateDto memberInfoUpdateDto) {
-		Member member = memberRepository.findMemberById(memberInfoUpdateDto.memberId())
-										.orElseThrow(() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID));
+		Member member = memberRepository.findMemberById(memberInfoUpdateDto.memberId()).orElseThrow(
+			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
+		);
 
 		updateMemberInfo(member, memberInfoUpdateDto);
 		String url = handleProfileImageUpdate(member, memberInfoUpdateDto);
@@ -109,8 +115,9 @@ public class MemberFacade {
 	}
 
 	public MemberInfoResponse getMemberInfo(final String memberId) {
-		Member member = memberRepository.findMemberById(memberId).orElseThrow(() -> new MemberNotFoundException(
-			NOT_FOUND_MEMBER_ID));
+		Member member = memberRepository.findMemberById(memberId).orElseThrow(
+			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
+		);
 
 		return MemberMapper.toInfoResponse(member, s3Util.generatePresignedUrlForDownload(member.getProfileImg()));
 	}

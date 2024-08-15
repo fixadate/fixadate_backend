@@ -36,15 +36,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(
 	indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true),
 	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"})
 )
 @EntityListeners(IDMakerEntityListener.class)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Member extends BaseTimeEntity implements UserDetails {
@@ -96,16 +96,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	}
 
 	@Override
-	public String getPassword() {
-		return null;
-	}
-
-	@Override
-	public String getUsername() {
-		return name;
-	}
-
-	@Override
 	public boolean isAccountNonExpired() {
 		return false;
 	}
@@ -123,6 +113,16 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return false;
+	}
+
+	@Override
+	public String getPassword() {
+		return null;
+	}
+
+	@Override
+	public String getUsername() {
+		return this.name;
 	}
 
 	public void updateMemberPushKey(final PushKey pushKey) {

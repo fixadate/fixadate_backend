@@ -5,50 +5,30 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fixadate.config.CommonControllerSliceTest;
-import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
-import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
-import com.fixadate.domain.member.dto.response.MemberInfoResponse;
-import com.fixadate.global.exception.ControllerAdvice;
+import com.fixadate.domain.member.controller.impl.fixture.MemberControllerFixture;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
-class MemberControllerImplTest extends CommonControllerSliceTest {
-
-	MockMvc mockMvc;
-
-	@BeforeEach
-	void setUp() {
-		mockMvc = MockMvcBuilders.standaloneSetup(memberController)
-								 .setControllerAdvice(new ControllerAdvice())
-								 .alwaysDo(print())
-								 .build();
-	}
+class MemberControllerImplTest extends MemberControllerFixture {
 
 	@Test
 	void 멤버_닉네임_생성() throws Exception {
 		// given
-		final String nickname = "nickname";
-
-		given(memberService.generateRandomNickname()).willReturn(nickname);
+		given(memberService.generateRandomNickname()).willReturn(멤버_닉네임);
 
 		// when & then
 		mockMvc.perform(get("/v1/member/nickname").contentType("application/json"))
 			   .andExpectAll(
 				   status().isOk(),
-				   content().string(nickname)
+				   content().string(멤버_닉네임)
 			   );
 	}
 
@@ -59,41 +39,29 @@ class MemberControllerImplTest extends CommonControllerSliceTest {
 		@Test
 		void 멤버_정보_조회() throws Exception {
 			// given
-			final String memberId = "memberId";
-			final MemberInfoResponse memberInfoResponse = new MemberInfoResponse(
-				"nickname",
-				"profileImg",
-				"signatureColor",
-				"male",
-				"red",
-				"student",
-				"2123dfsa"
-			);
-
-			given(memberService.getMemberInfo(memberId)).willReturn(memberInfoResponse);
+			given(memberService.getMemberInfo(멤버_아이디)).willReturn(멤버_정보_응답);
 
 			// when & then
 			mockMvc.perform(
-					   get("/v1/member/{memberId}", memberId)
+					   get("/v1/member/{memberId}", 멤버_아이디)
 						   .contentType("application/json")
 				   )
 				   .andExpectAll(
 					   status().isOk(),
-					   content().json(objectMapper.writeValueAsString(memberInfoResponse))
+					   content().json(objectMapper.writeValueAsString(멤버_정보_응답))
 				   );
 		}
 
 		@Test
 		void 멤버가_없는_경우_404_반환() throws Exception {
 			// given
-			final String memberId = "memberId";
 			final MemberNotFoundException memberNotFoundException = new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
 
-			given(memberService.getMemberInfo(memberId)).willThrow(memberNotFoundException);
+			given(memberService.getMemberInfo(멤버_아이디)).willThrow(memberNotFoundException);
 
 			// when & then
 			mockMvc.perform(
-					   get("/v1/member/{memberId}", memberId)
+					   get("/v1/member/{memberId}", 멤버_아이디)
 						   .contentType("application/json")
 				   )
 				   .andExpectAll(
@@ -107,73 +75,36 @@ class MemberControllerImplTest extends CommonControllerSliceTest {
 	@DisplayName("멤버 정보 수정")
 	@Nested
 	class UpdateMemberInfoTest {
+
 		@Test
 		void 멤버_정보_수정() throws Exception {
 			// given
-			final String memberId = "memberId";
-			final MemberInfoUpdateRequest memberInfoUpdateRequest = new MemberInfoUpdateRequest(
-				"profileImg",
-				"red",
-				"student",
-				"image"
-			);
-			final MemberInfoUpdateDto memberInfoUpdateDto = new MemberInfoUpdateDto(
-				memberId,
-				"profileImg",
-				"red",
-				"student",
-				"image"
-			);
-			final MemberInfoResponse memberInfoResponse = new MemberInfoResponse(
-				"nickname",
-				"profileImg",
-				"signatureColor",
-				"male",
-				"red",
-				"student",
-				"2123dfsa"
-			);
-
-			given(memberService.updateMemberInfo(memberInfoUpdateDto)).willReturn(memberInfoResponse);
+			given(memberService.updateMemberInfo(멤버_정보_업데이트_전달_객체)).willReturn(멤버_정보_응답);
 
 			// when & then
 			mockMvc.perform(
-					   patch("/v1/member/{memberId}", memberId)
+					   patch("/v1/member/{memberId}", 멤버_아이디)
 						   .contentType("application/json")
-						   .content(objectMapper.writeValueAsString(memberInfoUpdateRequest))
+						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
 					   status().isOk(),
-					   content().json(objectMapper.writeValueAsString(memberInfoResponse))
+					   content().json(objectMapper.writeValueAsString(멤버_정보_응답))
 				   );
 		}
 
 		@Test
 		void 멤버가_없는_경우_404_반환() throws Exception {
 			// given
-			final String memberId = "memberId";
-			final MemberInfoUpdateRequest memberInfoUpdateRequest = new MemberInfoUpdateRequest(
-				"profileImg",
-				"red",
-				"student",
-				"image"
-			);
-			final MemberInfoUpdateDto memberInfoUpdateDto = new MemberInfoUpdateDto(
-				memberId,
-				"profileImg",
-				"red",
-				"student",
-				"image"
-			);
 			final MemberNotFoundException memberNotFoundException = new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
 
-			given(memberService.updateMemberInfo(memberInfoUpdateDto)).willThrow(memberNotFoundException);
+			given(memberService.updateMemberInfo(멤버_정보_업데이트_전달_객체)).willThrow(memberNotFoundException);
 
 			// when & then
 			mockMvc.perform(
-					   patch("/v1/member/{memberId}", memberId)
+					   patch("/v1/member/{memberId}", 멤버_아이디)
 						   .contentType("application/json")
-						   .content(objectMapper.writeValueAsString(memberInfoUpdateRequest))
+						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
 					   status().isNotFound(),

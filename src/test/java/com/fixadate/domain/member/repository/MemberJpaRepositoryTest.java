@@ -1,6 +1,6 @@
 package com.fixadate.domain.member.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.Optional;
 
@@ -27,8 +27,10 @@ class MemberJpaRepositoryTest extends MemberRepositoryFixture {
 		final Optional<Member> actual = memberJpaRepository.findMemberByEmail(저장된_멤버.getEmail());
 
 		//then
-		assertThat(actual.isPresent()).isTrue();
-		assertThat(actual).contains(저장된_멤버);
+		assertSoftly(softly -> {
+			softly.assertThat(actual.isPresent()).isTrue();
+			softly.assertThat(actual).contains(저장된_멤버);
+		});
 	}
 
 	@Test
@@ -37,8 +39,10 @@ class MemberJpaRepositoryTest extends MemberRepositoryFixture {
 		final Optional<Member> actual = memberJpaRepository.findMemberById(저장된_멤버.getId());
 
 		//then
-		assertThat(actual.isPresent()).isTrue();
-		assertThat(actual).contains(저장된_멤버);
+		assertSoftly(softly -> {
+			softly.assertThat(actual.isPresent()).isTrue();
+			softly.assertThat(actual).contains(저장된_멤버);
+		});
 	}
 
 	@Test
@@ -51,7 +55,9 @@ class MemberJpaRepositoryTest extends MemberRepositoryFixture {
 		);
 
 		//then
-		assertThat(actual.isPresent()).isTrue();
-		assertThat(actual).contains(저장된_멤버);
+		assertSoftly(softly -> {
+			softly.assertThat(actual.isPresent()).isTrue();
+			softly.assertThat(actual).contains(저장된_멤버);
+		});
 	}
 }

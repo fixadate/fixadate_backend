@@ -9,7 +9,7 @@ public class RandomUtil {
 	private RandomUtil() {
 	}
 
-	public static Random current() {
+	public static Random getRandom() {
 		return RANDOM;
 	}
 }

@@ -1,6 +1,8 @@
 package com.fixadate.domain.member.service;
 
-import static com.fixadate.global.util.RandomUtil.current;
+import static com.fixadate.global.util.RandomUtil.getRandom;
+import static com.fixadate.global.util.constant.ConstantValue.COMMA;
+import static com.fixadate.global.util.constant.ConstantValue.SPACE;
 
 import java.util.List;
 
@@ -34,10 +36,10 @@ public class MemberService implements UserDetailsService {
 	}
 
 	public String generateRandomNickname() {
-		List<String> adjs = List.of(this.adjs.split(","));
-		List<String> nouns = List.of(this.nouns.split(","));
+		final List<String> adjs = List.of(this.adjs.split(COMMA.getValue()));
+		final List<String> nouns = List.of(this.nouns.split(COMMA.getValue()));
 
-		return getRandomNickname(adjs) + " " + getRandomNickname(nouns);
+		return getRandomNickname(adjs) + SPACE.getValue() + getRandomNickname(nouns);
 	}
 
 	public MemberInfoResponse getMemberInfo(final String memberId) {
@@ -49,6 +51,6 @@ public class MemberService implements UserDetailsService {
 	}
 
 	public String getRandomNickname(final List<String> strings) {
-		return strings.get(current().nextInt(strings.size())).trim();
+		return strings.get(getRandom().nextInt(strings.size())).trim();
 	}
 }

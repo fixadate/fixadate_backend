@@ -30,7 +30,9 @@ public enum ConstantValue {
 	GOOGLE_CALENDAR("Google Calendar"),
 	GOOGLE_CALENDAR_COLOR("4285F4"),
 	UTC("UTC"),
-	ADATE_WITH_COLON("Adate:");
+	ADATE_WITH_COLON("Adate:"),
+	COMMA(","),
+	SPACE(" ");
 
 	private final String value;
 

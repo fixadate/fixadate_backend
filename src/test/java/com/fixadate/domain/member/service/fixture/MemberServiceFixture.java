@@ -25,6 +25,9 @@ import com.navercorp.fixturemonkey.customizer.Values;
 @SuppressWarnings("NonAsciiCharacters")
 public class MemberServiceFixture {
 
+	private static final FixtureMonkey 엔티티_몽키 = FixtureMonkeyConfig.entityMonkey();
+	private static final FixtureMonkey 전달_객체_몽키 = FixtureMonkeyConfig.jakartaValidationMonkey();
+
 	@PersistenceContext
 	private EntityManager em;
 
@@ -40,8 +43,6 @@ public class MemberServiceFixture {
 	protected String 멤버_아이디;
 	protected MemberInfoUpdateDto 멤버_정보_수정_요청;
 	protected MemberInfoUpdateDto 멤버_정보_수정_요청_이미지_없는_경우;
-	private static final FixtureMonkey 엔티티_몽키 = FixtureMonkeyConfig.entityMonkey();
-	private static final FixtureMonkey DTO_몽키 = FixtureMonkeyConfig.jakartaValidationMonkey();
 
 	@BeforeEach
 	void setUp() {
@@ -65,23 +66,23 @@ public class MemberServiceFixture {
 		멤버_아이디 = 멤버.getId();
 		memberRepository.save(멤버);
 
-		멤버_정보_수정_요청 = DTO_몽키.giveMeBuilder(MemberInfoUpdateDto.class)
-							.set("memberId", 멤버_아이디)
-							.set("profileImg", Values.just(CombinableArbitrary.from(
-								() -> Arbitraries.strings().alpha().ofMinLength(5).sample())
-							))
-							.setNotNull("nickname")
-							.setNotNull("signatureColor")
-							.setNotNull("profession")
-							.sample();
+		멤버_정보_수정_요청 = 전달_객체_몽키.giveMeBuilder(MemberInfoUpdateDto.class)
+							  .set("memberId", 멤버_아이디)
+							  .set("profileImg", Values.just(CombinableArbitrary.from(
+								  () -> Arbitraries.strings().alpha().ofMinLength(5).sample())
+							  ))
+							  .setNotNull("nickname")
+							  .setNotNull("signatureColor")
+							  .setNotNull("profession")
+							  .sample();
 
-		멤버_정보_수정_요청_이미지_없는_경우 = DTO_몽키.giveMeBuilder(MemberInfoUpdateDto.class)
-									  .set("memberId", 멤버_아이디)
-									  .setNull("profileImg")
-									  .setNotNull("nickname")
-									  .setNotNull("signatureColor")
-									  .setNotNull("profession")
-									  .sample();
+		멤버_정보_수정_요청_이미지_없는_경우 = 전달_객체_몽키.giveMeBuilder(MemberInfoUpdateDto.class)
+										.set("memberId", 멤버_아이디)
+										.setNull("profileImg")
+										.setNotNull("nickname")
+										.setNotNull("signatureColor")
+										.setNotNull("profession")
+										.sample();
 
 
 		입력_요청 = PutObjectRequest.builder()
