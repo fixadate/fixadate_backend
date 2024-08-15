@@ -41,13 +41,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdateService {
 
+	private static final int ADATE_REDIS_DURATION = 20;
+
 	private final AdateRepository adateRepository;
 	private final RedisFacade redisFacade;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public void registerAdateEvent(final AdateRegisterRequest adateRegisterRequest, final Member member) {
-		Adate adate = registerDtoToEntity(adateRegisterRequest, member);
+		final Adate adate = registerDtoToEntity(adateRegisterRequest, member);
 		adateRepository.save(adate);
 
 		final String tagName = adateRegisterRequest.tagName();
@@ -60,8 +62,9 @@ public class AdateService {
 	public AdateResponse restoreAdateByCalendarId(final String calendarId) {
 		final String key = ADATE_WITH_COLON.getValue() + calendarId;
 		final Adate adate = redisFacade.getAndDeleteObjectRedis(key, Adate.class);
+		final Adate saveAdate = adateRepository.save(adate);
 
-		return toAdateResponse(adateRepository.save(adate));
+		return toAdateResponse(saveAdate);
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
@@ -82,7 +85,8 @@ public class AdateService {
 		);
 		adateRepository.delete(adate);
 
-		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, Duration.ofDays(20));
+		final Duration adateDuration = Duration.ofDays(ADATE_REDIS_DURATION);
+		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, adateDuration);
 	}
 
 	@Transactional(readOnly = true)
@@ -121,6 +125,12 @@ public class AdateService {
 		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
 
+	private void checkStartAndEndTime(final LocalDateTime startTime, final LocalDateTime endTime) {
+		if (startTime.isAfter(endTime)) {
+			throw new InvalidTimeException(INVALID_START_END_TIME);
+		}
+	}
+
 	@Transactional(readOnly = true)
 	public List<AdateViewResponse> getAdatesByWeek(
 		final LocalDate firstDay,
@@ -132,12 +142,6 @@ public class AdateService {
 		checkStartAndEndTime(startTime, endTime);
 
 		return getAdateByStartAndEndTime(member, startTime, endTime);
-	}
-
-	private void checkStartAndEndTime(final LocalDateTime startTime, final LocalDateTime endTime) {
-		if (startTime.isAfter(endTime)) {
-			throw new InvalidTimeException(INVALID_START_END_TIME);
-		}
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
