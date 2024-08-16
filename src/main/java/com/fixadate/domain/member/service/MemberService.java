@@ -1,6 +1,6 @@
 package com.fixadate.domain.member.service;
 
-import static com.fixadate.global.util.RandomUtil.getRandom;
+import static com.fixadate.global.util.RandomUtil.getRandomInt;
 import static com.fixadate.global.util.constant.ConstantValue.COMMA;
 import static com.fixadate.global.util.constant.ConstantValue.SPACE;
 
@@ -51,6 +51,6 @@ public class MemberService implements UserDetailsService {
 	}
 
 	public String getRandomNickname(final List<String> strings) {
-		return strings.get(getRandom().nextInt(strings.size())).trim();
+		return strings.get(getRandomInt(strings.size())).trim();
 	}
 }
