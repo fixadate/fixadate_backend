@@ -1,5 +1,8 @@
 package com.fixadate.config;
 
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
+import static software.amazon.awssdk.regions.Region.US_EAST_1;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +11,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
@@ -16,14 +18,13 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 public class LocalStackContainerProvider {
 
 	private static final DockerImageName DOCKER_IMAGE_NAME = DockerImageName.parse("localstack/localstack:0.12.18");
-	private static final LocalStackContainer LOCAL_STACK_CONTAINER = new LocalStackContainer(DOCKER_IMAGE_NAME);
 
 	@Value("${cloud.aws.bucket-name}")
 	private String bucket;
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	public LocalStackContainer localStackContainer() {
-		return LOCAL_STACK_CONTAINER.withServices(LocalStackContainer.Service.S3);
+		return new LocalStackContainer(DOCKER_IMAGE_NAME).withServices(S3);
 	}
 
 	@Bean
@@ -37,9 +38,9 @@ public class LocalStackContainerProvider {
 	@Bean
 	public S3Client s3Client(final LocalStackContainer localStackContainer) {
 		S3Client s3Client = S3Client.builder()
-									.region(Region.US_EAST_1)
+									.region(US_EAST_1)
 									.endpointOverride(
-										localStackContainer.getEndpointOverride(LocalStackContainer.Service.S3)
+										localStackContainer.getEndpointOverride(S3)
 									)
 									.credentialsProvider(
 										StaticCredentialsProvider.create(
@@ -54,8 +55,8 @@ public class LocalStackContainerProvider {
 	@Bean
 	public S3Presigner s3Presigner(final LocalStackContainer localStackContainer) {
 		return S3Presigner.builder()
-						  .region(Region.US_EAST_1)
-						  .endpointOverride(localStackContainer.getEndpointOverride(LocalStackContainer.Service.S3))
+						  .region(US_EAST_1)
+						  .endpointOverride(localStackContainer.getEndpointOverride(S3))
 						  .credentialsProvider(
 							  StaticCredentialsProvider.create(
 								  basicAwsCredentials(localStackContainer))
