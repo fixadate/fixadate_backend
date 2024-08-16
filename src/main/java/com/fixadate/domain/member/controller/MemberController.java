@@ -1,11 +1,12 @@
 package com.fixadate.domain.member.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
+import com.fixadate.global.jwt.MemberPrincipal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,7 +34,7 @@ public interface MemberController {
 			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
 	})
 	ResponseEntity<MemberInfoResponse> getMemberInfo(
-		@Parameter(description = "회원 ID") @PathVariable String memberId
+		@Parameter(description = "회원 정보") @AuthenticationPrincipal MemberPrincipal memberPrincipal
 	);
 
 	@Operation(summary = "회원 정보 수정", description = "회원의 정보를 수정합니다.")
@@ -43,7 +44,7 @@ public interface MemberController {
 			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
 	})
 	ResponseEntity<MemberInfoResponse> updateMemberInfo(
-		@Parameter(description = "회원 ID") @PathVariable String memberId,
+		@Parameter(description = "회원 정보") @AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@Parameter(description = "수정할 회원 정보") @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest
 	);
 }

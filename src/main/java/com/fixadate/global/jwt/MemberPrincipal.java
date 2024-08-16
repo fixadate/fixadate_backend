@@ -14,11 +14,12 @@ public class MemberPrincipal extends User implements Serializable {
 
 	public MemberPrincipal(Member member) {
 		super(member.getId(), member.getUsername(),
-			member.getAuthorities());
+			  member.getAuthorities()
+		);
 		this.member = member;
 	}
 
 	public String getMemberId() {
-		return member.getId();
+		return this.member.getId();
 	}
 }

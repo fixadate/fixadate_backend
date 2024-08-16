@@ -29,7 +29,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,12 +40,10 @@ import lombok.NoArgsConstructor;
 	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"})
 )
 @EntityListeners(IDMakerEntityListener.class)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode(of = "id", callSuper = false)
+@Getter
 public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
@@ -88,6 +85,37 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "google_credentials_id")
 	private GoogleCredentials googleCredentials;
+
+	@Builder
+	public Member(
+		final String oauthId,
+		final OAuthProvider oauthPlatform,
+		final String name,
+		final String profileImg,
+		final String nickname,
+		final String birth,
+		final String gender,
+		final String profession,
+		final String signatureColor,
+		final String email,
+		final String role,
+		final PushKey pushKey,
+		final GoogleCredentials googleCredentials
+	) {
+		this.oauthId = oauthId;
+		this.oauthPlatform = oauthPlatform;
+		this.name = name;
+		this.profileImg = profileImg;
+		this.nickname = nickname;
+		this.birth = birth;
+		this.gender = gender;
+		this.profession = profession;
+		this.signatureColor = signatureColor;
+		this.email = email;
+		this.role = role;
+		this.pushKey = pushKey;
+		this.googleCredentials = googleCredentials;
+	}
 
 	@Override
 	@JsonIgnore

@@ -3,6 +3,9 @@ package com.fixadate.domain.member.controller.impl;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -25,7 +28,11 @@ class MemberControllerImplTest extends MemberControllerFixture {
 		given(memberService.generateRandomNickname()).willReturn(멤버_닉네임);
 
 		// when & then
-		mockMvc.perform(get("/v1/member/nickname").contentType("application/json"))
+		mockMvc.perform(
+				   get("/v1/member/nickname")
+					   .contentType(APPLICATION_JSON_VALUE)
+					   .with(user(멤버_인증_정보))
+			   )
 			   .andExpectAll(
 				   status().isOk(),
 				   content().string(멤버_닉네임)
@@ -43,8 +50,9 @@ class MemberControllerImplTest extends MemberControllerFixture {
 
 			// when & then
 			mockMvc.perform(
-					   get("/v1/member/{memberId}", 멤버_아이디)
-						   .contentType("application/json")
+					   get("/v1/member")
+						   .contentType(APPLICATION_JSON_VALUE)
+						   .with(user(멤버_인증_정보))
 				   )
 				   .andExpectAll(
 					   status().isOk(),
@@ -61,8 +69,9 @@ class MemberControllerImplTest extends MemberControllerFixture {
 
 			// when & then
 			mockMvc.perform(
-					   get("/v1/member/{memberId}", 멤버_아이디)
-						   .contentType("application/json")
+					   get("/v1/member")
+						   .contentType(APPLICATION_JSON_VALUE)
+						   .with(user(멤버_인증_정보))
 				   )
 				   .andExpectAll(
 					   status().isNotFound(),
@@ -83,8 +92,10 @@ class MemberControllerImplTest extends MemberControllerFixture {
 
 			// when & then
 			mockMvc.perform(
-					   patch("/v1/member/{memberId}", 멤버_아이디)
-						   .contentType("application/json")
+					   patch("/v1/member")
+						   .with(user(멤버_인증_정보))
+						   .with(csrf())
+						   .contentType(APPLICATION_JSON_VALUE)
 						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
@@ -102,8 +113,10 @@ class MemberControllerImplTest extends MemberControllerFixture {
 
 			// when & then
 			mockMvc.perform(
-					   patch("/v1/member/{memberId}", 멤버_아이디)
-						   .contentType("application/json")
+					   patch("/v1/member")
+						   .with(user(멤버_인증_정보))
+						   .with(csrf())
+						   .contentType(APPLICATION_JSON_VALUE)
 						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(

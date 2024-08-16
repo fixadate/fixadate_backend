@@ -1,6 +1,10 @@
 package com.fixadate.global.filter;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
+import static com.fixadate.global.exception.ExceptionCode.EXPIRED_PERIOD_TOKEN;
+import static com.fixadate.global.exception.ExceptionCode.FAIL_TO_VALIDATE_TOKEN;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_TOKEN;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_TOKEN_BLACKLIST;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_IDENTIFIER;
 
 import java.io.IOException;
 
@@ -22,9 +26,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
+
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(
+		HttpServletRequest request, HttpServletResponse response,
+		FilterChain filterChain
+	) throws ServletException, IOException {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (ExpiredJwtException exception) {
