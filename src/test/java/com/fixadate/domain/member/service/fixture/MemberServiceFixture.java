@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import net.jqwik.api.Arbitraries;
 
 import com.fixadate.config.FixtureMonkeyConfig;
-import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateDto;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
 

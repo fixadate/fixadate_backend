@@ -15,17 +15,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import com.fixadate.domain.member.controller.impl.fixture.MemberControllerFixture;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 
+@WebMvcTest(MemberControllerImpl.class)
 @SuppressWarnings("NonAsciiCharacters")
 class MemberControllerImplTest extends MemberControllerFixture {
 
 	@Test
 	void 멤버_닉네임_생성() throws Exception {
 		// given
-		given(memberService.generateRandomNickname()).willReturn(멤버_닉네임);
+		given(commonControllerSliceTest.getMemberService().generateRandomNickname()).willReturn(멤버_닉네임);
 
 		// when & then
 		mockMvc.perform(
@@ -46,7 +48,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 		@Test
 		void 멤버_정보_조회() throws Exception {
 			// given
-			given(memberService.getMemberInfo(멤버_아이디)).willReturn(멤버_정보_응답);
+			given(commonControllerSliceTest.getMemberService().getMemberInfo(멤버_아이디)).willReturn(멤버_정보_응답_전달_객체);
 
 			// when & then
 			mockMvc.perform(
@@ -56,7 +58,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 				   )
 				   .andExpectAll(
 					   status().isOk(),
-					   content().json(objectMapper.writeValueAsString(멤버_정보_응답))
+					   content().json(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_응답))
 				   );
 		}
 
@@ -65,7 +67,8 @@ class MemberControllerImplTest extends MemberControllerFixture {
 			// given
 			final MemberNotFoundException memberNotFoundException = new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
 
-			given(memberService.getMemberInfo(멤버_아이디)).willThrow(memberNotFoundException);
+			given(commonControllerSliceTest.getMemberService()
+										   .getMemberInfo(멤버_아이디)).willThrow(memberNotFoundException);
 
 			// when & then
 			mockMvc.perform(
@@ -88,7 +91,8 @@ class MemberControllerImplTest extends MemberControllerFixture {
 		@Test
 		void 멤버_정보_수정() throws Exception {
 			// given
-			given(memberService.updateMemberInfo(멤버_정보_업데이트_전달_객체)).willReturn(멤버_정보_응답);
+			given(commonControllerSliceTest.getMemberService().updateMemberInfo(멤버_정보_업데이트_전달_객체)).willReturn(
+				멤버_정보_응답_전달_객체);
 
 			// when & then
 			mockMvc.perform(
@@ -96,11 +100,11 @@ class MemberControllerImplTest extends MemberControllerFixture {
 						   .with(user(멤버_인증_정보))
 						   .with(csrf())
 						   .contentType(APPLICATION_JSON_VALUE)
-						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
+						   .content(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
 					   status().isOk(),
-					   content().json(objectMapper.writeValueAsString(멤버_정보_응답))
+					   content().json(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_응답))
 				   );
 		}
 
@@ -109,7 +113,8 @@ class MemberControllerImplTest extends MemberControllerFixture {
 			// given
 			final MemberNotFoundException memberNotFoundException = new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
 
-			given(memberService.updateMemberInfo(멤버_정보_업데이트_전달_객체)).willThrow(memberNotFoundException);
+			given(commonControllerSliceTest.getMemberService().updateMemberInfo(멤버_정보_업데이트_전달_객체)).willThrow(
+				memberNotFoundException);
 
 			// when & then
 			mockMvc.perform(
@@ -117,7 +122,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 						   .with(user(멤버_인증_정보))
 						   .with(csrf())
 						   .contentType(APPLICATION_JSON_VALUE)
-						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
+						   .content(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
 					   status().isNotFound(),

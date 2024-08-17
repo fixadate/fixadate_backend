@@ -1,5 +1,6 @@
 package com.fixadate.global.facade;
 
+import static com.fixadate.domain.member.mapper.MemberMapper.toInfoDto;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_GOOGLE_CREDENTIALS_MEMBER;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_S3_IMG;
@@ -9,10 +10,9 @@ import org.springframework.stereotype.Component;
 
 import com.fixadate.domain.googlecalendar.entity.GoogleCredentials;
 import com.fixadate.domain.googlecalendar.repository.GoogleRepository;
-import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
-import com.fixadate.domain.member.dto.response.MemberInfoResponse;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateDto;
+import com.fixadate.domain.member.dto.response.MemberInfoDto;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.mapper.MemberMapper;
 import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.pushkey.entity.PushKey;
 import com.fixadate.global.exception.notfound.GoogleNotFoundException;
@@ -69,7 +69,7 @@ public class MemberFacade {
 	}
 
 	@Transactional
-	public MemberInfoResponse deleteAndGetUploadUrl(final MemberInfoUpdateDto memberInfoUpdateDto) {
+	public MemberInfoDto deleteAndGetUploadUrl(final MemberInfoUpdateDto memberInfoUpdateDto) {
 		Member member = memberRepository.findMemberById(memberInfoUpdateDto.memberId()).orElseThrow(
 			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
 		);
@@ -77,7 +77,7 @@ public class MemberFacade {
 		updateMemberInfo(member, memberInfoUpdateDto);
 		String url = handleProfileImageUpdate(member, memberInfoUpdateDto);
 
-		return MemberMapper.toInfoResponse(member, url);
+		return toInfoDto(member, url);
 	}
 
 	private void updateMemberInfo(final Member member, final MemberInfoUpdateDto memberInfoUpdateDto) {
@@ -114,11 +114,11 @@ public class MemberFacade {
 		}
 	}
 
-	public MemberInfoResponse getMemberInfo(final String memberId) {
+	public MemberInfoDto getMemberInfo(final String memberId) {
 		Member member = memberRepository.findMemberById(memberId).orElseThrow(
 			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
 		);
 
-		return MemberMapper.toInfoResponse(member, s3Util.generatePresignedUrlForDownload(member.getProfileImg()));
+		return toInfoDto(member, s3Util.generatePresignedUrlForDownload(member.getProfileImg()));
 	}
 }

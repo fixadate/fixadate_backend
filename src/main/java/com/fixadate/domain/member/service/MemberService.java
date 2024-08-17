@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
-import com.fixadate.domain.member.dto.response.MemberInfoResponse;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateDto;
+import com.fixadate.domain.member.dto.response.MemberInfoDto;
 import com.fixadate.global.facade.MemberFacade;
 
 import lombok.RequiredArgsConstructor;
@@ -39,14 +39,14 @@ public class MemberService implements UserDetailsService {
 		final List<String> adjs = List.of(this.adjs.split(COMMA.getValue()));
 		final List<String> nouns = List.of(this.nouns.split(COMMA.getValue()));
 
-		return getRandomNickname(adjs) + SPACE.getValue() + getRandomNickname(nouns);
+		return this.getRandomNickname(adjs) + SPACE.getValue() + this.getRandomNickname(nouns);
 	}
 
-	public MemberInfoResponse getMemberInfo(final String memberId) {
+	public MemberInfoDto getMemberInfo(final String memberId) {
 		return memberFacade.getMemberInfo(memberId);
 	}
 
-	public MemberInfoResponse updateMemberInfo(final MemberInfoUpdateDto memberInfoUpdateDto) {
+	public MemberInfoDto updateMemberInfo(final MemberInfoUpdateDto memberInfoUpdateDto) {
 		return memberFacade.deleteAndGetUploadUrl(memberInfoUpdateDto);
 	}
 

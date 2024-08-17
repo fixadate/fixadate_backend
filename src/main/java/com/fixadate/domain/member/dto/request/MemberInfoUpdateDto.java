@@ -1,4 +1,4 @@
-package com.fixadate.domain.member.dto;
+package com.fixadate.domain.member.dto.request;
 
 public record MemberInfoUpdateDto(
 	String memberId,

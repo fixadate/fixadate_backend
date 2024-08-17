@@ -1,5 +1,6 @@
 package com.fixadate.domain.member.controller.impl;
 
+import static com.fixadate.domain.member.mapper.MemberMapper.toInfoResponse;
 import static com.fixadate.domain.member.mapper.MemberMapper.toUpdateDto;
 
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fixadate.domain.member.controller.MemberController;
-import com.fixadate.domain.member.dto.MemberInfoUpdateDto;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateDto;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.MemberService;
@@ -35,7 +36,9 @@ public class MemberControllerImpl implements MemberController {
 	public ResponseEntity<MemberInfoResponse> getMemberInfo(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
-		return ResponseEntity.ok(memberService.getMemberInfo(memberPrincipal.getMemberId()));
+		MemberInfoResponse response = toInfoResponse(memberService.getMemberInfo(memberPrincipal.getMemberId()));
+
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
@@ -44,8 +47,12 @@ public class MemberControllerImpl implements MemberController {
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestBody final MemberInfoUpdateRequest memberInfoUpdateRequest
 	) {
-		MemberInfoUpdateDto memberInfoUpdateDto = toUpdateDto(memberPrincipal.getMemberId(), memberInfoUpdateRequest);
+		MemberInfoUpdateDto memberInfoUpdateDto = toUpdateDto(
+			memberPrincipal.getMemberId(),
+			memberInfoUpdateRequest
+		);
+		MemberInfoResponse response = toInfoResponse(memberService.updateMemberInfo(memberInfoUpdateDto));
 
-		return ResponseEntity.ok(memberService.updateMemberInfo(memberInfoUpdateDto));
+		return ResponseEntity.ok(response);
 	}
 }

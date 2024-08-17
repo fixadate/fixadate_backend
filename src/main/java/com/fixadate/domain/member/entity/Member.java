@@ -33,6 +33,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(
@@ -43,6 +44,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode(of = "id", callSuper = false)
+@ToString(exclude = {"pushKey", "googleCredentials"})
 @Getter
 public class Member extends BaseTimeEntity implements UserDetails {
 
@@ -50,7 +52,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@IDMaker(length = 6)
 	private String id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String oauthId;
 
 	@Enumerated(EnumType.STRING)
@@ -87,7 +89,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	private GoogleCredentials googleCredentials;
 
 	@Builder
-	public Member(
+	private Member(
 		final String oauthId,
 		final OAuthProvider oauthPlatform,
 		final String name,

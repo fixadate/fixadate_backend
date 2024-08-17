@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fixadate.domain.member.dto.response.MemberInfoResponse;
+import com.fixadate.domain.member.dto.response.MemberInfoDto;
 import com.fixadate.domain.member.service.fixture.MemberServiceFixture;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 
@@ -52,7 +52,7 @@ class MemberServiceTest extends MemberServiceFixture {
 		@RepeatedTest(100)
 		void 멤버_정보_조회() {
 			// when
-			final MemberInfoResponse actual = memberService.getMemberInfo(멤버_아이디);
+			final MemberInfoDto actual = memberService.getMemberInfo(멤버_아이디);
 
 			// then
 			assertSoftly(softly -> {
@@ -89,7 +89,7 @@ class MemberServiceTest extends MemberServiceFixture {
 			s3Client.putObject(입력_요청, 입력_바디);
 
 			// when
-			final MemberInfoResponse actual = memberService.updateMemberInfo(멤버_정보_수정_요청);
+			final MemberInfoDto actual = memberService.updateMemberInfo(멤버_정보_수정_요청);
 
 			// then
 			assertSoftly(softly -> {
@@ -107,7 +107,7 @@ class MemberServiceTest extends MemberServiceFixture {
 		@RepeatedTest(100)
 		void 이미지를_변경하지_않는_경우_Url_null_반환() {
 			// when
-			final MemberInfoResponse actual = memberService.updateMemberInfo(멤버_정보_수정_요청_이미지_없는_경우);
+			final MemberInfoDto actual = memberService.updateMemberInfo(멤버_정보_수정_요청_이미지_없는_경우);
 
 			// then
 			assertSoftly(softly -> {
