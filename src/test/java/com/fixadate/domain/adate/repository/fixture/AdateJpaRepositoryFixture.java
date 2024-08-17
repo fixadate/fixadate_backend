@@ -7,7 +7,7 @@ import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
-import com.fixadate.integration.config.FixtureMonkeyConfig;
+import com.fixadate.config.FixtureMonkeyConfig;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
