@@ -75,11 +75,6 @@ The following rules in the Naver coding convention cannot be checked by this con
             <message key="name.invalidPattern"
                      value="[class-interface-lower-camelcase] Type name ''{0}'' must match pattern ''{1}''."/>
         </module>
-
-        <!-- [method-lower-camelcase] -->
-
-        <!-- [var-lower-camelcase] -->
-
         <module name="ParameterName">
             <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>
             <message key="name.invalidPattern"
@@ -167,8 +162,6 @@ The following rules in the Naver coding convention cannot be checked by this con
 
         <!-- [4-spaces-tab] -->
         <property name="tabWidth" value="4"/>
-
-        <!-- [indentation-tab] -->
 
         <!-- End of Indentation chapter -->
 

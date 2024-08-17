@@ -1,4 +1,4 @@
-package com.fixadate.integration.config;
+package com.fixadate.config;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;

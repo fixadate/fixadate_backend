@@ -1,9 +1,17 @@
 package com.fixadate.integration.domain.auth.service;
 
-import static com.fixadate.domain.auth.entity.OAuthProvider.*;
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.fixadate.domain.auth.entity.OAuthProvider.translateStringToOAuthProvider;
+import static com.fixadate.global.exception.ExceptionCode.FAIL_TO_SIGNIN;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_EMAIL;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME;
+import static com.fixadate.global.exception.ExceptionCode.NOT_SUPPORTED_OAUTH_SERVICE;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,6 +42,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
@@ -44,7 +53,6 @@ import com.fixadate.global.exception.badrequest.OAuthPlatformBadRequest;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 import com.fixadate.global.exception.unauthorized.AuthException;
 import com.fixadate.global.util.S3Util;
-import com.fixadate.integration.config.DataClearExtension;
 import com.fixadate.integration.util.CreateMemberRegisterRequest;
 
 @ExtendWith(DataClearExtension.class)
@@ -96,7 +104,8 @@ class AuthServiceTest {
 			"104, samsung, sarah, 516, michael, 19991225, female, developer, yellow, kev, MEMBER",
 			"105, wooabros, emily, 617, chris, 19921005, female, manager, orange, k, MEMBER"})
 		void registerMemberTestIfoauthPlatformHasInvalidValue(
-			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
+			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest
+		) {
 			assertThatThrownBy(() -> authService.registerMember(memberRegisterRequest))
 				.isInstanceOf(BadRequestException.class)
 				.extracting(MESSAGE)
@@ -112,12 +121,14 @@ class AuthServiceTest {
 			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
 			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER"})
 		void registerMemberTestIfEveryThingsIsOk(
-			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
+			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest
+		) {
 			assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
 
 			Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
 				translateStringToOAuthProvider(memberRegisterRequest.oauthPlatform()),
-				memberRegisterRequest.email(), memberRegisterRequest.name());
+				memberRegisterRequest.email(), memberRegisterRequest.name()
+			);
 
 			assertTrue(memberOptional.isPresent());
 			Member member = memberOptional.get();
@@ -139,18 +150,22 @@ class AuthServiceTest {
 			"103, google, sarah, 516, michael, 19991225, female, developer, yellow, kevin0928@mit.com, MEMBER",
 			"104, google, emily, 617, chris, 19921005, female, manager, orange, kevin0928@daum.net, MEMBER"})
 		void registerMemberTestEncryption(
-			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest) {
+			@AggregateWith(MemberAggregator.class) MemberRegisterRequest memberRegisterRequest
+		) {
 			assertDoesNotThrow(() -> authService.registerMember(memberRegisterRequest));
 
 			Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
 				translateStringToOAuthProvider(memberRegisterRequest.oauthPlatform()),
-				memberRegisterRequest.email(), memberRegisterRequest.name());
+				memberRegisterRequest.email(), memberRegisterRequest.name()
+			);
 
 			assertTrue(memberOptional.isPresent());
 			Member member = memberOptional.get();
 			assertAll(
-				() -> assertTrue(member.getOauthId().startsWith("{bcrypt}"),
-					"oauthId doesn't start with {bcrypt}"),
+				() -> assertTrue(
+					member.getOauthId().startsWith("{bcrypt}"),
+					"oauthId doesn't start with {bcrypt}"
+				),
 				() -> assertTrue(passwordEncoder.matches(memberRegisterRequest.oauthId(), member.getOauthId()))
 			);
 		}
@@ -319,11 +334,12 @@ class AuthServiceTest {
 		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
 			return new MemberRegisterRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
-				argumentsAccessor.getString(2), argumentsAccessor.getString(3),
-				argumentsAccessor.getString(4), argumentsAccessor.getString(5),
-				argumentsAccessor.getString(6), argumentsAccessor.getString(7),
-				argumentsAccessor.getString(8), argumentsAccessor.getString(9),
-				argumentsAccessor.getString(10));
+											 argumentsAccessor.getString(2), argumentsAccessor.getString(3),
+											 argumentsAccessor.getString(4), argumentsAccessor.getString(5),
+											 argumentsAccessor.getString(6), argumentsAccessor.getString(7),
+											 argumentsAccessor.getString(8), argumentsAccessor.getString(9),
+											 argumentsAccessor.getString(10)
+			);
 		}
 	}
 
@@ -332,7 +348,8 @@ class AuthServiceTest {
 		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
 			ArgumentsAggregationException {
 			return new MemberOAuthRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
-				argumentsAccessor.getString(2), argumentsAccessor.getString(3));
+										  argumentsAccessor.getString(2), argumentsAccessor.getString(3)
+			);
 		}
 	}
 

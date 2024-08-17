@@ -1,8 +1,14 @@
 package com.fixadate.integration.domain.tag.service;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.fixadate.global.exception.ExceptionCode.ALREADY_EXISTS_TAG;
+import static com.fixadate.global.exception.ExceptionCode.CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TAG_MEMBER_NAME;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,7 +41,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import net.jqwik.api.Arbitraries;
 
-import com.fixadate.domain.adate.repository.AdateJpaRepository;
+import com.fixadate.config.DataClearExtension;
+import com.fixadate.config.FixtureMonkeyConfig;
+import com.fixadate.domain.adate.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.domain.tag.dto.request.TagRequest;
@@ -45,8 +53,6 @@ import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.domain.tag.service.TagService;
 import com.fixadate.global.exception.badrequest.TagBadRequestException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
-import com.fixadate.integration.config.DataClearExtension;
-import com.fixadate.integration.config.FixtureMonkeyConfig;
 
 import jakarta.transaction.Transactional;
 
@@ -67,7 +73,7 @@ class TagServiceTest {
 	@Autowired
 	private TagService tagService;
 	@Autowired
-	private AdateJpaRepository adateJpaRepository;
+	private AdateRepository adateRepository;
 
 	private static final String MESSAGE = "message";
 
@@ -102,9 +108,14 @@ class TagServiceTest {
 
 			FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
 			var tagRequests = fixtureMonkey.giveMeBuilder(TagRequest.class)
-				.set("name", Values.just(CombinableArbitrary.from(() -> Arbitraries.strings().sample()).unique()))
-				.setNotNull("color")
-				.sampleList(100);
+										   .set(
+											   "name",
+											   Values.just(CombinableArbitrary.from(() -> Arbitraries.strings()
+																									 .sample())
+																			  .unique())
+										   )
+										   .setNotNull("color")
+										   .sampleList(100);
 
 			tagRequests.forEach(tagRequest -> {
 				assertDoesNotThrow(() -> tagService.registerTag(memberOptional.get(), tagRequest));
@@ -130,7 +141,8 @@ class TagServiceTest {
 			"white, ex5"
 		})
 		void registerTagTestIfDuplicatedColorExists(
-			@AggregateWith(TagRequestAggregator.class) TagRequest tagRequest) {
+			@AggregateWith(TagRequestAggregator.class) TagRequest tagRequest
+		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertAll(
@@ -189,7 +201,8 @@ class TagServiceTest {
 			"ex5, newColor5, newName5"
 		})
 		void updateColorNameIfColorExists(
-			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
+		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertDoesNotThrow(() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()));
 			Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
@@ -199,8 +212,11 @@ class TagServiceTest {
 				() -> assertEquals(tagUpdateRequest.newColor(), tagOptional.get().getColor()),
 				() -> assertEquals(tagUpdateRequest.newName(), tagOptional.get().getName()),
 				() -> tagOptional.ifPresent(tag ->
-					tag.getAdates().forEach(adate ->
-						assertEquals(tagUpdateRequest.newColor(), adate.getColor())))
+												tag.getAdates().forEach(adate ->
+																			assertEquals(
+																				tagUpdateRequest.newColor(),
+																				adate.getColor()
+																			)))
 			);
 
 		}
@@ -216,7 +232,8 @@ class TagServiceTest {
 			"ex5,,newColor5"
 		})
 		void updateColorNameOnlyNameIfColorExists(
-			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
+		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertDoesNotThrow(() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()));
 			Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(
@@ -239,7 +256,8 @@ class TagServiceTest {
 			"ex5, green, ex5"
 		})
 		void updateColorNameToSameName(
-			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
+		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertThatThrownBy(
@@ -249,7 +267,7 @@ class TagServiceTest {
 					.isEqualTo(ALREADY_EXISTS_TAG.getMessage()),
 
 				() -> assertTrue(tagRepository
-					.findTagByNameAndMember(tagUpdateRequest.name(), memberOptional.get()).isPresent())
+									 .findTagByNameAndMember(tagUpdateRequest.name(), memberOptional.get()).isPresent())
 			);
 		}
 
@@ -264,7 +282,8 @@ class TagServiceTest {
 			"ex5, violet, ex1"
 		})
 		void updateColorNameToExistsColor(
-			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
+		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertAll(
@@ -275,7 +294,7 @@ class TagServiceTest {
 					.isEqualTo(ALREADY_EXISTS_TAG.getMessage()),
 
 				() -> assertTrue(tagRepository
-					.findTagByNameAndMember(tagUpdateRequest.name(), memberOptional.get()).isPresent())
+									 .findTagByNameAndMember(tagUpdateRequest.name(), memberOptional.get()).isPresent())
 			);
 		}
 
@@ -288,7 +307,8 @@ class TagServiceTest {
 			"ex10, NColor, newName3"
 		})
 		void updateColorNameIfTagisDefault(
-			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
+		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertAll(
@@ -311,7 +331,8 @@ class TagServiceTest {
 			"skyblue, newColor5, newName5"
 		})
 		void updateColorNameIfColorNotExists(
-			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest) {
+			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
+		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 
 			assertThatThrownBy(() -> tagService.updateTag(tagUpdateRequest, memberOptional.get()))
@@ -388,8 +409,10 @@ class TagServiceTest {
 
 	static class TagRequestAggregator implements ArgumentsAggregator {
 		@Override
-		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor,
-			ParameterContext parameterContext) throws
+		public Object aggregateArguments(
+			ArgumentsAccessor argumentsAccessor,
+			ParameterContext parameterContext
+		) throws
 			ArgumentsAggregationException {
 			return new TagRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1));
 		}
@@ -397,11 +420,14 @@ class TagServiceTest {
 
 	static class TagUpdateRequestAggregator implements ArgumentsAggregator {
 		@Override
-		public Object aggregateArguments(ArgumentsAccessor argumentsAccessor,
-			ParameterContext parameterContext) throws
+		public Object aggregateArguments(
+			ArgumentsAccessor argumentsAccessor,
+			ParameterContext parameterContext
+		) throws
 			ArgumentsAggregationException {
 			return new TagUpdateRequest(argumentsAccessor.getString(0), argumentsAccessor.getString(1),
-				argumentsAccessor.getString(2));
+										argumentsAccessor.getString(2)
+			);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.fixadate.integration.config;
+package com.fixadate.config;
 
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -13,6 +13,6 @@ public class DataClearExtension implements BeforeEachCallback {
 
 	private DataCleaner getDataCleaner(ExtensionContext extensionContext) {
 		return SpringExtension.getApplicationContext(extensionContext)
-			.getBean(DataCleaner.class);
+							  .getBean(DataCleaner.class);
 	}
 }
