@@ -29,8 +29,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
 	@Index(name = "calendar_id", columnList = "calendarId", unique = true),
@@ -83,6 +81,39 @@ public class Adate extends BaseTimeEntity {
 	@JoinColumn(name = "tag_id")
 	@JsonIgnore
 	private Tag tag;
+
+	@Builder
+	private Adate(
+		final String title,
+		final String notes,
+		final String location,
+		final LocalDateTime alertWhen,
+		final LocalDateTime repeatFreq,
+		final String color,
+		final Boolean ifAllDay,
+		final LocalDateTime startsWhen,
+		final LocalDateTime endsWhen,
+		final String calendarId,
+		final String etag,
+		final boolean reminders,
+		final Member member,
+		final Tag tag
+	) {
+		this.title = title;
+		this.notes = notes;
+		this.location = location;
+		this.alertWhen = alertWhen;
+		this.repeatFreq = repeatFreq;
+		this.color = color;
+		this.ifAllDay = ifAllDay;
+		this.startsWhen = startsWhen;
+		this.endsWhen = endsWhen;
+		this.calendarId = calendarId;
+		this.etag = etag;
+		this.reminders = reminders;
+		this.member = member;
+		this.tag = tag;
+	}
 
 	public boolean isOwner(final Member member) {
 		return this.member.equals(member);
