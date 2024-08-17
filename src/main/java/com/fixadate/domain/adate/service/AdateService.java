@@ -76,6 +76,7 @@ public class AdateService {
 		applicationEventPublisher.publishEvent(new TagSettingEvent(saveAdate, GOOGLE_CALENDAR.getValue()));
 	}
 
+	@Transactional
 	public void removeAdate(final Adate adate) {
 		adateRepository.delete(adate);
 	}
