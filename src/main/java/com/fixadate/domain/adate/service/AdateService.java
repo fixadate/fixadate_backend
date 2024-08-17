@@ -67,6 +67,8 @@ public class AdateService {
 		return toAdateResponse(saveAdate);
 	}
 
+	// TODO: [질문] Event라는 네이밍은 TagSettingEvent의 Event인지 다른 의미가 있는 것인지 궁금합니다.
+	//  해당 메서드의 기능은 외부 캘린더 일정을 저장하는 것이 맞을까요?
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public void registerEvent(final Adate adate) {
 		final Adate saveAdate = adateRepository.save(adate);
