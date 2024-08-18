@@ -15,15 +15,16 @@ import lombok.RequiredArgsConstructor;
 public class MemberRepositoryImpl implements MemberRepository {
 
 	private final MemberJpaRepository memberJpaRepository;
+	private final MemberQueryRepository memberQueryRepository;
 
 	@Override
 	public Optional<Member> findMemberById(final String id) {
-		return memberJpaRepository.findMemberById(id);
+		return memberQueryRepository.findMemberById(id);
 	}
 
 	@Override
 	public Optional<Member> findMemberByEmail(final String email) {
-		return memberJpaRepository.findMemberByEmail(email);
+		return memberQueryRepository.findMemberByEmail(email);
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 		final String email,
 		final String memberName
 	) {
-		return memberJpaRepository.findMemberByOauthPlatformAndEmailAndName(oauthPlatform, email, memberName);
+		return memberQueryRepository.findMemberByOauthPlatformAndEmailAndName(oauthPlatform, email, memberName);
 	}
 
 	@Override

@@ -14,13 +14,13 @@ import jakarta.persistence.PersistenceContext;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
 @SuppressWarnings("NonAsciiCharacters")
-public class MemberRepositoryFixture {
+public class MemberQueryRepositoryFixture {
 
 	@PersistenceContext
 	private EntityManager em;
 
 	@Autowired
-	protected MemberJpaRepository memberJpaRepository;
+	protected MemberJpaRepository memberRepository;
 
 	protected Member 멤버;
 	protected Member 저장된_멤버;
@@ -49,7 +49,7 @@ public class MemberRepositoryFixture {
 							  .setNull("googleCredentials")
 							  .setNull("pushKey")
 							  .sample();
-		memberJpaRepository.save(저장된_멤버);
+		memberRepository.save(저장된_멤버);
 
 		em.flush();
 		em.clear();
