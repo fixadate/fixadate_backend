@@ -22,6 +22,7 @@ public class FixtureMonkeyConfig {
 							.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 							.plugin(new SimpleValueJqwikPlugin().maxStringLength(10)
 																.maxNumberValue(10_000)
+																.characterPredicate(Character::isAlphabetic)
 							)
 							.build();
 	}

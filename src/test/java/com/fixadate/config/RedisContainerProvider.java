@@ -1,32 +1,21 @@
 package com.fixadate.config;
 
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.stereotype.Component;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
-import com.redis.testcontainers.RedisContainer;
+@Component
+public class RedisContainerProvider {
 
-final class RedisContainerProvider {
-
-	private static final String IMAGE_VERSION = "redis:5.0.7-alpine";
-	private static final String REDIS_PASSWORD = "REDIS_PASSWORD";
+	private static final DockerImageName DOCKER_IMAGE_NAME = DockerImageName.parse("redis:7.0.15-alpine");
 	private static final Integer REDIS_PORT = 6379;
-	private static final RedisContainer REDIS_CONTAINER;
-
-	private RedisContainerProvider() {
-	}
+	private static final GenericContainer<?> REDIS_CONTAINER;
 
 	static {
-		REDIS_CONTAINER = new RedisContainer(IMAGE_VERSION)
-			.withExposedPorts(REDIS_PORT)
-			.withCommand("--requirepass " + REDIS_PASSWORD)
-			.withReuse(true);
+		REDIS_CONTAINER = new GenericContainer<>(DOCKER_IMAGE_NAME).withExposedPorts(REDIS_PORT);
 		REDIS_CONTAINER.start();
-	}
 
-	@DynamicPropertySource
-	static void registerRedisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.redis.host", REDIS_CONTAINER::getHost);
-		registry.add("spring.data.redis.port", () -> REDIS_CONTAINER.getMappedPort(REDIS_PORT).toString());
-		registry.add("spring.data.redis.password", () -> REDIS_PASSWORD);
+		System.setProperty("spring.data.redis.host", REDIS_CONTAINER.getHost());
+		System.setProperty("spring.data.redis.port", REDIS_CONTAINER.getMappedPort(REDIS_PORT).toString());
 	}
 }

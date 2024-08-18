@@ -47,7 +47,7 @@ import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.global.exception.badrequest.BadRequestException;
 import com.fixadate.global.exception.badrequest.OAuthPlatformBadRequest;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;

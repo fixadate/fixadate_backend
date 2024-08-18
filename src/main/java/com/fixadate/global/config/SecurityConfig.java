@@ -1,6 +1,6 @@
 package com.fixadate.global.config;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.*;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fixadate.global.filter.ExceptionHandlerFilter;
 import com.fixadate.global.filter.JwtAuthenticationFilter;
+import com.fixadate.global.filter.NativeAuthenticationFilter;
 import com.fixadate.global.jwt.CustomAuthenticationEntryPoint;
 import com.fixadate.global.jwt.JwtAccessDeniedHandler;
 import com.fixadate.global.jwt.service.JwtProvider;
@@ -74,7 +75,7 @@ public class SecurityConfig {
 				.authenticationEntryPoint(authenticationEntryPoint))
 			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
-			// .addFilterBefore(new NativeAuthenticationFilter(), ExceptionHandlerFilter.class)
+			.addFilterBefore(new NativeAuthenticationFilter(), ExceptionHandlerFilter.class)
 			.build();
 	}
 }

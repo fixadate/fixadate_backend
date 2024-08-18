@@ -1,54 +1,59 @@
 package com.fixadate.domain.member.controller.impl;
 
-import java.util.List;
+import static com.fixadate.domain.member.mapper.MemberMapper.toInfoResponse;
+import static com.fixadate.domain.member.mapper.MemberMapper.toUpdateDto;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fixadate.domain.member.controller.MemberController;
+import com.fixadate.domain.member.dto.request.MemberInfoUpdateDto;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
+import com.fixadate.global.jwt.MemberPrincipal;
 
 import lombok.RequiredArgsConstructor;
 
 @RestControllerWithMapping("/v1/member")
 @RequiredArgsConstructor
 public class MemberControllerImpl implements MemberController {
+
 	private final MemberService memberService;
 
-	@Value("${randNick.adjs}")
-	private String randomAdjs;
-	@Value("${randNick.nouns}")
-	private String randomNouns;
-
 	@Override
-	@GetMapping("/nickname")
+	@PostMapping("/nickname")
 	public ResponseEntity<String> getRandomNickname() {
-		List<String> adjs = List.of(randomAdjs.split(","));
-		List<String> nouns = List.of(randomNouns.split(","));
-
-		String adj = memberService.getRandomNickname(adjs);
-		String noun = memberService.getRandomNickname(nouns);
-		String randomNickname = adj + " " + noun;
-		return ResponseEntity.ok(randomNickname);
+		return ResponseEntity.ok(memberService.generateRandomNickname());
 	}
 
 	@Override
-	@GetMapping("/{memberId}")
-	public ResponseEntity<MemberInfoResponse> getMemberNickname(@PathVariable String memberId) {
-		return ResponseEntity.ok(memberService.getMemberInfo(memberId));
+	@GetMapping()
+	public ResponseEntity<MemberInfoResponse> getMemberInfo(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	) {
+		MemberInfoResponse response = toInfoResponse(memberService.getMemberInfo(memberPrincipal.getMemberId()));
+
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
-	@PatchMapping("/{memberId}")
-	public ResponseEntity<MemberInfoResponse> updateMemberNickname(@PathVariable String memberId,
-		@RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest) {
-		return ResponseEntity.ok(memberService.updateMemberInfo(memberId, memberInfoUpdateRequest));
+	@PatchMapping()
+	public ResponseEntity<MemberInfoResponse> updateMemberInfo(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@RequestBody final MemberInfoUpdateRequest memberInfoUpdateRequest
+	) {
+		MemberInfoUpdateDto memberInfoUpdateDto = toUpdateDto(
+			memberPrincipal.getMemberId(),
+			memberInfoUpdateRequest
+		);
+		MemberInfoResponse response = toInfoResponse(memberService.updateMemberInfo(memberInfoUpdateDto));
+
+		return ResponseEntity.ok(response);
 	}
 }

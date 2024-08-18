@@ -12,8 +12,8 @@ spring:
         default-page-size: 5
 
     redis:
+      host: 127.0.0.1
       port: 6379
-      host: localhost
       password: password
 
   jpa:
@@ -24,7 +24,6 @@ spring:
         format_sql: true
         use_sql_comments: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
-
   security:
     oauth2:
       client:
@@ -38,6 +37,8 @@ spring:
               - https://www.googleapis.com/auth/calendar.readonly
   mvc:
     log-request-details: true
+  main:
+    allow-bean-definition-overriding: true
 
 server:
   error:
@@ -71,11 +72,11 @@ google:
 cloud:
   aws:
     credentials:
-      access-key: AKIAXXXXXXXXXXXXXXXX
-      secret-key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    region:
-      static: ap-northeast-2
-    bucket-name: fixadate-assets-bucket
+      access-key: test
+      secret-key: test
+    stack:
+      auto: false
+    bucket-name: file-bucket
 
 encryption:
   secret: AES_PRIVATE_KEY_THIS_TEST_32BYTE

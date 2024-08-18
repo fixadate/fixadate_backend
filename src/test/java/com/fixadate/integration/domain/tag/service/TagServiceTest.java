@@ -45,7 +45,7 @@ import com.fixadate.config.DataClearExtension;
 import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.tag.entity.Tag;
