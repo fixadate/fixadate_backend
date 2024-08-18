@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public sealed class BadRequestException extends RuntimeException
 	permits InvalidTimeException, GoogleIoExcetption, EncryptionBadRequestException, TagBadRequestException,
-	RedisConnectionException, SerializationException, RedisExecutionException, OAuthPlatformBadRequest,
+	RedisConnectionException, RedisSerializationException, RedisExecutionException, OAuthPlatformBadRequest,
 	RedisException {
 	private final int code;
 	private final String message;

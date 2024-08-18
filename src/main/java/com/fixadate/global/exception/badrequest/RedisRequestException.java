@@ -2,6 +2,7 @@ package com.fixadate.global.exception.badrequest;
 
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.RedisSystemException;
+import org.springframework.data.redis.serializer.SerializationException;
 
 import com.fixadate.global.exception.ExceptionCode;
 
@@ -14,9 +15,8 @@ public class RedisRequestException {
 	public static void handleRedisException(Exception exception) {
 		if (exception instanceof RedisConnectionFailureException || exception instanceof RedisConnectionException) {
 			throw new RedisConnectionException(ExceptionCode.FAIL_TO_CONNECT_REDIS);
-		} else if (exception instanceof org.springframework.data.redis.serializer.SerializationException
-				   || exception instanceof IllegalArgumentException) {
-			throw new SerializationException(ExceptionCode.FAIL_TO_SERIALIZATION);
+		} else if (exception instanceof SerializationException || exception instanceof IllegalArgumentException) {
+			throw new RedisSerializationException(ExceptionCode.FAIL_TO_SERIALIZATION);
 		} else if (exception instanceof RedisSystemException || exception instanceof RedisCommandExecutionException) {
 			throw new RedisExecutionException(ExceptionCode.FAIL_TO_EXECUTE_REDIS_COMMAND);
 		} else {
@@ -31,9 +31,9 @@ public class RedisRequestException {
 		}
 	}
 
-	static non-sealed class SerializationException extends BadRequestException {
+	static non-sealed class RedisSerializationException extends BadRequestException {
 
-		public SerializationException(ExceptionCode exceptionCode) {
+		public RedisSerializationException(ExceptionCode exceptionCode) {
 			super(exceptionCode);
 		}
 	}

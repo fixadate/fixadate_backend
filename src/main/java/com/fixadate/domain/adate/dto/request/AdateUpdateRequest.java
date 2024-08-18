@@ -18,5 +18,6 @@ public record AdateUpdateRequest(
 	@NotNull(message = "Adate endsWhen cannot be null")
 	LocalDateTime endsWhen,
 	@NotNull
-	boolean reminders) {
+	boolean reminders
+) {
 }

@@ -6,7 +6,11 @@ import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromDateTime;
 
 import java.time.LocalDateTime;
 
+import com.fixadate.domain.adate.dto.AdateDto;
+import com.fixadate.domain.adate.dto.AdateRegisterDto;
+import com.fixadate.domain.adate.dto.AdateUpdateDto;
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
+import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
@@ -23,18 +27,48 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AdateMapper {
 
-	public static Adate registerDtoToEntity(final AdateRegisterRequest adateRegisterRequest, final Member member) {
+	public static AdateRegisterDto toDto(final AdateRegisterRequest request) {
+		return new AdateRegisterDto(
+			request.title(),
+			request.notes(),
+			request.location(),
+			request.alertWhen(),
+			request.repeatFreq(),
+			request.tagName(),
+			request.ifAllDay(),
+			request.startsWhen(),
+			request.endsWhen(),
+			request.reminders()
+		);
+	}
+
+	public static AdateUpdateDto toDto(final AdateUpdateRequest request) {
+		return new AdateUpdateDto(
+			request.title(),
+			request.notes(),
+			request.location(),
+			request.alertWhen(),
+			request.repeatFreq(),
+			request.tagName(),
+			request.ifAllDay(),
+			request.startsWhen(),
+			request.endsWhen(),
+			request.reminders()
+		);
+	}
+
+	public static Adate registerDtoToEntity(final AdateRegisterDto adateRegisterDto, final Member member) {
 		return Adate.builder()
-					.title(adateRegisterRequest.title())
-					.notes(adateRegisterRequest.notes())
-					.location(adateRegisterRequest.location())
-					.alertWhen(adateRegisterRequest.alertWhen())
-					.repeatFreq(adateRegisterRequest.repeatFreq())
-					.ifAllDay(adateRegisterRequest.ifAllDay())
-					.startsWhen(adateRegisterRequest.startsWhen())
-					.endsWhen(adateRegisterRequest.endsWhen())
+					.title(adateRegisterDto.title())
+					.notes(adateRegisterDto.notes())
+					.location(adateRegisterDto.location())
+					.alertWhen(adateRegisterDto.alertWhen())
+					.repeatFreq(adateRegisterDto.repeatFreq())
+					.ifAllDay(adateRegisterDto.ifAllDay())
+					.startsWhen(adateRegisterDto.startsWhen())
+					.endsWhen(adateRegisterDto.endsWhen())
 					.calendarId(RandomValueUtil.createRandomString(10))
-					.reminders(adateRegisterRequest.reminders())
+					.reminders(adateRegisterDto.reminders())
 					.member(member)
 					.build();
 	}
@@ -58,7 +92,7 @@ public class AdateMapper {
 	 * TODO: [질문] 제 경우 private 메서드 순서를 저는 처음 사용한 메서드 바로 아래 둡니다. 혹시 어떻게 정렬하시나요?
 	 * TODO: [의견] 아래 check 관련 메서드는 adate의 역할이 아니라고 생각했습니다.
 	 *  check 관련 해당 메서드를 사용하는 곳은 adateMapper 뿐이기도 하고요. 그래서 이 클래스로 이동해봤습니다.
-	*/
+	 */
 	private static LocalDateTime checkEventDateTimeIsNull(final EventDateTime eventDateTime) {
 		if (eventDateTime.getDateTime() == null) {
 			return getLocalDateTimeFromDate(eventDateTime.getDate());
@@ -87,8 +121,9 @@ public class AdateMapper {
 					.build();
 	}
 
-	public static AdateResponse toAdateResponse(Adate adate) {
-		return new AdateResponse(
+	public static AdateDto toAdateDto(final Adate adate) {
+		return new AdateDto(
+			adate.getId(),
 			adate.getTitle(),
 			adate.getNotes(),
 			adate.getLocation(),
@@ -99,19 +134,37 @@ public class AdateMapper {
 			adate.getStartsWhen(),
 			adate.getEndsWhen(),
 			adate.getCalendarId(),
-			adate.isReminders()
+			adate.getEtag(),
+			adate.isReminders(),
+			getTagResponse(adate.getTag())
 		);
 	}
 
-	public static AdateViewResponse toAdateViewResponse(final Adate adate) {
+	public static AdateResponse toAdateResponse(final AdateDto adate) {
+		return new AdateResponse(
+			adate.title(),
+			adate.notes(),
+			adate.location(),
+			adate.alertWhen(),
+			adate.repeatFreq(),
+			adate.color(),
+			adate.ifAllDay(),
+			adate.startsWhen(),
+			adate.endsWhen(),
+			adate.calendarId(),
+			adate.reminders()
+		);
+	}
+
+	public static AdateViewResponse toAdateViewResponse(final AdateDto adate) {
 		return new AdateViewResponse(
-			adate.getTitle(),
-			adate.getNotes(),
-			adate.getIfAllDay(),
-			adate.getStartsWhen(),
-			adate.getEndsWhen(),
-			adate.getCalendarId(),
-			getTagResponse(adate.getTag())
+			adate.title(),
+			adate.notes(),
+			adate.ifAllDay(),
+			adate.startsWhen(),
+			adate.endsWhen(),
+			adate.calendarId(),
+			adate.tag()
 		);
 	}
 

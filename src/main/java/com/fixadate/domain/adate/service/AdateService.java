@@ -1,7 +1,7 @@
 package com.fixadate.domain.adate.service;
 
 import static com.fixadate.domain.adate.mapper.AdateMapper.registerDtoToEntity;
-import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateResponse;
+import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateDto;
 import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_ADATE;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
@@ -20,10 +20,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
-import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
-import com.fixadate.domain.adate.dto.response.AdateResponse;
-import com.fixadate.domain.adate.dto.response.AdateViewResponse;
+import com.fixadate.domain.adate.dto.AdateDto;
+import com.fixadate.domain.adate.dto.AdateRegisterDto;
+import com.fixadate.domain.adate.dto.AdateUpdateDto;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.service.repository.AdateRepository;
@@ -48,23 +47,23 @@ public class AdateService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerAdateEvent(final AdateRegisterRequest adateRegisterRequest, final Member member) {
-		final Adate adate = registerDtoToEntity(adateRegisterRequest, member);
+	public void registerAdateEvent(final AdateRegisterDto adateRegisterDto, final Member member) {
+		final Adate adate = registerDtoToEntity(adateRegisterDto, member);
 		adateRepository.save(adate);
 
-		final String tagName = adateRegisterRequest.tagName();
+		final String tagName = adateRegisterDto.tagName();
 		if (tagName != null && !tagName.isEmpty()) {
 			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, tagName));
 		}
 	}
 
 	@Transactional
-	public AdateResponse restoreAdateByCalendarId(final String calendarId) {
+	public AdateDto restoreAdateByCalendarId(final String calendarId) {
 		final String key = ADATE_WITH_COLON.getValue() + calendarId;
 		final Adate adate = redisFacade.getAndDeleteObjectRedis(key, Adate.class);
 		final Adate saveAdate = adateRepository.save(adate);
 
-		return toAdateResponse(saveAdate);
+		return toAdateDto(saveAdate);
 	}
 
 	// TODO: [질문] Event라는 네이밍은 TagSettingEvent의 Event인지 다른 의미가 있는 것인지 궁금합니다.
@@ -97,17 +96,20 @@ public class AdateService {
 		return adateRepository.findAdateByCalendarId(calendarId);
 	}
 
+	// TODO: [질문] 회원정보를 받아, 해당 회원의 일정인지 확인은 필요 없을까요?
+	//  + getAdateDto는 메서드에 타입을 적는 것 같아 그냥 정보 느낌으로 information으로 정해봤는데 어떻게 생각하시나요?
 	@Transactional(readOnly = true)
-	public AdateResponse getAdateResponseByCalendarId(final String calendarId) {
+	public AdateDto getAdateInformationByCalendarId(final String calendarId) {
 		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
 		);
 
-		return toAdateResponse(adate);
+		return toAdateDto(adate);
 	}
 
+	// TODO: [질문] 해당 메서드에서는 checkStartAndEndTime을 확인하지 않는 이유가 있을까요?
 	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdateByStartAndEndTime(
+	public List<AdateDto> getAdateByStartAndEndTime(
 		final Member member,
 		final LocalDateTime startDateTime,
 		final LocalDateTime endDateTime
@@ -115,12 +117,14 @@ public class AdateService {
 		final List<Adate> adates = adateRepository.findByDateRange(member, startDateTime, endDateTime);
 
 		return adates.stream()
-					 .map(AdateMapper::toAdateViewResponse)
+					 .map(AdateMapper::toAdateDto)
 					 .toList();
 	}
 
+	// TODO: [질문] 여기서 체크가 필요할지 의문입니다. getLocalDate~를 통해 유효한 시작일과 종료일이 설정된 것이 아닐까요?
+	//  여기서 검증한다면, TimeUtil의 유효성을 검증하는 느낌인데, 오히려 클라이언트에서 전달 받은 값을 검증하는 게 적절하지 않을까 생각합니다.
 	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdatesByMonth(final int year, final int month, final Member member) {
+	public List<AdateDto> getAdatesByMonth(final Member member, final int year, final int month) {
 		final LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
 		final LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
 		checkStartAndEndTime(startTime, endTime);
@@ -134,11 +138,12 @@ public class AdateService {
 		}
 	}
 
+	// TODO: [질문] 여기서 week는 한주차라는 의미가 아닌걸까요? 시간만 없을 뿐 getAdateByStartAndEndTime와 다른점을 잘 모르겠습니다.
 	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdatesByWeek(
+	public List<AdateDto> getAdatesByWeek(
+		final Member member,
 		final LocalDate firstDay,
-		final LocalDate lastDay,
-		final Member member
+		final LocalDate lastDay
 	) {
 		final LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
 		final LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
@@ -148,19 +153,19 @@ public class AdateService {
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public AdateResponse updateAdate(
+	public AdateDto updateAdate(
+		final Member member,
 		final String calendarId,
-		final AdateUpdateRequest adateUpdateRequest,
-		final Member member
+		final AdateUpdateDto adateUpdateDto
 	) {
 		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
 		);
 
 		validateUserCanUpdate(adate, member);
-		updateIfNotNull(adate, adateUpdateRequest);
+		updateIfNotNull(adate, adateUpdateDto);
 
-		return toAdateResponse(adate);
+		return toAdateDto(adate);
 	}
 
 	private void validateUserCanUpdate(final Adate adate, final Member member) {
@@ -169,29 +174,29 @@ public class AdateService {
 		}
 	}
 
-	private void updateIfNotNull(final Adate adate, final AdateUpdateRequest adateUpdateRequest) {
-		if (adateUpdateRequest.tagName() != null) {
-			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, adateUpdateRequest.tagName()));
+	private void updateIfNotNull(final Adate adate, final AdateUpdateDto adateUpdateDto) {
+		if (adateUpdateDto.tagName() != null) {
+			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, adateUpdateDto.tagName()));
 		}
-		if (adateUpdateRequest.title() != null) {
-			adate.updateTitle(adateUpdateRequest.title());
+		if (adateUpdateDto.title() != null) {
+			adate.updateTitle(adateUpdateDto.title());
 		}
-		if (adateUpdateRequest.notes() != null) {
-			adate.updateNotes(adateUpdateRequest.notes());
+		if (adateUpdateDto.notes() != null) {
+			adate.updateNotes(adateUpdateDto.notes());
 		}
-		if (adateUpdateRequest.location() != null) {
-			adate.updateLocation(adateUpdateRequest.location());
+		if (adateUpdateDto.location() != null) {
+			adate.updateLocation(adateUpdateDto.location());
 		}
-		if (adateUpdateRequest.alertWhen() != null) {
-			adate.updateAlertWhen(adateUpdateRequest.alertWhen());
+		if (adateUpdateDto.alertWhen() != null) {
+			adate.updateAlertWhen(adateUpdateDto.alertWhen());
 		}
-		if (adateUpdateRequest.repeatFreq() != null) {
-			adate.updateRepeatFreq(adateUpdateRequest.repeatFreq());
+		if (adateUpdateDto.repeatFreq() != null) {
+			adate.updateRepeatFreq(adateUpdateDto.repeatFreq());
 		}
 
-		adate.updateIfAllDay(adateUpdateRequest.ifAllDay());
-		adate.updateStartsWhen(adateUpdateRequest.startsWhen());
-		adate.updateEndsWhen(adateUpdateRequest.endsWhen());
-		adate.updateReminders(adateUpdateRequest.reminders());
+		adate.updateIfAllDay(adateUpdateDto.ifAllDay());
+		adate.updateStartsWhen(adateUpdateDto.startsWhen());
+		adate.updateEndsWhen(adateUpdateDto.endsWhen());
+		adate.updateReminders(adateUpdateDto.reminders());
 	}
 }

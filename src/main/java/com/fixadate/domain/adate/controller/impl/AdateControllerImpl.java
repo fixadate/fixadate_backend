@@ -15,10 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.adate.controller.AdateController;
+import com.fixadate.domain.adate.dto.AdateDto;
+import com.fixadate.domain.adate.dto.AdateRegisterDto;
+import com.fixadate.domain.adate.dto.AdateUpdateDto;
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
+import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.annotation.RestControllerWithMapping;
@@ -36,46 +40,61 @@ public class AdateControllerImpl implements AdateController {
 	@PostMapping()
 	public ResponseEntity<AdateRegisterRequest> registerAdateEvent(
 		@Valid @RequestBody AdateRegisterRequest adateRegisterRequest,
-		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal
+	) {
 		Member member = memberPrincipal.getMember();
-		adateService.registerAdateEvent(adateRegisterRequest, member);
+		final AdateRegisterDto adateRegisterDto = AdateMapper.toDto(adateRegisterRequest);
+		adateService.registerAdateEvent(adateRegisterDto, member);
 		return ResponseEntity.ok(adateRegisterRequest);
 	}
 
 	@Override
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<List<AdateViewResponse>> getAdates(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam LocalDateTime startDateTime,
-		@RequestParam LocalDateTime endDateTime) {
+		@RequestParam LocalDateTime endDateTime
+	) {
 		Member member = memberPrincipal.getMember();
-		List<AdateViewResponse> adateRespons = adateService
-			.getAdateByStartAndEndTime(member, startDateTime, endDateTime);
-		return ResponseEntity.ok(adateRespons);
+		List<AdateDto> adates = adateService.getAdateByStartAndEndTime(member, startDateTime, endDateTime);
+		final List<AdateViewResponse> responses = adates.stream()
+														.map(AdateMapper::toAdateViewResponse)
+														.toList();
+
+		return ResponseEntity.ok(responses);
 	}
 
 	@Override
 	@PostMapping("/restore/{calendarId}")
 	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable String calendarId) {
-		AdateResponse adateResponse = adateService.restoreAdateByCalendarId(calendarId);
-		return ResponseEntity.ok(adateResponse);
+		final AdateDto adate = adateService.restoreAdateByCalendarId(calendarId);
+		final AdateResponse response = AdateMapper.toAdateResponse(adate);
+
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
 	@GetMapping("/{calendarId}")
 	public ResponseEntity<AdateResponse> getAdate(@PathVariable String calendarId) {
-		AdateResponse adateResponse = adateService.getAdateResponseByCalendarId(calendarId);
-		return ResponseEntity.ok(adateResponse);
+		final AdateDto adate = adateService.getAdateInformationByCalendarId(calendarId);
+		final AdateResponse response = AdateMapper.toAdateResponse(adate);
+
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
 	@PatchMapping("/{calendarId}")
-	public ResponseEntity<AdateResponse> updateAdate(@PathVariable String calendarId,
+	public ResponseEntity<AdateResponse> updateAdate(
+		@PathVariable String calendarId,
 		@Valid @RequestBody AdateUpdateRequest adateUpdateRequest,
-		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-		AdateResponse adateResponse = adateService.updateAdate(calendarId, adateUpdateRequest,
-			memberPrincipal.getMember());
-		return ResponseEntity.ok(adateResponse);
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal
+	) {
+		final Member member = memberPrincipal.getMember();
+		final AdateUpdateDto adateUpdateDto = AdateMapper.toDto(adateUpdateRequest);
+		final AdateDto adate = adateService.updateAdate(member, calendarId, adateUpdateDto);
+		final AdateResponse response = AdateMapper.toAdateResponse(adate);
+
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
@@ -85,16 +104,21 @@ public class AdateControllerImpl implements AdateController {
 		return ResponseEntity.noContent().build();
 	}
 
+	// TODO: [질문] requestParam에 기본 값이 없어도 괜찮은가?
 	@Override
 	@GetMapping("/month")
 	public ResponseEntity<List<AdateViewResponse>> getAdatesByMonth(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam int year,
-		@RequestParam int month) {
+		@RequestParam int month
+	) {
 		Member member = memberPrincipal.getMember();
-		List<AdateViewResponse> adateRespons = adateService
-			.getAdatesByMonth(year, month, member);
-		return ResponseEntity.ok(adateRespons);
+		final List<AdateDto> adates = adateService.getAdatesByMonth(member, year, month);
+		final List<AdateViewResponse> responses = adates.stream()
+														.map(AdateMapper::toAdateViewResponse)
+														.toList();
+
+		return ResponseEntity.ok(responses);
 	}
 
 	@Override
@@ -102,10 +126,14 @@ public class AdateControllerImpl implements AdateController {
 	public ResponseEntity<List<AdateViewResponse>> getAdatesByWeeks(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam LocalDate firstDay,
-		@RequestParam LocalDate lastDay) {
+		@RequestParam LocalDate lastDay
+	) {
 		Member member = memberPrincipal.getMember();
-		List<AdateViewResponse> adateRespons = adateService
-			.getAdatesByWeek(firstDay, lastDay, member);
-		return ResponseEntity.ok(adateRespons);
+		final List<AdateDto> adates = adateService.getAdatesByWeek(member, firstDay, lastDay);
+		final List<AdateViewResponse> responses = adates.stream()
+														.map(AdateMapper::toAdateViewResponse)
+														.toList();
+
+		return ResponseEntity.ok(responses);
 	}
 }
