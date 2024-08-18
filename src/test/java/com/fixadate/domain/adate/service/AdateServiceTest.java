@@ -30,8 +30,8 @@ import com.fixadate.global.exception.notfound.TagNotFoundException;
 @SpringBootTest
 @Testcontainers
 @RecordApplicationEvents
-@SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 class AdateServiceTest extends AdateServiceFixture {
 
 	private static final int REPEATED_COUNT = 100;

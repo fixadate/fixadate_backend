@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import com.fixadate.domain.adate.entity.fixture.AdateFixture;
 
-@SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 class AdateTest extends AdateFixture {
 
 	@Test
