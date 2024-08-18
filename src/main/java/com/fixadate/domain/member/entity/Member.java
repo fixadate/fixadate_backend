@@ -1,9 +1,6 @@
 package com.fixadate.domain.member.entity;
 
-import static com.fixadate.global.util.UuidUtil.*;
-
 import java.util.Collection;
-import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -14,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.googlecalendar.entity.GoogleCredentials;
-import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.pushkey.entity.PushKey;
 
 import IDMaker.idmaker.IDMaker;
@@ -33,27 +29,30 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Table(indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true),
-	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"}))
+@Table(
+	indexes = @Index(name = "oauth_id", columnList = "oauthId", unique = true),
+	uniqueConstraints = @UniqueConstraint(name = "member_identifier", columnNames = {"name", "email", "oauthPlatform"})
+)
 @EntityListeners(IDMakerEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode(of = "id", callSuper = false)
+@ToString(exclude = {"pushKey", "googleCredentials"})
+@Getter
 public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
 	@IDMaker(length = 6)
 	private String id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String oauthId;
 
 	@Enumerated(EnumType.STRING)
@@ -63,6 +62,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	private String name;
 
 	private String profileImg;
+
 	@Column(nullable = false)
 	private String nickname;
 
@@ -88,11 +88,34 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@JoinColumn(name = "google_credentials_id")
 	private GoogleCredentials googleCredentials;
 
-	public void setMemberPushKey(PushKey pushKey) {
+	@Builder
+	private Member(
+		final String oauthId,
+		final OAuthProvider oauthPlatform,
+		final String name,
+		final String profileImg,
+		final String nickname,
+		final String birth,
+		final String gender,
+		final String profession,
+		final String signatureColor,
+		final String email,
+		final String role,
+		final PushKey pushKey,
+		final GoogleCredentials googleCredentials
+	) {
+		this.oauthId = oauthId;
+		this.oauthPlatform = oauthPlatform;
+		this.name = name;
+		this.profileImg = profileImg;
+		this.nickname = nickname;
+		this.birth = birth;
+		this.gender = gender;
+		this.profession = profession;
+		this.signatureColor = signatureColor;
+		this.email = email;
+		this.role = role;
 		this.pushKey = pushKey;
-	}
-
-	public void setGoogleCredentials(GoogleCredentials googleCredentials) {
 		this.googleCredentials = googleCredentials;
 	}
 
@@ -100,16 +123,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return AuthorityUtils.commaSeparatedStringToAuthorityList(role);
-	}
-
-	@Override
-	public String getPassword() {
-		return null;
-	}
-
-	@Override
-	public String getUsername() { //memberPrincipal에서 getUsername을 통해 snsId를 얻을 수 있게 함
-		return name;
 	}
 
 	@Override
@@ -132,23 +145,37 @@ public class Member extends BaseTimeEntity implements UserDetails {
 		return false;
 	}
 
-	public boolean updateMember(MemberInfoUpdateRequest memberInfoUpdateRequest) {
-		if (memberInfoUpdateRequest.nickname() != null) {
-			this.nickname = memberInfoUpdateRequest.nickname();
-		}
-		if (memberInfoUpdateRequest.signatureColor() != null) {
-			this.signatureColor = memberInfoUpdateRequest.signatureColor();
-		}
-		if (memberInfoUpdateRequest.profession() != null) {
-			this.profession = memberInfoUpdateRequest.profession();
-		}
+	@Override
+	public String getPassword() {
+		return null;
+	}
 
-		boolean isUpdated = false;
-		if (memberInfoUpdateRequest.profileImg() != null && !removeUuid(this.profileImg).equals(
-			memberInfoUpdateRequest.profileImg())) {
-			isUpdated = true;
-			this.profileImg = memberInfoUpdateRequest.profileImg() + UUID.randomUUID();
-		}
-		return isUpdated;
+	@Override
+	public String getUsername() {
+		return this.name;
+	}
+
+	public void updateMemberPushKey(final PushKey pushKey) {
+		this.pushKey = pushKey;
+	}
+
+	public void updateGoogleCredentials(final GoogleCredentials googleCredentials) {
+		this.googleCredentials = googleCredentials;
+	}
+
+	public void updateNickname(final String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void updateProfileImg(final String profileImg) {
+		this.profileImg = profileImg;
+	}
+
+	public void updateSignatureColor(final String signatureColor) {
+		this.signatureColor = signatureColor;
+	}
+
+	public void updateProfession(final String profession) {
+		this.profession = profession;
 	}
 }

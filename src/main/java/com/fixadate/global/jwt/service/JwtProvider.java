@@ -1,7 +1,12 @@
 package com.fixadate.global.jwt.service;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_TOKEN_BLACKLIST;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_IDENTIFIER;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_REFRESHTOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.AUTHORIZATION;
+import static com.fixadate.global.util.constant.ConstantValue.AUTHORIZATION_BEARER;
+import static com.fixadate.global.util.constant.ConstantValue.BLACK_LIST;
+import static com.fixadate.global.util.constant.ConstantValue.ID;
 
 import java.security.Key;
 import java.time.Duration;
@@ -16,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.global.exception.unauthorized.TokenException;
 import com.fixadate.global.jwt.MemberPrincipal;
 import com.fixadate.global.jwt.entity.TokenResponse;
@@ -29,11 +34,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtProvider {
 	@Value("${jwt.secret}")
 	private String secret;
@@ -59,6 +62,7 @@ public class JwtProvider {
 	public String createAccessToken(String id) {
 		Claims claims = Jwts.claims();
 		claims.put(ID.getValue(), id);
+
 		return createToken(claims, accesesTokenexpirationPeriod);
 	}
 
@@ -67,6 +71,7 @@ public class JwtProvider {
 		claims.put(ID.getValue(), id);
 		String refreshToken = createToken(claims, refreshTokenexpirationPeriod);
 		registRefreshTokenInRedis(refreshToken, id);
+
 		return refreshToken;
 	}
 
@@ -84,6 +89,7 @@ public class JwtProvider {
 			throw new TokenException(NOT_FOUND_REFRESHTOKEN);
 		}
 		redisTemplate.delete(id);
+
 		return getTokenResponse(id);
 	}
 
@@ -102,25 +108,28 @@ public class JwtProvider {
 		if (value != null && value.equals(BLACK_LIST.getValue())) {
 			throw new TokenException(INVALID_TOKEN_BLACKLIST);
 		}
+
 		return false;
 	}
 
 	public String createToken(Claims claims, long expirationPeriod) {
 		return Jwts.builder()
-			.setClaims(claims)
-			.setIssuedAt(issuedAt())
-			.setExpiration(expiredAt(expirationPeriod))
-			.signWith(key, SignatureAlgorithm.HS256)
-			.compact();
+				   .setClaims(claims)
+				   .setIssuedAt(issuedAt())
+				   .setExpiration(expiredAt(expirationPeriod))
+				   .signWith(key, SignatureAlgorithm.HS256)
+				   .compact();
 	}
 
 	private Date issuedAt() {
 		LocalDateTime now = LocalDateTime.now();
+
 		return Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	private Date expiredAt(long expirationPeriod) {
 		LocalDateTime now = LocalDateTime.now();
+
 		return Date.from(now.plusSeconds(expirationPeriod).atZone(ZoneId.systemDefault()).toInstant());
 	}
 
@@ -129,30 +138,35 @@ public class JwtProvider {
 			.setSigningKey(secret.getBytes())
 			.parseClaimsJws(token)
 			.getBody();
+
 		return true;
 	}
 
 	public UsernamePasswordAuthenticationToken getAuthentication(String token) {
 		String id = getIdFromToken(token);
-		Member member = memberRepository.findMemberById(id).orElseThrow(() ->
-			new TokenException(NOT_FOUND_MEMBER_IDENTIFIER));
+		Member member = memberRepository.findMemberById(id).orElseThrow(
+			() -> new TokenException(NOT_FOUND_MEMBER_IDENTIFIER)
+		);
 		MemberPrincipal memberPrincipal = new MemberPrincipal(member);
+
 		return new UsernamePasswordAuthenticationToken(memberPrincipal, token, memberPrincipal.getAuthorities());
 	}
 
 	public String retrieveToken(HttpServletRequest httpServletRequest) {
 		String bearerToken = httpServletRequest.getHeader(AUTHORIZATION.getValue());
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(AUTHORIZATION_BEARER.getValue())) {
+
 			return bearerToken.substring(7);
 		}
+
 		return null;
 	}
 
 	public String getIdFromToken(String token) {
 		return Jwts.parser()
-			.setSigningKey(secret.getBytes())
-			.parseClaimsJws(token)
-			.getBody()
-			.get(ID.getValue(), String.class);
+				   .setSigningKey(secret.getBytes())
+				   .parseClaimsJws(token)
+				   .getBody()
+				   .get(ID.getValue(), String.class);
 	}
 }

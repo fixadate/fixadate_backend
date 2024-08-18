@@ -1,7 +1,10 @@
 package com.fixadate.domain.googlecalendar.controller.impl;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE;
+import static com.fixadate.global.util.constant.ConstantValue.ACCESS_TOKEN;
+import static com.fixadate.global.util.constant.ConstantValue.AUTHORIZATION;
+import static com.fixadate.global.util.constant.ConstantValue.AUTHORIZATION_BEARER;
+import static com.fixadate.global.util.constant.ConstantValue.REFRESH_TOKEN;
 
 import java.io.IOException;
 
@@ -17,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fixadate.domain.googlecalendar.controller.GoogleCalendarController;
 import com.fixadate.domain.googlecalendar.entity.constant.WebhookHeaders;
 import com.fixadate.domain.googlecalendar.service.GoogleService;
-import com.fixadate.domain.member.repository.MemberRepository;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.exception.badrequest.GoogleIoExcetption;
 import com.google.api.client.auth.oauth2.TokenResponse;
@@ -31,12 +33,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 	private final GoogleService googleService;
-	private final MemberRepository memberRepository;
 
 	@Override
 	@GetMapping("/watch")
-	public ResponseEntity<Channel> watchCalendar(@RequestParam String userId,
-		@RequestParam String memberId, HttpServletRequest request) {
+	public ResponseEntity<Channel> watchCalendar(
+		@RequestParam String userId,
+		@RequestParam String memberId, HttpServletRequest request
+	) {
 		TokenResponse tokenResponse = createTokenResponse(request.getCookies());
 		String accessToken = AUTHORIZATION_BEARER.getValue() + tokenResponse.getAccessToken();
 		HttpHeaders headers = new HttpHeaders();
@@ -45,7 +48,7 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 		Channel channel = googleService.executeWatchRequest(userId);
 		googleService.registerGoogleCredentials(channel, tokenResponse, userId, memberId);
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.headers(headers).build();
+							 .headers(headers).build();
 	}
 
 	private TokenResponse createTokenResponse(Cookie[] cookies) {
@@ -75,7 +78,8 @@ public class GoogleCalendarControllerImpl implements GoogleCalendarController {
 		@RequestHeader(WebhookHeaders.CHANNEL_ID) String channelId,
 		@RequestHeader(WebhookHeaders.CHANNEL_EXPIRATION) String channelExpiration,
 		@RequestHeader(WebhookHeaders.RESOURCE_STATE) String resourceState,
-		@RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber) {
+		@RequestHeader(WebhookHeaders.MESSAGE_NUMBER) String messageNumber
+	) {
 		try {
 			googleService.listEvents(channelId);
 		} catch (IOException e) {
