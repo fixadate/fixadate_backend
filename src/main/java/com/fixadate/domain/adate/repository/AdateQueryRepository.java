@@ -4,6 +4,7 @@ import static com.fixadate.domain.adate.entity.QAdate.adate;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,17 @@ public class AdateQueryRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 
+	public Optional<Adate> findAdateByCalendarId(final String calendarId) {
+		return Optional.ofNullable(
+			jpaQueryFactory.selectFrom(adate)
+						   .where(adate.calendarId.eq(calendarId))
+						   .leftJoin(adate.member).fetchJoin()
+						   .leftJoin(adate.tag).fetchJoin()
+						   .fetchOne()
+		);
+	}
+
+	// TODO: [질문] readonly 힌트를 설정한 이유가 뭘까요? @Tansactional(readonly=true)로는 적용이 안 되는 것일까요?
 	public List<Adate> findByDateRange(
 		final Member member,
 		final LocalDateTime startDateTime,

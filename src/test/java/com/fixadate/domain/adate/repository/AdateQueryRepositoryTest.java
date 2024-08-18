@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -20,21 +20,42 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.fixture.AdateQueryRepositoryFixture;
 import com.fixadate.global.config.QueryDslConfig;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @DataJpaTest
 @Testcontainers
-@Import(QueryDslConfig.class)
+@Import({QueryDslConfig.class, AdateQueryRepository.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 class AdateQueryRepositoryTest extends AdateQueryRepositoryFixture {
 
+	@Autowired
 	private AdateQueryRepository adateQueryRepository;
 
-	@BeforeEach
-	void setUp(@Autowired final JPAQueryFactory jpaQueryFactory) {
-		adateQueryRepository = new AdateQueryRepository(jpaQueryFactory);
+	@Nested
+	@DisplayName("캘린더 아이디를 통해 일정 조회 테스트")
+	class FindAdateByCalendarIdTest {
+
+		@Test
+		void 캘린더_아이디를_통해_일정을_조회한다() {
+			// when
+			final Optional<Adate> actual = adateQueryRepository.findAdateByCalendarId(일정.getCalendarId());
+
+			// then
+			assertSoftly(softly -> {
+				softly.assertThat(actual).isPresent();
+				softly.assertThat(actual).contains(일정);
+			});
+		}
+
+		@Test
+		void 캘린더_아이디에_해당하는_일정이_없다면_빈값을_조회한다() {
+			// when
+			final Optional<Adate> actual = adateQueryRepository.findAdateByCalendarId(일정이_없는_캘린더_아이디);
+
+			// then
+			assertThat(actual).isEmpty();
+		}
 	}
 
 	@Nested

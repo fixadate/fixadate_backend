@@ -31,7 +31,7 @@ public class AdateRepositoryImpl implements AdateRepository {
 
 	@Override
 	public Optional<Adate> findAdateByCalendarId(final String calendarId) {
-		return adateJpaRepository.findAdateByCalendarId(calendarId);
+		return adateQueryRepository.findAdateByCalendarId(calendarId);
 	}
 
 	@Override

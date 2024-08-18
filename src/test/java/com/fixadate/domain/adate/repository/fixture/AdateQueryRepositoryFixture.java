@@ -31,9 +31,11 @@ public class AdateQueryRepositoryFixture {
 	protected LocalDateTime 일정이_없는_범위_종료일 = 일정이_없는_범위_시작일.plusDays(10);
 
 	protected Member 회원;
+	protected Adate 일정;
 	protected Adate 범위_내_일정;
 	protected Adate 범위에_걸치는_일정;
 	protected Adate 범위_밖의_일정;
+	protected String 일정이_없는_캘린더_아이디 = "none adate";
 
 	@BeforeEach
 	void setUpFixture() {
@@ -51,14 +53,15 @@ public class AdateQueryRepositoryFixture {
 
 		memberRepository.save(회원);
 
-		범위_내_일정 = fixtureMonkey.giveMeBuilder(Adate.class)
-							   .setNull("id")
-							   .set("startsWhen", 범위_시작일)
-							   .set("endsWhen", 범위_종료일)
-							   .setNotNull("calendarId")
-							   .set("member", 회원)
-							   .setNull("tag")
-							   .sample();
+		일정 = fixtureMonkey.giveMeBuilder(Adate.class)
+						  .setNull("id")
+						  .set("startsWhen", 범위_시작일)
+						  .set("endsWhen", 범위_종료일)
+						  .setNotNull("calendarId")
+						  .set("member", 회원)
+						  .setNull("tag")
+						  .sample();
+		범위_내_일정 = 일정;
 		범위에_걸치는_일정 = fixtureMonkey.giveMeBuilder(Adate.class)
 								  .setNull("id")
 								  .set("startsWhen", 범위_시작일.plusDays(1))
@@ -76,7 +79,6 @@ public class AdateQueryRepositoryFixture {
 								.setNull("tag")
 								.sample();
 
-		// TODO: [질문] jpa repository를 사용해도 괜찮을까요? 만약, jpa를 사용하지 않게 되면 수정 범위가 여기까지로 확장됩니다.
 		adateJpaRepository.saveAll(List.of(범위_내_일정, 범위에_걸치는_일정, 범위_밖의_일정));
 	}
 }
