@@ -10,7 +10,7 @@ import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.repository.MemberJpaRepository;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
@@ -23,7 +23,7 @@ public class AdateQueryRepositoryFixture {
 	private AdateJpaRepository adateJpaRepository;
 
 	@Autowired
-	private MemberRepository memberRepository;
+	private MemberJpaRepository memberRepository;
 
 	protected LocalDateTime 범위_시작일 = LocalDateTime.now().minusDays(5);
 	protected LocalDateTime 범위_종료일 = LocalDateTime.now().plusDays(5);

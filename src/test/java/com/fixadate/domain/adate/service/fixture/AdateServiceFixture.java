@@ -18,7 +18,7 @@ import com.fixadate.domain.adate.dto.AdateUpdateDto;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.repository.MemberRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.repository.TagRepository;
 
