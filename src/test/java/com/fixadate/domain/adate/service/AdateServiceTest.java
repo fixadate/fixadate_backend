@@ -200,6 +200,7 @@ class AdateServiceTest extends AdateServiceFixture {
 
 			// then
 			assertThat(actual).isEmpty();
+			// TODO: [추가] 레디스에서 값이 있는지 확인 로직 추가
 		}
 
 		@RepeatedTest(100)
