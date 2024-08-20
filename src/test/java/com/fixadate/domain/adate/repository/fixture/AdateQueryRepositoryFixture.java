@@ -12,12 +12,18 @@ import com.fixadate.domain.adate.repository.AdateJpaRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.repository.MemberJpaRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class AdateQueryRepositoryFixture {
 
 	private final FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.entityMonkey();
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
 	private AdateJpaRepository adateJpaRepository;
@@ -80,5 +86,8 @@ public class AdateQueryRepositoryFixture {
 								.sample();
 
 		adateJpaRepository.saveAll(List.of(범위_내_일정, 범위에_걸치는_일정, 범위_밖의_일정));
+
+		em.flush();
+		em.clear();
 	}
 }
