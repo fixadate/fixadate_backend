@@ -59,7 +59,14 @@ class MemberControllerImplTest extends MemberControllerFixture {
 						   .with(user(멤버_인증_정보))
 				   )
 				   .andExpectAll(
-					   status().isOk()
+					   status().isOk(),
+					   jsonPath("$.name", is(멤버_정보_응답_전달_객체.name())),
+					   jsonPath("$.nickname", is(멤버_정보_응답_전달_객체.nickname())),
+					   jsonPath("$.birth", is(멤버_정보_응답_전달_객체.birth())),
+					   jsonPath("$.gender", is(멤버_정보_응답_전달_객체.gender())),
+					   jsonPath("$.signatureColor", is(멤버_정보_응답_전달_객체.signatureColor())),
+					   jsonPath("$.profession", is(멤버_정보_응답_전달_객체.profession())),
+					   jsonPath("$.url", is(멤버_정보_응답_전달_객체.url()))
 				   );
 		}
 
@@ -102,7 +109,14 @@ class MemberControllerImplTest extends MemberControllerFixture {
 						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
-					   status().isOk()
+					   status().isOk(),
+					   jsonPath("$.name", is(멤버_정보_응답_전달_객체.name())),
+					   jsonPath("$.nickname", is(멤버_정보_응답_전달_객체.nickname())),
+					   jsonPath("$.birth", is(멤버_정보_응답_전달_객체.birth())),
+					   jsonPath("$.gender", is(멤버_정보_응답_전달_객체.gender())),
+					   jsonPath("$.signatureColor", is(멤버_정보_응답_전달_객체.signatureColor())),
+					   jsonPath("$.profession", is(멤버_정보_응답_전달_객체.profession())),
+					   jsonPath("$.url", is(멤버_정보_응답_전달_객체.url()))
 				   );
 		}
 

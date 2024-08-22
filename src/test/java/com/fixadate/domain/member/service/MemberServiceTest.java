@@ -27,13 +27,15 @@ import software.amazon.awssdk.services.s3.S3Client;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class MemberServiceTest extends MemberServiceFixture {
 
+	private static final int REPEATED_COUNT = 100;
+
 	@Autowired
 	private MemberService memberService;
 
 	@Autowired
 	private S3Client s3Client;
 
-	@RepeatedTest(100)
+	@RepeatedTest(REPEATED_COUNT)
 	void 멤버_닉네임_생성() {
 		// when
 		final String actual = memberService.generateRandomNickname();
@@ -49,7 +51,7 @@ class MemberServiceTest extends MemberServiceFixture {
 	@Nested
 	class GetMemberInfoTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 멤버_정보_조회() {
 			// when
 			final MemberInfoDto actual = memberService.getMemberInfo(멤버_아이디);
@@ -67,7 +69,7 @@ class MemberServiceTest extends MemberServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 멤버가_없는_경우_404_반환() {
 			// given
 			final String memberId = 멤버_아이디 + "extra";
@@ -83,7 +85,7 @@ class MemberServiceTest extends MemberServiceFixture {
 	@Nested
 	class UpdateMemberInfoTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 멤버_정보_수정() {
 			// given
 			s3Client.putObject(입력_요청, 입력_바디);
@@ -104,7 +106,7 @@ class MemberServiceTest extends MemberServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 이미지를_변경하지_않는_경우_Url_null_반환() {
 			// when
 			final MemberInfoDto actual = memberService.updateMemberInfo(멤버_정보_수정_요청_이미지_없는_경우);
