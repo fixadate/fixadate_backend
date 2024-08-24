@@ -35,7 +35,7 @@ jobs:
           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
           dir: './src/main/resources/'
       - name: Build with Gradle
-        run: ./gradlew build --scan
+        run: ./gradlew build
       - name: Make Zip File
         run: zip -qq -r ./$GITHUB_SHA.zip .
         shell: bash
