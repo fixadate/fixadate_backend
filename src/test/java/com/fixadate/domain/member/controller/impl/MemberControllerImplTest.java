@@ -28,7 +28,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 	@Test
 	void 멤버_닉네임_생성() throws Exception {
 		// given
-		given(commonControllerSliceTest.getMemberService().generateRandomNickname()).willReturn(멤버_닉네임);
+		given(memberService.generateRandomNickname()).willReturn(멤버_닉네임);
 
 		// when & then
 		mockMvc.perform(
@@ -50,7 +50,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 		@Test
 		void 멤버_정보_조회() throws Exception {
 			// given
-			given(commonControllerSliceTest.getMemberService().getMemberInfo(멤버_아이디)).willReturn(멤버_정보_응답_전달_객체);
+			given(memberService.getMemberInfo(멤버_아이디)).willReturn(멤버_정보_응답_전달_객체);
 
 			// when & then
 			mockMvc.perform(
@@ -60,7 +60,13 @@ class MemberControllerImplTest extends MemberControllerFixture {
 				   )
 				   .andExpectAll(
 					   status().isOk(),
-					   content().json(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_응답))
+					   jsonPath("$.name", is(멤버_정보_응답_전달_객체.name())),
+					   jsonPath("$.nickname", is(멤버_정보_응답_전달_객체.nickname())),
+					   jsonPath("$.birth", is(멤버_정보_응답_전달_객체.birth())),
+					   jsonPath("$.gender", is(멤버_정보_응답_전달_객체.gender())),
+					   jsonPath("$.signatureColor", is(멤버_정보_응답_전달_객체.signatureColor())),
+					   jsonPath("$.profession", is(멤버_정보_응답_전달_객체.profession())),
+					   jsonPath("$.url", is(멤버_정보_응답_전달_객체.url()))
 				   );
 		}
 
@@ -69,8 +75,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 			// given
 			final MemberNotFoundException memberNotFoundException = new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
 
-			given(commonControllerSliceTest.getMemberService()
-										   .getMemberInfo(멤버_아이디)).willThrow(memberNotFoundException);
+			given(memberService.getMemberInfo(멤버_아이디)).willThrow(memberNotFoundException);
 
 			// when & then
 			mockMvc.perform(
@@ -93,8 +98,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 		@Test
 		void 멤버_정보_수정() throws Exception {
 			// given
-			given(commonControllerSliceTest.getMemberService().updateMemberInfo(멤버_정보_업데이트_전달_객체)).willReturn(
-				멤버_정보_응답_전달_객체);
+			given(memberService.updateMemberInfo(멤버_정보_업데이트_전달_객체)).willReturn(멤버_정보_응답_전달_객체);
 
 			// when & then
 			mockMvc.perform(
@@ -102,11 +106,17 @@ class MemberControllerImplTest extends MemberControllerFixture {
 						   .with(user(멤버_인증_정보))
 						   .with(csrf())
 						   .contentType(APPLICATION_JSON_VALUE)
-						   .content(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_업데이트_요청))
+						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
 					   status().isOk(),
-					   content().json(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_응답))
+					   jsonPath("$.name", is(멤버_정보_응답_전달_객체.name())),
+					   jsonPath("$.nickname", is(멤버_정보_응답_전달_객체.nickname())),
+					   jsonPath("$.birth", is(멤버_정보_응답_전달_객체.birth())),
+					   jsonPath("$.gender", is(멤버_정보_응답_전달_객체.gender())),
+					   jsonPath("$.signatureColor", is(멤버_정보_응답_전달_객체.signatureColor())),
+					   jsonPath("$.profession", is(멤버_정보_응답_전달_객체.profession())),
+					   jsonPath("$.url", is(멤버_정보_응답_전달_객체.url()))
 				   );
 		}
 
@@ -115,7 +125,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 			// given
 			final MemberNotFoundException memberNotFoundException = new MemberNotFoundException(NOT_FOUND_MEMBER_ID);
 
-			given(commonControllerSliceTest.getMemberService().updateMemberInfo(멤버_정보_업데이트_전달_객체)).willThrow(
+			given(memberService.updateMemberInfo(멤버_정보_업데이트_전달_객체)).willThrow(
 				memberNotFoundException);
 
 			// when & then
@@ -124,7 +134,7 @@ class MemberControllerImplTest extends MemberControllerFixture {
 						   .with(user(멤버_인증_정보))
 						   .with(csrf())
 						   .contentType(APPLICATION_JSON_VALUE)
-						   .content(commonControllerSliceTest.getObjectMapper().writeValueAsString(멤버_정보_업데이트_요청))
+						   .content(objectMapper.writeValueAsString(멤버_정보_업데이트_요청))
 				   )
 				   .andExpectAll(
 					   status().isNotFound(),
