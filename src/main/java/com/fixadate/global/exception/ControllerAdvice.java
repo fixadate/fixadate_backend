@@ -1,7 +1,11 @@
 package com.fixadate.global.exception;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,7 +26,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		NotFoundException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleNotFound(final NotFoundException exception) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+		return ResponseEntity.status(NOT_FOUND)
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -30,7 +34,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		BadRequestException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleBadRequest(final BadRequestException exception) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+		return ResponseEntity.status(BAD_REQUEST)
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -38,7 +42,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		UnAuthorizedException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleUnAuthorizedRequest(final UnAuthorizedException exception) {
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+		return ResponseEntity.status(UNAUTHORIZED)
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -46,10 +50,11 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		ForbiddenException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleForbiddenRequest(final ForbiddenException exception) {
-		return ResponseEntity.status(HttpStatus.FORBIDDEN)
+		return ResponseEntity.status(FORBIDDEN)
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
+	// TODO: [질문] validate 등 예외가 발생헀을 때에 대해서인데 code를 자체적인 번호로 부여해줘야 할까요?
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 		final MethodArgumentNotValidException exception,
@@ -59,8 +64,8 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 	) {
 		final String message = exception.getFieldErrors().get(0).getDefaultMessage();
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-							 .body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), message));
+		return ResponseEntity.status(BAD_REQUEST)
+							 .body(new ExceptionResponse(BAD_REQUEST.value(), message));
 	}
 
 	@Override

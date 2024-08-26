@@ -4,11 +4,7 @@ import java.time.LocalDateTime;
 
 import com.fixadate.domain.tag.dto.response.TagResponse;
 
-/**
- *
- * @author yongjunhong
- * @since 2024. 6. 1.
- */
+// TODO: [질문] 연동규격서에서는 tagResponse가 없던데 괜찮은가요?
 public record AdateViewResponse(
 	String title,
 	String notes,
@@ -16,5 +12,6 @@ public record AdateViewResponse(
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen,
 	String calendarId,
-	TagResponse tagResponse) {
+	TagResponse tagResponse
+) {
 }

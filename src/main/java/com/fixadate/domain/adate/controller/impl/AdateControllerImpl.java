@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RestControllerWithMapping("/v1/calendar")
 @RequiredArgsConstructor
 public class AdateControllerImpl implements AdateController {
+
 	private final AdateService adateService;
 
 	@Override
@@ -46,6 +47,7 @@ public class AdateControllerImpl implements AdateController {
 		final AdateRegisterDto adateRegisterDto = AdateMapper.toDto(adateRegisterRequest);
 		adateService.registerAdateEvent(adateRegisterDto, member);
 
+		// TODO: [질문] service에서 save한 member 객체로 응답값을 만들어 반환하는 것이 더 적절할까요?
 		return ResponseEntity.ok(adateRegisterRequest);
 	}
 
@@ -65,6 +67,7 @@ public class AdateControllerImpl implements AdateController {
 		return ResponseEntity.ok(responses);
 	}
 
+	// TODO: [질문] spirngsecurity에서 인증을 진행해주는 걸까요? 해당 adate 복구 권한이 있는지 확인은 필요 없을지 궁금합니다.
 	@Override
 	@PostMapping("/restore/{calendarId}")
 	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId) {
@@ -107,7 +110,6 @@ public class AdateControllerImpl implements AdateController {
 							 .build();
 	}
 
-	// TODO: [질문] requestParam에 기본 값이 없어도 괜찮을까요? 혹은 requestParam이 필수 등의 옵션 설정이 필요 없을까요? (다른 메서드들도)
 	@Override
 	@GetMapping("/month")
 	public ResponseEntity<List<AdateViewResponse>> getAdatesByMonth(
