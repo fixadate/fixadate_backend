@@ -33,14 +33,15 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
       - name: publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: /build/test-results/test/TEST-*.xml
+          files: build/test-results/test/TEST-*.xml
 
       - name: add comments to a pull request
         uses: mikepenz/action-junit-report@v3
         if: always()
         with:
-          report_paths: /build/test-results/test/TEST-*.xml
+          report_paths: build/test-results/test/TEST-*.xml
