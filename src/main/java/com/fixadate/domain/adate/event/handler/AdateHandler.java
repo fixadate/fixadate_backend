@@ -45,8 +45,6 @@ public class AdateHandler {
 			}
 		});
 
-		// TODO: [질문] 해당 코드는 일정이 없을 때 adate를 추가하는 것이기에 멤버도 adate에 저장해줘야 한다고 생각했는데 맞을까요?
-		//  기존에는 member 정보는 저장하지 않고 있었습니다.
 		if (adateOptional.isEmpty()) {
 			final Adate adate = eventToEntity(googleEvent, member);
 			adateService.registerEvent(adate);
