@@ -20,21 +20,18 @@ import com.google.api.services.calendar.model.Event;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * @author yongjunhong
- * @since 2024. 7. 9.
- */
 @Component
 @RequiredArgsConstructor
 public class AdateHandler {
+
 	private final AdateService adateService;
 
 	@EventListener
-	public void setAdateEvent(AdateCalendarSettingEvent event) {
-		Event googleEvent = event.event();
-		Member member = event.member();
+	public void setAdateEvent(final AdateCalendarSettingEvent event) {
+		final Event googleEvent = event.event();
+		final Member member = event.member();
 
-		Optional<Adate> adateOptional = adateService.getAdateByCalendarId(googleEvent.getId());
+		final Optional<Adate> adateOptional = adateService.getAdateByCalendarId(googleEvent.getId());
 
 		if (googleEvent.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
 			adateOptional.ifPresent(adateService::removeAdate);
@@ -59,7 +56,8 @@ public class AdateHandler {
 	@Async
 	@EventListener
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public void updateAdateTagEvent(AdateTagUpdateEvent adateTagUpdateEvent) {
-		adateTagUpdateEvent.adates().forEach(Adate::refreshColorFromCurrentTag);
+	public void updateAdateTagEvent(final AdateTagUpdateEvent adateTagUpdateEvent) {
+		adateTagUpdateEvent.adates()
+						   .forEach(Adate::refreshColorFromCurrentTag);
 	}
 }
