@@ -4,8 +4,8 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 import static software.amazon.awssdk.regions.Region.US_EAST_1;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -14,7 +14,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-@Configuration
+@TestConfiguration
 public class LocalStackContainerProvider {
 
 	private static final DockerImageName DOCKER_IMAGE_NAME = DockerImageName.parse("localstack/localstack:0.12.18");
