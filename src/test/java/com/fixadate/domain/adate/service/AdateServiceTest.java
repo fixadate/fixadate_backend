@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.service;
 
+import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -14,10 +15,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.domain.adate.dto.AdateDto;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.service.fixture.AdateServiceFixture;
@@ -44,6 +47,12 @@ class AdateServiceTest extends AdateServiceFixture {
 
 	@Autowired
 	private ApplicationEvents events;
+
+	@Autowired
+	private RedisTemplate<Object, Object> redisJsonTemplate;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Nested
 	@DisplayName("adate 저장 테스트")
@@ -197,10 +206,17 @@ class AdateServiceTest extends AdateServiceFixture {
 			// when
 			adateService.removeAdateByCalendarId(저장된_일정.getCalendarId());
 			final Optional<Adate> actual = adateRepository.findAdateByCalendarId(저장된_일정.getCalendarId());
+			final Object redisResult = redisJsonTemplate.opsForValue()
+														.get(ADATE_WITH_COLON.getValue() + 저장된_일정.getCalendarId());
+			final Adate actualRedis = objectMapper.convertValue(redisResult, Adate.class);
 
 			// then
 			assertThat(actual).isEmpty();
 			// TODO: [추가] 레디스에서 값이 있는지 확인 로직 추가
+			assertSoftly(softly -> {
+				assertThat(actual).isEmpty();
+				assertThat(actualRedis).isEqualTo(저장된_일정);
+			});
 		}
 
 		@RepeatedTest(100)
