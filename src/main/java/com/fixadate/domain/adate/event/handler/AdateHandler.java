@@ -8,8 +8,6 @@ import java.util.Optional;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
@@ -33,6 +31,12 @@ public class AdateHandler {
 
 		final Optional<Adate> adateOptional = adateService.getAdateByCalendarId(googleEvent.getId());
 
+		if (adateOptional.isEmpty()) {
+			final Adate adate = eventToEntity(googleEvent, member);
+			adateService.registerEvent(adate);
+			return;
+		}
+
 		if (googleEvent.getStatus().equals(CALENDAR_CANCELLED.getValue())) {
 			adateOptional.ifPresent(adateService::removeAdate);
 			return;
@@ -44,16 +48,10 @@ public class AdateHandler {
 				originAdate.updateFrom(adate);
 			}
 		});
-
-		if (adateOptional.isEmpty()) {
-			final Adate adate = eventToEntity(googleEvent, member);
-			adateService.registerEvent(adate);
-		}
 	}
 
 	@Async
 	@EventListener
-	@Transactional(propagation = Propagation.SUPPORTS)
 	public void updateAdateTagEvent(final AdateTagUpdateEvent adateTagUpdateEvent) {
 		adateTagUpdateEvent.adates()
 						   .forEach(Adate::refreshColorFromCurrentTag);
