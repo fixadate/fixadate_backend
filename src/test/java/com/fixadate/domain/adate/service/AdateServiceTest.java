@@ -58,8 +58,6 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("adate 저장 테스트")
 	class RegisterAdateEventTest {
 
-		// TODO: [질문] 서비스에서 event와 관련해 Mock과 통합 테스트 중 뭐가 더 적절할까요?
-		//  일단 통합 테스트를 진행하기로 했기에, 후자로 진행했습니다.
 		@RepeatedTest(REPEATED_COUNT)
 		void adate를_저장한다() {
 			// given
@@ -78,7 +76,7 @@ class AdateServiceTest extends AdateServiceFixture {
 		}
 
 		@RepeatedTest(REPEATED_COUNT)
-		void 태그가_있는_adate_저장시_태그를_저장하는_이벤트를_한번_호출한다() {
+		void 태그를_조회하는_이벤트를_한_번_호출한다() {
 			// when
 			adateService.registerAdateEvent(태그가_있는_일정_저장_요청, 회원);
 			final long actual = events.stream(TagSettingEvent.class).count();
@@ -186,7 +184,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("adate 객체를 통한 일정 삭제 테스트")
 	class RemoveAdateTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_삭제한다() {
 			// when
 			adateService.removeAdate(저장된_일정);
@@ -201,7 +199,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("캘린더 아이디를 통한 일정 삭제 테스트")
 	class RemoveAdateByCalendarIdTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_삭제한다() {
 			// when
 			adateService.removeAdateByCalendarId(저장된_일정.getCalendarId());
@@ -211,15 +209,13 @@ class AdateServiceTest extends AdateServiceFixture {
 			final Adate actualRedis = objectMapper.convertValue(redisResult, Adate.class);
 
 			// then
-			assertThat(actual).isEmpty();
-			// TODO: [추가] 레디스에서 값이 있는지 확인 로직 추가
 			assertSoftly(softly -> {
 				assertThat(actual).isEmpty();
 				assertThat(actualRedis).isEqualTo(저장된_일정);
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 존재하지_않는_캘린더_아이디라면_예외를_반환한다() {
 			// when & then
 			assertThatThrownBy(() -> adateService.removeAdateByCalendarId(존재하지_않는_일정의_캘린더_아이디))
@@ -231,7 +227,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("캘린더 아이디로 일정 조회 테스트 - adate 반환")
 	class GetAdateByCalendarIdTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_조회() {
 			// when
 			final Optional<Adate> actual = adateService.getAdateByCalendarId(저장된_일정.getCalendarId());
@@ -243,7 +239,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 존재하지_않는_캘린더_아이디라면_예외를_반환한다() {
 			// when
 			final Optional<Adate> actual = adateService.getAdateByCalendarId(존재하지_않는_일정의_캘린더_아이디);
@@ -257,7 +253,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("캘린더 아이디로 일정 조회 테스트 - dto 반환")
 	class GetAdateInformationByCalendarIdTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_조회한다() {
 			// when
 			final AdateDto actual = adateService.getAdateInformationByCalendarId(저장된_일정.getCalendarId());
@@ -266,7 +262,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			assertThat(actual.id()).isEqualTo(저장된_일정.getId());
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 존재하지_않는_캘린더_아이디라면_예외를_반환한다() {
 			// when && then
 			assertThatThrownBy(() -> adateService.getAdateInformationByCalendarId(존재하지_않는_일정의_캘린더_아이디))
@@ -278,7 +274,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("회원, 시작 일시, 종료 일시를 통한 일정 조회 테스트")
 	class GetAdateByStartAndEndTimeTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_조회한다() {
 			// when
 			final List<AdateDto> actual = adateService.getAdateByStartAndEndTime(회원, 시작_일시, 종료_일시);
@@ -291,7 +287,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정이_없다면_빈_배열을_반환한다() {
 			// when
 			final List<AdateDto> actual = adateService.getAdateByStartAndEndTime(회원, 일정_없는_시작_일시, 일정_없는_종료_일시);
@@ -305,7 +301,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("회원, 연도, 달을 통한 일정 조회 테스트")
 	class GetAdatesByMonthTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_조회한다() {
 			// when
 			final List<AdateDto> actual = adateService.getAdatesByMonth(
@@ -321,7 +317,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정이_없다면_빈_배열을_반환한다() {
 			// when
 			final List<AdateDto> actual = adateService.getAdatesByMonth(
@@ -339,7 +335,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("회원, 시작일, 종료일을 통한 일정 조회 테스트")
 	class GetAdatesByWeekTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_조회한다() {
 			// when
 			final List<AdateDto> actual = adateService.getAdatesByWeek(
@@ -356,7 +352,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 시작일보다_종료일이_빠르다면_예외를_반환한다() {
 			// when & then
 			assertThatThrownBy(() -> adateService.getAdatesByWeek(회원, 종료_일시.toLocalDate(), 시작_일시.toLocalDate()))
@@ -368,7 +364,7 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("일정 수정 테스트 (종일여부, 시작, 종료, 리마이드 여부 정보 필수)")
 	class UpdateAdateTest {
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정의_모든_정보를_수정한다() {
 			// when
 			final AdateDto actual = adateService.updateAdate(회원, 태그가_있는_일정.getCalendarId(), 전체_수정_요청);
@@ -389,7 +385,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정의_제목을_수정한다() {
 			// when
 			final AdateDto actual = adateService.updateAdate(회원, 태그가_있는_일정.getCalendarId(), 제목_수정_요청);
@@ -410,7 +406,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정의_노트를_수정한다() {
 			// when
 			final AdateDto actual = adateService.updateAdate(회원, 태그가_있는_일정.getCalendarId(), 노트_수정_요청);
@@ -431,7 +427,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정의_위치를_수정한다() {
 			// when
 			final AdateDto actual = adateService.updateAdate(회원, 태그가_있는_일정.getCalendarId(), 위치_수정_요청);
@@ -452,7 +448,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정의_알람_시간을_수정한다() {
 			// when
 			final AdateDto actual = adateService.updateAdate(회원, 태그가_있는_일정.getCalendarId(), 알람_시간_수정_요청);
@@ -473,7 +469,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정의_반복_시간을_수정한다() {
 			// when
 			final AdateDto actual = adateService.updateAdate(회원, 태그가_있는_일정.getCalendarId(), 반복_시간_수정_요청);
@@ -494,7 +490,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			});
 		}
 
-		@RepeatedTest(100)
+		@RepeatedTest(REPEATED_COUNT)
 		void 일정의_태그를_수정한다() {
 			// when
 			final AdateDto actual = adateService.updateAdate(회원, 태그가_있는_일정.getCalendarId(), 태그_수정_요청);

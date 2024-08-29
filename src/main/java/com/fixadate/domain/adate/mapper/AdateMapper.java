@@ -89,7 +89,6 @@ public class AdateMapper {
 	}
 
 	/**
-	 * TODO: [질문] 제 경우 private 메서드 순서를 저는 처음 사용한 메서드 바로 아래 둡니다. 혹시 어떻게 정렬하시나요?
 	 * TODO: [의견] 아래 check 관련 메서드는 adate의 역할이 아니라고 생각했습니다.
 	 *  check 관련 해당 메서드를 사용하는 곳은 adateMapper 뿐이기도 하고요. 그래서 이 클래스로 이동해봤습니다.
 	 */

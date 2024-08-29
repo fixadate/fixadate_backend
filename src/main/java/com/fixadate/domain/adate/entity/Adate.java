@@ -57,8 +57,7 @@ public class Adate extends BaseTimeEntity {
 
 	private String color;
 
-	// TODO: [의견] if 대신 is는 어떤가요? api 등 고려해야 할 게 많을까봐 변경은 하지 않았습니다.
-	// TODO: [질문] ifAllday는 참조타입이고 reminders는 원시 타입인 이유가 무엇인가요? 구글 캘린더 때문일까요?
+	// TODO: [추후] if 대신 is로 수정 & 불필요한 필드 삭제
 	private Boolean ifAllDay;
 
 	private LocalDateTime startsWhen;
@@ -124,7 +123,7 @@ public class Adate extends BaseTimeEntity {
 		this.tag = null;
 	}
 
-	// TODO: [질문] 구글 캘린더에서 수정이 될 때 ifAllDay, alertWhen, repeatFreq은 수정이 안 되나요?
+	// TODO: [추후] 구글 캘린더에서 수정이 될 때 ifAllDay, alertWhen, repeatFreq은 수정이 안 되나요? -> 답변 필요
 	public void updateFrom(final Adate adate) {
 		this.title = adate.title;
 		this.notes = adate.notes;
@@ -183,7 +182,8 @@ public class Adate extends BaseTimeEntity {
 
 	// TODO: [의견] updateColor로는 adate에 설정되어 있는 tag의 color로 수정된다는 것을 이해하기 어렵다고 생각해 아래와 같이 변경해봤습니다.
 	//  혹은 deleteTag에서 adate의 removeTagAndColor를 호출하는 것처럼, tag의 색상 update 시 updateTage(tag.color)를 통해 호출하는 건 어떤가 싶습니다.
-	public void refreshColorFromCurrentTag() {
+	public void
+	refreshColorFromCurrentTag() {
 		if (this.tag != null) {
 			this.color = this.tag.getColor();
 		}

@@ -26,7 +26,7 @@ class AdateTest extends AdateFixture {
 	}
 
 	@Test
-	void 일정의_주인이라면_거짓을_반환한다() {
+	void 일정의_주인이_아니라면_거짓을_반환한다() {
 		// when
 		final boolean actual = 일정.isOwner(다른_회원);
 
@@ -158,7 +158,7 @@ class AdateTest extends AdateFixture {
 		assertThat(일정.getEndsWhen()).isEqualTo(newEndsWhen);
 	}
 
-	// TODO: [질문] 리마인드 여부를 의미하는 게 맞을까요? 맞다면 정확히 어떤 기능인가요?
+	// TODO: [추후] 리마인드 여부를 의미하는 게 맞을까요? 맞다면 정확히 어떤 기능인가요? -> 답변 필요
 	@Test
 	void 일정의_리마인드_여부_수정_테스트() {
 		// when

@@ -67,7 +67,6 @@ public class AdateControllerImpl implements AdateController {
 		return ResponseEntity.ok(responses);
 	}
 
-	// TODO: [질문] spirngsecurity에서 인증을 진행해주는 걸까요? 해당 adate 복구 권한이 있는지 확인은 필요 없을지 궁금합니다.
 	@Override
 	@PostMapping("/restore/{calendarId}")
 	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId) {

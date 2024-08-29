@@ -144,7 +144,7 @@ public class AdateServiceFixture {
 		종료_일시 = 일정2.getEndsWhen();
 		시작_날짜보다_빠른_종료_일시 = 시작_일시.minusDays(10);
 
-		// TODO: [수정 필요] ifAllday의 타입이 참조/원시 결정 사항에 따라 수정 필요
+		// TODO: [추후] ifAllday의 타입이 참조/원시 결정 사항에 따라 수정 필요
 		삭제된_일정 = entityFixtureMonkey.giveMeBuilder(Adate.class)
 									.setNull("id")
 									.set("calendarId", uniqueStringOption)

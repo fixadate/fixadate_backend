@@ -10,8 +10,6 @@ import io.lettuce.core.RedisCommandExecutionException;
 
 public class RedisRequestException {
 
-	// TODO: [문제점] 내부 클래스의 SerializationExceptoin으로 인식해 redis의 직렬화 예외를 못잡고 있었습니다.
-	//  클래스명이 동일해 아래와 같이 되는데 어떻게 생각하시나요?
 	public static void handleRedisException(Exception exception) {
 		if (exception instanceof RedisConnectionFailureException || exception instanceof RedisConnectionException) {
 			throw new RedisConnectionException(ExceptionCode.FAIL_TO_CONNECT_REDIS);

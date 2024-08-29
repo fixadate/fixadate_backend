@@ -96,8 +96,7 @@ public class AdateService {
 		return adateRepository.findAdateByCalendarId(calendarId);
 	}
 
-	// TODO: [질문] 회원정보를 받아, 해당 회원의 일정인지 확인은 필요 없을까요?
-	//  + getAdateDto는 메서드에 타입을 적는 것 같아 그냥 정보 느낌으로 information으로 정해봤는데 어떻게 생각하시나요?
+	// TODO: [추후] 회원정보를 받아, 해당 회원의 일정인지 확인 필요
 	@Transactional(readOnly = true)
 	public AdateDto getAdateInformationByCalendarId(final String calendarId) {
 		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
