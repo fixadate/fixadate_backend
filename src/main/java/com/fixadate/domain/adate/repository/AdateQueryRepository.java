@@ -47,15 +47,4 @@ public class AdateQueryRepository {
 			.setHint("org.hibernate.readOnly", true)
 			.fetch();
 	}
-
-	// TODO: [질문] 어떤 용도인가요? 삭제해도 될까요?
-	public List<Adate> findByDateRangeTest(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-		return jpaQueryFactory
-			.selectFrom(adate)
-			.where(adate.startsWhen.loe(endDateTime)
-								   .and(adate.endsWhen.goe(startDateTime)))
-			.orderBy(adate.startsWhen.asc())
-			.setHint("org.hibernate.readOnly", true)
-			.fetch();
-	}
 }
