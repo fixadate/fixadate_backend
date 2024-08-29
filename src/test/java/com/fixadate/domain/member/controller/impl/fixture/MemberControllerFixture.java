@@ -1,33 +1,32 @@
 package com.fixadate.domain.member.controller.impl.fixture;
 
-import static com.fixadate.domain.member.mapper.MemberMapper.toInfoResponse;
 import static com.fixadate.domain.member.mapper.MemberMapper.toUpdateDto;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import net.jqwik.api.Arbitraries;
 
-import com.fixadate.config.CommonControllerSliceTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.config.FixtureMonkeyConfig;
+import com.fixadate.domain.member.controller.impl.MemberControllerImpl;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateDto;
 import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoDto;
-import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.service.MemberService;
 import com.fixadate.global.jwt.MemberPrincipal;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.customizer.Values;
 
-@Import(CommonControllerSliceTest.class)
 @SuppressWarnings("NonAsciiCharacters")
 public class MemberControllerFixture {
 
@@ -35,14 +34,19 @@ public class MemberControllerFixture {
 	private WebApplicationContext webApplicationContext;
 
 	@Autowired
-	protected CommonControllerSliceTest commonControllerSliceTest;
+	protected ObjectMapper objectMapper;
+
+	@Autowired
+	protected MemberControllerImpl memberController;
+
+	@MockBean
+	protected MemberService memberService;
 
 	protected MockMvc mockMvc;
 	protected String 멤버_닉네임;
 	protected String 멤버_아이디;
 	protected Member 멤버;
 	protected MemberInfoDto 멤버_정보_응답_전달_객체;
-	protected MemberInfoResponse 멤버_정보_응답;
 	protected MemberInfoUpdateDto 멤버_정보_업데이트_전달_객체;
 	protected MemberInfoUpdateRequest 멤버_정보_업데이트_요청;
 	protected MemberPrincipal 멤버_인증_정보;
@@ -58,7 +62,6 @@ public class MemberControllerFixture {
 								 .build();
 
 		멤버_정보_응답_전달_객체 = dtoMonkey.giveMeBuilder(MemberInfoDto.class).sample();
-		멤버_정보_응답 = toInfoResponse(멤버_정보_응답_전달_객체);
 		멤버_정보_업데이트_요청 = dtoMonkey.giveMeBuilder(MemberInfoUpdateRequest.class)
 								 .set(
 									 "nickname", Values.just(CombinableArbitrary.from(
