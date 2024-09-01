@@ -1,10 +1,8 @@
 package com.fixadate.domain.adate.mapper;
 
 import static com.fixadate.domain.tag.mapper.TagMapper.toResponse;
-import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromDate;
-import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromDateTime;
-
-import java.time.LocalDateTime;
+import static com.fixadate.global.util.EventTimeUtil.checkEventDateTimeIsNull;
+import static com.fixadate.global.util.EventTimeUtil.checkEventIsAllDayType;
 
 import com.fixadate.domain.adate.dto.AdateDto;
 import com.fixadate.domain.adate.dto.AdateRegisterDto;
@@ -19,7 +17,6 @@ import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -86,22 +83,6 @@ public class AdateMapper {
 					.etag(event.getEtag())
 					.reminders(event.getReminders().getUseDefault())
 					.build();
-	}
-
-	/**
-	 * TODO: [의견] 아래 check 관련 메서드는 adate의 역할이 아니라고 생각했습니다.
-	 *  check 관련 해당 메서드를 사용하는 곳은 adateMapper 뿐이기도 하고요. 그래서 이 클래스로 이동해봤습니다.
-	 */
-	private static LocalDateTime checkEventDateTimeIsNull(final EventDateTime eventDateTime) {
-		if (eventDateTime.getDateTime() == null) {
-			return getLocalDateTimeFromDate(eventDateTime.getDate());
-		}
-
-		return getLocalDateTimeFromDateTime(eventDateTime.getDateTime());
-	}
-
-	private static boolean checkEventIsAllDayType(final EventDateTime eventDateTime) {
-		return eventDateTime.getDateTime() == null;
 	}
 
 	public static Adate eventToEntity(final Event event, final Member member) {

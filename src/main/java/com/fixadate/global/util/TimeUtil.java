@@ -14,7 +14,7 @@ public class TimeUtil {
 	static final String DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 	static final String DATE_FORMATTER = "yyyy-MM-dd";
 
-	private TimeUtil() {
+	protected TimeUtil() {
 	}
 
 	public static LocalDateTime getLocalDateTimeFromDateTime(DateTime dateTime) {
