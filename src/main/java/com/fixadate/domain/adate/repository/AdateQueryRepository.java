@@ -30,7 +30,6 @@ public class AdateQueryRepository {
 		);
 	}
 
-	// TODO: [질문] readonly 힌트를 설정한 이유가 뭘까요? @Tansactional(readonly=true)로는 적용이 안 되는 것일까요?
 	public List<Adate> findByDateRange(
 		final Member member,
 		final LocalDateTime startDateTime,
@@ -44,7 +43,6 @@ public class AdateQueryRepository {
 							.and(adate.endsWhen.goe(startDateTime))
 			)
 			.orderBy(adate.startsWhen.asc())
-			.setHint("org.hibernate.readOnly", true)
 			.fetch();
 	}
 }
