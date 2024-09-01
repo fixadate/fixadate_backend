@@ -21,8 +21,10 @@ import com.google.api.services.calendar.model.Event;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AdateMapper {
+
+	private AdateMapper() {
+	}
 
 	public static AdateRegisterDto toDto(final AdateRegisterRequest request) {
 		return new AdateRegisterDto(
