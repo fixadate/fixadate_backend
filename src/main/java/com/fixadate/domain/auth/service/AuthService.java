@@ -77,6 +77,7 @@ public class AuthService {
 		Member member = toEntity(memberRegisterRequest, encodedOauthId);
 		memberRepository.save(member);
 
+		// TODO: [질문]  TagMemeberSettingEvent()의 경우 무조건 적으로 태그를 GOOGLE로 수행하는데 이유가 있을까요?
 		applicationEventPublisher.publishEvent(new TagMemberSettingEvent(member));
 		return new MemberSignupResponse(s3Util.generatePresignedUrlForUpload(member.getProfileImg()));
 	}
