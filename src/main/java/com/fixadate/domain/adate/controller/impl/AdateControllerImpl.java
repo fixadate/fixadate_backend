@@ -29,6 +29,8 @@ import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.jwt.MemberPrincipal;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestControllerWithMapping("/v1/calendar")
@@ -81,7 +83,7 @@ public class AdateControllerImpl implements AdateController {
 	public ResponseEntity<List<AdateViewResponse>> getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final int year,
-		@RequestParam final int month
+		@RequestParam @Min(1) @Max(12) final int month
 	) {
 		final Member member = memberPrincipal.getMember();
 		final List<AdateDto> adates = adateService.getAdatesByMonth(member, year, month);
