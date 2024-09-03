@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.google.api.services.calendar.model.EventDateTime;
 
-public class EventTimeUtil extends TimeUtil{
+public class EventTimeUtil extends TimeUtil {
 
 	public static LocalDateTime checkEventDateTimeIsNull(final EventDateTime eventDateTime) {
 		if (eventDateTime.getDateTime() == null) {
