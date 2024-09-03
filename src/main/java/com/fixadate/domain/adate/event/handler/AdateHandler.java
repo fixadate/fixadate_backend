@@ -14,6 +14,7 @@ import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
 import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.util.constant.ExternalCalendar;
 import com.google.api.services.calendar.model.Event;
 
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,13 @@ public class AdateHandler {
 	public void setAdateEvent(final AdateCalendarSettingEvent event) {
 		final Event googleEvent = event.event();
 		final Member member = event.member();
+		final ExternalCalendar calendar = event.externalCalendar();
 
 		final Optional<Adate> adateOptional = adateService.getAdateByCalendarId(googleEvent.getId());
 
 		if (adateOptional.isEmpty()) {
 			final Adate adate = eventToEntity(googleEvent, member);
-			adateService.registerEvent(adate);
+			adateService.registerEvent(adate, calendar);
 			return;
 		}
 

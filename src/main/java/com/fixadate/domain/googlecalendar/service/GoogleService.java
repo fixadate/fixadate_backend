@@ -1,8 +1,16 @@
 package com.fixadate.domain.googlecalendar.service;
 
-import static com.fixadate.domain.googlecalendar.mapper.GoogleMapper.*;
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.domain.googlecalendar.mapper.GoogleMapper.getGoogleCredentialsFromCredentials;
+import static com.fixadate.domain.googlecalendar.mapper.GoogleMapper.toChannel;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_GOOGLE_CALENDAR_DELETE_SYNCTOKEN;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_GOOGLE_CALENDAR_GET_SYNCTOKEN;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_GOOGLE_CALENDAR_REQUEST_EXECUTE;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_GOOGLE_CALENDAR_SET_SYNCTOKEN;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_GOOGLE_CREDENTIALS_CHANNELID;
+import static com.fixadate.global.util.constant.ConstantValue.CALENDAR_ID;
+import static com.fixadate.global.util.constant.ConstantValue.SYNC_TOKEN_KEY;
+import static com.fixadate.global.util.constant.ConstantValue.UTC;
+import static com.fixadate.global.util.constant.ExternalCalendar.GOOGLE;
 
 import java.io.IOException;
 import java.util.Date;
@@ -87,7 +95,7 @@ public class GoogleService {
 	@Async
 	public void syncEvents(List<Event> events, Member member) {
 		events.parallelStream().forEach(event ->
-			applicationEventPublisher.publishEvent(new AdateCalendarSettingEvent(event, member))
+			applicationEventPublisher.publishEvent(new AdateCalendarSettingEvent(event, member, GOOGLE))
 		);
 	}
 

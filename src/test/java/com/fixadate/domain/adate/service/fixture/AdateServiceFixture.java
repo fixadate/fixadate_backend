@@ -1,8 +1,6 @@
 package com.fixadate.domain.adate.service.fixture;
 
 import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
-import static com.fixadate.global.util.constant.ConstantValue.GOOGLE_CALENDAR;
-import static com.fixadate.global.util.constant.ConstantValue.GOOGLE_CALENDAR_COLOR;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,6 +19,7 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.global.util.constant.ExternalCalendar;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.customizer.Values;
@@ -93,8 +92,8 @@ public class AdateServiceFixture {
 										  .sample();
 		final Tag 구글_캘린더_태그 = entityFixtureMonkey.giveMeBuilder(Tag.class)
 												 .setNull("id")
-												 .set("color", GOOGLE_CALENDAR_COLOR.getValue())
-												 .set("name", GOOGLE_CALENDAR.getValue())
+												 .set("color", ExternalCalendar.GOOGLE.getColor())
+												 .set("name", ExternalCalendar.GOOGLE.getTagName())
 												 .set("member", 회원)
 												 .sample();
 

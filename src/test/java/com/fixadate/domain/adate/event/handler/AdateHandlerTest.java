@@ -23,6 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.event.handler.fixture.AdateHandlerFixture;
 import com.fixadate.domain.adate.service.AdateService;
+import com.fixadate.global.util.constant.ExternalCalendar;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 @ContextConfiguration(classes = AdateHandler.class)
@@ -49,7 +50,7 @@ class AdateHandlerTest extends AdateHandlerFixture {
 			applicationContext.publishEvent(추가된_외부_일정_정보);
 
 			// then
-			verify(adateService, times(1)).registerEvent(any(Adate.class));
+			verify(adateService, times(1)).registerEvent(any(Adate.class), any(ExternalCalendar.class));
 		}
 
 		@Test

@@ -29,6 +29,7 @@ import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.fixadate.global.exception.notfound.AdateNotFoundException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
+import com.fixadate.global.util.constant.ExternalCalendar;
 
 @SpringBootTest
 @Testcontainers
@@ -158,7 +159,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			);
 
 			// when
-			adateService.registerEvent(외부_캘린더_일정);
+			adateService.registerEvent(외부_캘린더_일정, ExternalCalendar.GOOGLE);
 			final List<Adate> actual = adateRepository.findByDateRange(
 				회원,
 				외부_캘린더_일정.getStartsWhen(),
@@ -172,7 +173,7 @@ class AdateServiceTest extends AdateServiceFixture {
 		@RepeatedTest(REPEATED_COUNT)
 		void 저장시_태그를_저장하는_이벤트를_한_번_호출한다() {
 			// when
-			adateService.registerEvent(외부_캘린더_일정);
+			adateService.registerEvent(외부_캘린더_일정, ExternalCalendar.GOOGLE);
 			final long actual = events.stream(TagSettingEvent.class).count();
 
 			// then

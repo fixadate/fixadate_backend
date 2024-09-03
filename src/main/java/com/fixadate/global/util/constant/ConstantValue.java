@@ -27,8 +27,6 @@ public enum ConstantValue {
 	BLACK_LIST("blackList"),
 	AES_ALGORITHM("AES"),
 	CIPHER_INSTANCE("AES/CBC/PKCS5Padding"),
-	GOOGLE_CALENDAR("Google Calendar"),
-	GOOGLE_CALENDAR_COLOR("4285F4"),
 	UTC("UTC"),
 	ADATE_WITH_COLON("Adate:"),
 	COMMA(","),

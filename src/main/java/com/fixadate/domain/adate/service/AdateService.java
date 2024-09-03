@@ -8,7 +8,6 @@ import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALEND
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromLocalDate;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
-import static com.fixadate.global.util.constant.ConstantValue.GOOGLE_CALENDAR;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -33,6 +32,7 @@ import com.fixadate.global.exception.forbidden.AdateUpdateForbiddenException;
 import com.fixadate.global.exception.notfound.AdateNotFoundException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.global.facade.RedisFacade;
+import com.fixadate.global.util.constant.ExternalCalendar;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,13 +66,11 @@ public class AdateService {
 		return toAdateDto(saveAdate);
 	}
 
-	// TODO: [질문] Event라는 네이밍은 TagSettingEvent의 Event인지 다른 의미가 있는 것인지 궁금합니다.
-	//  해당 메서드의 기능은 외부 캘린더 일정을 저장하는 것이 맞을까요?
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerEvent(final Adate adate) {
+	public void registerEvent(final Adate adate, final ExternalCalendar externalCalendar) {
 		final Adate saveAdate = adateRepository.save(adate);
 
-		applicationEventPublisher.publishEvent(new TagSettingEvent(saveAdate, GOOGLE_CALENDAR.getValue()));
+		applicationEventPublisher.publishEvent(new TagSettingEvent(saveAdate, externalCalendar.getTagName()));
 	}
 
 	@Transactional
