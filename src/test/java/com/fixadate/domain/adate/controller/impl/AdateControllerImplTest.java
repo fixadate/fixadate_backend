@@ -471,7 +471,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 		@Test
 		void 일정_목록을_조회한다() throws Exception {
 			// given
-			given(adateService.getAdatesByWeek(회원, 조회_시작_날짜, 조회_종료_날짜)).willReturn(일정_조회_응답_전달_객체);
+			given(adateService.getAdatesByDate(회원, 조회_시작_날짜, 조회_종료_날짜)).willReturn(일정_조회_응답_전달_객체);
 
 			// when & then
 			mockMvc.perform(

@@ -1,7 +1,7 @@
 package com.fixadate.domain.adate.service;
 
-import static com.fixadate.domain.adate.mapper.AdateMapper.toEntity;
 import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateDto;
+import static com.fixadate.domain.adate.mapper.AdateMapper.toEntity;
 import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_ADATE;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
@@ -57,15 +57,6 @@ public class AdateService {
 		}
 	}
 
-	@Transactional
-	public AdateDto restoreAdateByCalendarId(final String calendarId) {
-		final String key = ADATE_WITH_COLON.getValue() + calendarId;
-		final Adate adate = redisFacade.getAndDeleteObjectRedis(key, Adate.class);
-		final Adate saveAdate = adateRepository.save(adate);
-
-		return toAdateDto(saveAdate);
-	}
-
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public void registerExternalCalendarToAdate(final Adate adate, final ExternalCalendar externalCalendar) {
 		final Adate saveAdate = adateRepository.save(adate);
@@ -74,19 +65,12 @@ public class AdateService {
 	}
 
 	@Transactional
-	public void removeAdate(final Adate adate) {
-		adateRepository.delete(adate);
-	}
+	public AdateDto restoreAdateByCalendarId(final String calendarId) {
+		final String key = ADATE_WITH_COLON.getValue() + calendarId;
+		final Adate adate = redisFacade.getAndDeleteObjectRedis(key, Adate.class);
+		final Adate saveAdate = adateRepository.save(adate);
 
-	@Transactional
-	public void removeAdateByCalendarId(final String calendarId) {
-		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
-			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
-		);
-		adateRepository.delete(adate);
-
-		final Duration adateDuration = Duration.ofDays(ADATE_REDIS_DURATION);
-		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, adateDuration);
+		return toAdateDto(saveAdate);
 	}
 
 	@Transactional(readOnly = true)
@@ -104,29 +88,18 @@ public class AdateService {
 		return toAdateDto(adate);
 	}
 
-	// TODO: [질문] 해당 메서드에서는 checkStartAndEndTime을 확인하지 않는 이유가 있을까요?
 	@Transactional(readOnly = true)
 	public List<AdateDto> getAdateByStartAndEndTime(
 		final Member member,
 		final LocalDateTime startDateTime,
 		final LocalDateTime endDateTime
 	) {
+		checkStartAndEndTime(startDateTime, endDateTime);
 		final List<Adate> adates = adateRepository.findByDateRange(member, startDateTime, endDateTime);
 
 		return adates.stream()
 					 .map(AdateMapper::toAdateDto)
 					 .toList();
-	}
-
-	// TODO: [질문] 여기서 체크가 필요할지 의문입니다. getLocalDate~를 통해 유효한 시작일과 종료일이 설정된 것이 아닐까요?
-	//  여기서 검증한다면, TimeUtil의 유효성을 검증하는 느낌인데, 오히려 클라이언트에서 전달 받은 값을 검증하는 게 적절하지 않을까 생각합니다.
-	@Transactional(readOnly = true)
-	public List<AdateDto> getAdatesByMonth(final Member member, final int year, final int month) {
-		final LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
-		final LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
-		checkStartAndEndTime(startTime, endTime);
-
-		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
 
 	private void checkStartAndEndTime(final LocalDateTime startTime, final LocalDateTime endTime) {
@@ -135,16 +108,22 @@ public class AdateService {
 		}
 	}
 
-	// TODO: [질문] 여기서 week는 한주차라는 의미가 아닌걸까요? 시간만 없을 뿐 getAdateByStartAndEndTime와 다른점을 잘 모르겠습니다.
 	@Transactional(readOnly = true)
-	public List<AdateDto> getAdatesByWeek(
+	public List<AdateDto> getAdatesByMonth(final Member member, final int year, final int month) {
+		final LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
+		final LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
+
+		return getAdateByStartAndEndTime(member, startTime, endTime);
+	}
+
+	@Transactional(readOnly = true)
+	public List<AdateDto> getAdatesByDate(
 		final Member member,
 		final LocalDate firstDay,
 		final LocalDate lastDay
 	) {
 		final LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
 		final LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
-		checkStartAndEndTime(startTime, endTime);
 
 		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
@@ -195,5 +174,21 @@ public class AdateService {
 		adate.updateStartsWhen(adateUpdateDto.startsWhen());
 		adate.updateEndsWhen(adateUpdateDto.endsWhen());
 		adate.updateReminders(adateUpdateDto.reminders());
+	}
+
+	@Transactional
+	public void removeAdate(final Adate adate) {
+		adateRepository.delete(adate);
+	}
+
+	@Transactional
+	public void removeAdateByCalendarId(final String calendarId) {
+		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
+		);
+		adateRepository.delete(adate);
+
+		final Duration adateDuration = Duration.ofDays(ADATE_REDIS_DURATION);
+		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, adateDuration);
 	}
 }

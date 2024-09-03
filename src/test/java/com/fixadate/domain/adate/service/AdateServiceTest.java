@@ -339,7 +339,7 @@ class AdateServiceTest extends AdateServiceFixture {
 		@RepeatedTest(REPEATED_COUNT)
 		void 일정을_조회한다() {
 			// when
-			final List<AdateDto> actual = adateService.getAdatesByWeek(
+			final List<AdateDto> actual = adateService.getAdatesByDate(
 				회원,
 				시작_일시.toLocalDate(),
 				종료_일시.toLocalDate()
@@ -356,7 +356,7 @@ class AdateServiceTest extends AdateServiceFixture {
 		@RepeatedTest(REPEATED_COUNT)
 		void 시작일보다_종료일이_빠르다면_예외를_반환한다() {
 			// when & then
-			assertThatThrownBy(() -> adateService.getAdatesByWeek(회원, 종료_일시.toLocalDate(), 시작_일시.toLocalDate()))
+			assertThatThrownBy(() -> adateService.getAdatesByDate(회원, 종료_일시.toLocalDate(), 시작_일시.toLocalDate()))
 				.isInstanceOf(InvalidTimeException.class);
 		}
 	}
