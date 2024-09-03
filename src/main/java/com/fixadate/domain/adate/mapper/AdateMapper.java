@@ -23,7 +23,7 @@ public class AdateMapper {
 	private AdateMapper() {
 	}
 
-	public static AdateRegisterDto toDto(final AdateRegisterRequest request) {
+	public static AdateRegisterDto toAdateRegisterDto(final AdateRegisterRequest request) {
 		return new AdateRegisterDto(
 			request.title(),
 			request.notes(),
@@ -38,7 +38,7 @@ public class AdateMapper {
 		);
 	}
 
-	public static AdateUpdateDto toDto(final AdateUpdateRequest request) {
+	public static AdateUpdateDto toAdateUpdateDto(final AdateUpdateRequest request) {
 		return new AdateUpdateDto(
 			request.title(),
 			request.notes(),
@@ -53,7 +53,7 @@ public class AdateMapper {
 		);
 	}
 
-	public static Adate registerDtoToEntity(final AdateRegisterDto adateRegisterDto, final Member member) {
+	public static Adate toEntity(final AdateRegisterDto adateRegisterDto, final Member member) {
 		return Adate.builder()
 					.title(adateRegisterDto.title())
 					.notes(adateRegisterDto.notes())
@@ -69,7 +69,7 @@ public class AdateMapper {
 					.build();
 	}
 
-	public static Adate eventToEntity(final Event event) {
+	public static Adate toEntity(final Event event) {
 		return Adate.builder()
 					.title(event.getSummary())
 					.notes(event.getDescription())
@@ -84,7 +84,7 @@ public class AdateMapper {
 					.build();
 	}
 
-	public static Adate eventToEntity(final Event event, final Member member) {
+	public static Adate toEntity(final Event event, final Member member) {
 		return Adate.builder()
 					.title(event.getSummary())
 					.notes(event.getDescription())

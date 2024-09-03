@@ -44,7 +44,7 @@ public class AdateControllerImpl implements AdateController {
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
 		final Member member = memberPrincipal.getMember();
-		final AdateRegisterDto adateRegisterDto = AdateMapper.toDto(adateRegisterRequest);
+		final AdateRegisterDto adateRegisterDto = AdateMapper.toAdateRegisterDto(adateRegisterRequest);
 		adateService.registerAdate(adateRegisterDto, member);
 
 		// TODO: [질문] service에서 save한 member 객체로 응답값을 만들어 반환하는 것이 더 적절할까요?
@@ -93,7 +93,7 @@ public class AdateControllerImpl implements AdateController {
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
 		final Member member = memberPrincipal.getMember();
-		final AdateUpdateDto adateUpdateDto = AdateMapper.toDto(adateUpdateRequest);
+		final AdateUpdateDto adateUpdateDto = AdateMapper.toAdateUpdateDto(adateUpdateRequest);
 		final AdateDto adate = adateService.updateAdate(member, calendarId, adateUpdateDto);
 		final AdateResponse response = AdateMapper.toAdateResponse(adate);
 

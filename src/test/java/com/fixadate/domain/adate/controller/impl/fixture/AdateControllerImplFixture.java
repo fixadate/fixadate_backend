@@ -83,7 +83,7 @@ public class AdateControllerImplFixture {
 											  .setNotNull("startsWhen")
 											  .setNull("endsWhen")
 											  .sample();
-		일정_저장_요청_전달_객체 = AdateMapper.toDto(일정_저장_요청);
+		일정_저장_요청_전달_객체 = AdateMapper.toAdateRegisterDto(일정_저장_요청);
 
 		일정_조회_응답_전달_객체 = createAdateDto(2);
 
@@ -104,7 +104,7 @@ public class AdateControllerImplFixture {
 									  .setNotNull("endsWhen")
 									  .setNotNull("reminders")
 									  .sample();
-		일정_수정_요청_전달_객체 = AdateMapper.toDto(일정_수정_요청);
+		일정_수정_요청_전달_객체 = AdateMapper.toAdateUpdateDto(일정_수정_요청);
 		일정_수정_결과_응답_전달_객체 = 일정_정보_응답_전달_객체;
 
 		시작_시간_누락_일정_수정_요청 = recordFixtureMonkey.giveMeBuilder(AdateUpdateRequest.class)

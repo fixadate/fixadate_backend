@@ -1,6 +1,6 @@
 package com.fixadate.domain.adate.service;
 
-import static com.fixadate.domain.adate.mapper.AdateMapper.registerDtoToEntity;
+import static com.fixadate.domain.adate.mapper.AdateMapper.toEntity;
 import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateDto;
 import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_ADATE;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
@@ -48,7 +48,7 @@ public class AdateService {
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public void registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
-		final Adate adate = registerDtoToEntity(adateRegisterDto, member);
+		final Adate adate = toEntity(adateRegisterDto, member);
 		adateRepository.save(adate);
 
 		final String tagName = adateRegisterDto.tagName();
