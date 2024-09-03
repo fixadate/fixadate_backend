@@ -54,6 +54,15 @@ public class AdateControllerImpl implements AdateController {
 	}
 
 	@Override
+	@PostMapping("/restore/{calendarId}")
+	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId) {
+		final AdateDto adate = adateService.restoreAdateByCalendarId(calendarId);
+		final AdateResponse response = AdateMapper.toAdateResponse(adate);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@Override
 	@GetMapping("/{calendarId}")
 	public ResponseEntity<AdateResponse> getAdate(@PathVariable final String calendarId) {
 		final AdateDto adate = adateService.getAdateInformationByCalendarId(calendarId);
@@ -102,21 +111,12 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam final LocalDate lastDay
 	) {
 		final Member member = memberPrincipal.getMember();
-		final List<AdateDto> adates = adateService.getAdatesByWeek(member, firstDay, lastDay);
+		final List<AdateDto> adates = adateService.getAdatesByDate(member, firstDay, lastDay);
 		final List<AdateViewResponse> responses = adates.stream()
 														.map(AdateMapper::toAdateViewResponse)
 														.toList();
 
 		return ResponseEntity.ok(responses);
-	}
-
-	@Override
-	@PostMapping("/restore/{calendarId}")
-	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId) {
-		final AdateDto adate = adateService.restoreAdateByCalendarId(calendarId);
-		final AdateResponse response = AdateMapper.toAdateResponse(adate);
-
-		return ResponseEntity.ok(response);
 	}
 
 	@Override

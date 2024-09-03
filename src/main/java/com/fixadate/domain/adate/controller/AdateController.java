@@ -45,6 +45,9 @@ public interface AdateController {
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	);
 
+	@Operation(summary = "Adate 복원", description = "삭제된 Adate를 복원합니다.")
+	ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId);
+
 	@Operation(summary = "Adate 조회", description = "특정 Adate를 조회합니다.")
 	ResponseEntity<AdateResponse> getAdate(@PathVariable final String calendarId);
 
@@ -101,9 +104,6 @@ public interface AdateController {
 		@RequestParam final LocalDate firstDay,
 		@RequestParam final LocalDate lastDay
 	);
-
-	@Operation(summary = "Adate 복원", description = "삭제된 Adate를 복원합니다.")
-	ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId);
 
 	@Operation(summary = "Adate 수정", description = "Adate를 수정합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
