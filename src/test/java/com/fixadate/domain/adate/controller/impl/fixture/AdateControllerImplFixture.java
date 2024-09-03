@@ -120,7 +120,7 @@ public class AdateControllerImplFixture {
 											   .setNotNull("reminders")
 											   .sample();
 		조회_연도 = Arbitraries.integers().between(2000, 2060).sample();
-		조회_달 = Arbitraries.integers().between(2000, 2060).sample();
+		조회_달 = Arbitraries.integers().between(1, 12).sample();
 	}
 
 	private List<AdateDto> createAdateDto(final int num) {

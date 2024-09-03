@@ -1,11 +1,14 @@
 package com.fixadate.domain.adate.controller.impl;
 
+import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,6 +29,7 @@ import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.annotation.RestControllerWithMapping;
+import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.fixadate.global.jwt.MemberPrincipal;
 
 import jakarta.validation.Valid;
@@ -34,6 +38,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestControllerWithMapping("/v1/calendar")
+@Validated
 @RequiredArgsConstructor
 public class AdateControllerImpl implements AdateController {
 
@@ -78,6 +83,8 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam final LocalDateTime startDateTime,
 		@RequestParam final LocalDateTime endDateTime
 	) {
+		checkDateTime(startDateTime, endDateTime);
+
 		final Member member = memberPrincipal.getMember();
 		final List<AdateDto> adates = adateService.getAdateByStartAndEndTime(member, startDateTime, endDateTime);
 		final List<AdateViewResponse> responses = adates.stream()
@@ -85,6 +92,12 @@ public class AdateControllerImpl implements AdateController {
 														.toList();
 
 		return ResponseEntity.ok(responses);
+	}
+
+	private void checkDateTime(final LocalDateTime startDateTime, final LocalDateTime endDateTime) {
+		if (startDateTime.isAfter(endDateTime)) {
+			throw new InvalidTimeException(INVALID_START_END_TIME);
+		}
 	}
 
 	@Override
@@ -110,6 +123,8 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam final LocalDate firstDay,
 		@RequestParam final LocalDate lastDay
 	) {
+		checkDate(firstDay, lastDay);
+
 		final Member member = memberPrincipal.getMember();
 		final List<AdateDto> adates = adateService.getAdatesByDate(member, firstDay, lastDay);
 		final List<AdateViewResponse> responses = adates.stream()
@@ -117,6 +132,12 @@ public class AdateControllerImpl implements AdateController {
 														.toList();
 
 		return ResponseEntity.ok(responses);
+	}
+
+	private void checkDate(final LocalDate firstDay, final LocalDate lastDay) {
+		if (firstDay.isAfter(lastDay)) {
+			throw new InvalidTimeException(INVALID_START_END_TIME);
+		}
 	}
 
 	@Override

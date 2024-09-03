@@ -26,6 +26,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 @Tag(name = "AdateController", description = "AdateController 입니다.")
 public interface AdateController {
@@ -84,7 +86,7 @@ public interface AdateController {
 	ResponseEntity<List<AdateViewResponse>> getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final int year,
-		@RequestParam final int month
+		@RequestParam @Min(1) @Max(12) final int month
 	);
 
 	@Operation(summary = "Adate 캘린더 이벤트 조회[일 조회]", description = "해당 기간에 존재하는 calendar를 조회합니다.[jwt 필요]")

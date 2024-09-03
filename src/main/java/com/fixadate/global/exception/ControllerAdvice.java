@@ -19,6 +19,8 @@ import com.fixadate.global.exception.forbidden.ForbiddenException;
 import com.fixadate.global.exception.notfound.NotFoundException;
 import com.fixadate.global.exception.unauthorized.UnAuthorizedException;
 
+import jakarta.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class ControllerAdvice extends ResponseEntityExceptionHandler {
 
@@ -52,6 +54,14 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 	public ResponseEntity<ExceptionResponse> handleForbiddenRequest(final ForbiddenException exception) {
 		return ResponseEntity.status(FORBIDDEN)
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception) {
+		final String message = exception.getConstraintViolations().iterator().next().getMessage();
+
+		return ResponseEntity.status(BAD_REQUEST)
+							 .body(new ExceptionResponse(BAD_REQUEST.value(), message));
 	}
 
 	// TODO: [질문] validate 등 예외가 발생헀을 때에 대해서인데 code를 자체적인 번호로 부여해줘야 할까요?
