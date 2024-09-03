@@ -52,8 +52,17 @@ public class AdateControllerImpl implements AdateController {
 	}
 
 	@Override
+	@GetMapping("/{calendarId}")
+	public ResponseEntity<AdateResponse> getAdate(@PathVariable final String calendarId) {
+		final AdateDto adate = adateService.getAdateInformationByCalendarId(calendarId);
+		final AdateResponse response = AdateMapper.toAdateResponse(adate);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@Override
 	@GetMapping
-	public ResponseEntity<List<AdateViewResponse>> getAdates(
+	public ResponseEntity<List<AdateViewResponse>> getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final LocalDateTime startDateTime,
 		@RequestParam final LocalDateTime endDateTime
@@ -68,18 +77,41 @@ public class AdateControllerImpl implements AdateController {
 	}
 
 	@Override
-	@PostMapping("/restore/{calendarId}")
-	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId) {
-		final AdateDto adate = adateService.restoreAdateByCalendarId(calendarId);
-		final AdateResponse response = AdateMapper.toAdateResponse(adate);
+	@GetMapping("/month")
+	public ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@RequestParam final int year,
+		@RequestParam final int month
+	) {
+		final Member member = memberPrincipal.getMember();
+		final List<AdateDto> adates = adateService.getAdatesByMonth(member, year, month);
+		final List<AdateViewResponse> responses = adates.stream()
+														.map(AdateMapper::toAdateViewResponse)
+														.toList();
 
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(responses);
 	}
 
 	@Override
-	@GetMapping("/{calendarId}")
-	public ResponseEntity<AdateResponse> getAdate(@PathVariable final String calendarId) {
-		final AdateDto adate = adateService.getAdateInformationByCalendarId(calendarId);
+	@GetMapping("/day")
+	public ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@RequestParam final LocalDate firstDay,
+		@RequestParam final LocalDate lastDay
+	) {
+		final Member member = memberPrincipal.getMember();
+		final List<AdateDto> adates = adateService.getAdatesByWeek(member, firstDay, lastDay);
+		final List<AdateViewResponse> responses = adates.stream()
+														.map(AdateMapper::toAdateViewResponse)
+														.toList();
+
+		return ResponseEntity.ok(responses);
+	}
+
+	@Override
+	@PostMapping("/restore/{calendarId}")
+	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId) {
+		final AdateDto adate = adateService.restoreAdateByCalendarId(calendarId);
 		final AdateResponse response = AdateMapper.toAdateResponse(adate);
 
 		return ResponseEntity.ok(response);
@@ -107,37 +139,5 @@ public class AdateControllerImpl implements AdateController {
 
 		return ResponseEntity.noContent()
 							 .build();
-	}
-
-	@Override
-	@GetMapping("/month")
-	public ResponseEntity<List<AdateViewResponse>> getAdatesByMonth(
-		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-		@RequestParam final int year,
-		@RequestParam final int month
-	) {
-		final Member member = memberPrincipal.getMember();
-		final List<AdateDto> adates = adateService.getAdatesByMonth(member, year, month);
-		final List<AdateViewResponse> responses = adates.stream()
-														.map(AdateMapper::toAdateViewResponse)
-														.toList();
-
-		return ResponseEntity.ok(responses);
-	}
-
-	@Override
-	@GetMapping("/day")
-	public ResponseEntity<List<AdateViewResponse>> getAdatesByWeeks(
-		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-		@RequestParam final LocalDate firstDay,
-		@RequestParam final LocalDate lastDay
-	) {
-		final Member member = memberPrincipal.getMember();
-		final List<AdateDto> adates = adateService.getAdatesByWeek(member, firstDay, lastDay);
-		final List<AdateViewResponse> responses = adates.stream()
-														.map(AdateMapper::toAdateViewResponse)
-														.toList();
-
-		return ResponseEntity.ok(responses);
 	}
 }
