@@ -50,7 +50,7 @@ class AdateHandlerTest extends AdateHandlerFixture {
 			applicationContext.publishEvent(추가된_외부_일정_정보);
 
 			// then
-			verify(adateService, times(1)).registerEvent(any(Adate.class), any(ExternalCalendar.class));
+			verify(adateService, times(1)).registerExternalCalendarToAdate(any(Adate.class), any(ExternalCalendar.class));
 		}
 
 		@Test

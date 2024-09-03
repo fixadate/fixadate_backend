@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
+import com.fixadate.domain.adate.event.object.ExternalCalendarSettingEvent;
 import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
@@ -25,8 +25,9 @@ public class AdateHandler {
 
 	private final AdateService adateService;
 
+	// TODO: [추후] 구글 외 외부 캘린더도 적용 가능하도록 확장 필요
 	@EventListener
-	public void setAdateEvent(final AdateCalendarSettingEvent event) {
+	public void setExternalCalendarToAdate(final ExternalCalendarSettingEvent event) {
 		final Event googleEvent = event.event();
 		final Member member = event.member();
 		final ExternalCalendar calendar = event.externalCalendar();
@@ -35,7 +36,7 @@ public class AdateHandler {
 
 		if (adateOptional.isEmpty()) {
 			final Adate adate = eventToEntity(googleEvent, member);
-			adateService.registerEvent(adate, calendar);
+			adateService.registerExternalCalendarToAdate(adate, calendar);
 			return;
 		}
 

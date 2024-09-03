@@ -11,7 +11,7 @@ import net.jqwik.api.Arbitraries;
 
 import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
+import com.fixadate.domain.adate.event.object.ExternalCalendarSettingEvent;
 import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.util.constant.ExternalCalendar;
@@ -52,18 +52,18 @@ public class AdateHandlerFixture {
 										   .setEnd(구글_일정_date)
 										   .setReminders(구글_일정_reminders);
 	private ExternalCalendar 구글_캘린더_타입 = ExternalCalendar.GOOGLE;
-	protected AdateCalendarSettingEvent 추가된_외부_일정_정보 = new AdateCalendarSettingEvent(추가된_구글_일정, 회원, 구글_캘린더_타입);
+	protected ExternalCalendarSettingEvent 추가된_외부_일정_정보 = new ExternalCalendarSettingEvent(추가된_구글_일정, 회원, 구글_캘린더_타입);
 
 	protected Event 취소된_구글_일정 = new Event().setId(구글_일정_아이디)
 										   .setStatus(CALENDAR_CANCELLED.getValue());
 	protected Adate 취소된_구글_일정의_adate = fixtureMonkey.giveMeBuilder(Adate.class)
 													.set("calendarId", 취소된_구글_일정.getId())
 													.sample();
-	protected AdateCalendarSettingEvent 취소된_외부_일정_정보 = new AdateCalendarSettingEvent(취소된_구글_일정, 회원, 구글_캘린더_타입);
+	protected ExternalCalendarSettingEvent 취소된_외부_일정_정보 = new ExternalCalendarSettingEvent(취소된_구글_일정, 회원, 구글_캘린더_타입);
 
 	protected String adate_eTag = Arbitraries.strings().alpha().ofMinLength(10).sample();
 	protected Event 수정된_구글_일정 = 추가된_구글_일정;
-	protected AdateCalendarSettingEvent 수정된_외부_일정_정보 = new AdateCalendarSettingEvent(수정된_구글_일정, 회원, 구글_캘린더_타입);
+	protected ExternalCalendarSettingEvent 수정된_외부_일정_정보 = new ExternalCalendarSettingEvent(수정된_구글_일정, 회원, 구글_캘린더_타입);
 
 	protected Adate 일정 = mock(Adate.class);
 	protected List<Adate> 일정들 = List.of(일정, 일정, 일정, 일정);

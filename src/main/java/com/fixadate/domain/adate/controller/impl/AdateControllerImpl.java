@@ -39,13 +39,13 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@PostMapping
-	public ResponseEntity<AdateRegisterRequest> registerAdateEvent(
+	public ResponseEntity<AdateRegisterRequest> registerAdate(
 		@Valid @RequestBody final AdateRegisterRequest adateRegisterRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
 		final Member member = memberPrincipal.getMember();
 		final AdateRegisterDto adateRegisterDto = AdateMapper.toDto(adateRegisterRequest);
-		adateService.registerAdateEvent(adateRegisterDto, member);
+		adateService.registerAdate(adateRegisterDto, member);
 
 		// TODO: [질문] service에서 save한 member 객체로 응답값을 만들어 반환하는 것이 더 적절할까요?
 		return ResponseEntity.ok(adateRegisterRequest);

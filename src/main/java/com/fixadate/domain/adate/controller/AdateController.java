@@ -40,7 +40,7 @@ public interface AdateController {
 		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<AdateRegisterRequest> registerAdateEvent(
+	ResponseEntity<AdateRegisterRequest> registerAdate(
 		@Valid @RequestBody final AdateRegisterRequest adateRegisterRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	);

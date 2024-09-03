@@ -47,7 +47,7 @@ public class AdateService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerAdateEvent(final AdateRegisterDto adateRegisterDto, final Member member) {
+	public void registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
 		final Adate adate = registerDtoToEntity(adateRegisterDto, member);
 		adateRepository.save(adate);
 
@@ -67,7 +67,7 @@ public class AdateService {
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerEvent(final Adate adate, final ExternalCalendar externalCalendar) {
+	public void registerExternalCalendarToAdate(final Adate adate, final ExternalCalendar externalCalendar) {
 		final Adate saveAdate = adateRepository.save(adate);
 
 		applicationEventPublisher.publishEvent(new TagSettingEvent(saveAdate, externalCalendar.getTagName()));

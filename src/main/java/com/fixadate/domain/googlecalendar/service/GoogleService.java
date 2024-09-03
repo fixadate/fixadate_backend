@@ -22,7 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.event.object.AdateCalendarSettingEvent;
+import com.fixadate.domain.adate.event.object.ExternalCalendarSettingEvent;
 import com.fixadate.domain.googlecalendar.entity.GoogleCredentials;
 import com.fixadate.domain.googlecalendar.repository.GoogleRepository;
 import com.fixadate.domain.member.entity.Member;
@@ -95,7 +95,7 @@ public class GoogleService {
 	@Async
 	public void syncEvents(List<Event> events, Member member) {
 		events.parallelStream().forEach(event ->
-			applicationEventPublisher.publishEvent(new AdateCalendarSettingEvent(event, member, GOOGLE))
+			applicationEventPublisher.publishEvent(new ExternalCalendarSettingEvent(event, member, GOOGLE))
 		);
 	}
 

@@ -72,7 +72,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 		@Test
 		void 일정_등록() throws Exception {
 			// given
-			willDoNothing().given(adateService).registerAdateEvent(일정_저장_요청_전달_객체, 회원);
+			willDoNothing().given(adateService).registerAdate(일정_저장_요청_전달_객체, 회원);
 
 			// when & then
 			mockMvc.perform(

@@ -69,7 +69,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			);
 
 			// when
-			adateService.registerAdateEvent(일정_저장_요청, 회원);
+			adateService.registerAdate(일정_저장_요청, 회원);
 			final List<Adate> actual = adateRepository.findByDateRange(회원, 일정_저장_요청.startsWhen(), 일정_저장_요청.endsWhen());
 
 			// then
@@ -79,7 +79,7 @@ class AdateServiceTest extends AdateServiceFixture {
 		@RepeatedTest(REPEATED_COUNT)
 		void 태그를_조회하는_이벤트를_한_번_호출한다() {
 			// when
-			adateService.registerAdateEvent(태그가_있는_일정_저장_요청, 회원);
+			adateService.registerAdate(태그가_있는_일정_저장_요청, 회원);
 			final long actual = events.stream(TagSettingEvent.class).count();
 
 			// then
@@ -89,7 +89,7 @@ class AdateServiceTest extends AdateServiceFixture {
 		@RepeatedTest(REPEATED_COUNT)
 		void 태그가_없다면_태그_저장_이벤트는_호출하지_않는다() {
 			// when
-			adateService.registerAdateEvent(태그가_없는_일정_저장_요청, 회원);
+			adateService.registerAdate(태그가_없는_일정_저장_요청, 회원);
 			final long actual = events.stream(TagSettingEvent.class).count();
 
 			// then
@@ -106,7 +106,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			);
 
 			// when
-			assertThatThrownBy(() -> adateService.registerAdateEvent(존재하지_않는_태그를_통해_일정_저장_요청, 회원))
+			assertThatThrownBy(() -> adateService.registerAdate(존재하지_않는_태그를_통해_일정_저장_요청, 회원))
 				.isInstanceOf(TagNotFoundException.class);
 			final List<Adate> actual = adateRepository.findByDateRange(
 				회원,
@@ -159,7 +159,7 @@ class AdateServiceTest extends AdateServiceFixture {
 			);
 
 			// when
-			adateService.registerEvent(외부_캘린더_일정, ExternalCalendar.GOOGLE);
+			adateService.registerExternalCalendarToAdate(외부_캘린더_일정, ExternalCalendar.GOOGLE);
 			final List<Adate> actual = adateRepository.findByDateRange(
 				회원,
 				외부_캘린더_일정.getStartsWhen(),
@@ -173,7 +173,7 @@ class AdateServiceTest extends AdateServiceFixture {
 		@RepeatedTest(REPEATED_COUNT)
 		void 저장시_태그를_저장하는_이벤트를_한_번_호출한다() {
 			// when
-			adateService.registerEvent(외부_캘린더_일정, ExternalCalendar.GOOGLE);
+			adateService.registerExternalCalendarToAdate(외부_캘린더_일정, ExternalCalendar.GOOGLE);
 			final long actual = events.stream(TagSettingEvent.class).count();
 
 			// then
