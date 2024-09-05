@@ -158,7 +158,6 @@ class AdateTest extends AdateFixture {
 		assertThat(일정.getEndsWhen()).isEqualTo(newEndsWhen);
 	}
 
-	// TODO: [추후] 리마인드 여부를 의미하는 게 맞을까요? 맞다면 정확히 어떤 기능인가요? -> 답변 필요
 	@Test
 	void 일정의_리마인드_여부_수정_테스트() {
 		// when

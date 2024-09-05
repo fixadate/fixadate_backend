@@ -69,6 +69,7 @@ public class Adate extends BaseTimeEntity {
 
 	private String etag;
 
+	// TODO: [추후] 불필요, 삭제 필요
 	private boolean reminders;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -181,10 +182,7 @@ public class Adate extends BaseTimeEntity {
 		}
 	}
 
-	// TODO: [의견] updateColor로는 adate에 설정되어 있는 tag의 color로 수정된다는 것을 이해하기 어렵다고 생각해 아래와 같이 변경해봤습니다.
-	//  혹은 deleteTag에서 adate의 removeTagAndColor를 호출하는 것처럼, tag의 색상 update 시 updateTage(tag.color)를 통해 호출하는 건 어떤가 싶습니다.
-	public void
-	refreshColorFromCurrentTag() {
+	public void refreshColorFromCurrentTag() {
 		if (this.tag != null) {
 			this.color = this.tag.getColor();
 		}
