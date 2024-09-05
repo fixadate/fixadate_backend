@@ -129,6 +129,7 @@ public class Adate extends BaseTimeEntity {
 		this.notes = adate.notes;
 		this.location = adate.location;
 		this.color = adate.color;
+		this.ifAllDay = adate.ifAllDay;
 		this.startsWhen = adate.startsWhen;
 		this.endsWhen = adate.endsWhen;
 		this.calendarId = adate.calendarId;
