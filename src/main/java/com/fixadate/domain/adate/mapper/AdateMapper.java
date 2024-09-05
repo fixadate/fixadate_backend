@@ -109,7 +109,7 @@ public class AdateMapper {
 			adate.getAlertWhen(),
 			adate.getRepeatFreq(),
 			adate.getColor(),
-			adate.getIfAllDay(),
+			adate.isIfAllDay(),
 			adate.getStartsWhen(),
 			adate.getEndsWhen(),
 			adate.getCalendarId(),

@@ -58,7 +58,7 @@ public class Adate extends BaseTimeEntity {
 	private String color;
 
 	// TODO: [추후] if 대신 is로 수정 & 불필요한 필드 삭제
-	private Boolean ifAllDay;
+	private boolean ifAllDay;
 
 	private LocalDateTime startsWhen;
 
@@ -89,7 +89,7 @@ public class Adate extends BaseTimeEntity {
 		final LocalDateTime alertWhen,
 		final LocalDateTime repeatFreq,
 		final String color,
-		final Boolean ifAllDay,
+		final boolean ifAllDay,
 		final LocalDateTime startsWhen,
 		final LocalDateTime endsWhen,
 		final String calendarId,

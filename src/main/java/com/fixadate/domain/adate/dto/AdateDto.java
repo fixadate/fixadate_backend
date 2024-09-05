@@ -13,7 +13,7 @@ public record AdateDto(
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
 	String color,
-	Boolean ifAllDay,
+	boolean ifAllDay,
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen,
 	String calendarId,

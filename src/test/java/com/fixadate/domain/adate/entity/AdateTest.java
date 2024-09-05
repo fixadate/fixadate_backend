@@ -131,7 +131,7 @@ class AdateTest extends AdateFixture {
 		일정.updateIfAllDay(false);
 
 		// then
-		assertThat(일정.getIfAllDay()).isFalse();
+		assertThat(일정.isIfAllDay()).isFalse();
 	}
 
 	@Test
