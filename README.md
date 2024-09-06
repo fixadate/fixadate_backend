@@ -5,7 +5,7 @@
 
 ## 기술 스택
 ### 백엔드
-Spring Boot, Spring Data Jpa, Spring Security, Spring Aop, Spring Validation, JUnit5, Mokito, TestContainers, Fixture Monkey, OAuth 2.0, MySQL, Redis
+Spring Boot, Spring Data JPA, Spring Security, Spring Aop, Spring Validation, JUnit5, Mokito, TestContainers, Fixture Monkey, OAuth 2.0, MySQL, Redis
 
 ### 인프라
 ~~~
