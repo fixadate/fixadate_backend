@@ -47,14 +47,16 @@ public class AdateService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
+	public AdateDto registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
 		final Adate adate = toEntity(adateRegisterDto, member);
-		adateRepository.save(adate);
+		final Adate savedAdate = adateRepository.save(adate);
 
 		final String tagName = adateRegisterDto.tagName();
 		if (tagName != null && !tagName.isEmpty()) {
 			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, tagName));
 		}
+
+		return AdateMapper.toAdateDto(savedAdate);
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)

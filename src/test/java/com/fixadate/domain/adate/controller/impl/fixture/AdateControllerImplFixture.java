@@ -38,6 +38,7 @@ public class AdateControllerImplFixture {
 	protected LocalDateTime 시작일 = LocalDateTime.now();
 	protected LocalDateTime 종료일 = 시작일.plusDays(5);
 	protected List<AdateDto> 일정_조회_응답_전달_객체;
+	protected AdateDto 일정_정보_저장_응답_전달_객체;
 	protected AdateDto 일정_정보_응답_전달_객체;
 	protected String 캘린더_아이디;
 	protected String 존재하지_않는_캘린더_아이디 = "none calendar id";
@@ -67,6 +68,19 @@ public class AdateControllerImplFixture {
 									  .setNotNull("startsWhen")
 									  .setNotNull("endsWhen")
 									  .sample();
+		일정_정보_저장_응답_전달_객체 = recordFixtureMonkey.giveMeBuilder(AdateDto.class)
+											   .set("title", 일정_저장_요청.title())
+											   .set("notes", 일정_저장_요청.notes())
+											   .set("location", 일정_저장_요청.location())
+											   .set("alertWhen", 일정_저장_요청.alertWhen())
+											   .set("repeatFreq", 일정_저장_요청.repeatFreq())
+											   .setNotNull("color")
+											   .set("ifAllDay", 일정_저장_요청.ifAllDay())
+											   .set("startsWhen", 일정_저장_요청.startsWhen())
+											   .set("endsWhen", 일정_저장_요청.endsWhen())
+											   .setNull("calendarId")
+											   .set("reminders", 일정_저장_요청.reminders())
+											   .sample();
 		일정_저장_응답 = 일정_저장_요청;
 		제목이_없는_일정_저장_요청 = recordFixtureMonkey.giveMeBuilder(AdateRegisterRequest.class)
 											 .setNull("title")

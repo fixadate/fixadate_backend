@@ -73,7 +73,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 		@Test
 		void 일정_등록() throws Exception {
 			// given
-			willDoNothing().given(adateService).registerAdate(일정_저장_요청_전달_객체, 회원);
+			given(adateService.registerAdate(일정_저장_요청_전달_객체, 회원)).willReturn(일정_정보_저장_응답_전달_객체);
 
 			// when & then
 			mockMvc.perform(
@@ -89,10 +89,11 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 				jsonPath("$.location", is(일정_저장_요청.location())),
 				jsonPath("$.alertWhen", startsWith(일정_저장_요청.alertWhen().format(formatter))),
 				jsonPath("$.repeatFreq", startsWith(일정_저장_요청.repeatFreq().format(formatter))),
-				jsonPath("$.tagName", is(일정_저장_요청.tagName())),
+				jsonPath("$.color").exists(),
 				jsonPath("$.ifAllDay", is(일정_저장_요청.ifAllDay())),
 				jsonPath("$.startsWhen", startsWith(일정_저장_요청.startsWhen().format(formatter))),
 				jsonPath("$.endsWhen", startsWith(일정_저장_요청.endsWhen().format(formatter))),
+				jsonPath("$.calendarId").isEmpty(),
 				jsonPath("$.reminders", is(일정_저장_요청.reminders()))
 			);
 		}
