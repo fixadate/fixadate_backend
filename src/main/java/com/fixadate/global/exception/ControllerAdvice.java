@@ -1,5 +1,6 @@
 package com.fixadate.global.exception;
 
+import static com.fixadate.global.exception.ExceptionCode.DEFAULT_BAD_REQUEST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -61,7 +62,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		final String message = exception.getConstraintViolations().iterator().next().getMessage();
 
 		return ResponseEntity.status(BAD_REQUEST)
-							 .body(new ExceptionResponse(BAD_REQUEST.value(), message));
+							 .body(new ExceptionResponse(DEFAULT_BAD_REQUEST.getCode(), message));
 	}
 
 	// TODO: [질문] validate 등 예외가 발생헀을 때에 대해서인데 code를 자체적인 번호로 부여해줘야 할까요?
@@ -75,7 +76,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		final String message = exception.getFieldErrors().get(0).getDefaultMessage();
 
 		return ResponseEntity.status(BAD_REQUEST)
-							 .body(new ExceptionResponse(BAD_REQUEST.value(), message));
+							 .body(new ExceptionResponse(DEFAULT_BAD_REQUEST.getCode(), message));
 	}
 
 	@Override

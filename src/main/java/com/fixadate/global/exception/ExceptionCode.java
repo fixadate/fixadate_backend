@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ExceptionCode {
 	/*
+	default -> 0xxx
 	adate -> 1xxx
 	tag -> 2xxx
 	googleCalendar -> 3xxx
@@ -16,6 +17,8 @@ public enum ExceptionCode {
 	auth -> 8xxx
 	other -> 9xxx
 	 */
+	DEFAULT_BAD_REQUEST(1, "BAD REQUEST"),
+
 	NOT_FOUND_ADATE_CALENDAR_ID(1001, "요청한 calendarId에 해당하는 Adate가 없습니다."),
 	INVALID_MONTH(1002, "월에는 1부터 12사이의 값을 입력해야 합니다."),
 	INVALID_LOCALDATE(1003, "잘못된 LocalDate 값입니다."),
