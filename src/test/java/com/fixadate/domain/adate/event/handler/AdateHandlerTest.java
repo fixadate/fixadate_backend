@@ -81,18 +81,4 @@ class AdateHandlerTest extends AdateHandlerFixture {
 			verify(기존_일정, times(1)).updateFrom(any(Adate.class));
 		}
 	}
-
-	@Nested
-	@DisplayName("일정 목록에 대해 태그 새로고침 이벤트 테스트")
-	class UpdateAdateTagEventTest {
-
-		@Test
-		void 일정_목록의_수만큼_태그를_새로고침을_호출한다() {
-			// when
-			applicationContext.publishEvent(일정_태그_업데이트_이벤트);
-
-			// then
-			verify(일정, times(일정들.size())).refreshColorFromCurrentTag();
-		}
-	}
 }

@@ -13,8 +13,8 @@ spring:
 
     redis:
       host: 127.0.0.1
-      port: 6379
-      password: password
+      port: 44136
+      password: fixadate_redis_password
 
   jpa:
     hibernate:

@@ -12,7 +12,6 @@ public record AdateDto(
 	String location,
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
-	String color,
 	boolean ifAllDay,
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen,

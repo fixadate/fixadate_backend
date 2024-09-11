@@ -1,9 +1,6 @@
 package com.fixadate.domain.adate.event.handler.fixture;
 
 import static com.fixadate.global.util.constant.ConstantValue.CALENDAR_CANCELLED;
-import static org.mockito.Mockito.mock;
-
-import java.util.List;
 
 import org.mockito.Mock;
 
@@ -11,7 +8,6 @@ import net.jqwik.api.Arbitraries;
 
 import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.adate.event.object.ExternalCalendarSettingEvent;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.util.constant.ExternalCalendar;
@@ -64,8 +60,4 @@ public class AdateHandlerFixture {
 	protected String adate_eTag = Arbitraries.strings().alpha().ofMinLength(10).sample();
 	protected Event 수정된_구글_일정 = 추가된_구글_일정;
 	protected ExternalCalendarSettingEvent 수정된_외부_일정_정보 = new ExternalCalendarSettingEvent(수정된_구글_일정, 회원, 구글_캘린더_타입);
-
-	protected Adate 일정 = mock(Adate.class);
-	protected List<Adate> 일정들 = List.of(일정, 일정, 일정, 일정);
-	protected AdateTagUpdateEvent 일정_태그_업데이트_이벤트 = new AdateTagUpdateEvent(일정들);
 }

@@ -74,7 +74,6 @@ public class AdateMapper {
 					.title(event.getSummary())
 					.notes(event.getDescription())
 					.location(event.getLocation())
-					.color(event.getColorId())
 					.startsWhen(checkEventDateTimeIsNull(event.getStart()))
 					.endsWhen(checkEventDateTimeIsNull(event.getEnd()))
 					.ifAllDay(checkEventIsAllDayType(event.getStart()))
@@ -89,7 +88,6 @@ public class AdateMapper {
 					.title(event.getSummary())
 					.notes(event.getDescription())
 					.location(event.getLocation())
-					.color(event.getColorId())
 					.startsWhen(checkEventDateTimeIsNull(event.getStart()))
 					.endsWhen(checkEventDateTimeIsNull(event.getEnd()))
 					.ifAllDay(checkEventIsAllDayType(event.getStart()))
@@ -108,7 +106,6 @@ public class AdateMapper {
 			adate.getLocation(),
 			adate.getAlertWhen(),
 			adate.getRepeatFreq(),
-			adate.getColor(),
 			adate.isIfAllDay(),
 			adate.getStartsWhen(),
 			adate.getEndsWhen(),
@@ -126,13 +123,21 @@ public class AdateMapper {
 			adate.location(),
 			adate.alertWhen(),
 			adate.repeatFreq(),
-			adate.color(),
+			getColor(adate.tag()),
 			adate.ifAllDay(),
 			adate.startsWhen(),
 			adate.endsWhen(),
 			adate.calendarId(),
 			adate.reminders()
 		);
+	}
+
+	private static String getColor(final TagResponse tag) {
+		if (tag == null) {
+			return null;
+		}
+
+		return tag.color();
 	}
 
 	public static AdateViewResponse toAdateViewResponse(final AdateDto adate) {

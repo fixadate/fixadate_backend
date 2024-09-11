@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.config.FixtureMonkeyConfig;
 import com.fixadate.domain.adate.dto.AdateRegisterDto;
 import com.fixadate.domain.adate.dto.AdateUpdateDto;
@@ -41,6 +42,9 @@ public class AdateServiceFixture {
 
 	@Autowired
 	private RedisTemplate<Object, Object> redisJsonTemplate;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	protected AdateRegisterDto 일정_저장_요청;
 	protected AdateRegisterDto 태그가_있는_일정_저장_요청;
@@ -149,7 +153,7 @@ public class AdateServiceFixture {
 									.set("calendarId", uniqueStringOption)
 									.setNotNull("ifAllDay")
 									.set("member", 회원)
-									.setNull("tag")
+									.set("tag", 태그)
 									.sample();
 
 		외부_캘린더_일정 = entityFixtureMonkey.giveMeBuilder(Adate.class)

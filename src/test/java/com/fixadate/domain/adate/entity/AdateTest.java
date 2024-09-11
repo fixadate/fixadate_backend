@@ -37,7 +37,7 @@ class AdateTest extends AdateFixture {
 	@Test
 	void 일정의_태그와_색상_삭제_테스트() {
 		// when
-		일정.removeTagAndColor();
+		일정.removeTag();
 
 		// then
 		assertSoftly(softly -> {
@@ -56,7 +56,6 @@ class AdateTest extends AdateFixture {
 			softly.assertThat(일정.getTitle()).isEqualTo(수정_일정.getTitle());
 			softly.assertThat(일정.getNotes()).isEqualTo(수정_일정.getNotes());
 			softly.assertThat(일정.getLocation()).isEqualTo(수정_일정.getLocation());
-			softly.assertThat(일정.getColor()).isEqualTo(수정_일정.getColor());
 			softly.assertThat(일정.getStartsWhen()).isEqualTo(수정_일정.getStartsWhen());
 			softly.assertThat(일정.getEndsWhen()).isEqualTo(수정_일정.getEndsWhen());
 			softly.assertThat(일정.getCalendarId()).isEqualTo(수정_일정.getCalendarId());
@@ -177,14 +176,5 @@ class AdateTest extends AdateFixture {
 			softly.assertThat(일정.getTag()).isEqualTo(수정_태그);
 			softly.assertThat(일정.getColor()).isEqualTo(수정_태그.getColor());
 		});
-	}
-
-	@Test
-	void 일정의_색상_수정_테스트() {
-		// when
-		일정.refreshColorFromCurrentTag();
-
-		// then
-		assertThat(일정.getColor()).isEqualTo(일정.getTag().getColor());
 	}
 }

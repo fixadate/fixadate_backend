@@ -55,8 +55,6 @@ public class Adate extends BaseTimeEntity {
 
 	private LocalDateTime repeatFreq;
 
-	private String color;
-
 	// TODO: [추후] if 대신 is로 수정 & 불필요한 필드 삭제
 	private boolean ifAllDay;
 
@@ -79,7 +77,6 @@ public class Adate extends BaseTimeEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "fk_adate_tag_id"))
-	@JsonIgnore
 	private Tag tag;
 
 	@Builder
@@ -89,7 +86,6 @@ public class Adate extends BaseTimeEntity {
 		final String location,
 		final LocalDateTime alertWhen,
 		final LocalDateTime repeatFreq,
-		final String color,
 		final boolean ifAllDay,
 		final LocalDateTime startsWhen,
 		final LocalDateTime endsWhen,
@@ -104,7 +100,6 @@ public class Adate extends BaseTimeEntity {
 		this.location = location;
 		this.alertWhen = alertWhen;
 		this.repeatFreq = repeatFreq;
-		this.color = color;
 		this.ifAllDay = ifAllDay;
 		this.startsWhen = startsWhen;
 		this.endsWhen = endsWhen;
@@ -119,8 +114,7 @@ public class Adate extends BaseTimeEntity {
 		return this.member.equals(member);
 	}
 
-	public void removeTagAndColor() {
-		this.color = null;
+	public void removeTag() {
 		this.tag = null;
 	}
 
@@ -129,7 +123,6 @@ public class Adate extends BaseTimeEntity {
 		this.title = adate.title;
 		this.notes = adate.notes;
 		this.location = adate.location;
-		this.color = adate.color;
 		this.ifAllDay = adate.ifAllDay;
 		this.startsWhen = adate.startsWhen;
 		this.endsWhen = adate.endsWhen;
@@ -176,15 +169,14 @@ public class Adate extends BaseTimeEntity {
 
 	public void updateTag(final Tag tag) {
 		this.tag = tag;
-
-		if (tag != null) {
-			this.color = tag.getColor();
-		}
 	}
 
-	public void refreshColorFromCurrentTag() {
-		if (this.tag != null) {
-			this.color = this.tag.getColor();
+	@JsonIgnore
+	public String getColor() {
+		if (tag == null) {
+			return null;
 		}
+
+		return tag.getColor();
 	}
 }

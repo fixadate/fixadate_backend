@@ -18,7 +18,7 @@ public class TagMapper {
 		return Tag.builder()
 			.color(tagRequest.color())
 			.name(tagRequest.name())
-			.isDefault(false)
+			.aisDefault(false)
 			.member(member)
 			.build();
 	}
@@ -27,7 +27,7 @@ public class TagMapper {
 		return new TagResponse(
 			tag.getColor(),
 			tag.getName(),
-			tag.isDefault()
+			tag.isAisDefault()
 		);
 	}
 }

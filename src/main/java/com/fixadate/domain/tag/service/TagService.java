@@ -1,16 +1,16 @@
 package com.fixadate.domain.tag.service;
 
-import static com.fixadate.domain.tag.mapper.TagMapper.*;
-import static com.fixadate.global.exception.ExceptionCode.*;
+import static com.fixadate.domain.tag.mapper.TagMapper.toEntity;
+import static com.fixadate.domain.tag.mapper.TagMapper.toResponse;
+import static com.fixadate.global.exception.ExceptionCode.ALREADY_EXISTS_TAG;
+import static com.fixadate.global.exception.ExceptionCode.CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TAG_MEMBER_NAME;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 public class TagService {
 
 	private final TagRepository tagRepository;
-	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional
 	public void registerTag(Member member, TagRequest tagRequest) {
@@ -52,8 +51,8 @@ public class TagService {
 
 	private List<TagResponse> createTagResponsesWithTags(List<Tag> tags) {
 		return tags.stream()
-			.map(TagMapper::toResponse)
-			.toList();
+				   .map(TagMapper::toResponse)
+				   .toList();
 	}
 
 	@Transactional
@@ -70,10 +69,6 @@ public class TagService {
 
 		tag.updateTag(tagUpdateRequest);
 
-		if (isValidString(tagUpdateRequest.newColor())) {
-			applicationEventPublisher.publishEvent(new AdateTagUpdateEvent(new ArrayList<>(tag.getAdates())));
-		}
-
 		return toResponse(tag);
 	}
 
@@ -84,11 +79,11 @@ public class TagService {
 	@Transactional
 	public Tag findTagByMemberAndColor(String name, Member member) {
 		return tagRepository.findTagByNameAndMember(name, member)
-			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
+							.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
 	}
 
 	public void isDefaultTag(Tag tag) {
-		if (tag.isDefault()) {
+		if (tag.isAisDefault()) {
 			throw new TagBadRequestException(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG);
 		}
 	}

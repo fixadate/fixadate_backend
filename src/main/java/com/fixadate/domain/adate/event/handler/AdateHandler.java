@@ -6,11 +6,9 @@ import static com.fixadate.global.util.constant.ConstantValue.CALENDAR_CANCELLED
 import java.util.Optional;
 
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.event.object.AdateTagUpdateEvent;
 import com.fixadate.domain.adate.event.object.ExternalCalendarSettingEvent;
 import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.service.AdateService;
@@ -52,12 +50,5 @@ public class AdateHandler {
 				originAdate.updateFrom(adate);
 			}
 		});
-	}
-
-	@Async
-	@EventListener
-	public void updateAdateTagEvent(final AdateTagUpdateEvent adateTagUpdateEvent) {
-		adateTagUpdateEvent.adates()
-						   .forEach(Adate::refreshColorFromCurrentTag);
 	}
 }

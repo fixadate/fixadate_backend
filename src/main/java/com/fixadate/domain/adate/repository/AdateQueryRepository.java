@@ -42,6 +42,7 @@ public class AdateQueryRepository {
 							.and(adate.startsWhen.loe(endDateTime))
 							.and(adate.endsWhen.goe(startDateTime))
 			)
+			.leftJoin(adate.tag).fetchJoin()
 			.orderBy(adate.startsWhen.asc())
 			.fetch();
 	}

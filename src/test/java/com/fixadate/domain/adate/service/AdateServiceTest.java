@@ -135,7 +135,6 @@ class AdateServiceTest extends AdateServiceFixture {
 				softly.assertThat(actual.location()).isEqualTo(삭제된_일정.getLocation());
 				softly.assertThat(actual.alertWhen()).isEqualTo(삭제된_일정.getAlertWhen());
 				softly.assertThat(actual.repeatFreq()).isEqualTo(삭제된_일정.getRepeatFreq());
-				softly.assertThat(actual.color()).isEqualTo(삭제된_일정.getColor());
 				softly.assertThat(actual.ifAllDay()).isEqualTo(삭제된_일정.isIfAllDay());
 				softly.assertThat(actual.startsWhen()).isEqualTo(삭제된_일정.getStartsWhen());
 				softly.assertThat(actual.endsWhen()).isEqualTo(삭제된_일정.getEndsWhen());
