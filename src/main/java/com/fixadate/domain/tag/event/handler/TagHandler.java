@@ -43,7 +43,7 @@ public class TagHandler {
 		Tag tag = Tag.builder()
 					 .color(calendar.getColor())
 					 .name(calendar.getTagName())
-					 .aisDefault(true)
+					 .systemDefined(true)
 					 .member(member)
 					 .build();
 

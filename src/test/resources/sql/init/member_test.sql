@@ -44,19 +44,16 @@ CREATE TABLE member
     FOREIGN KEY (push_key_id) REFERENCES push_key (id)
 );
 
-
-
 CREATE TABLE tag
 (
     id         BIGINT NOT NULL AUTO_INCREMENT,
     color      VARCHAR(255),
     name       VARCHAR(255),
-    is_default BOOLEAN,
+    system_defined BOOLEAN,
     member_id  VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
-
 
 CREATE TABLE adate
 (

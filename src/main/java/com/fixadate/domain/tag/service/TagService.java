@@ -64,7 +64,7 @@ public class TagService {
 		Tag tag = findTagByMemberAndColor(tagUpdateRequest.name(), member);
 
 		if (isValidString(tagUpdateRequest.newName())) {
-			isDefaultTag(tag);
+			isSystemDefinedTag(tag);
 		}
 
 		tag.updateTag(tagUpdateRequest);
@@ -82,8 +82,8 @@ public class TagService {
 							.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
 	}
 
-	public void isDefaultTag(Tag tag) {
-		if (tag.isAisDefault()) {
+	public void isSystemDefinedTag(Tag tag) {
+		if (tag.isSystemDefined()) {
 			throw new TagBadRequestException(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG);
 		}
 	}
@@ -92,7 +92,7 @@ public class TagService {
 	public void removeColor(String name, Member member) {
 		Tag tag = findTagByMemberAndColor(name, member);
 
-		isDefaultTag(tag);
+		isSystemDefinedTag(tag);
 		tag.deleteTag();
 
 		tagRepository.delete(tag);

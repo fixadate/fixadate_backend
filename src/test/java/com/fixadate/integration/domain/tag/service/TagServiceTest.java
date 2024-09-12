@@ -306,7 +306,7 @@ class TagServiceTest {
 			"ex9, NColor, newName2",
 			"ex10, NColor, newName3"
 		})
-		void updateColorNameIfTagisDefault(
+		void updateColorNameIfTagIsSystemDefined(
 			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
 		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
@@ -395,7 +395,7 @@ class TagServiceTest {
 			"ex9",
 			"ex10"
 		})
-		void removeColorIfTagisDefault(String name) {
+		void removeColorIfTagIsSystemDefined(String name) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),

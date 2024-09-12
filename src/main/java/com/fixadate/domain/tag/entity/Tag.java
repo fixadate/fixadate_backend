@@ -35,7 +35,7 @@ public class Tag {
 
 	private String color;
 	private String name;
-	private boolean aisDefault;
+	private boolean systemDefined;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", referencedColumnName = "id")

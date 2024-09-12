@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.controller.impl;
 
+import static com.fixadate.global.exception.ExceptionCode.DEFAULT_BAD_REQUEST;
 import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_ADATE;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
@@ -109,7 +110,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 					.content(objectMapper.writeValueAsString(제목이_없는_일정_저장_요청))
 			).andExpectAll(
 				status().isBadRequest(),
-				jsonPath("$.code", is(BAD_REQUEST.value())),
+				jsonPath("$.code", is(DEFAULT_BAD_REQUEST.getCode())),
 				jsonPath("$.message", is("Adate title cannot be blank"))
 			);
 		}
@@ -125,7 +126,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 					.content(objectMapper.writeValueAsString(시작일이_없는_일정_저장_요청))
 			).andExpectAll(
 				status().isBadRequest(),
-				jsonPath("$.code", is(BAD_REQUEST.value())),
+				jsonPath("$.code", is(DEFAULT_BAD_REQUEST.getCode())),
 				jsonPath("$.message", is("Adate startsWhen cannot be null"))
 			);
 		}
@@ -141,7 +142,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 					.content(objectMapper.writeValueAsString(종료일이_없는_일정_저장_요청))
 			).andExpectAll(
 				status().isBadRequest(),
-				jsonPath("$.code", is(BAD_REQUEST.value())),
+				jsonPath("$.code", is(DEFAULT_BAD_REQUEST.getCode())),
 				jsonPath("$.message", is("Adate endsWhen cannot be null"))
 			);
 		}
@@ -355,7 +356,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 					.queryParam("month", String.valueOf(0))
 			).andExpectAll(
 				status().isBadRequest(),
-				jsonPath("$.code", is(BAD_REQUEST.value())),
+				jsonPath("$.code", is(DEFAULT_BAD_REQUEST.getCode())),
 				jsonPath("$.message", containsString("greater than"))
 			);
 		}
@@ -372,7 +373,7 @@ class AdateControllerImplTest extends AdateControllerImplFixture {
 					.queryParam("month", String.valueOf(13))
 			).andExpectAll(
 				status().isBadRequest(),
-				jsonPath("$.code", is(BAD_REQUEST.value())),
+				jsonPath("$.code", is(DEFAULT_BAD_REQUEST.getCode())),
 				jsonPath("$.message", containsString("less than"))
 			);
 		}

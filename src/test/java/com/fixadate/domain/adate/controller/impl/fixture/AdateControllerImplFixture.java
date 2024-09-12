@@ -17,6 +17,7 @@ import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.global.jwt.MemberPrincipal;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -68,18 +69,24 @@ public class AdateControllerImplFixture {
 									  .setNotNull("startsWhen")
 									  .setNotNull("endsWhen")
 									  .sample();
+
+		final TagResponse 태그_정보_전달_객체 = recordFixtureMonkey.giveMeBuilder(TagResponse.class)
+														   .setNotNull("color")
+														   .setNotNull("name")
+														   .setNotNull("systemDefined")
+														   .sample();
 		일정_정보_저장_응답_전달_객체 = recordFixtureMonkey.giveMeBuilder(AdateDto.class)
 											   .set("title", 일정_저장_요청.title())
 											   .set("notes", 일정_저장_요청.notes())
 											   .set("location", 일정_저장_요청.location())
 											   .set("alertWhen", 일정_저장_요청.alertWhen())
 											   .set("repeatFreq", 일정_저장_요청.repeatFreq())
-											   .setNotNull("color")
 											   .set("ifAllDay", 일정_저장_요청.ifAllDay())
 											   .set("startsWhen", 일정_저장_요청.startsWhen())
 											   .set("endsWhen", 일정_저장_요청.endsWhen())
 											   .setNull("calendarId")
 											   .set("reminders", 일정_저장_요청.reminders())
+											   .set("tag", 태그_정보_전달_객체)
 											   .sample();
 		일정_저장_응답 = 일정_저장_요청;
 		제목이_없는_일정_저장_요청 = recordFixtureMonkey.giveMeBuilder(AdateRegisterRequest.class)
@@ -100,7 +107,6 @@ public class AdateControllerImplFixture {
 		일정_저장_요청_전달_객체 = AdateMapper.toAdateRegisterDto(일정_저장_요청);
 
 		일정_조회_응답_전달_객체 = createAdateDto(2);
-
 		일정_정보_응답_전달_객체 = recordFixtureMonkey.giveMeBuilder(AdateDto.class)
 											.setNotNull("alertWhen")
 											.setNotNull("repeatFreq")
@@ -109,6 +115,7 @@ public class AdateControllerImplFixture {
 											.setNotNull("endsWhen")
 											.setNotNull("calendarId")
 											.setNotNull("reminders")
+											.set("tag", 태그_정보_전달_객체)
 											.sample();
 		캘린더_아이디 = 일정_정보_응답_전달_객체.calendarId();
 
