@@ -4,7 +4,7 @@
 
 ## 기술 스택
 
-<img alt="Fixadate 기술 스택" height="600" src="https://github.com/user-attachments/assets/e4dcd46e-d443-43bd-88b8-2fbb1214007b" width="400"/>
+<img width="600" alt="fixadate 기술 스택" src="https://github.com/user-attachments/assets/096f4343-3182-4bd8-86cf-2da2307d0792" height="600">
 
 ## CICD
 
