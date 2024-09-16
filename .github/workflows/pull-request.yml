@@ -6,6 +6,9 @@ on:
       - 'hotfix/**'
     paths:
       - '**'
+
+permissions: write-all
+
 jobs:
   test:
     uses: ./.github/workflows/common-steps.yml
