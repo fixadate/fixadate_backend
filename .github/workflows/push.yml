@@ -4,6 +4,9 @@ on:
     branches: [ 'main' ]
     paths:
       - '**'
+
+permissions: write-all
+
 env:
   PROJECT_NAME: fixadate
   BUCKET_NAME: fixadate-bucket

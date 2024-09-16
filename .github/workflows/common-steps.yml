@@ -3,6 +3,8 @@ name: Common Steps
 on:
   workflow_call:
 
+permissions: write-all
+
 jobs:
   build:
     runs-on: ubuntu-latest
