@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ExceptionCode {
 	/*
+	default -> 0xxx
 	adate -> 1xxx
 	tag -> 2xxx
 	googleCalendar -> 3xxx
@@ -16,6 +17,8 @@ public enum ExceptionCode {
 	auth -> 8xxx
 	other -> 9xxx
 	 */
+	DEFAULT_BAD_REQUEST(1, "BAD REQUEST"),
+
 	NOT_FOUND_ADATE_CALENDAR_ID(1001, "요청한 calendarId에 해당하는 Adate가 없습니다."),
 	INVALID_MONTH(1002, "월에는 1부터 12사이의 값을 입력해야 합니다."),
 	INVALID_LOCALDATE(1003, "잘못된 LocalDate 값입니다."),
@@ -25,6 +28,7 @@ public enum ExceptionCode {
 	FAIL_TO_SERIALIZATION(1007, "직렬화 하는데 실패했습니다."),
 	FAIL_TO_EXECUTE_REDIS_COMMAND(1008, "Redis 명령을 실행하는데 실패했습니다."),
 	UNKNOWN_REDIS_EXCEPTION(1009, "Redis 예외가 발생했습니다."),
+	FORBIDDEN_UPDATE_ADATE(1010, "해당 Adate를 수정할 권한이 없습니다."),
 
 	ALREADY_EXISTS_TAG(2001, "변경하려고 하는 이름이 이미 존재합니다."),
 	NOT_FOUND_TAG_MEMBER_NAME(2002, "요청한 member, name에 해당하는 tag가 없습니다."),

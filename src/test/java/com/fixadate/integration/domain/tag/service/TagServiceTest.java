@@ -43,7 +43,7 @@ import net.jqwik.api.Arbitraries;
 
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.config.FixtureMonkeyConfig;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.tag.dto.request.TagRequest;
@@ -306,7 +306,7 @@ class TagServiceTest {
 			"ex9, NColor, newName2",
 			"ex10, NColor, newName3"
 		})
-		void updateColorNameIfTagisDefault(
+		void updateColorNameIfTagIsSystemDefined(
 			@AggregateWith(TagUpdateRequestAggregator.class) TagUpdateRequest tagUpdateRequest
 		) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
@@ -395,7 +395,7 @@ class TagServiceTest {
 			"ex9",
 			"ex10"
 		})
-		void removeColorIfTagisDefault(String name) {
+		void removeColorIfTagIsSystemDefined(String name) {
 			Optional<Member> memberOptional = memberRepository.findMemberByEmail("hong@example.com");
 			assertAll(
 				() -> assertTrue(memberOptional.isPresent()),

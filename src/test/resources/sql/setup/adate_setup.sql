@@ -11,7 +11,7 @@ VALUES ('101', '123', 'GOOGLE', 'hong', '123123', 'kevin', '0928', 'male', 'stud
        ('105', '5', 'GOOGLE', 'down', '123123', 'mark', '1001', 'female', 'teacher', 'skyblue', 'down@example.com',
         'MEMBER');
 
-INSERT INTO tag(color, name, is_default)
+INSERT INTO tag(color, name, system_defined)
 VALUES ('black', '검정', false),
        ('red', '빨강', false),
        ('white', '하양', false),

@@ -1,7 +1,6 @@
 package com.fixadate.domain.tag.event.handler;
 
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TAG_MEMBER_NAME;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -15,14 +14,10 @@ import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.domain.tag.repository.TagRepository;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
+import com.fixadate.global.util.constant.ExternalCalendar;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- *
- * @author yongjunhong
- * @since 2024. 7. 8.
- */
 @Component
 @RequiredArgsConstructor
 public class TagHandler {
@@ -32,24 +27,25 @@ public class TagHandler {
 	@EventListener
 	public void setTagEvent(TagSettingEvent event) {
 		Adate adate = event.adate();
-		Member member = event.member();
+		Member member = adate.getMember();
 		String tagName = event.tagName();
 
 		Tag tag = tagRepository.findTagByNameAndMember(tagName, member)
-			.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
-		adate.setTag(tag);
+							   .orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
+		adate.updateTag(tag);
 	}
 
 	@EventListener
 	public void setTagMemberEvent(TagMemberSettingEvent event) {
 		Member member = event.member();
+		ExternalCalendar calendar = event.externalCalendar();
 
 		Tag tag = Tag.builder()
-			.color(GOOGLE_CALENDAR_COLOR.getValue())
-			.name(GOOGLE_CALENDAR.getValue())
-			.isDefault(true)
-			.member(member)
-			.build();
+					 .color(calendar.getColor())
+					 .name(calendar.getTagName())
+					 .systemDefined(true)
+					 .member(member)
+					 .build();
 
 		tagRepository.save(tag);
 	}

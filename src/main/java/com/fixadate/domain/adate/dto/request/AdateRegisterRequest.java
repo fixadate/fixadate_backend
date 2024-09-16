@@ -13,6 +13,7 @@ public record AdateRegisterRequest(
 	LocalDateTime alertWhen,
 	LocalDateTime repeatFreq,
 	String tagName,
+	@NotNull
 	boolean ifAllDay,
 	@NotNull(message = "Adate startsWhen cannot be null")
 	LocalDateTime startsWhen,

@@ -1,9 +1,13 @@
 package com.fixadate.domain.adate.service;
 
-import static com.fixadate.domain.adate.mapper.AdateMapper.*;
-import static com.fixadate.global.exception.ExceptionCode.*;
-import static com.fixadate.global.util.TimeUtil.*;
-import static com.fixadate.global.util.constant.ConstantValue.*;
+import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateDto;
+import static com.fixadate.domain.adate.mapper.AdateMapper.toEntity;
+import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_ADATE;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
+import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromLocalDate;
+import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
+import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -14,127 +18,179 @@ import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
-import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
-import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
-import com.fixadate.domain.adate.dto.response.AdateResponse;
-import com.fixadate.domain.adate.dto.response.AdateViewResponse;
+import com.fixadate.domain.adate.dto.AdateDto;
+import com.fixadate.domain.adate.dto.AdateRegisterDto;
+import com.fixadate.domain.adate.dto.AdateUpdateDto;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.mapper.AdateMapper;
-import com.fixadate.domain.adate.repository.AdateQueryRepository;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
+import com.fixadate.global.exception.forbidden.AdateUpdateForbiddenException;
 import com.fixadate.global.exception.notfound.AdateNotFoundException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.global.facade.RedisFacade;
-import com.google.api.services.calendar.model.Event;
+import com.fixadate.global.util.constant.ExternalCalendar;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Validated
 public class AdateService {
+
+	private static final int ADATE_REDIS_DURATION = 20;
+
 	private final AdateRepository adateRepository;
-	private final AdateQueryRepository adateQueryRepository;
 	private final RedisFacade redisFacade;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerAdateEvent(AdateRegisterRequest adateRegisterRequest, String tagName, Member member) {
-		Adate adate = registerDtoToEntity(adateRegisterRequest, member);
-		adateRepository.save(adate);
+	public AdateDto registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
+		final Adate adate = toEntity(adateRegisterDto, member);
+		final Adate savedAdate = adateRepository.save(adate);
 
+		final String tagName = adateRegisterDto.tagName();
 		if (tagName != null && !tagName.isEmpty()) {
-			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, tagName));
+			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, tagName));
 		}
-	}
 
-	@Transactional
-	public AdateResponse restoreAdateByCalendarId(String calendarId) {
-		Adate adate = redisFacade.getAndDeleteObjectRedis(ADATE_WITH_COLON.getValue() + calendarId, Adate.class);
-		return toAdateResponse(adateRepository.save(adate));
+		return AdateMapper.toAdateDto(savedAdate);
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public void registerEvent(Event event, Member member) {
-		Adate adate = eventToEntity(event);
-		adateRepository.save(adate);
+	public void registerExternalCalendarToAdate(final Adate adate, final ExternalCalendar externalCalendar) {
+		final Adate saveAdate = adateRepository.save(adate);
 
-		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, GOOGLE_CALENDAR.getValue()));
-	}
-
-	public void removeAdate(Adate adate) {
-		adateRepository.delete(adate);
+		applicationEventPublisher.publishEvent(new TagSettingEvent(saveAdate, externalCalendar.getTagName()));
 	}
 
 	@Transactional
-	public void removeAdateByCalendarId(String calendarId) {
-		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
-			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
-		adateRepository.delete(adate);
+	public AdateDto restoreAdateByCalendarId(final String calendarId) {
+		final String key = ADATE_WITH_COLON.getValue() + calendarId;
+		final Adate adate = redisFacade.getAndDeleteObjectRedis(key, Adate.class);
+		final Adate saveAdate = adateRepository.save(adate);
 
-		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, Duration.ofDays(20));
+		return toAdateDto(saveAdate);
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<Adate> getAdateByCalendarId(String calendarId) {
+	public Optional<Adate> getAdateByCalendarId(final String calendarId) {
 		return adateRepository.findAdateByCalendarId(calendarId);
 	}
 
+	// TODO: [추후] 회원정보를 받아, 해당 회원의 일정인지 확인 필요
 	@Transactional(readOnly = true)
-	public AdateResponse getAdateResponseByCalendarId(String calendarId) {
-		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
-			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
-		return toAdateResponse(adate);
+	public AdateDto getAdateInformationByCalendarId(final String calendarId) {
+		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
+		);
+
+		return toAdateDto(adate);
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdateByStartAndEndTime(Member member, LocalDateTime startDateTime,
-		LocalDateTime endDateTime) {
-		List<Adate> adates = adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
-		return adates.stream().map(AdateMapper::toAdateViewResponse).toList();
+	public List<AdateDto> getAdateByStartAndEndTime(
+		final Member member,
+		final LocalDateTime startDateTime,
+		final LocalDateTime endDateTime
+	) {
+		checkStartAndEndTime(startDateTime, endDateTime);
+		final List<Adate> adates = adateRepository.findByDateRange(member, startDateTime, endDateTime);
+
+		return adates.stream()
+					 .map(AdateMapper::toAdateDto)
+					 .toList();
 	}
 
-	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdatesByMonth(int year, int month, Member member) {
-		LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
-		LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
-		checkStartAndEndTime(startTime, endTime);
-
-		return getAdateByStartAndEndTime(member, startTime, endTime);
-	}
-
-	@Transactional(readOnly = true)
-	public List<AdateViewResponse> getAdatesByWeek(LocalDate firstDay, LocalDate lastDay, Member member) {
-		LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
-		LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
-		checkStartAndEndTime(startTime, endTime);
-
-		return getAdateByStartAndEndTime(member, startTime, endTime);
-	}
-
-	private void checkStartAndEndTime(LocalDateTime startTime, LocalDateTime endTime) {
+	private void checkStartAndEndTime(final LocalDateTime startTime, final LocalDateTime endTime) {
 		if (startTime.isAfter(endTime)) {
 			throw new InvalidTimeException(INVALID_START_END_TIME);
 		}
 	}
 
-	@Transactional(noRollbackFor = TagNotFoundException.class)
-	public AdateResponse updateAdate(String calendarId, AdateUpdateRequest adateUpdateRequest, Member member) {
-		Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
-			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID));
+	@Transactional(readOnly = true)
+	public List<AdateDto> getAdatesByMonth(final Member member, final int year, final int month) {
+		final LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
+		final LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
 
-		adate.updateAdate(adateUpdateRequest);
-		adateRepository.save(adate);
-
-		applicationEventPublisher.publishEvent(new TagSettingEvent(adate, member, adateUpdateRequest.tagName()));
-		return toAdateResponse(adate);
+		return getAdateByStartAndEndTime(member, startTime, endTime);
 	}
 
+	@Transactional(readOnly = true)
+	public List<AdateDto> getAdatesByDate(
+		final Member member,
+		final LocalDate firstDay,
+		final LocalDate lastDay
+	) {
+		final LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
+		final LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
+
+		return getAdateByStartAndEndTime(member, startTime, endTime);
+	}
+
+	@Transactional(noRollbackFor = TagNotFoundException.class)
+	public AdateDto updateAdate(
+		final Member member,
+		final String calendarId,
+		final AdateUpdateDto adateUpdateDto
+	) {
+		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
+		);
+
+		validateUserCanUpdate(adate, member);
+		updateIfNotNull(adate, adateUpdateDto);
+
+		return toAdateDto(adate);
+	}
+
+	private void validateUserCanUpdate(final Adate adate, final Member member) {
+		if (!adate.isOwner(member)) {
+			throw new AdateUpdateForbiddenException(FORBIDDEN_UPDATE_ADATE);
+		}
+	}
+
+	private void updateIfNotNull(final Adate adate, final AdateUpdateDto adateUpdateDto) {
+		if (adateUpdateDto.tagName() != null) {
+			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, adateUpdateDto.tagName()));
+		}
+		if (adateUpdateDto.title() != null) {
+			adate.updateTitle(adateUpdateDto.title());
+		}
+		if (adateUpdateDto.notes() != null) {
+			adate.updateNotes(adateUpdateDto.notes());
+		}
+		if (adateUpdateDto.location() != null) {
+			adate.updateLocation(adateUpdateDto.location());
+		}
+		if (adateUpdateDto.alertWhen() != null) {
+			adate.updateAlertWhen(adateUpdateDto.alertWhen());
+		}
+		if (adateUpdateDto.repeatFreq() != null) {
+			adate.updateRepeatFreq(adateUpdateDto.repeatFreq());
+		}
+
+		adate.updateIfAllDay(adateUpdateDto.ifAllDay());
+		adate.updateStartsWhen(adateUpdateDto.startsWhen());
+		adate.updateEndsWhen(adateUpdateDto.endsWhen());
+		adate.updateReminders(adateUpdateDto.reminders());
+	}
+
+	@Transactional
+	public void removeAdate(final Adate adate) {
+		adateRepository.delete(adate);
+	}
+
+	@Transactional
+	public void removeAdateByCalendarId(final String calendarId) {
+		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
+			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
+		);
+		adateRepository.delete(adate);
+
+		final Duration adateDuration = Duration.ofDays(ADATE_REDIS_DURATION);
+		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, adateDuration);
+	}
 }

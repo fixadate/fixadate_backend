@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.repository.AdateRepository;
+import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.googlecalendar.service.GoogleService;

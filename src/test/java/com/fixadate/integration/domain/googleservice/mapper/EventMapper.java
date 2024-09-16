@@ -77,7 +77,7 @@ public class EventMapper {
 		Long randomId = random.nextLong();
 
 		// todo : set으로 값을 생성하지 말고 랜덤하게 생성할 수 있게 수정할 것
-		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.jakartaValidationMonkey();
+		FixtureMonkey fixtureMonkey = FixtureMonkeyConfig.entityMonkey();
 		return fixtureMonkey.giveMeBuilder(Adate.class)
 							.set("id", randomId)
 							.set("title", "Random Title")

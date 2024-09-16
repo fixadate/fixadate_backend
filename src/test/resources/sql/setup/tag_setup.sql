@@ -24,7 +24,7 @@ VALUES ('101', '123', 'GOOGLE', 'hong', '123123', 'kevin', '0928', 'male', 'stud
 
 
 
-INSERT INTO tag (color, name, is_default)
+INSERT INTO tag (color, name, system_defined)
 VALUES ('yellow', 'ex1', false),
        ('violet', 'ex2', false),
        ('white', 'ex3', false),

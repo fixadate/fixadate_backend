@@ -13,12 +13,16 @@ spring:
 
     redis:
       host: 127.0.0.1
-      port: 6379
-      password: password
+      port: 44136
+      password: fixadate_redis_password
 
   jpa:
     hibernate:
       ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
   security:
     oauth2:
@@ -55,8 +59,8 @@ jwt:
 
 logging:
   level:
-    org.springframework.security: debug
-    org.hibernate.SQL: debug
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
     org.springframework.web: DEBUG
 
 google:

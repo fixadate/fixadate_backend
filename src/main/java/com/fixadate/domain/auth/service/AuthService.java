@@ -10,6 +10,7 @@ import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME;
 import static com.fixadate.global.util.constant.ConstantValue.REFRESH_TOKEN;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -29,6 +30,7 @@ import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 import com.fixadate.global.exception.unauthorized.AuthException;
 import com.fixadate.global.util.S3Util;
+import com.fixadate.global.util.constant.ExternalCalendar;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,8 +79,14 @@ public class AuthService {
 		Member member = toEntity(memberRegisterRequest, encodedOauthId);
 		memberRepository.save(member);
 
-		applicationEventPublisher.publishEvent(new TagMemberSettingEvent(member));
+		registerExternalCalendarTag(member);
+
 		return new MemberSignupResponse(s3Util.generatePresignedUrlForUpload(member.getProfileImg()));
+	}
+
+	private void registerExternalCalendarTag(final Member member) {
+		Arrays.stream(ExternalCalendar.values())
+			  .forEach(calendar -> applicationEventPublisher.publishEvent(new TagMemberSettingEvent(member, calendar)));
 	}
 
 	@Transactional

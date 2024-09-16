@@ -1,9 +1,13 @@
 package com.fixadate.config;
 
+import java.util.UUID;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 
@@ -16,10 +20,9 @@ public class FixtureMonkeyConfig {
 	public static FixtureMonkey simpleValueJqwikMonkey() {
 		return FixtureMonkey.builder()
 							.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-							.plugin(new SimpleValueJqwikPlugin()
-										.maxStringLength(10)
-										.maxNumberValue(10_000)
-										.characterPredicate(Character::isAlphabetic)
+							.plugin(new SimpleValueJqwikPlugin().maxStringLength(10)
+																.maxNumberValue(10_000)
+																.characterPredicate(Character::isAlphabetic)
 							)
 							.build();
 	}
@@ -55,5 +58,14 @@ public class FixtureMonkeyConfig {
 							.plugin(new JakartaValidationPlugin())
 							.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 							.build();
+	}
+
+	public static Values.Just uniqueStringOption(final int length) {
+		return Values.just(
+			CombinableArbitrary.from(() -> UUID.randomUUID()
+											   .toString()
+											   .substring(0, length)
+			)
+		);
 	}
 }

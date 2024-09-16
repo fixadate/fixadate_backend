@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
@@ -34,14 +35,16 @@ public class Tag {
 
 	private String color;
 	private String name;
-	private boolean isDefault;
+	private boolean systemDefined;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", referencedColumnName = "id")
 	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JsonIgnore
 	private Member member;
 
 	@OneToMany(mappedBy = "tag")
+	@JsonIgnore
 	private List<Adate> adates;
 
 	public void updateTag(TagUpdateRequest tagUpdateRequest) {
@@ -54,6 +57,6 @@ public class Tag {
 	}
 
 	public void deleteTag() {
-		this.adates.forEach(Adate::removeTagAndColor);
+		this.adates.forEach(Adate::removeTag);
 	}
 }
