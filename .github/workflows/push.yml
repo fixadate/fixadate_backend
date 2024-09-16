@@ -12,6 +12,9 @@ env:
   SPRING_PROFILES_ACTIVE: prod
 jobs:
   build:
+    permissions:
+      pull-requests: write
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,28 +26,40 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
+
       - name: Set YML AND Credentials
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
           find src
+
       - name: SET Credentials
         uses: jsdaniell/create-json@1.1.2
         with:
           name: "credentials.json"
           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
           dir: './src/main/resources/'
+
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: build/test-results/test/TEST-*.xml
+
       - name: Make Zip File
         run: zip -qq -r ./$GITHUB_SHA.zip .
         shell: bash
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_FIXAMATE_ACCESSKEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_FIXAMATE_ACCESSKEY }}
           aws-region: ap-northeast-2
+
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
       - name: Code Deploy To EC2 instance
