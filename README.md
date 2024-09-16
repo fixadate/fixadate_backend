@@ -12,4 +12,4 @@
 
 ## INFRASTRUCTURE
 
-<img alt="fixadate flow drawio (1)" height="500" src="https://github.com/user-attachments/assets/d0886df4-549d-49e4-9dfd-0d40aac32527" width="740"/>
+<img alt="fixadate flow drawio (1)" height="600" src="https://github.com/user-attachments/assets/d0886df4-549d-49e4-9dfd-0d40aac32527" width="740"/>
