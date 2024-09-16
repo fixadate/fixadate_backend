@@ -15,9 +15,6 @@ env:
   SPRING_PROFILES_ACTIVE: prod
 jobs:
   build:
-    permissions:
-      pull-requests: write
-      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
