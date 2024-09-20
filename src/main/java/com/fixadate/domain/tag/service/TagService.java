@@ -17,7 +17,7 @@ import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.mapper.TagMapper;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.service.repository.TagRepository;
 import com.fixadate.global.exception.badrequest.TagBadRequestException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 

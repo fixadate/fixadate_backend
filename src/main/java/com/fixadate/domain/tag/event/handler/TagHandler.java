@@ -12,7 +12,7 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.event.object.TagMemberSettingEvent;
 import com.fixadate.domain.tag.event.object.TagSettingEvent;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.service.repository.TagRepository;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.global.util.constant.ExternalCalendar;
 
