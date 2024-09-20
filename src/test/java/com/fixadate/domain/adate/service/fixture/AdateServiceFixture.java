@@ -19,7 +19,7 @@ import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.service.repository.TagRepository;
 import com.fixadate.global.util.constant.ExternalCalendar;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
