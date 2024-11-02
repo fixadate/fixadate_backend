@@ -8,7 +8,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,12 +28,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tag {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String color;
+
 	private String name;
+
 	private boolean systemDefined;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -47,13 +49,12 @@ public class Tag {
 	@JsonIgnore
 	private List<Adate> adates;
 
-	public void updateTag(TagUpdateRequest tagUpdateRequest) {
-		if (tagUpdateRequest.newName() != null && !tagUpdateRequest.newName().isEmpty()) {
-			this.name = tagUpdateRequest.newName();
-		}
-		if (tagUpdateRequest.newColor() != null && !tagUpdateRequest.newColor().isEmpty()) {
-			this.color = tagUpdateRequest.newColor();
-		}
+	public void updateTagName(final String newName) {
+		this.name = newName;
+	}
+
+	public void updateTagColor(final String newColor) {
+		this.color = newColor;
 	}
 
 	public void deleteTag() {

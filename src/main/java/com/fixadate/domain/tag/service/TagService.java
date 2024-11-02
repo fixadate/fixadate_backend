@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.request.TagRequest;
@@ -32,11 +33,9 @@ public class TagService {
 	@Transactional
 	public void registerTag(Member member, TagRequest tagRequest) {
 		checkColor(tagRequest.name(), member);
-		Tag tag = toEntity(member, tagRequest);
-		tagRepository.save(tag);
+		tagRepository.save(toEntity(member, tagRequest));
 	}
 
-	@Transactional(readOnly = true)
 	public void checkColor(String name, Member member) {
 		if (tagRepository.findTagByNameAndMember(name, member).isPresent()) {
 			throw new TagBadRequestException(ALREADY_EXISTS_TAG);
@@ -46,10 +45,7 @@ public class TagService {
 	@Transactional(readOnly = true)
 	public List<TagResponse> getTagResponses(Member member) {
 		List<Tag> tags = tagRepository.findTagsByMember(member);
-		return createTagResponsesWithTags(tags);
-	}
 
-	private List<TagResponse> createTagResponsesWithTags(List<Tag> tags) {
 		return tags.stream()
 				   .map(TagMapper::toResponse)
 				   .toList();
@@ -57,24 +53,21 @@ public class TagService {
 
 	@Transactional
 	public TagResponse updateTag(TagUpdateRequest tagUpdateRequest, Member member) {
-		if (isValidString(tagUpdateRequest.newName())) {
-			checkColor(tagUpdateRequest.newName(), member);
-		}
-
 		Tag tag = findTagByMemberAndColor(tagUpdateRequest.name(), member);
 
-		if (isValidString(tagUpdateRequest.newName())) {
+		if (StringUtils.hasText(tagUpdateRequest.newName())) {
+			checkColor(tagUpdateRequest.newName(), member);
 			isSystemDefinedTag(tag);
+			tag.updateTagName(tagUpdateRequest.newName());
 		}
 
-		tag.updateTag(tagUpdateRequest);
+		if (StringUtils.hasText(tagUpdateRequest.newColor())) {
+			tag.updateTagColor(tagUpdateRequest.newColor());
+		}
 
 		return toResponse(tag);
 	}
 
-	private boolean isValidString(String str) {
-		return str != null && !str.isEmpty();
-	}
 
 	@Transactional
 	public Tag findTagByMemberAndColor(String name, Member member) {

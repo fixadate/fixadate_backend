@@ -54,7 +54,10 @@ public class SecurityConfig {
 
 		/* logout */
 		"/v1/auth/logout",
-		"/v1/google/loadtest"
+		"/v1/google/loadtest",
+
+		/* version check */
+		"/v1/appVersion"
 	};
 
 	@Bean

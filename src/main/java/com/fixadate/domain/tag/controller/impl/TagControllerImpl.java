@@ -31,8 +31,10 @@ public class TagControllerImpl implements TagController {
 
 	@Override
 	@PostMapping()
-	public ResponseEntity<Void> createTag(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
-		@Valid @RequestBody TagRequest tagRequest) {
+	public ResponseEntity<Void> createTag(
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+		@Valid @RequestBody TagRequest tagRequest
+	) {
 		tagService.registerTag(memberPrincipal.getMember(), tagRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
@@ -40,7 +42,8 @@ public class TagControllerImpl implements TagController {
 	@Override
 	@GetMapping()
 	public ResponseEntity<List<TagResponse>> findTags(
-		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal
+	) {
 
 		List<TagResponse> tagResponses = tagService.getTagResponses(
 			memberPrincipal.getMember());
@@ -51,16 +54,21 @@ public class TagControllerImpl implements TagController {
 	@PatchMapping()
 	public ResponseEntity<TagResponse> updateTag(
 		@Valid @RequestBody TagUpdateRequest tagUpdateRequest,
-		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-		TagResponse tagResponse = tagService.updateTag(tagUpdateRequest,
-			memberPrincipal.getMember());
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal
+	) {
+		TagResponse tagResponse = tagService.updateTag(
+			tagUpdateRequest,
+			memberPrincipal.getMember()
+		);
 		return ResponseEntity.ok(tagResponse);
 	}
 
 	@Override
 	@DeleteMapping("/{name}")
-	public ResponseEntity<Void> removeTag(@PathVariable String name,
-		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+	public ResponseEntity<Void> removeTag(
+		@PathVariable String name,
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal
+	) {
 		tagService.removeColor(name, memberPrincipal.getMember());
 		return ResponseEntity.noContent().build();
 	}

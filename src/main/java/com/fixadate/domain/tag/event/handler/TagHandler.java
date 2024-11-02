@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class TagHandler {
+
 	private final TagRepository tagRepository;
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -49,5 +50,4 @@ public class TagHandler {
 
 		tagRepository.save(tag);
 	}
-
 }

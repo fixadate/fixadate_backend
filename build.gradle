@@ -102,6 +102,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.testcontainers/localstack
     testImplementation "org.testcontainers:localstack:1.15.3"
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+
 }
 checkstyle {
     maxWarnings = 0

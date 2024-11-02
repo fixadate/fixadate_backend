@@ -5,22 +5,19 @@ import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 
-/**
- *
- * @author yongjunhong
- * @since 2024. 6. 1.
- */
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TagMapper {
-	private TagMapper() {
-	}
 
 	public static Tag toEntity(Member member, TagRequest tagRequest) {
 		return Tag.builder()
-			.color(tagRequest.color())
-			.name(tagRequest.name())
+				  .color(tagRequest.color())
+				  .name(tagRequest.name())
 				  .systemDefined(false)
-			.member(member)
-			.build();
+				  .member(member)
+				  .build();
 	}
 
 	public static TagResponse toResponse(Tag tag) {

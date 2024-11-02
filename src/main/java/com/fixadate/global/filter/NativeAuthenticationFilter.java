@@ -14,7 +14,7 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+									FilterChain filterChain) throws ServletException, IOException {
 
 		String contentType = request.getHeader("content-type");
 		String fixVersion = request.getHeader("Fix_Version");
@@ -35,11 +35,11 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		System.out.println(request.getRequestURI());
 		return request.getRequestURI().contains("/v1/member/nickname") || request.getRequestURI().contains("/error")
-			|| request.getRequestURI().contains("/swagger-ui") || request.getRequestURI()
-			.contains("/swagger-resources")
-			|| request.getRequestURI().contains("/v3/api-docs") || request.getRequestURI()
-			.contains("/swagger-ui/index.html")
-			|| request.getRequestURI().contains("/favicon.ico") || request.getRequestURI()
-			.contains("/v1/google/loadtest");
+			   || request.getRequestURI().contains("/swagger-ui") || request.getRequestURI()
+																			.contains("/swagger-resources")
+			   || request.getRequestURI().contains("/v3/api-docs") || request.getRequestURI()
+																			 .contains("/swagger-ui/index.html")
+			   || request.getRequestURI().contains("/favicon.ico") || request.getRequestURI()
+																			 .contains("/v1/google/loadtest");
 	}
 }
