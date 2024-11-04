@@ -2,6 +2,7 @@ package com.fixadate.domain.tag.repository;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,9 +50,11 @@ class TagQueryRepositoryTest extends TagQueryRepositoryFixture {
 		//then
 		assertSoftly(softly -> {
 			softly.assertThat(actual.size()).isEqualTo(1);
-			// TODO : 동일성이 아닌 동등성을 비교하도록 수정할 것
-//			softly.assertThat(actual).containsExactlyInAnyOrderElementsOf(List.of(저장된_태그));
+			softly.assertThat(actual)
+				  .usingElementComparator(Comparator.comparing(Tag::getName)
+													.thenComparing(Tag::getColor)
+													.thenComparing(Tag::getName))
+				  .containsExactlyInAnyOrderElementsOf(List.of(저장된_태그));
 		});
 	}
-
 }

@@ -84,9 +84,9 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '6.2.1'
 
     // https://mvnrepository.com/artifact/com.navercorp.fixturemonkey/fixture-monkey
-    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey', version: '1.0.20'
-    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey-jakarta-validation', version: '1.0.20'
-    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey-jackson', version: '1.0.21'
+    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey', version: '1.1.3'
+    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey-jakarta-validation', version: '1.1.3'
+    implementation group: 'com.navercorp.fixturemonkey', name: 'fixture-monkey-jackson', version: '1.1.3'
 
     // IDMaker
     implementation 'io.github.yonggoose:IDMaker:0.5.0'

@@ -16,6 +16,7 @@ import com.fixadate.domain.tag.controller.TagController;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.tag.dto.response.TagResponse;
+import com.fixadate.domain.tag.mapper.TagMapper;
 import com.fixadate.domain.tag.service.TagService;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.jwt.MemberPrincipal;
@@ -35,7 +36,7 @@ public class TagControllerImpl implements TagController {
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@Valid @RequestBody TagRequest tagRequest
 	) {
-		tagService.registerTag(memberPrincipal.getMember(), tagRequest);
+		tagService.registerTag(TagMapper.toRegisterDto(tagRequest, memberPrincipal.getMember()));
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
@@ -46,7 +47,8 @@ public class TagControllerImpl implements TagController {
 	) {
 
 		List<TagResponse> tagResponses = tagService.getTagResponses(
-			memberPrincipal.getMember());
+			memberPrincipal.getMember()
+		);
 		return ResponseEntity.ok(tagResponses);
 	}
 
@@ -56,10 +58,10 @@ public class TagControllerImpl implements TagController {
 		@Valid @RequestBody TagUpdateRequest tagUpdateRequest,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal
 	) {
-		TagResponse tagResponse = tagService.updateTag(
+		TagResponse tagResponse = tagService.updateTag(TagMapper.toUpdateDto(
 			tagUpdateRequest,
 			memberPrincipal.getMember()
-		);
+		));
 		return ResponseEntity.ok(tagResponse);
 	}
 
