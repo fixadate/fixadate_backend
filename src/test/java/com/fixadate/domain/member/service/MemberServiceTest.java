@@ -10,19 +10,17 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.fixadate.config.annotation.ServiceTest;
 import com.fixadate.domain.member.dto.response.MemberInfoDto;
 import com.fixadate.domain.member.service.fixture.MemberServiceFixture;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 
 import software.amazon.awssdk.services.s3.S3Client;
 
-@SpringBootTest
+@ServiceTest
 @Transactional
-@Testcontainers
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class MemberServiceTest extends MemberServiceFixture {

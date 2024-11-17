@@ -10,14 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Optional;
 
-import javax.sql.DataSource;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,18 +26,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.context.jdbc.Sql;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import net.jqwik.api.Arbitraries;
 
 import com.fixadate.config.DataClearExtension;
 import com.fixadate.config.FixtureMonkeyConfig;
-import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.tag.dto.request.TagRequest;
@@ -72,29 +61,8 @@ class TagServiceTest {
 	private MemberRepository memberRepository;
 	@Autowired
 	private TagService tagService;
-	@Autowired
-	private AdateRepository adateRepository;
 
 	private static final String MESSAGE = "message";
-
-	@Container
-	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
-
-	@BeforeAll
-	static void initDataBase(@Autowired DataSource dataSource) {
-		try (Connection conn = dataSource.getConnection()) {
-			mySQLContainer.start();
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/dropTable.sql"));
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/tag_test.sql"));
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@AfterAll
-	static void stopContainers() {
-		mySQLContainer.stop();
-	}
 
 	@Nested
 	@DisplayName("tag 저장 테스트")

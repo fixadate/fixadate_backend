@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
@@ -55,19 +52,10 @@ class JwtProviderTest {
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 
-	@Container
-	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
-
 	@BeforeAll
 	static void startContainers() {
 		claims = Jwts.claims();
 		claims.put("id", SAMPLE_SUBJECT);
-		mySQLContainer.start();
-	}
-
-	@AfterAll
-	static void stopContainers() {
-		mySQLContainer.stop();
 	}
 
 	@BeforeEach

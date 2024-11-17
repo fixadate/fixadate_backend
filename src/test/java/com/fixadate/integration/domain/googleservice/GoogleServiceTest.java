@@ -4,23 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
@@ -53,19 +45,6 @@ public class GoogleServiceTest {
 	@Autowired
 	private AuthService authService;
 
-	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
-
-	@BeforeAll
-	static void initDataBase(@Autowired DataSource dataSource) {
-		try (Connection conn = dataSource.getConnection()) {
-			mySQLContainer.start();
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/dropTable.sql"));
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/google_credentials_test.sql"));
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	@DisplayName("이벤트 동기화 테스트")
 	@Test
 	void syncEventsTest() {
@@ -83,5 +62,4 @@ public class GoogleServiceTest {
 			assertNotNull(adateRepository.findAdateByCalendarId(adate.getCalendarId()));
 		}
 	}
-
 }

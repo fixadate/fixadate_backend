@@ -40,29 +40,27 @@ VALUES ('yellow', 'ex1', false),
        ('default3', 'ex10', true);
 
 
-INSERT INTO adate (title, notes, location, alert_when, repeat_freq, color, if_all_day, starts_when,
-                   ends_when, calendar_id, reminders)
-VALUES ('Meeting1', 'Discuss project status', 'Conference Room A', '2024-04-17T10:00:00', '2024-04-17T11:00:00',
-        'yellow', 1, '2024-05-01T10:00:00', '2024-05-01T11:00:00', 'abc123', 101),
+INSERT INTO adate (title, notes, location, alert_when, repeat_freq, if_all_day, starts_when,
+                   ends_when, calendar_id, etag, reminders)
+VALUES ('Meeting1', 'Discuss project status', 'Conference Room A', '2024-04-17T10:00:00', '2024-04-17T11:00:00', 1,
+        '2024-05-01T10:00:00', '2024-05-01T11:00:00', 'abc123', 101, false),
        ('Meeting2', 'Discuss project status', 'Conference Room B', '2024-04-18T10:00:00', '2024-04-18T11:00:00',
-        'violet',
-        0, '2024-06-01T10:00:00', '2024-06-01T11:00:00', 'def456', 102),
+        0, '2024-06-01T10:00:00', '2024-06-01T11:00:00', 'def456', 102, false),
        ('Meeting3', 'Discuss project status', 'Conference Room C', '2024-04-19T10:00:00', '2024-04-19T11:00:00',
-        'white', 1, '2024-07-04T10:00:00', '2024-07-04T11:00:00', 'ghi789', 103),
+        1, '2024-07-04T10:00:00', '2024-07-04T11:00:00', 'ghi789', 103, false),
        ('Meeting4', 'Discuss project status', 'Conference Room D', '2024-04-20T10:00:00', '2024-04-20T11:00:00',
-        'orange',
-        0, '2024-04-20T10:00:00', '2024-04-20T11:00:00', 'jkl012', 104),
+        0, '2024-04-20T10:00:00', '2024-04-20T11:00:00', 'jkl012', 104, false),
        ('Meeting5', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-21T11:00:00',
-        'brown', 1, '2024-04-21T10:00:00', '2024-04-21T11:00:00', 'mno345', 105),
+        1, '2024-04-21T10:00:00', '2024-04-21T11:00:00', 'mno345', 105, false),
        ('Meeting6', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-22T11:00:00',
-        'silver', 1, '2024-04-21T10:00:00', '2024-04-22T11:00:00', 'ads234', 105),
+        1, '2024-04-21T10:00:00', '2024-04-22T11:00:00', 'ads234', 105, false),
        ('Meeting7', 'Discuss project status', 'Conference Room E', '2024-04-21T10:00:00', '2024-04-23T11:00:00',
-        'cyan', 1, '2024-04-21T10:00:00', '2024-04-23T11:00:00', 'qew267', 105),
+        1, '2024-04-21T10:00:00', '2024-04-23T11:00:00', 'qew267', 105, false),
 
        ('Meeting8', 'Discuss marketing strategy', 'Conference Room F', '2024-04-24T10:00:00', '2024-04-24T11:00:00',
-        'magenta', 1, '2024-03-24T10:00:00', '2024-08-24T11:00:00', 'ert567', 106),
+        1, '2024-03-24T10:00:00', '2024-08-24T11:00:00', 'ert567', 106, false),
        ('Meeting9', 'Discuss financial report', 'Conference Room G', '2024-04-25T10:00:00', '2024-04-25T11:00:00',
-        'maroon', 0, '2024-03-25T10:00:00', '2024-08-25T11:00:00', 'fgh890', 107);
+        0, '2024-03-25T10:00:00', '2024-08-25T11:00:00', 'fgh890', 107, false);
 
 
 
