@@ -36,8 +36,10 @@ public interface TagController {
 		@ApiResponse(responseCode = "400", description = "name이 이미 존재할 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	public ResponseEntity<Void> createTag(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
-		@RequestBody TagRequest tagRequest);
+	public ResponseEntity<Void> createTag(
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+		@RequestBody TagRequest tagRequest
+	);
 
 	@Operation(summary = "색상 유형 조회", description = "사용자의 색상 유형을 조회합니다.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
@@ -63,8 +65,10 @@ public interface TagController {
 		@ApiResponse(responseCode = "404", description = "변경하고자 하는 color가 조회되지 않을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<TagResponse> updateTag(@RequestBody TagUpdateRequest tagUpdateRequest,
-		@AuthenticationPrincipal MemberPrincipal memberPrincipal);
+	ResponseEntity<TagResponse> updateTag(
+		@RequestBody TagUpdateRequest tagUpdateRequest,
+		@AuthenticationPrincipal MemberPrincipal memberPrincipal
+	);
 
 	@Operation(summary = "색상 유형 삭제", description = "색상 유형을 삭제.")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)

@@ -10,14 +10,17 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.dto.TagRegisterDto;
+import com.fixadate.domain.tag.dto.TagUpdateDto;
 import com.fixadate.domain.tag.dto.request.TagRequest;
 import com.fixadate.domain.tag.dto.request.TagUpdateRequest;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.domain.tag.mapper.TagMapper;
-import com.fixadate.domain.tag.repository.TagRepository;
+import com.fixadate.domain.tag.service.repository.TagRepository;
 import com.fixadate.global.exception.badrequest.TagBadRequestException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 
@@ -30,71 +33,71 @@ public class TagService {
 	private final TagRepository tagRepository;
 
 	@Transactional
-	public void registerTag(Member member, TagRequest tagRequest) {
+	public void registerTag(final TagRegisterDto tagRegisterDto) {
+		final TagRequest tagRequest = tagRegisterDto.tagRequest();
+		final Member member = tagRegisterDto.member();
+
 		checkColor(tagRequest.name(), member);
-		Tag tag = toEntity(member, tagRequest);
-		tagRepository.save(tag);
+		tagRepository.save(toEntity(member, tagRequest));
 	}
 
-	@Transactional(readOnly = true)
-	public void checkColor(String name, Member member) {
+	public void checkColor(final String name, final Member member) {
 		if (tagRepository.findTagByNameAndMember(name, member).isPresent()) {
 			throw new TagBadRequestException(ALREADY_EXISTS_TAG);
 		}
 	}
 
 	@Transactional(readOnly = true)
-	public List<TagResponse> getTagResponses(Member member) {
+	public List<TagResponse> getTagResponses(final Member member) {
 		List<Tag> tags = tagRepository.findTagsByMember(member);
-		return createTagResponsesWithTags(tags);
-	}
 
-	private List<TagResponse> createTagResponsesWithTags(List<Tag> tags) {
 		return tags.stream()
 				   .map(TagMapper::toResponse)
 				   .toList();
 	}
 
 	@Transactional
-	public TagResponse updateTag(TagUpdateRequest tagUpdateRequest, Member member) {
-		if (isValidString(tagUpdateRequest.newName())) {
-			checkColor(tagUpdateRequest.newName(), member);
-		}
+	public TagResponse updateTag(final TagUpdateDto tagUpdateDto) {
+		final TagUpdateRequest tagUpdateRequest = tagUpdateDto.tagUpdateRequest();
+		final Member member = tagUpdateDto.member();
 
 		Tag tag = findTagByMemberAndColor(tagUpdateRequest.name(), member);
 
-		if (isValidString(tagUpdateRequest.newName())) {
+		if (StringUtils.hasText(tagUpdateRequest.newName())) {
+			checkColor(tagUpdateRequest.newName(), member);
 			isSystemDefinedTag(tag);
+			tag.updateTagName(tagUpdateRequest.newName());
 		}
 
-		tag.updateTag(tagUpdateRequest);
+		if (StringUtils.hasText(tagUpdateRequest.newColor())) {
+			tag.updateTagColor(tagUpdateRequest.newColor());
+		}
 
 		return toResponse(tag);
 	}
 
-	private boolean isValidString(String str) {
-		return str != null && !str.isEmpty();
-	}
 
 	@Transactional
-	public Tag findTagByMemberAndColor(String name, Member member) {
+	public Tag findTagByMemberAndColor(final String name, final Member member) {
 		return tagRepository.findTagByNameAndMember(name, member)
 							.orElseThrow(() -> new TagNotFoundException(NOT_FOUND_TAG_MEMBER_NAME));
 	}
 
-	public void isSystemDefinedTag(Tag tag) {
+	public void isSystemDefinedTag(final Tag tag) {
 		if (tag.isSystemDefined()) {
 			throw new TagBadRequestException(CAN_NOT_UPDATE_OR_REMOVE_DEFAULT_TAG);
 		}
 	}
 
 	@Transactional
-	public void removeColor(String name, Member member) {
+	public void removeColor(final String name, final Member member) {
 		Tag tag = findTagByMemberAndColor(name, member);
 
 		isSystemDefinedTag(tag);
-		tag.deleteTag();
 
+		if (tag.getAdates() != null && !tag.getAdates().isEmpty()) {
+			tag.deleteTag();
+		}
 		tagRepository.delete(tag);
 	}
 }
