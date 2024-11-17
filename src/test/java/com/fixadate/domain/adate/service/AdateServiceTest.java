@@ -14,13 +14,12 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fixadate.config.annotation.ServiceTest;
 import com.fixadate.domain.adate.dto.AdateDto;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.service.fixture.AdateServiceFixture;
@@ -31,8 +30,7 @@ import com.fixadate.global.exception.notfound.AdateNotFoundException;
 import com.fixadate.global.exception.notfound.TagNotFoundException;
 import com.fixadate.global.util.constant.ExternalCalendar;
 
-@SpringBootTest
-@Testcontainers
+@ServiceTest
 @RecordApplicationEvents
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
