@@ -13,15 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.sql.DataSource;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,12 +28,8 @@ import org.junit.jupiter.params.aggregator.ArgumentsAggregator;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fixadate.config.DataClearExtension;
@@ -52,7 +42,6 @@ import com.fixadate.global.exception.badrequest.BadRequestException;
 import com.fixadate.global.exception.badrequest.OAuthPlatformBadRequest;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 import com.fixadate.global.exception.unauthorized.AuthException;
-import com.fixadate.global.util.S3Util;
 import com.fixadate.integration.util.CreateMemberRegisterRequest;
 
 @ExtendWith(DataClearExtension.class)
@@ -69,28 +58,7 @@ class AuthServiceTest {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private S3Util s3Util;
-
 	private static final String MESSAGE = "message";
-	@Container
-	static MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.31");
-
-	@BeforeAll
-	static void initDataBase(@Autowired DataSource dataSource) {
-		try (Connection conn = dataSource.getConnection()) {
-			mySQLContainer.start();
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/dropTable.sql"));
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/sql/init/member_test.sql"));
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@AfterAll
-	static void stopContainers() {
-		mySQLContainer.stop();
-	}
 
 	@Nested
 	@DisplayName("Member 저장 테스트")
