@@ -2,6 +2,7 @@ package com.fixadate.domain.versioncheck.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,10 +20,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class AppVersionCheckController {
-
 	private final AppVersionCheckService appVersionCheckService;
 
-	@GetMapping("/v1/appVersion")
+	@PostMapping("/v1/appVersion")
 	public ResponseEntity<AppVersionCheckResponse> checkAppVersion(
 		@RequestBody AppVersionCheckRequest appVersionCheckRequest) {
 		return ResponseEntity.ok(appVersionCheckService.checkApiVersion(appVersionCheckRequest));
