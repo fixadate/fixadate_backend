@@ -104,13 +104,14 @@ dependencies {
     testImplementation "org.testcontainers:localstack:1.15.3"
 }
 
-//checkstyle {
-//    maxWarnings = 0
-//    toolVersion = '9.3'
-//    configFile = file("${rootDir}/tool/naver-checkstyle-rules.xml")
-//    configProperties = ["suppressionFile": "${rootDir}/tool/naver-checkstyle-suppressions.xml"]
-//
-//}
+checkstyle {
+    ignoreFailures = true
+    maxWarnings = 0
+    toolVersion = '9.3'
+    configFile = file("${rootDir}/tool/naver-checkstyle-rules.xml")
+    configProperties = ["suppressionFile": "${rootDir}/tool/naver-checkstyle-suppressions.xml"]
+
+}
 //
 //test {
 //    useJUnitPlatform()
