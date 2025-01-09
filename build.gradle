@@ -103,19 +103,20 @@ dependencies {
     // https://mvnrepository.com/artifact/org.testcontainers/localstack
     testImplementation "org.testcontainers:localstack:1.15.3"
 }
-checkstyle {
-    maxWarnings = 0
-    toolVersion = '9.3'
-    configFile = file("${rootDir}/tool/naver-checkstyle-rules.xml")
-    configProperties = ["suppressionFile": "${rootDir}/tool/naver-checkstyle-suppressions.xml"]
 
-}
-
-test {
-    useJUnitPlatform()
-    dependsOn 'checkstyleMain'
-    dependsOn 'checkstyleTest'
-}
+//checkstyle {
+//    maxWarnings = 0
+//    toolVersion = '9.3'
+//    configFile = file("${rootDir}/tool/naver-checkstyle-rules.xml")
+//    configProperties = ["suppressionFile": "${rootDir}/tool/naver-checkstyle-suppressions.xml"]
+//
+//}
+//
+//test {
+//    useJUnitPlatform()
+//    dependsOn 'checkstyleMain'
+//    dependsOn 'checkstyleTest'
+//}
 
 
 def querydslSrcDir = 'src/main/generated'

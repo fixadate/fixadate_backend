@@ -1,7 +1,7 @@
 package com.fixadate.global.dto;
 
 
-public record GeneralResponseDto (
+public record GeneralResponseDto(
     //response Code
     String rspCd,
 
@@ -13,5 +13,5 @@ public record GeneralResponseDto (
 
     //response body
     Object data
-){
+) {
 }
