@@ -47,6 +47,7 @@ public class SecurityConfig {
 		"/v1/auth/signup",
 		/* etc */
 		"/v1/member/nickname",
+		"/v1/appVersion",
 		"/error",
 
 		/* reissue */
