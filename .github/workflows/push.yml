@@ -43,11 +43,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: build/test-results/test/TEST-*.xml
+      # - name: Publish Test Results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     files: build/test-results/test/TEST-*.xml
 
       - name: Make Zip File
         run: zip -qq -r ./$GITHUB_SHA.zip .
