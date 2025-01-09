@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.global.dto.GeneralResponseDto;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -29,7 +28,7 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 
 		if (contentType == null || fixVersion == null || telephoneCarrier == null || celno == null
 			|| cacheControl == null) {
-//			response.sendError(HttpStatus.OK.value(), "");
+//			response.sendError(HttpStatus. OK.value(), "");
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
