@@ -49,6 +49,7 @@ public class SecurityConfig {
 		"/v1/member/nickname",
 		"/v1/appVersion",
 		"/error",
+		"/v1/healthcheck",
 
 		/* reissue */
 		"/v1/auth/reissue",
