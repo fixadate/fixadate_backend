@@ -10,8 +10,8 @@ JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 P8081_PID=$(sudo netstat -ntlp | grep :8081 | awk '{print $7}' | cut -d'/' -f1) # Port ID  where 8081 is on
 P8082_PID=$(sudo netstat -ntlp | grep :8082 | awk '{print $7}' | cut -d'/' -f1) # Port ID  where 8082 is on
 
-P8081_URL="http://3.37.141.38:8081/v1/member/nickname" # health check url when port 8081 initialize
-P8082_URL="http://3.37.141.38:8082/v1/member/nickname" # health check url when port 8082 initialize
+P8081_URL="http://3.37.141.38:8081/v1/healthcheck" # health check url when port 8081 initialize
+P8082_URL="http://3.37.141.38:8082/v1/healthcheck" # health check url when port 8082 initialize
 
 NEW_PID=0
 
