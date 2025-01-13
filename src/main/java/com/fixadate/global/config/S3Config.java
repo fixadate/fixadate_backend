@@ -1,5 +1,6 @@
 package com.fixadate.global.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,7 @@ public class S3Config {
 	}
 
 	@Bean
+	@Autowired
 	public S3Client s3Client(AwsCredentials awsCredentials) {
 		return S3Client.builder()
 					   .region(Region.AP_NORTHEAST_2)
