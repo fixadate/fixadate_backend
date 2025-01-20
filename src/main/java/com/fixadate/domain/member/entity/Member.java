@@ -1,7 +1,10 @@
 package com.fixadate.domain.member.entity;
 
+import jakarta.persistence.JoinTable;
 import java.util.Collection;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -50,6 +53,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
 	@IDMaker(length = 6)
+	@Column(name = "member_id")
 	private String id;
 
 	@Column(nullable = false, unique = true)
@@ -87,6 +91,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "google_credentials_id")
 	private GoogleCredentials googleCredentials;
+
+	@OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+	private MemberPlans memberPlan;
 
 	@Builder
 	private Member(
