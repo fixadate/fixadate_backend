@@ -38,7 +38,7 @@ public class Tag {
 	private boolean systemDefined;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", referencedColumnName = "id")
+	@JoinColumn(name = "member_id", referencedColumnName = "member_id")
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
 	private Member member;

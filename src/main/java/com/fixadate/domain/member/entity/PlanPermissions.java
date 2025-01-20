@@ -9,7 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import org.codehaus.jackson.annotate.JsonBackReference;
 
+@Getter
 @Entity
 @Table(name = "plan_permissions")
 public class PlanPermissions extends BaseTimeEntity {
@@ -17,10 +20,12 @@ public class PlanPermissions extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "plan_id")
     private Plans plan;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "permission_id")
     private Permissions permission;

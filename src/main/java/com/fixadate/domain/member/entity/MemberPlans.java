@@ -12,12 +12,10 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "member_plans")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberPlans extends BaseTimeEntity {
