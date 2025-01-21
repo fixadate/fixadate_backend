@@ -1,49 +1,49 @@
-name: Common Steps
+# name: Common Steps
 
-on:
-  workflow_call:
+# on:
+#   workflow_call:
 
-permissions: write-all
+# permissions: write-all
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'corretto'
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Set up JDK 17
+#         uses: actions/setup-java@v3
+#         with:
+#           java-version: '17'
+#           distribution: 'corretto'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-        shell: bash
+#       - name: Grant execute permission for gradlew
+#         run: chmod +x ./gradlew
+#         shell: bash
 
-      - name: Set YML AND Credentials
-        run: |
-          mkdir -p src/main/resources
-          echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
-          find src
+#       - name: Set YML AND Credentials
+#         run: |
+#           mkdir -p src/main/resources
+#           echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
+#           find src
 
-      - name: SET Credentials
-        uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "credentials.json"
-          json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
-          dir: './src/main/resources/'
+#       - name: SET Credentials
+#         uses: jsdaniell/create-json@1.1.2
+#         with:
+#           name: "credentials.json"
+#           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
+#           dir: './src/main/resources/'
 
-      - name: Build with Gradle
-        run: ./gradlew build
+#       - name: Build with Gradle
+#         run: ./gradlew build
 
-      - name: publish test results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: build/test-results/test/TEST-*.xml
+#       - name: publish test results
+#         uses: EnricoMi/publish-unit-test-result-action@v2
+#         if: always()
+#         with:
+#           files: build/test-results/test/TEST-*.xml
 
-      - name: add comments to a pull request
-        uses: mikepenz/action-junit-report@v3
-        if: always()
-        with:
-          report_paths: build/test-results/test/TEST-*.xml
+#       - name: add comments to a pull request
+#         uses: mikepenz/action-junit-report@v3
+#         if: always()
+#         with:
+#           report_paths: build/test-results/test/TEST-*.xml

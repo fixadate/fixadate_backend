@@ -1,8 +1,12 @@
 package com.fixadate.global.filter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fixadate.global.dto.GeneralResponseDto;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -24,7 +28,24 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 
 		if (contentType == null || fixVersion == null || telephoneCarrier == null || celno == null
 			|| cacheControl == null) {
-			response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "x");
+//			response.sendError(HttpStatus. OK.value(), "");
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			GeneralResponseDto responseDto = new GeneralResponseDto(
+					"0N0A0E0001",
+					"Native Authentication Failed. value(s) might be missing",
+					LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:SS")).toString(),
+					null
+			);
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			String jsonResponse = objectMapper.writeValueAsString(responseDto);
+
+			PrintWriter writer = response.getWriter();
+			writer.write(jsonResponse);
+			writer.flush();
+
 			return;
 		}
 
@@ -40,6 +61,8 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 			|| request.getRequestURI().contains("/v3/api-docs") || request.getRequestURI()
 			.contains("/swagger-ui/index.html")
 			|| request.getRequestURI().contains("/favicon.ico") || request.getRequestURI()
-			.contains("/v1/google/loadtest");
+			.contains("/v1/google/loadtest") || request.getRequestURI()
+				.contains("/v1/appVersion") || request.getRequestURI()
+				.contains("/v1/healthcheck");
 	}
 }
