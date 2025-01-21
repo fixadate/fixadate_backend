@@ -24,15 +24,14 @@ public class SecurityResourceService {
         LinkedHashMap<RequestMatcher, List<ConfigAttribute>> result = new LinkedHashMap<>();
         List<Permissions> resourcesList = permissionsRepository.findAllResources();
 
-        resourcesList.forEach(re ->
-                {
-                    List<ConfigAttribute> configAttributeList = new ArrayList<>();
-                    re.getPlanPermissions().forEach(ro -> {
-                        configAttributeList.add(new SecurityConfig(ro.getPlan().getName().toString()));
-                        result.put(new AntPathRequestMatcher(re.getPermissionName(), re.getHttpMethod()), configAttributeList);
-                    });
-                }
-        );
+        resourcesList.forEach(re -> {
+            re.getPlanPermissions().forEach(ro -> {
+                AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher(re.getPermissionName(), re.getHttpMethod());
+                // 이미 존재하는 RequestMatcher인지 확인하고 ConfigAttribute를 추가
+                result.computeIfAbsent(requestMatcher, k -> new ArrayList<>())
+                    .add(new SecurityConfig(ro.getPlan().getName().toString()));
+            });
+        });
         return result;
     }
 }
