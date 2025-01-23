@@ -22,7 +22,7 @@ CREATE TABLE google_credentials
 
 CREATE TABLE member
 (
-    id                    VARCHAR(255) NOT NULL,
+    member_id             VARCHAR(255) NOT NULL,
     oauth_id              VARCHAR(255) NOT NULL,
     oauth_platform        ENUM ('APPLE', 'GOOGLE', 'KAKAO'),
     name                  VARCHAR(255) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE member
     google_credentials_id BIGINT,
     create_date           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
+    PRIMARY KEY (member_id),
     UNIQUE KEY oauth_id (oauth_id),
     FOREIGN KEY (google_credentials_id) REFERENCES google_credentials (id),
     FOREIGN KEY (push_key_id) REFERENCES push_key (id)
@@ -52,7 +52,7 @@ CREATE TABLE tag
     system_defined BOOLEAN,
     member_id  VARCHAR(255),
     PRIMARY KEY (id),
-    FOREIGN KEY (member_id) REFERENCES member (id)
+    FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
 
 CREATE TABLE adate
@@ -75,7 +75,7 @@ CREATE TABLE adate
     create_date        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
     FOREIGN KEY (tag_id) REFERENCES tag (id)
 );
 
