@@ -1,4 +1,4 @@
-package com.fixadate.global.config;
+package com.fixadate.global.config.security;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 

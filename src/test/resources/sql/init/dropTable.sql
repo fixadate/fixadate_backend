@@ -5,4 +5,5 @@ DROP TABLE IF EXISTS adate;
 DROP TABLE IF EXISTS google_credentials;
 DROP TABLE IF EXISTS push_key;
 DROP TABLE IF EXISTS google_credentials;
+DROP TABLE IF EXISTS teams;
 SET FOREIGN_KEY_CHECKS = 1; -- 외래 키 체크 다시 활성화
