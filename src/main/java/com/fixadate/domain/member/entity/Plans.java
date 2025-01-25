@@ -3,6 +3,7 @@ package com.fixadate.domain.member.entity;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +15,9 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Entity
 @Table(name = "plans")
