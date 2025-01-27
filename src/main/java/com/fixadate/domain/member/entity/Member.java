@@ -82,7 +82,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@Column(nullable = false)
 	private String email;
 
-	private String role;
+	private String role; // 추후 enum으로 변경
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "pushKey_id")
