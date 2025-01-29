@@ -11,11 +11,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name = "permissions")
@@ -31,6 +35,7 @@ public class Permissions extends BaseTimeEntity {
     @Column(name = "http_method")
     private String httpMethod;
 
+    @Setter
     @JsonManagedReference
     @OneToMany(mappedBy = "permission")
     private Set<PlanPermissions> planPermissions = new HashSet<>();
