@@ -1,24 +1,26 @@
 package com.fixadate.integration.domain.dates.service;
 
+import static com.fixadate.domain.auth.entity.OAuthProvider.translateStringToOAuthProvider;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fixadate.config.DataClearExtension;
+import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
+import com.fixadate.domain.auth.service.AuthService;
 import com.fixadate.domain.dates.dto.TeamCreateRequest;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.dates.service.TeamService;
+import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.AggregateWith;
@@ -32,11 +34,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@ExtendWith(DataClearExtension.class)
+//@ExtendWith(DataClearExtension.class)
 @SpringBootTest
-@Testcontainers
+//@Testcontainers
 class TeamServiceTest {
 
     @Autowired
@@ -44,6 +45,12 @@ class TeamServiceTest {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private AuthService authService;
 
     private static final String MESSAGE = "message";
     
@@ -61,10 +68,10 @@ class TeamServiceTest {
         }
     }
 
-    @AfterAll
-    static void stopContainers() {
-        mySQLContainer.stop();
-    }
+//    @AfterAll
+//    static void stopContainers() {
+//        mySQLContainer.stop();
+//    }
 
     @Nested
     @DisplayName("Team 저장 테스트")
@@ -82,7 +89,18 @@ class TeamServiceTest {
         void createTeamTestSuccess(
             @AggregateWith(TeamAggregator.class) TeamCreateRequest teamCreateRequest
         ) {
-            Assertions.assertDoesNotThrow(() -> teamService.createTeam(teamCreateRequest));
+            MemberRegisterRequest registerRequest = new MemberRegisterRequest(
+                "105", "google", "emily", "617", "chris", "19921005", "female", "manager", "orange", "kevin@naver.com", "MEMBER"
+            );
+            authService.registerMember(registerRequest);
+
+            Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
+                translateStringToOAuthProvider(registerRequest.oauthPlatform()),
+                registerRequest.email(), registerRequest.name()
+            );
+            Member member = memberOptional.orElse(null);
+
+            Assertions.assertDoesNotThrow(() -> teamService.createTeam(member, teamCreateRequest));
 
             Optional<Teams> teamOptional = teamRepository.findByName(teamCreateRequest.name());
             
