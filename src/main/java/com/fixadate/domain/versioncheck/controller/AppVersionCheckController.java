@@ -1,5 +1,6 @@
 package com.fixadate.domain.versioncheck.controller;
 
+import com.fixadate.global.dto.GeneralResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,5 +32,10 @@ public class AppVersionCheckController {
 	@GetMapping("/v1/healthcheck")
 	public ResponseEntity healthCheck() {
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/v1/servertime")
+	public GeneralResponseDto getServerTime() {
+		return GeneralResponseDto.create("200", "", "");
 	}
 }
