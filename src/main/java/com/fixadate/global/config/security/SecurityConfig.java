@@ -50,6 +50,7 @@ public class SecurityConfig {
 		"/v1/appVersion",
 		"/error",
 		"/v1/healthcheck",
+		"/v1/servertime",
 
 		/* reissue */
 		"/v1/auth/reissue",
