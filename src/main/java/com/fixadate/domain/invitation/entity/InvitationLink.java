@@ -1,6 +1,6 @@
 package com.fixadate.domain.invitation.entity;
 
-import com.fixadate.domain.auth.entity.BaseTimeEntity;
+import com.fixadate.domain.auth.entity.BaseEntity;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.member.entity.Member;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "invitation_links")
 @Getter
-public class InvitationLink extends BaseTimeEntity {
+public class InvitationLink extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

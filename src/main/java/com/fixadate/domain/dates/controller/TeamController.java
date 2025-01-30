@@ -30,5 +30,13 @@ public class TeamController {
         Teams createdTeam = teamService.createTeam(member, request);
         return new ResponseEntity<>(createdTeam, HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @PathVariable Long id) {
+        final Member member = memberPrincipal.getMember();
+        boolean result = teamService.deleteTeam(member, id);
+        return ResponseEntity.ok(result);
+    }
 }
 

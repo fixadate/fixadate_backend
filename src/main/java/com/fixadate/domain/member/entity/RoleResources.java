@@ -1,7 +1,6 @@
 package com.fixadate.domain.member.entity;
 
-import com.fixadate.domain.auth.entity.BaseTimeEntity;
-import com.fixadate.domain.member.entity.Plans.PlanType;
+import com.fixadate.domain.auth.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -10,16 +9,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "role_resources")
-public class RoleResources extends BaseTimeEntity {
+public class RoleResources extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
