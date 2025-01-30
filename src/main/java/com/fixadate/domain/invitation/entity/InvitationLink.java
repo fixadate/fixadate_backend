@@ -34,12 +34,34 @@ public class InvitationLink extends BaseTimeEntity {
     private String inviteCode;
 
     @Column(nullable = false)
-    private Boolean isActive = true;
+    private Boolean active = true;
 
     @Column(nullable = false)
     private int remainSeat;
 
     private LocalDateTime expiresAt = LocalDateTime.now().plusDays(4);
+
+    public boolean isExpired() {
+        return expiresAt != null && LocalDateTime.now().isAfter(expiresAt);
+    }
+
+    public boolean isActive() {
+        return active && remainSeat > 0;
+    }
+
+    public void decreaseRemainCnt(){
+        this.remainSeat -= 1;
+        if(this.remainSeat < 0){
+            throw new RuntimeException("cannot exceed remainSeat");
+        }
+        if(this.remainSeat == 0){
+            deactivate();
+        }
+    }
+
+    public void deactivate(){
+        this.active = false;
+    }
 
     @Builder
     public InvitationLink(Teams team, Member creator, String inviteCode, int remainSeat) {

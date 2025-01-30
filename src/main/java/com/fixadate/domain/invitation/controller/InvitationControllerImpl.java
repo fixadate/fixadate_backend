@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,7 @@ import com.fixadate.global.annotation.RestControllerWithMapping;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value.Bool;
 
 @RequiredArgsConstructor
 @RestControllerWithMapping("/v1/invitation")
@@ -64,5 +67,23 @@ public class InvitationControllerImpl implements InvitationController {
 	public ResponseEntity<?> getSpecifyInvitationByTeamId(@RequestParam Long teamId) {
 		List<InvitationResponse> responses = invitationService.getInvitationResponseFromTeamId(teamId);
 		return ResponseEntity.ok(responses);
+	}
+
+	@Override
+	@GetMapping("/link/{inviteCode}")
+	public ResponseEntity<Boolean> validateInvitationLink(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@PathVariable String inviteCode) {
+		final Member member = memberPrincipal.getMember();
+		return ResponseEntity.ok(invitationService.validateInvitationLink(member, inviteCode));
+	}
+
+	@Override
+	@PatchMapping("/link/{inviteCode}")
+	public ResponseEntity<Boolean> deactivateInvitationLink(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@PathVariable String inviteCode) {
+		final Member member = memberPrincipal.getMember();
+		return ResponseEntity.ok(invitationService.deactivateInvitationLink(member, inviteCode));
 	}
 }

@@ -10,6 +10,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface InvitationLinkRepository extends JpaRepository<InvitationLink, String> {
 	Optional<InvitationLink> findByTeam(Teams team);
-
 	List<InvitationLink> findAllByTeam(Teams team);
+	Optional<InvitationLink> findByInviteCode(String inviteCode);
 }

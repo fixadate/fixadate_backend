@@ -11,6 +11,7 @@ import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,12 +41,11 @@ public class InvitationService {
 		// todo: 팀 초대 권한 검증 로직
 		// todo: 팀 초대 인원 가능여부 확인 로직
 
-		String inviteCode = "";
 		Teams foundTeam = teamRepository.findById(invitationLinkRequest.teamId()).orElseThrow(
 			() -> new RuntimeException("")
 		);
 
-		InvitationLink invitationLink = invitationLinkRequest.toEntity(foundTeam, member, inviteCode);
+		InvitationLink invitationLink = invitationLinkRequest.toEntity(foundTeam, member);
 		InvitationLink createLink = invitationLinkRepository.save(invitationLink);
 		return createLink.getInviteCode();
 	}
@@ -91,5 +91,38 @@ public class InvitationService {
 		return invitations.stream()
 			.map(InvitationResponse::of)
 			.toList();
+	}
+
+	public boolean validateInvitationLink(Member member, String inviteCode) {
+		// todo: 팀에 초대가능한 사람인지 확인
+		Optional<InvitationLink> invitationLinkOptional = invitationLinkRepository.findByInviteCode(inviteCode)
+			.filter(link -> link.isActive() && !link.isExpired());
+		if(invitationLinkOptional.isEmpty()){
+			return false;
+		}
+
+		InvitationLink invitationLink = invitationLinkOptional.get();
+		invitationLink.decreaseRemainCnt();
+
+		// todo: push alarm
+		return true;
+	}
+
+	public boolean deactivateInvitationLink(Member member, String inviteCode) {
+		// todo: 비활성화 가능한 사람인지 확인
+		Optional<InvitationLink> invitationLinkOptional = invitationLinkRepository.findByInviteCode(inviteCode);
+		if(invitationLinkOptional.isEmpty()){
+			return false;
+		}
+		if(invitationLinkOptional.get().isExpired()){
+			return false;
+		}
+		if(!invitationLinkOptional.get().isActive()){
+			return false;
+		}
+		InvitationLink invitationLink = invitationLinkOptional.get();
+		invitationLink.deactivate();
+
+		return !invitationLink.isActive();
 	}
 }
