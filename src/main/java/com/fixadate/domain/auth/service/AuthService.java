@@ -2,6 +2,7 @@ package com.fixadate.domain.auth.service;
 
 import static com.fixadate.domain.auth.entity.OAuthProvider.translateStringToOAuthProvider;
 import static com.fixadate.domain.member.mapper.MemberMapper.toEntity;
+import static com.fixadate.domain.member.mapper.MemberMapper.toMemberPlansEntity;
 import static com.fixadate.domain.member.mapper.MemberMapper.toResponse;
 import static com.fixadate.global.exception.ExceptionCode.ALREADY_EXISTS_MEMBER;
 import static com.fixadate.global.exception.ExceptionCode.FAIL_TO_SIGNIN;
@@ -10,6 +11,11 @@ import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME;
 import static com.fixadate.global.util.constant.ConstantValue.REFRESH_TOKEN;
 
+import com.fixadate.domain.member.entity.MemberPlans;
+import com.fixadate.domain.member.entity.Plans;
+import com.fixadate.domain.member.entity.Plans.PlanType;
+import com.fixadate.domain.member.service.repository.MemberPlansRepository;
+import com.fixadate.domain.member.service.repository.PlansRepository;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -40,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 	private final MemberRepository memberRepository;
+	private final MemberPlansRepository memberPlansRepository;
+	private final PlansRepository plansRepository;
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final PasswordEncoder passwordEncoder;
 	private final S3Util s3Util;
@@ -78,6 +86,13 @@ public class AuthService {
 		String encodedOauthId = passwordEncoder.encode(memberRegisterRequest.oauthId());
 		Member member = toEntity(memberRegisterRequest, encodedOauthId);
 		memberRepository.save(member);
+
+		Plans freePlan = plansRepository.findPlansByName(PlanType.FREE).orElseThrow(
+			() -> new RuntimeException("")
+		);
+
+		MemberPlans memberPlans = toMemberPlansEntity(member, freePlan);
+		memberPlansRepository.save(memberPlans);
 
 		registerExternalCalendarTag(member);
 

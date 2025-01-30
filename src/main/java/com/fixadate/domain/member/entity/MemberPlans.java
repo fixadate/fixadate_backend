@@ -3,6 +3,7 @@ package com.fixadate.domain.member.entity;
 import com.fixadate.domain.auth.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,8 +13,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Builder
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "member_plans")
 @NoArgsConstructor
@@ -28,6 +34,7 @@ public class MemberPlans extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Getter
     @ManyToOne
     @JoinColumn(name = "plan_id")
     private Plans plan;
@@ -39,5 +46,6 @@ public class MemberPlans extends BaseTimeEntity {
     private LocalDateTime endAt;
 
     @Column(name = "valid_yn")
-    private boolean validYn;
+    private boolean validYn = true;
+
 }

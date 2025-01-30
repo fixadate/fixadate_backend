@@ -114,12 +114,12 @@ checkstyle {
     configProperties = ["suppressionFile": "${rootDir}/tool/naver-checkstyle-suppressions.xml"]
 
 }
-//
-//test {
-//    useJUnitPlatform()
+
+test {
+    useJUnitPlatform()
 //    dependsOn 'checkstyleMain'
 //    dependsOn 'checkstyleTest'
-//}
+}
 
 
 def querydslSrcDir = 'src/main/generated'
