@@ -63,6 +63,7 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 			|| request.getRequestURI().contains("/favicon.ico") || request.getRequestURI()
 			.contains("/v1/google/loadtest") || request.getRequestURI()
 				.contains("/v1/appVersion") || request.getRequestURI()
-				.contains("/v1/healthcheck");
+				.contains("/v1/healthcheck") || request.getRequestURI()
+				.contains("/v1/servertime");
 	}
 }
