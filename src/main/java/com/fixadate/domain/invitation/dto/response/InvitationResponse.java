@@ -14,6 +14,6 @@ public record InvitationResponse(
 
 	public static InvitationResponse of(Invitation invitation) {
 		return new InvitationResponse(invitation.getTeamId(),
-			invitation.getExpirationDate(), invitation.getMemberName(), invitation.getRole());
+			invitation.getExpirationDate(), invitation.getSenderName(), invitation.getRole());
 	}
 }

@@ -9,6 +9,10 @@ import com.fixadate.domain.member.dto.request.MemberInfoUpdateRequest;
 import com.fixadate.domain.member.dto.response.MemberInfoDto;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.entity.MemberPlans;
+import com.fixadate.domain.member.entity.Plans;
+import com.fixadate.domain.member.entity.Plans.PlanType;
+import java.time.LocalDateTime;
 
 public class MemberMapper {
 
@@ -85,5 +89,15 @@ public class MemberMapper {
 			memberInfoUpdateRequest.profession(),
 			memberInfoUpdateRequest.profileImg()
 		);
+	}
+
+	public static MemberPlans toMemberPlansEntity(Member member, Plans plan){
+		LocalDateTime now = LocalDateTime.now();
+		return MemberPlans.builder()
+			.member(member)
+			.plan(plan)
+			.beginAt(now)
+			.endAt(now.plusMonths(1))
+			.build();
 	}
 }
