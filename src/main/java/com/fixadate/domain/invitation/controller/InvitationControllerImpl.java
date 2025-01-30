@@ -1,15 +1,18 @@
 package com.fixadate.domain.invitation.controller;
 
+import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.jwt.MemberPrincipal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.fixadate.domain.invitation.dto.request.InvitationRequest;
+import com.fixadate.domain.invitation.dto.request.InvitationLinkRequest;
 import com.fixadate.domain.invitation.dto.request.InvitationSpecifyRequest;
 import com.fixadate.domain.invitation.dto.response.InvitationResponse;
 import com.fixadate.domain.invitation.service.InvitationService;
@@ -25,8 +28,11 @@ public class InvitationControllerImpl implements InvitationController {
 
 	@Override
 	@PostMapping()
-	public ResponseEntity<String> registInvitation(@Valid @RequestBody InvitationRequest invitationRequest) {
-		String invitationId = invitationService.registInvitation(invitationRequest);
+	public ResponseEntity<String> registInvitation(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@Valid @RequestBody InvitationLinkRequest invitationLinkRequest) {
+		final Member member = memberPrincipal.getMember();
+		String invitationId = invitationService.registInvitation(member, invitationLinkRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(invitationId);
 	}
 
@@ -45,8 +51,11 @@ public class InvitationControllerImpl implements InvitationController {
 
 	@Override
 	@PostMapping("/specify")
-	public ResponseEntity<?> inviteMemberToTeams(@Valid @RequestBody InvitationSpecifyRequest requestDto) {
-		invitationService.inviteSpecifyMember(requestDto);
+	public ResponseEntity<?> inviteMemberToTeams(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@Valid @RequestBody InvitationSpecifyRequest requestDto) {
+		final Member member = memberPrincipal.getMember();
+		boolean result = invitationService.inviteSpecifyMember(member, requestDto);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 

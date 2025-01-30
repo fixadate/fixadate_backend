@@ -1,20 +1,24 @@
 package com.fixadate.domain.invitation.controller;
 
+import com.fixadate.global.jwt.MemberPrincipal;
 import org.springframework.http.ResponseEntity;
 
-import com.fixadate.domain.invitation.dto.request.InvitationRequest;
+import com.fixadate.domain.invitation.dto.request.InvitationLinkRequest;
 import com.fixadate.domain.invitation.dto.request.InvitationSpecifyRequest;
 import com.fixadate.domain.invitation.dto.response.InvitationResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Tag(name = "InvitationController", description = "InvitationController 입니다.")
 public interface InvitationController {
 
 	@Operation(summary = "초대 등록", description = "초대를 등록합니다.", deprecated = true)
-	ResponseEntity<String> registInvitation(@Valid InvitationRequest invitationRequest);
+	ResponseEntity<String> registInvitation(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@Valid InvitationLinkRequest invitationLinkRequest);
 
 	@Operation(summary = "초대 조회", description = "초대 코드를 입력하여 초대에 응답합니다.", deprecated = true)
 	ResponseEntity<?> checkInvitationById(String id);
@@ -23,7 +27,9 @@ public interface InvitationController {
 	ResponseEntity<InvitationResponse> isInvitationExist(Long datesId);
 
 	@Operation(summary = "멤버 초대", description = "특정 멤버를 팀에 초대합니다.", deprecated = true)
-	ResponseEntity<?> inviteMemberToTeams(@Valid InvitationSpecifyRequest requestDto);
+	ResponseEntity<?> inviteMemberToTeams(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@Valid InvitationSpecifyRequest requestDto);
 
 	@Operation(summary = "팀별 초대 조회", description = "특정 팀에 대한 초대를 조회합니다.", deprecated = true)
 	ResponseEntity<?> getSpecifyInvitationByTeamId(Long teamId);

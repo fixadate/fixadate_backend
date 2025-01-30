@@ -1,5 +1,11 @@
 package com.fixadate.domain.invitation.entity;
 
+import com.fixadate.domain.member.entity.Member;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
@@ -23,11 +29,27 @@ public class Invitation {
 	private String id;
 	@Indexed
 	private Long teamId;
+	@ManyToOne(fetch = FetchType.LAZY) // 보낸 사람 (팀원 or 팀장)
+	@JoinColumn(name = "sender_id", nullable = false)
+	private Member sender;
+
+	@ManyToOne(fetch = FetchType.LAZY) // 받은 사람 (초대 대상자)
+	@JoinColumn(name = "receiver_id", nullable = false)
+	private Member receiver;
 	private boolean userSpecify;
 	@Column(nullable = false)
 	private String role;
-	private String memberName;
+	private String senderName;
+	private String receiverName;
 	@TimeToLive
 	private Long expiration;
 	private LocalDateTime expirationDate;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private InviteStatus status = InviteStatus.PENDING;
+
+	public enum InviteStatus {
+		PENDING, ACCEPTED, DECLINED
+	}
 }
