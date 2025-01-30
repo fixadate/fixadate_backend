@@ -12,8 +12,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import org.codehaus.jackson.annotate.JsonBackReference;
+<<<<<<< Updated upstream
+=======
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+>>>>>>> Stashed changes
 
 @Getter
 @Entity
@@ -32,6 +39,29 @@ public class TeamMembers extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+<<<<<<< Updated upstream
     @Column
     private String updatedBy;
+=======
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Grades grades;
+
+    @Column
+    private String updatedBy;
+
+    @Builder
+    private TeamMembers(
+            final Teams team,
+            final Member member,
+            final Grades grades,
+            final String updatedBy
+    ) {
+        this.team = team;
+        this.member = member;
+        this.grades = grades;
+        this.updatedBy = updatedBy;
+    }
+
+>>>>>>> Stashed changes
 }
