@@ -4,7 +4,10 @@ import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.repository.TeamRepository;
+import com.fixadate.domain.invitation.entity.Invitation.InviteStatus;
+import com.fixadate.domain.invitation.entity.InvitationHistory;
 import com.fixadate.domain.invitation.entity.InvitationLink;
+import com.fixadate.domain.invitation.repository.InvitationHistoryRepository;
 import com.fixadate.domain.invitation.repository.InvitationLinkRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
@@ -34,6 +37,7 @@ public class InvitationService {
 	private final InvitationLinkRepository invitationLinkRepository;
 	private final MemberRepository memberRepository;
 	private final TeamRepository teamRepository;
+	private final InvitationHistoryRepository invitationHistoryRepository;
 	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
@@ -93,7 +97,7 @@ public class InvitationService {
 			.toList();
 	}
 
-	public boolean validateInvitationLink(Member member, String inviteCode) {
+	public boolean validateInvitationLink(Member receiver, String inviteCode) {
 		// todo: 팀에 초대가능한 사람인지 확인
 		Optional<InvitationLink> invitationLinkOptional = invitationLinkRepository.findByInviteCode(inviteCode)
 			.filter(link -> link.isActive() && !link.isExpired());
@@ -103,6 +107,8 @@ public class InvitationService {
 
 		InvitationLink invitationLink = invitationLinkOptional.get();
 		invitationLink.decreaseRemainCnt();
+
+		createInvitationHistory(invitationLink.getTeam().getId(), invitationLink.getCreator(), receiver, false, "MEMBER");
 
 		// todo: push alarm
 		return true;
@@ -124,5 +130,45 @@ public class InvitationService {
 		invitationLink.deactivate();
 
 		return !invitationLink.isActive();
+	}
+
+	public boolean acceptInvitation(Member member, String id) {
+		Optional<Invitation> invitationOptional = invitationRepository.findById(id);
+		if(invitationOptional.isEmpty()){
+			return false;
+		}
+		Invitation invitation = invitationOptional.get();
+		if(!member.getId().equals(invitation.getReceiver().getId())){
+			throw new RuntimeException("invalid receiver");
+		}
+		invitation.accept();
+
+		createInvitationHistory(invitation.getTeamId(), invitation.getSender(), invitation.getReceiver(), true, invitation.getRole());
+
+		return InviteStatus.ACCEPTED.equals(invitation.getStatus());
+	}
+
+	public boolean declineInvitation(Member member, String id) {
+		Optional<Invitation> invitationOptional = invitationRepository.findById(id);
+		if(invitationOptional.isEmpty()){
+			return false;
+		}
+		Invitation invitation = invitationOptional.get();
+		if(!member.getId().equals(invitation.getReceiver().getId())){
+			throw new RuntimeException("invalid receiver");
+		}
+		invitation.decline();
+		return InviteStatus.DECLINED.equals(invitation.getStatus());
+	}
+
+	public void createInvitationHistory(Long teamId, Member sender, Member receiver, boolean userSpecify, String role){
+		InvitationHistory invitationHistory = InvitationHistory.builder()
+			.teamId(teamId)
+			.sender(sender)
+			.receiver(receiver)
+			.userSpecify(userSpecify)
+			.role(role)
+			.build();
+		invitationHistoryRepository.save(invitationHistory);
 	}
 }

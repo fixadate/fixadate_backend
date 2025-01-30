@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
@@ -51,5 +52,18 @@ public class Invitation {
 
 	public enum InviteStatus {
 		PENDING, ACCEPTED, DECLINED
+	}
+	public void accept(){
+		if(!InviteStatus.PENDING.equals(this.status)){
+			throw new RuntimeException("invalid status");
+		}
+		this.status = InviteStatus.ACCEPTED;
+	}
+
+	public void decline(){
+		if(!InviteStatus.PENDING.equals(this.status)){
+			throw new RuntimeException("invalid status");
+		}
+		this.status = InviteStatus.DECLINED;
 	}
 }

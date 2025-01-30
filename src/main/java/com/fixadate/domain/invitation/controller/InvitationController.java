@@ -12,13 +12,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Tag(name = "InvitationController", description = "InvitationController 입니다.")
 public interface InvitationController {
 
 	@Operation(summary = "초대 링크 생성", description = "링크를 생성합니다.", deprecated = true)
-	ResponseEntity<String> registInvitation(
+	ResponseEntity<String> registInvitationLink(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@Valid InvitationLinkRequest invitationLinkRequest);
 
@@ -36,13 +38,24 @@ public interface InvitationController {
 	@Operation(summary = "팀별 초대 조회", description = "특정 팀에 대한 초대를 조회합니다.", deprecated = true)
 	ResponseEntity<?> getSpecifyInvitationByTeamId(Long teamId);
 
+	@Operation(summary = "친구 초대 수락", description = "초대를 수락합니다.", deprecated = true)
+	ResponseEntity<Boolean> acceptInvitation(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@PathVariable String id);
+
+	@Operation(summary = "친구 초대 거절", description = "초대를 거절합니다.", deprecated = true)
+	ResponseEntity<Boolean> declineInvitation(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@PathVariable String id);
+
+
 	@Operation(summary = "초대 코드 검증", description = "특정 팀에 대한 초대링크를 수락합니다.", deprecated = true)
-	public ResponseEntity<Boolean> validateInvitationLink(
+	ResponseEntity<Boolean> validateInvitationLink(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@PathVariable String inviteCode);
 
 	@Operation(summary = "초대 코드 비활성화", description = "초대링크를 비활성화합니다.", deprecated = true)
-	public ResponseEntity<Boolean> deactivateInvitationLink(
+	ResponseEntity<Boolean> deactivateInvitationLink(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@PathVariable String inviteCode);
 }

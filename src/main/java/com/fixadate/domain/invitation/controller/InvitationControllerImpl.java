@@ -31,7 +31,7 @@ public class InvitationControllerImpl implements InvitationController {
 
 	@Override
 	@PostMapping()
-	public ResponseEntity<String> registInvitation(
+	public ResponseEntity<String> registInvitationLink(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@Valid @RequestBody InvitationLinkRequest invitationLinkRequest) {
 		final Member member = memberPrincipal.getMember();
@@ -67,6 +67,26 @@ public class InvitationControllerImpl implements InvitationController {
 	public ResponseEntity<?> getSpecifyInvitationByTeamId(@RequestParam Long teamId) {
 		List<InvitationResponse> responses = invitationService.getInvitationResponseFromTeamId(teamId);
 		return ResponseEntity.ok(responses);
+	}
+
+	@Override
+	@PostMapping("/{id}")
+	public ResponseEntity<Boolean> acceptInvitation(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@PathVariable String id) {
+		final Member member = memberPrincipal.getMember();
+		boolean response = invitationService.acceptInvitation(member, id);
+		return ResponseEntity.ok(response);
+	}
+
+	@Override
+	@PatchMapping("/{id}")
+	public ResponseEntity<Boolean> declineInvitation(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@PathVariable String id) {
+		final Member member = memberPrincipal.getMember();
+		boolean response = invitationService.declineInvitation(member, id);
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
