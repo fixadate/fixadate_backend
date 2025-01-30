@@ -6,11 +6,17 @@ import com.fixadate.domain.dates.entity.TeamMembers.Grades;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import com.fixadate.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.net.http.HttpResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +28,7 @@ public class TeamService {
     @Transactional
     public Teams createTeam(Member member, TeamCreateRequest requestDto) {
         // todo: 팀 생성 제한 처리 로직
+
 
         Teams team = new Teams();
         team.setName(requestDto.name());

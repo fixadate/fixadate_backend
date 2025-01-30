@@ -23,7 +23,8 @@ public class TeamGradePermissions extends BaseTimeEntity {
 
     @Column(name = "grade")
     @Enumerated(EnumType.STRING)
-    private TeamMembers.Grades grade;
+    private Grades grade;
+
 
     @Column(name = "permission_name")
     private String permissionName;
