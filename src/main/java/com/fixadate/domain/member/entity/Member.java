@@ -1,17 +1,14 @@
 package com.fixadate.domain.member.entity;
 
-import jakarta.persistence.JoinTable;
 import java.util.Collection;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fixadate.domain.auth.entity.BaseTimeEntity;
+import com.fixadate.domain.auth.entity.BaseEntity;
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.googlecalendar.entity.GoogleCredentials;
 import com.fixadate.domain.pushkey.entity.PushKey;
@@ -49,7 +46,7 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString(exclude = {"pushKey", "googleCredentials"})
 @Getter
-public class Member extends BaseTimeEntity implements UserDetails {
+public class Member extends BaseEntity implements UserDetails {
 
 	@Id
 	@IDMaker(length = 6)

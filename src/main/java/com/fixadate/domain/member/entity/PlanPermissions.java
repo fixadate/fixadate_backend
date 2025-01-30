@@ -1,6 +1,6 @@
 package com.fixadate.domain.member.entity;
 
-import com.fixadate.domain.auth.entity.BaseTimeEntity;
+import com.fixadate.domain.auth.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Entity
 @Table(name = "plan_permissions")
-public class PlanPermissions extends BaseTimeEntity {
+public class PlanPermissions extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

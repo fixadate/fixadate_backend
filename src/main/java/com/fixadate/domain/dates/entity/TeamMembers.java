@@ -1,10 +1,7 @@
 package com.fixadate.domain.dates.entity;
 
-import com.fixadate.domain.auth.entity.BaseTimeEntity;
+import com.fixadate.domain.auth.entity.BaseEntity;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.member.entity.Permissions;
-import com.fixadate.domain.member.entity.Plans;
-import com.fixadate.domain.member.entity.Plans.PlanType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -28,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Entity
 @Table(name = "team_members")
-public class TeamMembers extends BaseTimeEntity {
+public class TeamMembers extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

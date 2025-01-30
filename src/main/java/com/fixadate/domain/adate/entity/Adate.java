@@ -6,7 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fixadate.domain.auth.entity.BaseTimeEntity;
+import com.fixadate.domain.auth.entity.BaseEntity;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.entity.Tag;
 
@@ -37,7 +37,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString(exclude = {"member", "tag"})
-public class Adate extends BaseTimeEntity {
+public class Adate extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
