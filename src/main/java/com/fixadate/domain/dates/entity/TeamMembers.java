@@ -67,8 +67,4 @@ public class TeamMembers extends BaseEntity {
         this.grades = grades;
         this.updatedBy = updatedBy;
     }
-
-    public TeamMembers() {
-
-    }
 }
