@@ -1,24 +1,20 @@
 package com.fixadate.domain.dates.service;
 
-import com.fixadate.domain.auth.entity.BaseEntity;
 import com.fixadate.domain.dates.dto.TeamCreateRequest;
+import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
-import com.fixadate.domain.dates.entity.TeamMembers.Grades;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
 
-import jakarta.servlet.http.HttpServletResponse;
 
 import com.fixadate.domain.member.entity.Member;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpResponse;
 
 @Service
 @RequiredArgsConstructor
