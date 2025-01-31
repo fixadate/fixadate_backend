@@ -1,10 +1,7 @@
 package com.fixadate.global.exception;
 
 import static com.fixadate.global.exception.ExceptionCode.DEFAULT_BAD_REQUEST;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -29,7 +26,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		NotFoundException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleNotFound(final NotFoundException exception) {
-		return ResponseEntity.status(NOT_FOUND)
+		return ResponseEntity.status(OK)  //404 NOT FOUND
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -37,7 +34,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		BadRequestException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleBadRequest(final BadRequestException exception) {
-		return ResponseEntity.status(BAD_REQUEST)
+		return ResponseEntity.status(BAD_REQUEST)  //400 BAD REQUEST
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -45,7 +42,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		UnAuthorizedException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleUnAuthorizedRequest(final UnAuthorizedException exception) {
-		return ResponseEntity.status(UNAUTHORIZED)
+		return ResponseEntity.status(UNAUTHORIZED)  //401 UNAUTHORIZED
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -53,7 +50,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		ForbiddenException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleForbiddenRequest(final ForbiddenException exception) {
-		return ResponseEntity.status(FORBIDDEN)
+		return ResponseEntity.status(FORBIDDEN)  //403 FORBIDDEN
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -61,7 +58,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception) {
 		final String message = exception.getConstraintViolations().iterator().next().getMessage();
 
-		return ResponseEntity.status(BAD_REQUEST)
+		return ResponseEntity.status(BAD_REQUEST)  //400 BAD REQUEST
 							 .body(new ExceptionResponse(DEFAULT_BAD_REQUEST.getCode(), message));
 	}
 
