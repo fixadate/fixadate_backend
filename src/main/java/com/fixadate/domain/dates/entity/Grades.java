@@ -17,7 +17,7 @@ public enum Grades {
             case "owner" -> Grades.OWNER;
             case "admin" -> Grades.ADMIN;
             case "member" -> Grades.MEMBER;
-            default -> Grades.MEMBER;
+            default -> throw new IllegalArgumentException();
         };
     }
 

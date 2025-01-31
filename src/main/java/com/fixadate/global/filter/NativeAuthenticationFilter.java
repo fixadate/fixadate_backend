@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.global.dto.GeneralResponseDto;
+import com.fixadate.global.exception.CustomException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -33,8 +34,8 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			GeneralResponseDto responseDto = new GeneralResponseDto(
-					"0N0A0E0001",
-					"Native Authentication Failed. value(s) might be missing",
+					CustomException.NativeAuthenticationError001.getCustomCode(),
+					CustomException.NativeAuthenticationError001.getErrorMsg(),
 					LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:SS")).toString(),
 					null
 			);
