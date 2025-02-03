@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
-	@Index(name = "calendar_id", columnList = "calendarId"),
 	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")
 })
 @Getter
@@ -78,7 +77,6 @@ public class Dates extends Calendar {
 		this.tag = null;
 	}
 
-	// TODO: [추후] 구글 캘린더에서 수정이 될 때 ifAllDay, alertWhen, repeatFreq은 수정이 안 되나요? -> 답변 필요
 	public void updateFrom(final Dates adate) {
 		this.title = adate.title;
 		this.notes = adate.notes;

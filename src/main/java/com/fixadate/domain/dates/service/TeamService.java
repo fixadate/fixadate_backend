@@ -1,15 +1,23 @@
 package com.fixadate.domain.dates.service;
 
+
+import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.auth.entity.BaseEntity;
+import com.fixadate.domain.dates.dto.DatesDto;
+import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.TeamCreateRequest;
+import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
+import com.fixadate.domain.dates.mapper.DatesMapper;
+import com.fixadate.domain.dates.repository.DatesRepository;
 import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
 
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.tag.event.object.TagSettingEvent;
 import java.util.List;
 
 import com.fixadate.domain.notification.event.object.TeamDeleteEvent;
@@ -26,6 +34,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamMembersRepository teamMembersRepository;
+    private final DatesRepository datesRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
@@ -76,5 +85,32 @@ public class TeamService {
         }
 
         return isDeleted;
+    }
+
+
+    public DatesDto createDates(DatesRegisterDto requestDto, Member member) {
+        // todo: 팀 일정 가능여부 로직
+
+        final Dates dates = DatesMapper.toEntity(requestDto, member);
+        final Dates savedDates = datesRepository.save(dates);
+
+        final String tagName = requestDto.tagName();
+//        if (tagName != null && !tagName.isEmpty()) {
+//            applicationEventPublisher.publishEvent(new TagSettingEvent(dates, tagName));
+//        }
+
+        // todo: 팀 일정 새로고침 필요 알림
+
+        return DatesMapper.toDatesDto(savedDates);
+    }
+
+    public boolean updateDates() {
+        return true;
+
+    }
+
+    public boolean deleteDates() {
+        return true;
+
     }
 }
