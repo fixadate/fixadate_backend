@@ -5,7 +5,6 @@ import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.service.TeamService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.jwt.MemberPrincipal;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class TeamController {
     }
 
     @PostMapping
-    public ResponseEntity<Teams> createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+    public ResponseEntity<Teams> deleteTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
                                             @RequestBody TeamCreateRequest request) {
         final Member member = memberPrincipal.getMember();
         Teams createdTeam = teamService.createTeam(member, request);
@@ -32,8 +31,8 @@ public class TeamController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-        @PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+                                              @PathVariable Long id) {
         final Member member = memberPrincipal.getMember();
         boolean result = teamService.deleteTeam(member, id);
         return ResponseEntity.ok(result);
