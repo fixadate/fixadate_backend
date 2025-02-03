@@ -1,13 +1,9 @@
 package com.fixadate.domain.dates.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-public record DatesRegisterRequest(
-	@NotBlank(message = "Dates team cannot be blank")
-	Long teamId,
-	@NotBlank(message = "Dates title cannot be blank")
+public record DatesUpdateRequest(
 	String title,
 	String notes,
 	String location,
@@ -16,10 +12,11 @@ public record DatesRegisterRequest(
 	String tagName,
 	@NotNull
 	boolean ifAllDay,
-	@NotNull(message = "Dates startsWhen cannot be null")
+	@NotNull(message = "Adate startsWhen cannot be null")
 	LocalDateTime startsWhen,
-	@NotNull(message = "Dates endsWhen cannot be null")
+	@NotNull(message = "Adate endsWhen cannot be null")
 	LocalDateTime endsWhen,
+	@NotNull
 	boolean reminders
 ) {
 }

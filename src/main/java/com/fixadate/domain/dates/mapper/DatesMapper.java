@@ -16,6 +16,8 @@ import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesRegisterRequest;
 import com.fixadate.domain.dates.dto.DatesResponse;
+import com.fixadate.domain.dates.dto.DatesUpdateDto;
+import com.fixadate.domain.dates.dto.DatesUpdateRequest;
 import com.fixadate.domain.dates.dto.DatesViewResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.member.entity.Member;
@@ -31,6 +33,7 @@ public class DatesMapper {
 
 	public static DatesRegisterDto toDatesRegisterDto(final DatesRegisterRequest request) {
 		return new DatesRegisterDto(
+			request.teamId(),
 			request.title(),
 			request.notes(),
 			request.location(),
@@ -44,8 +47,8 @@ public class DatesMapper {
 		);
 	}
 
-	public static AdateUpdateDto toAdateUpdateDto(final AdateUpdateRequest request) {
-		return new AdateUpdateDto(
+	public static DatesUpdateDto toDatesUpdateDto(final DatesUpdateRequest request) {
+		return new DatesUpdateDto(
 			request.title(),
 			request.notes(),
 			request.location(),

@@ -1,15 +1,13 @@
 package com.fixadate.domain.dates.controller;
 
-import com.fixadate.domain.adate.dto.AdateDto;
-import com.fixadate.domain.adate.dto.AdateRegisterDto;
-import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
-import com.fixadate.domain.adate.mapper.AdateMapper;
+
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesRegisterRequest;
 import com.fixadate.domain.dates.dto.DatesResponse;
+import com.fixadate.domain.dates.dto.DatesUpdateDto;
+import com.fixadate.domain.dates.dto.DatesUpdateRequest;
 import com.fixadate.domain.dates.dto.TeamCreateRequest;
-import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.TeamService;
@@ -61,14 +59,24 @@ public class TeamController {
     }
 
     @PatchMapping("/dates/{id}")
-    public ResponseEntity<Boolean> updateDates(){
-        boolean result = teamService.updateDates();
-        return ResponseEntity.ok(result);
+    public ResponseEntity<DatesResponse> updateDates(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @PathVariable Long id,
+        @Valid @RequestBody final DatesUpdateRequest request
+    ){
+        final Member member = memberPrincipal.getMember();
+        final DatesUpdateDto datesUpdateDto = DatesMapper.toDatesUpdateDto(request);
+        DatesDto datesDto = teamService.updateDates(datesUpdateDto, id, member);
+        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto);
+        return ResponseEntity.ok(datesResponse);
     }
 
     @DeleteMapping("/dates/{id}")
-    public ResponseEntity<Boolean> deleteDates(){
-        boolean result = teamService.deleteDates();
+    public ResponseEntity<Boolean> deleteDates(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @PathVariable Long id){
+        final Member member = memberPrincipal.getMember();
+        boolean result = teamService.deleteDates(id, member);
         return ResponseEntity.ok(result);
     }
 }

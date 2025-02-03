@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
+	@Index(name = "team_id", columnList = "team_id"),
 	@Index(name = "date_range", columnList = "member_id,startsWhen,endsWhen")
 })
 @Getter
@@ -26,18 +27,23 @@ public class Dates extends Calendar {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_dates_team_id"))
+	private Teams team;
+
 	private String etag;
 
 	// TODO: [추후] 불필요, 삭제 필요
 	private boolean reminders;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_adate_member_id"))
+	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_dates_member_id"))
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "fk_adate_tag_id"))
+	@JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "fk_dates_tag_id"))
 	private Tag tag;
 
 	@Builder

@@ -2,8 +2,7 @@ package com.fixadate.domain.dates.dto;
 
 import java.time.LocalDateTime;
 
-public record DatesRegisterDto(
-	Long teamId,
+public record DatesUpdateDto(
 	String title,
 	String notes,
 	String location,
