@@ -1,4 +1,4 @@
-package com.fixadate.domain.dates.dto;
+package com.fixadate.domain.dates.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

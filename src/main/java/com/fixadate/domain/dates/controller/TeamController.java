@@ -3,11 +3,11 @@ package com.fixadate.domain.dates.controller;
 
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
-import com.fixadate.domain.dates.dto.DatesRegisterRequest;
-import com.fixadate.domain.dates.dto.DatesResponse;
+import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
+import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
-import com.fixadate.domain.dates.dto.DatesUpdateRequest;
-import com.fixadate.domain.dates.dto.TeamCreateRequest;
+import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
+import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.TeamService;
@@ -39,11 +39,11 @@ public class TeamController {
         return new ResponseEntity<>(createdTeam, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{teamId}")
     public ResponseEntity<Boolean> deleteTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-                                              @PathVariable Long id) {
+                                              @PathVariable Long teamId) {
         final Member member = memberPrincipal.getMember();
-        boolean result = teamService.deleteTeam(member, id);
+        boolean result = teamService.deleteTeam(member, teamId);
         return ResponseEntity.ok(result);
     }
 

@@ -4,26 +4,18 @@ import static com.fixadate.domain.tag.mapper.TagMapper.toResponse;
 import static com.fixadate.global.util.EventTimeUtil.checkEventDateTimeIsNull;
 import static com.fixadate.global.util.EventTimeUtil.checkEventIsAllDayType;
 
-import com.fixadate.domain.adate.dto.AdateDto;
-import com.fixadate.domain.adate.dto.AdateRegisterDto;
-import com.fixadate.domain.adate.dto.AdateUpdateDto;
-import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
-import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
-import com.fixadate.domain.adate.dto.response.AdateResponse;
-import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
-import com.fixadate.domain.dates.dto.DatesRegisterRequest;
-import com.fixadate.domain.dates.dto.DatesResponse;
+import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
+import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
-import com.fixadate.domain.dates.dto.DatesUpdateRequest;
-import com.fixadate.domain.dates.dto.DatesViewResponse;
+import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
+import com.fixadate.domain.dates.dto.response.DatesViewResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
-import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
 
 public class DatesMapper {
