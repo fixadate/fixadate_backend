@@ -2,6 +2,11 @@ package com.fixadate.global.config.security;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+import com.fixadate.domain.dates.repository.TeamGradePermissionsRepository;
+import com.fixadate.domain.dates.repository.TeamMembersRepository;
+import com.fixadate.domain.dates.repository.TeamRepository;
+import com.fixadate.domain.member.service.repository.PlansPermissionsRepository;
+import com.fixadate.global.filter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,9 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.fixadate.global.filter.ExceptionHandlerFilter;
-import com.fixadate.global.filter.JwtAuthenticationFilter;
-import com.fixadate.global.filter.NativeAuthenticationFilter;
 import com.fixadate.global.jwt.CustomAuthenticationEntryPoint;
 import com.fixadate.global.jwt.JwtAccessDeniedHandler;
 import com.fixadate.global.jwt.service.JwtProvider;
@@ -28,7 +30,9 @@ public class SecurityConfig {
 	private final JwtProvider jwtProvider;
 	private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
+	private final PlansPermissionsRepository plansPermissionsRepository;
+	private final TeamMembersRepository teamMembersRepository;
+	private final TeamGradePermissionsRepository teamGradePermissionsRepository;
 	private static final String[] PERMIT_URL_ARRAY = {
 		/* swagger v3 */
 		"/swagger-ui/**",
@@ -76,6 +80,8 @@ public class SecurityConfig {
 			.exceptionHandling(handling -> handling
 				.accessDeniedHandler(jwtAccessDeniedHandler)
 				.authenticationEntryPoint(authenticationEntryPoint))
+			.addFilterBefore(new TeamAuthorizationFilter(teamMembersRepository, teamGradePermissionsRepository), SubscriptionAuthorizationFilter.class)
+			.addFilterBefore(new SubscriptionAuthorizationFilter(plansPermissionsRepository), JwtAuthenticationFilter.class)
 			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
 			.addFilterBefore(new NativeAuthenticationFilter(), ExceptionHandlerFilter.class)
