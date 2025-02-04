@@ -80,11 +80,11 @@ public class SecurityConfig {
 			.exceptionHandling(handling -> handling
 				.accessDeniedHandler(jwtAccessDeniedHandler)
 				.authenticationEntryPoint(authenticationEntryPoint))
-			.addFilterBefore(new TeamAuthorizationFilter(teamMembersRepository, teamGradePermissionsRepository), SubscriptionAuthorizationFilter.class)
-			.addFilterBefore(new SubscriptionAuthorizationFilter(plansPermissionsRepository), JwtAuthenticationFilter.class)
 			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
 			.addFilterBefore(new NativeAuthenticationFilter(), ExceptionHandlerFilter.class)
+			.addFilterBefore(new SubscriptionAuthorizationFilter(plansPermissionsRepository), JwtAuthenticationFilter.class)
+			.addFilterBefore(new TeamAuthorizationFilter(teamMembersRepository, teamGradePermissionsRepository), SubscriptionAuthorizationFilter.class)
 			.build();
 	}
 }

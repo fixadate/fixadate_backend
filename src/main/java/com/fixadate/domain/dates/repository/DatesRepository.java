@@ -11,4 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DatesRepository extends JpaRepository<Dates, Long> {
     List<Dates> findAllByTeamAndStatusIs(Teams team, DataStatus status);
     Optional<Dates> findByIdAndStatusIs(Long id,DataStatus status);
+
+    List<Dates> findAllByTeam_IdAndStatusIs(Long teamId, DataStatus dataStatus);
 }

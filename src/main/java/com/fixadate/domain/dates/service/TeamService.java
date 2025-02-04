@@ -237,4 +237,16 @@ public class TeamService {
             throw new RuntimeException("invalid access");
         }
     }
+
+    public void validateTeamMember(Member member, Long teamId) {
+        Optional<TeamMembers> foundMember = teamMembersRepository.findByTeam_IdAndMember_Id(teamId, member.getId());
+        if(foundMember.isEmpty()){
+            throw new RuntimeException("not team member");
+        }
+    }
+
+    public List<Dates> getTeamDates(Member member, Long teamId) {
+        validateTeamMember(member, teamId);
+        return datesRepository.findAllByTeam_IdAndStatusIs(teamId, DataStatus.ACTIVE);
+    }
 }
