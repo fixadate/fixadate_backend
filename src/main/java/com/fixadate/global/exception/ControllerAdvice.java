@@ -34,7 +34,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		BadRequestException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleBadRequest(final BadRequestException exception) {
-		return ResponseEntity.status(BAD_REQUEST)  //400 BAD REQUEST
+		return ResponseEntity.status(OK)  //400 BAD REQUEST
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -42,7 +42,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		UnAuthorizedException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleUnAuthorizedRequest(final UnAuthorizedException exception) {
-		return ResponseEntity.status(UNAUTHORIZED)  //401 UNAUTHORIZED
+		return ResponseEntity.status(OK)  //401 UNAUTHORIZED
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -50,7 +50,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		ForbiddenException.class
 	})
 	public ResponseEntity<ExceptionResponse> handleForbiddenRequest(final ForbiddenException exception) {
-		return ResponseEntity.status(FORBIDDEN)  //403 FORBIDDEN
+		return ResponseEntity.status(OK)  //403 FORBIDDEN
 							 .body(new ExceptionResponse(exception.getCode(), exception.getMessage()));
 	}
 
@@ -58,7 +58,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception) {
 		final String message = exception.getConstraintViolations().iterator().next().getMessage();
 
-		return ResponseEntity.status(BAD_REQUEST)  //400 BAD REQUEST
+		return ResponseEntity.status(OK)  //400 BAD REQUEST
 							 .body(new ExceptionResponse(DEFAULT_BAD_REQUEST.getCode(), message));
 	}
 
@@ -72,7 +72,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 	) {
 		final String message = exception.getFieldErrors().get(0).getDefaultMessage();
 
-		return ResponseEntity.status(BAD_REQUEST)
+		return ResponseEntity.status(OK)
 							 .body(new ExceptionResponse(DEFAULT_BAD_REQUEST.getCode(), message));
 	}
 
@@ -84,7 +84,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
 		final HttpStatusCode statusCode,
 		final WebRequest request
 	) {
-		return ResponseEntity.status(statusCode)
+		return ResponseEntity.status(OK)
 							 .body(new ExceptionResponse(statusCode.value(), exception.getMessage()));
 	}
 }
