@@ -6,7 +6,6 @@ import com.fixadate.domain.member.entity.ResourceType;
 
 public interface MemberResourcesRepository {
     public MemberResources getMemberResources(Member member);
-    public int getResourceCnt(Member member, ResourceType resourceType);
     public boolean addMemberResources(Member member, ResourceType resourceType, int cnt);
     public boolean removeMemberResources(Member member, ResourceType resourceType, int cnt);
 }

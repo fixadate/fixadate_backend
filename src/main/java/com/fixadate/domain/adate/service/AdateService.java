@@ -9,6 +9,12 @@ import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromLocalDate;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
 
+import com.fixadate.domain.member.entity.MemberPlans;
+import com.fixadate.domain.member.entity.MemberResources;
+import com.fixadate.domain.member.entity.Plans;
+import com.fixadate.domain.member.entity.ResourceType;
+import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
+import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,9 +51,13 @@ public class AdateService {
 	private final AdateRepository adateRepository;
 	private final RedisFacade redisFacade;
 	private final ApplicationEventPublisher applicationEventPublisher;
+	private final PlanResourcesRepository planResourcesRepository;
+	private final MemberResourcesRepository memberResourcesRepository;
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateDto registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
+		MemberResources foundMemberResources = checkAdateResourceCntExceedAndGetMemberResources(member);
+
 		final Adate adate = toEntity(adateRegisterDto, member);
 		final Adate savedAdate = adateRepository.save(adate);
 
@@ -55,13 +65,18 @@ public class AdateService {
 		if (tagName != null && !tagName.isEmpty()) {
 			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, tagName));
 		}
-
+		foundMemberResources.plusResources(ResourceType.ADATE, 1);
 		return AdateMapper.toAdateDto(savedAdate);
 	}
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public void registerExternalCalendarToAdate(final Adate adate, final ExternalCalendar externalCalendar) {
+		Member foundMember = adate.getMember();
+		MemberResources foundMemberResources = checkAdateResourceCntExceedAndGetMemberResources(foundMember);
+
 		final Adate saveAdate = adateRepository.save(adate);
+
+		foundMemberResources.plusResources(ResourceType.ADATE, 1);
 
 		applicationEventPublisher.publishEvent(new TagSettingEvent(saveAdate, externalCalendar.getTagName()));
 	}
@@ -70,7 +85,13 @@ public class AdateService {
 	public AdateDto restoreAdateByCalendarId(final String calendarId) {
 		final String key = ADATE_WITH_COLON.getValue() + calendarId;
 		final Adate adate = redisFacade.getAndDeleteObjectRedis(key, Adate.class);
+
+		Member foundMember = adate.getMember();
+		MemberResources foundMemberResources = checkAdateResourceCntExceedAndGetMemberResources(foundMember);
+
 		final Adate saveAdate = adateRepository.save(adate);
+
+		foundMemberResources.plusResources(ResourceType.ADATE, 1);
 
 		return toAdateDto(saveAdate);
 	}
@@ -180,7 +201,11 @@ public class AdateService {
 
 	@Transactional
 	public void removeAdate(final Adate adate) {
+		Member member = adate.getMember();
 		adateRepository.delete(adate);
+
+		// todo: adate 삭제 상태 체크
+		minusAdateResource(member);
 	}
 
 	@Transactional
@@ -188,9 +213,37 @@ public class AdateService {
 		final Adate adate = getAdateByCalendarId(calendarId).orElseThrow(
 			() -> new AdateNotFoundException(NOT_FOUND_ADATE_CALENDAR_ID)
 		);
+		Member member = adate.getMember();
 		adateRepository.delete(adate);
 
 		final Duration adateDuration = Duration.ofDays(ADATE_REDIS_DURATION);
 		redisFacade.removeAndRegisterObject(ADATE_WITH_COLON.getValue() + calendarId, adate, adateDuration);
+
+		// todo: adate 삭제 상태 체크
+		minusAdateResource(member);
+	}
+
+	private void minusAdateResource(Member member) {
+		MemberPlans memberPlan = member.getMemberPlan();
+		if(!memberPlan.isValid()){
+			throw new RuntimeException("member plan invalid");
+		}
+		MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
+		foundMemberResources.minusResources(ResourceType.ADATE, 1);
+	}
+
+	private MemberResources checkAdateResourceCntExceedAndGetMemberResources(Member member) {
+		MemberPlans memberPlan = member.getMemberPlan();
+		if(!memberPlan.isValid()){
+			throw new RuntimeException("member plan invalid");
+		}
+		Plans foundPlan = memberPlan.getPlan();
+		int adateResourceMaxCnt = planResourcesRepository.getResourceMaxCnt(ResourceType.ADATE, foundPlan);
+		MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
+		int currentAdateResourceCnt = foundMemberResources.getResourceCnt(ResourceType.ADATE);
+		if(currentAdateResourceCnt + 1 > adateResourceMaxCnt){
+			throw new RuntimeException("adate resource limit exceeded");
+		}
+		return foundMemberResources;
 	}
 }

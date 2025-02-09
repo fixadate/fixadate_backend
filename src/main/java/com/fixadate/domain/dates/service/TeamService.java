@@ -18,6 +18,14 @@ import com.fixadate.domain.dates.repository.TeamRepository;
 
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.entity.MemberPlans;
+import com.fixadate.domain.member.entity.MemberResources;
+import com.fixadate.domain.member.entity.Plans;
+import com.fixadate.domain.member.entity.ResourceType;
+import com.fixadate.domain.member.service.repository.MemberPlansRepository;
+import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
+import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
+import com.fixadate.domain.member.service.repository.PlansRepository;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import java.util.List;
@@ -39,11 +47,25 @@ public class TeamService {
     private final TeamMembersRepository teamMembersRepository;
     private final DatesRepository datesRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final PlansRepository plansRepository;
+    private final MemberPlansRepository memberPlansRepository;
+    private final PlanResourcesRepository planResourcesRepository;
+    private final MemberResourcesRepository memberResourcesRepository;
 
     @Transactional
     public Teams createTeam(Member member, TeamCreateRequest requestDto) {
-        // todo: 팀 생성 제한 처리 로직
+        MemberPlans memberPlan = member.getMemberPlan();
+        if(!memberPlan.isValid()){
+            throw new RuntimeException("member plan invalid");
+        }
+        Plans foundPlan = memberPlan.getPlan();
+        int teamResourceMaxCnt = planResourcesRepository.getResourceMaxCnt(ResourceType.TEAM, foundPlan);
+        MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
+        int currentTeamResourceCnt = foundMemberResources.getResourceCnt(ResourceType.TEAM);
 
+        if(currentTeamResourceCnt + 1 > teamResourceMaxCnt){
+            throw new RuntimeException("team resource limit exceeded");
+        }
 
         Teams team = new Teams();
         team.setName(requestDto.name());
@@ -58,7 +80,7 @@ public class TeamService {
 
         teamMembersRepository.save(owner);
 
-        // todo: 팀 생성 갯수 처리 로직
+        foundMemberResources.plusResources(ResourceType.TEAM, 1);
 
         return createdTeam;
     }
@@ -83,7 +105,11 @@ public class TeamService {
         foundTeam.delete();
 
         boolean isDeleted = teamRepository.existsByIdAndStatusIs(id, BaseEntity.DataStatus.DELETED);
+
         if(isDeleted) {
+            MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
+            foundMemberResources.minusResources(ResourceType.TEAM, 1);
+
             memberList.forEach(teamMember -> {
                 applicationEventPublisher.publishEvent(new TeamDeleteEvent(teamMember, teamName));
             });

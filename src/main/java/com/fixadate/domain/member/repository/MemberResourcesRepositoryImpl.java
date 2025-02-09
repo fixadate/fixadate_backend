@@ -23,15 +23,6 @@ public class MemberResourcesRepositoryImpl implements MemberResourcesRepository 
     }
 
     @Override
-    public int getResourceCnt(Member member, ResourceType resourceType) {
-        Optional<MemberResources> memberResources = memberResourcesJpaRepository.findByMember(member);
-        if(memberResources.isEmpty()){
-            throw new NotFoundException(null);
-        }
-        return memberResources.get().getResourceCnt(resourceType);
-    }
-
-    @Override
     public boolean addMemberResources(Member member, ResourceType resourceType, int cnt) {
         MemberResources memberResources = getMemberResources(member);
         int resourceCnt = memberResources.getResourceCnt(resourceType);
