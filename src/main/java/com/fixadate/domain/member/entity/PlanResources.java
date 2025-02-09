@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -33,4 +34,8 @@ public class PlanResources extends BaseEntity {
 
     @Column
     private String updatedBy;
+
+    public Resources getResource() {
+        return resource;
+    }
 }

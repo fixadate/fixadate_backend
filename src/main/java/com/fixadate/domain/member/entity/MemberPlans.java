@@ -48,4 +48,8 @@ public class MemberPlans extends BaseEntity {
     @Column(name = "valid_yn")
     private boolean validYn = true;
 
+    public boolean isValid(){
+        return validYn;
+    }
+
 }
