@@ -1,7 +1,9 @@
 package com.fixadate.domain.pushkey.controller;
 
+import java.io.IOException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.global.jwt.MemberPrincipal;
@@ -35,4 +37,22 @@ public interface PushKeyController {
 	})
 	ResponseEntity<Void> registPushKey(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@RequestParam String pushKey);
+
+	@Operation(summary = "pushKey test", description = "PushKey를 넣으면 푸시를 보내는 테스트입니다.")
+	@Parameters(value = {
+		@Parameter(name = "pushKey", description = "pushKey 값입니다.",
+			content = @Content(schema = @Schema(implementation = String.class)), in = ParameterIn.QUERY)
+	})
+	@PostMapping("/test")
+	ResponseEntity<Void> testFcm(@RequestParam String pushKey) throws IOException;
+
+	@Operation(summary = "pushKey test", description = "PushKey와 이미지를 넣으면 이미지와 푸시를 보내는 테스트입니다. 또한 test용 data도 같이 보냅니다. 테스트용으로 네이버 링크 이동")
+	@Parameters(value = {
+		@Parameter(name = "pushKey", description = "pushKey 값입니다.",
+			content = @Content(schema = @Schema(implementation = String.class)), in = ParameterIn.QUERY),
+		@Parameter(name = "image", description = "이미지 uri입니다.",
+			content = @Content(schema = @Schema(implementation = String.class)), in = ParameterIn.QUERY)
+	})
+	@PostMapping("/test-image")
+	ResponseEntity<Void> testFcmWithData(@RequestParam String pushKey, @RequestParam String image) throws IOException;
 }
