@@ -17,6 +17,7 @@ ngrinder-controller
 # Source code output directories
 src/main/generated/
 src/main/resources/credentials.json
+src/main/resources/fixadate_firebase_service_key.json
 src/main/resources/application-prod.yml
 src/main/resources/application-test.yml
 src/main/resources/application-loadtest.yml

@@ -104,6 +104,12 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.testcontainers/localstack
     testImplementation "org.testcontainers:localstack:1.15.3"
+
+    // firebase sdk
+    implementation 'com.google.firebase:firebase-admin:6.8.1'
+
+    // okhttp
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 }
 
 checkstyle {
@@ -115,11 +121,11 @@ checkstyle {
 
 }
 
-//test {
-//    useJUnitPlatform()
+test {
+    useJUnitPlatform()
 ////    dependsOn 'checkstyleMain'
 ////    dependsOn 'checkstyleTest'
-//}
+}
 
 
 def querydslSrcDir = 'src/main/generated'
