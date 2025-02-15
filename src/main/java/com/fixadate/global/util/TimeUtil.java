@@ -9,10 +9,22 @@ import java.time.format.DateTimeFormatter;
 import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.google.api.client.util.DateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 public class TimeUtil {
 	static final String DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 	static final String DATE_FORMATTER = "yyyy-MM-dd";
+
+	private static class TIME_MAX {
+
+		public static final int SEC = 60;
+		public static final int MIN = 60;
+		public static final int HOUR = 24;
+		public static final int DAY = 30;
+		public static final int YEAR_DAY = 365;
+		public static final int MONTH = 12;
+	}
 
 	protected TimeUtil() {
 	}
@@ -54,5 +66,24 @@ public class TimeUtil {
 			case 2 -> 29;
 			default -> throw new InvalidTimeException(ExceptionCode.INVALID_MONTH);
 		};
+	}
+
+	public static String convertDateToKor(LocalDateTime dateTime) {
+		LocalDateTime now = LocalDateTime.now();
+		long diffTime;
+
+		if ((diffTime = ChronoUnit.SECONDS.between(dateTime, now)) < TIME_MAX.SEC) {
+			return diffTime + "초 전";
+		} else if ((diffTime = ChronoUnit.MINUTES.between(dateTime, now)) < TIME_MAX.MIN) {
+			return diffTime + "분 전";
+		} else if ((diffTime = ChronoUnit.HOURS.between(dateTime, now)) < TIME_MAX.HOUR) {
+			return diffTime + "시간 전";
+		} else if ((diffTime = ChronoUnit.DAYS.between(dateTime, now)) < TIME_MAX.DAY) {
+			return diffTime + "일 전";
+		} else if ((diffTime = ChronoUnit.MONTHS.between(dateTime, now)) < TIME_MAX.MONTH) {
+			return diffTime + "달 전";
+		} else {
+			return ChronoUnit.YEARS.between(dateTime, now) + "년 전";
+		}
 	}
 }
