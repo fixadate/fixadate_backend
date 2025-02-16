@@ -122,7 +122,7 @@ checkstyle {
 }
 
 test {
-    useJUnitPlatform()
+//    useJUnitPlatform()
 ////    dependsOn 'checkstyleMain'
 ////    dependsOn 'checkstyleTest'
 }
