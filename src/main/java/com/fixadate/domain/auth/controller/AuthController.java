@@ -1,8 +1,11 @@
 package com.fixadate.domain.auth.controller;
 
+import com.fixadate.global.dto.GeneralResponseDto;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.auth.dto.request.MemberOAuthRequest;
@@ -38,7 +41,7 @@ public interface AuthController {
 		@ApiResponse(responseCode = "401", description = "로그인 실패",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<MemberSigninResponse> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest);
+	GeneralResponseDto signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest, @RequestHeader HttpHeaders headers);
 
 	@Operation(summary = "회원가입", description = "회원가입을 합니다.")
 	@ApiResponses({
@@ -47,7 +50,7 @@ public interface AuthController {
 		@ApiResponse(responseCode = "400", description = "이미 member가 데이터베이스에 존재할 때",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<MemberSignupResponse> signup(@Valid @RequestBody MemberRegisterRequest memberRegisterRequest);
+	GeneralResponseDto signup(@Valid @RequestBody MemberRegisterRequest memberRegisterRequest);
 
 	@Operation(summary = "token 재발급", description = "accessToken, refreshToken 재발급")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
@@ -64,7 +67,8 @@ public interface AuthController {
 		@ApiResponse(responseCode = "401", description = "유효하지 않은 refreshToken",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<Void> reissueAccessToken(@CookieValue(value = "refreshToken") Cookie cookie);
+	GeneralResponseDto reissueAccessToken(@CookieValue(value = "refreshToken") Cookie cookie,
+		 								  @RequestHeader HttpHeaders headers);
 
 	@Operation(summary = "로그아웃", description = "refreshToken을 삭제하고, accessToken 블랙리스트")
 	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
@@ -74,7 +78,7 @@ public interface AuthController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<Void> logout(HttpServletRequest httpServletRequest);
+	GeneralResponseDto logout(HttpServletRequest httpServletRequest);
 
 	@Operation(summary = "탈퇴",
 		description = "member의 모든 정보를 지우고 연관 정보도 지웁니다., refreshToken 삭제, accessToken 블랙리스트")
@@ -90,5 +94,5 @@ public interface AuthController {
 		@ApiResponse(responseCode = "404", description = "member가 존재하지 않을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<Void> signout(@RequestParam String email, HttpServletRequest httpServletRequest);
+	GeneralResponseDto signout(@RequestParam String email, HttpServletRequest httpServletRequest);
 }

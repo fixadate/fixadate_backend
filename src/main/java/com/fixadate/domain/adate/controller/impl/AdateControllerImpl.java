@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.controller.impl;
 
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 
+import com.fixadate.global.dto.GeneralResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +47,7 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@PostMapping
-	public ResponseEntity<AdateResponse> registerAdate(
+	public GeneralResponseDto registerAdate(
 		@Valid @RequestBody final AdateRegisterRequest adateRegisterRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
@@ -55,30 +56,30 @@ public class AdateControllerImpl implements AdateController {
 		final AdateDto adate = adateService.registerAdate(adateRegisterDto, member);
 		final AdateResponse response = AdateMapper.toAdateResponse(adate);
 
-		return ResponseEntity.ok(response);
+		return GeneralResponseDto.success("", response);
 	}
 
 	@Override
 	@PostMapping("/restore/{calendarId}")
-	public ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId) {
+	public GeneralResponseDto restoreAdate(@PathVariable final String calendarId) {
 		final AdateDto adate = adateService.restoreAdateByCalendarId(calendarId);
 		final AdateResponse response = AdateMapper.toAdateResponse(adate);
 
-		return ResponseEntity.ok(response);
+		return GeneralResponseDto.success("", response);
 	}
 
 	@Override
 	@GetMapping("/{calendarId}")
-	public ResponseEntity<AdateResponse> getAdate(@PathVariable final String calendarId) {
+	public GeneralResponseDto getAdate(@PathVariable final String calendarId) {
 		final AdateDto adate = adateService.getAdateInformationByCalendarId(calendarId);
 		final AdateResponse response = AdateMapper.toAdateResponse(adate);
 
-		return ResponseEntity.ok(response);
+		return GeneralResponseDto.success("", response);
 	}
 
 	@Override
 	@GetMapping
-	public ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+	public GeneralResponseDto getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final LocalDateTime startDateTime,
 		@RequestParam final LocalDateTime endDateTime
@@ -91,7 +92,7 @@ public class AdateControllerImpl implements AdateController {
 														.map(AdateMapper::toAdateViewResponse)
 														.toList();
 
-		return ResponseEntity.ok(responses);
+		return GeneralResponseDto.success("", responses);
 	}
 
 	private void checkDateTime(final LocalDateTime startDateTime, final LocalDateTime endDateTime) {
@@ -102,7 +103,7 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@GetMapping("/month")
-	public ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+	public GeneralResponseDto getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final int year,
 		@RequestParam @Min(1) @Max(12) final int month
@@ -113,12 +114,12 @@ public class AdateControllerImpl implements AdateController {
 														.map(AdateMapper::toAdateViewResponse)
 														.toList();
 
-		return ResponseEntity.ok(responses);
+		return GeneralResponseDto.success("", responses);
 	}
 
 	@Override
 	@GetMapping("/day")
-	public ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+	public GeneralResponseDto getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final LocalDate firstDay,
 		@RequestParam final LocalDate lastDay
@@ -131,7 +132,7 @@ public class AdateControllerImpl implements AdateController {
 														.map(AdateMapper::toAdateViewResponse)
 														.toList();
 
-		return ResponseEntity.ok(responses);
+		return GeneralResponseDto.success("", responses);
 	}
 
 	private void checkDate(final LocalDate firstDay, final LocalDate lastDay) {
@@ -142,7 +143,7 @@ public class AdateControllerImpl implements AdateController {
 
 	@Override
 	@PatchMapping("/{calendarId}")
-	public ResponseEntity<AdateResponse> updateAdate(
+	public GeneralResponseDto updateAdate(
 		@PathVariable final String calendarId,
 		@Valid @RequestBody final AdateUpdateRequest adateUpdateRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
@@ -152,15 +153,14 @@ public class AdateControllerImpl implements AdateController {
 		final AdateDto adate = adateService.updateAdate(member, calendarId, adateUpdateDto);
 		final AdateResponse response = AdateMapper.toAdateResponse(adate);
 
-		return ResponseEntity.ok(response);
+		return GeneralResponseDto.success("",response);
 	}
 
 	@Override
 	@DeleteMapping("/{calendarId}")
-	public ResponseEntity<Void> removeAdate(@PathVariable final String calendarId) {
+	public GeneralResponseDto removeAdate(@PathVariable final String calendarId) {
 		adateService.removeAdateByCalendarId(calendarId);
 
-		return ResponseEntity.noContent()
-							 .build();
+		return GeneralResponseDto.success("", "");
 	}
 }
