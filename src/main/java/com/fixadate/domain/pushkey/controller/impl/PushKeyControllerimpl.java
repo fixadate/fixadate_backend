@@ -49,7 +49,7 @@ public class PushKeyControllerimpl implements PushKeyController {
 		Map<String, Object> map = new HashMap<>();
 		map.put("image", image);
 		map.put("link", "https://www.naver.com");
-		map.put("pushType", PushNotificationType.MOVE_TO_LINK);
+		map.put("pushType", PushNotificationType.NORMAL);
 		firebaseCloudMessageService.sendMessageToWithData(pushKey, "test제목", "test내용", map);
 
 		return GeneralResponseDto.success("", "");

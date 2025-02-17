@@ -23,12 +23,12 @@ public class NotificationService {
 
     public NotificationPageResponse getNotificationList(Member member,
         Pageable pageable) {
-        Page<Notification> foundAlarmList = notificationRepository.findAllByMemberId(member.getId(), pageable);
-        List<NotificationListResponse> alarmListResponse = foundAlarmList.stream()
+        Page<Notification> foundNotificationList = notificationRepository.findAllByMemberId(member.getId(), pageable);
+        List<NotificationListResponse> notificationListResponse = foundNotificationList.stream()
             .map(NotificationListResponse::new).collect(
                 Collectors.toList());
 
-        return new NotificationPageResponse(new PageImpl<>(alarmListResponse, pageable, foundAlarmList.getTotalElements()));
+        return new NotificationPageResponse(new PageImpl<>(notificationListResponse, pageable, foundNotificationList.getTotalElements()));
     }
 
     public boolean changeNotificationRead(Long id, Member member) {
