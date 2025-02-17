@@ -3,6 +3,7 @@ package com.fixadate.domain.notification.entity;
 import com.fixadate.domain.auth.entity.BaseEntity;
 
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.notification.dto.NotificationListResponse.ValueObject;
 import com.fixadate.domain.notification.enumerations.PushNotificationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,6 +27,8 @@ public class Notification extends BaseEntity {
 
     @Column(nullable = false)
     private String memberId;
+    @Column(nullable = false)
+    private String pushKey;
 
     private String image;
 
@@ -46,13 +49,14 @@ public class Notification extends BaseEntity {
     private boolean isRead = false;
 
     @Builder
-    public Notification(Member member, PushNotificationType eventType, String title, String content, String value, String image) {
+    public Notification(Member member, PushNotificationType eventType, String title, String content, String value, String image, String pushKey) {
         this.memberId = member.getId();
         this.eventType = eventType;
         this.title = title;
         this.content = content;
         this.value = value;
         this.image = image;
+        this.pushKey = pushKey;
     }
 
     public void setIsRead(boolean isRead) {
@@ -65,5 +69,16 @@ public class Notification extends BaseEntity {
 
     public String shortenTitle(String title) {
         return title.substring(0, 10) + "...";
+    }
+
+    public ValueObject createValueObj(){
+        ValueObject valueObject = new ValueObject();
+        switch (eventType) {
+            case DATES_MARK_REQUEST -> valueObject.setMarkRequestDatesId(value);
+            case WORKSPACE_INVITATION -> valueObject.setInvitationId(value);
+            case DATES_CHOICE -> valueObject.setChoiceDatesId(value);
+            case DATES_CONFIRMED -> valueObject.setConfirmedDatesId(value);
+        }
+        return valueObject;
     }
 }

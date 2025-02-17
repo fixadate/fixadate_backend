@@ -24,21 +24,10 @@ public class NotificationListResponse {
         this.eventType = notification.getEventType();
         this.title = notification.getTitle();
         this.content = notification.getContent();
-        this.valueObj = createValueObj(notification.getEventType(), notification.getValue());
+        this.valueObj = notification.createValueObj();
         this.image = notification.getImage();
         this.isRead = notification.isRead();
         this.createdAt = TimeUtil.convertDateToKor(notification.getCreateDate());
-    }
-
-    private ValueObject createValueObj(PushNotificationType eventType, String value){
-        ValueObject valueObject = new ValueObject();
-        switch (eventType) {
-            case DATES_MARK_REQUEST -> valueObject.setMarkRequestDatesId(value);
-            case WORKSPACE_INVITATION -> valueObject.setInvitationId(value);
-            case DATES_CHOICE -> valueObject.setChoiceDatesId(value);
-            case DATES_CONFIRMED -> valueObject.setConfirmedDatesId(value);
-        }
-        return valueObject;
     }
 
     @Data
