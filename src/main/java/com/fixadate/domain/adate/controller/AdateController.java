@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.controller;
 
+import com.fixadate.global.dto.GeneralResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,16 +43,16 @@ public interface AdateController {
 		@ApiResponse(responseCode = "404", description = "name를 tag에서 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<AdateResponse> registerAdate(
+	GeneralResponseDto registerAdate(
 		@Valid @RequestBody final AdateRegisterRequest adateRegisterRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	);
 
 	@Operation(summary = "Adate 복원", description = "삭제된 Adate를 복원합니다.")
-	ResponseEntity<AdateResponse> restoreAdate(@PathVariable final String calendarId);
+	GeneralResponseDto restoreAdate(@PathVariable final String calendarId);
 
 	@Operation(summary = "Adate 조회", description = "특정 Adate를 조회합니다.")
-	ResponseEntity<AdateResponse> getAdate(@PathVariable final String calendarId);
+	GeneralResponseDto getAdate(@PathVariable final String calendarId);
 
 	@Operation(summary = "Adate 캘린더 이벤트 조회[시간 조회]", description = "지정된 범위에 해당하는 calendar를 조회합니다.[jwt 필요]")
 	@Parameters({
@@ -65,7 +66,7 @@ public interface AdateController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+	GeneralResponseDto getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final LocalDateTime startDateTime,
 		@RequestParam final LocalDateTime endDateTime
@@ -83,7 +84,7 @@ public interface AdateController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+	GeneralResponseDto getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final int year,
 		@RequestParam @Min(1) @Max(12) final int month
@@ -101,7 +102,7 @@ public interface AdateController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<List<AdateViewResponse>> getAdatesBy(
+	GeneralResponseDto getAdatesBy(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestParam final LocalDate firstDay,
 		@RequestParam final LocalDate lastDay
@@ -119,7 +120,7 @@ public interface AdateController {
 		@ApiResponse(responseCode = "404", description = "calendarId로 adate를 찾을 수 없을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	ResponseEntity<AdateResponse> updateAdate(
+	GeneralResponseDto updateAdate(
 		@PathVariable final String calendarId,
 		@Valid @RequestBody final AdateUpdateRequest adateUpdateRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
@@ -137,5 +138,5 @@ public interface AdateController {
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
-	ResponseEntity<Void> removeAdate(@PathVariable final String calendarId);
+	GeneralResponseDto removeAdate(@PathVariable final String calendarId);
 }

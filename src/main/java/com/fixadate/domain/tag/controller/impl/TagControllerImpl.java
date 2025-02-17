@@ -1,5 +1,6 @@
 package com.fixadate.domain.tag.controller.impl;
 
+import com.fixadate.global.dto.GeneralResponseDto;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -31,37 +32,37 @@ public class TagControllerImpl implements TagController {
 
 	@Override
 	@PostMapping()
-	public ResponseEntity<Void> createTag(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+	public GeneralResponseDto createTag(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@Valid @RequestBody TagRequest tagRequest) {
 		tagService.registerTag(memberPrincipal.getMember(), tagRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return GeneralResponseDto.success("created", "");
 	}
 
 	@Override
 	@GetMapping()
-	public ResponseEntity<List<TagResponse>> findTags(
+	public GeneralResponseDto findTags(
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 
 		List<TagResponse> tagResponses = tagService.getTagResponses(
 			memberPrincipal.getMember());
-		return ResponseEntity.ok(tagResponses);
+		return GeneralResponseDto.success("", tagResponses);
 	}
 
 	@Override
 	@PatchMapping()
-	public ResponseEntity<TagResponse> updateTag(
+	public GeneralResponseDto updateTag(
 		@Valid @RequestBody TagUpdateRequest tagUpdateRequest,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 		TagResponse tagResponse = tagService.updateTag(tagUpdateRequest,
 			memberPrincipal.getMember());
-		return ResponseEntity.ok(tagResponse);
+		return GeneralResponseDto.success("", tagResponse);
 	}
 
 	@Override
 	@DeleteMapping("/{name}")
-	public ResponseEntity<Void> removeTag(@PathVariable String name,
+	public GeneralResponseDto removeTag(@PathVariable String name,
 		@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
 		tagService.removeColor(name, memberPrincipal.getMember());
-		return ResponseEntity.noContent().build();
+		return GeneralResponseDto.success("", "");
 	}
 }

@@ -1,5 +1,6 @@
 package com.fixadate.domain.member.controller;
 
+import com.fixadate.global.dto.GeneralResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,7 @@ public interface MemberController {
 			responseCode = "200", description = "ok",
 			content = @Content(schema = @Schema(implementation = String.class)))
 	})
-	ResponseEntity<String> getRandomNickname();
+	GeneralResponseDto getRandomNickname();
 
 	@Operation(summary = "회원 정보 조회", description = "회원의 정보를 조회합니다.")
 	@ApiResponses({
@@ -33,7 +34,7 @@ public interface MemberController {
 			responseCode = "200", description = "ok",
 			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
 	})
-	ResponseEntity<MemberInfoResponse> getMemberInfo(
+	GeneralResponseDto getMemberInfo(
 		@Parameter(description = "회원 정보") @AuthenticationPrincipal MemberPrincipal memberPrincipal
 	);
 
@@ -43,7 +44,7 @@ public interface MemberController {
 			responseCode = "200", description = "ok",
 			content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
 	})
-	ResponseEntity<MemberInfoResponse> updateMemberInfo(
+	GeneralResponseDto updateMemberInfo(
 		@Parameter(description = "회원 정보") @AuthenticationPrincipal MemberPrincipal memberPrincipal,
 		@Parameter(description = "수정할 회원 정보") @RequestBody MemberInfoUpdateRequest memberInfoUpdateRequest
 	);
