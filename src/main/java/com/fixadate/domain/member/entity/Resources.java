@@ -27,4 +27,12 @@ public class Resources extends BaseEntity {
 
     @Column
     private String updatedBy;
+
+    public String getResourceName() {
+        return name;
+    }
+
+    public int getMaxCnt() {
+        return cnt;
+    }
 }

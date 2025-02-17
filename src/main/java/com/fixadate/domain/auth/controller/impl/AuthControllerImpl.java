@@ -2,6 +2,7 @@ package com.fixadate.domain.auth.controller.impl;
 
 import static com.fixadate.global.util.constant.ConstantValue.*;
 
+import com.fixadate.global.dto.GeneralResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.auth.controller.AuthController;
@@ -37,64 +39,59 @@ public class AuthControllerImpl implements AuthController {
 
 	@Override
 	@PostMapping("/signin")
-	public ResponseEntity<MemberSigninResponse> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest) {
+	public GeneralResponseDto signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest,
+									 @RequestHeader HttpHeaders headers) {
 		MemberSigninResponse response = authService.memberSignIn(memberOAuthRequest);
 
 		TokenResponse tokenResponse = jwtProvider.getTokenResponse(response.id());
 
 		ResponseCookie cookie = authService.createHttpOnlyCooke(tokenResponse.getRefreshToken());
 
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
-		httpHeaders.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
+		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+		headers.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
-		return ResponseEntity.status(HttpStatus.OK)
-			.headers(httpHeaders)
-			.body(response);
+		return GeneralResponseDto.success("", response);
 	}
 
 	@Override
 	@PostMapping("/signup")
-	public ResponseEntity<MemberSignupResponse> signup(
+	public GeneralResponseDto signup(
 		@Valid @RequestBody MemberRegisterRequest memberRegisterRequest) {
 
 		MemberSignupResponse memberSignupResponse = authService.registerMember(memberRegisterRequest);
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(memberSignupResponse);
+		return GeneralResponseDto.success("", memberSignupResponse);
 	}
 
 	@Override
 	@PostMapping("/reissue")
-	public ResponseEntity<Void> reissueAccessToken(
-		@CookieValue(value = "refreshToken") Cookie cookie) {
+	public GeneralResponseDto reissueAccessToken(
+		@CookieValue(value = "refreshToken") Cookie cookie,
+		@RequestHeader HttpHeaders headers) {
 		TokenResponse tokenResponse = jwtProvider.reIssueToken(cookie);
 		ResponseCookie ncookie = authService.createHttpOnlyCooke(tokenResponse.getRefreshToken());
 
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add(HttpHeaders.SET_COOKIE, ncookie.toString());
-		httpHeaders.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
+		headers.add(HttpHeaders.SET_COOKIE, ncookie.toString());
+		headers.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
-		return ResponseEntity.noContent()
-			.headers(httpHeaders)
-			.build();
+		return GeneralResponseDto.success("", "");
 	}
 
 	@Override
 	@PostMapping("/logout")
-	public ResponseEntity<Void> logout(HttpServletRequest httpServletRequest) {
+	public GeneralResponseDto logout(HttpServletRequest httpServletRequest) {
 		String accessToken = jwtProvider.retrieveToken(httpServletRequest);
 		jwtProvider.memberLogout(accessToken);
 
-		return ResponseEntity.noContent().build();
+		return GeneralResponseDto.success("", "");
 	}
 
 	@Override
 	@DeleteMapping("/signout")
-	public ResponseEntity<Void> signout(@RequestParam String email, HttpServletRequest httpServletRequest) {
+	public GeneralResponseDto signout(@RequestParam String email, HttpServletRequest httpServletRequest) {
 		String accessToken = jwtProvider.retrieveToken(httpServletRequest);
 		authService.memberSignout(email, jwtProvider.getIdFromToken(accessToken));
 		jwtProvider.memberLogout(accessToken);
 
-		return ResponseEntity.noContent().build();
+		return GeneralResponseDto.success("", "");
 	}
 }

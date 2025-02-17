@@ -12,23 +12,43 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class PushKey {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(unique = true)
 	private String memberId;
 
 	@Column(unique = true)
 	private String pushKey;
+
+	@Column(nullable = false)
+	private boolean isLogin = true;
+
+	@Builder
+	public PushKey(String memberId, String pushKey) {
+		this.memberId = memberId;
+		this.pushKey = pushKey;
+	}
 
 	public void compareAndChangeKey(String key) {
 		if (this.pushKey.equals(key)) {
 			return;
 		}
 		this.pushKey = key;
+	}
+
+	public void setLogin() {
+		this.isLogin = true;
+	}
+
+	public void forceLogout() {
+		this.isLogin = false;
+	}
+
+	public void updatePushKey(String pushKey) {
+		this.pushKey = pushKey;
 	}
 }

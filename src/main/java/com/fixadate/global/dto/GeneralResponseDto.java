@@ -28,4 +28,22 @@ public record GeneralResponseDto(
         );
     }
 
+    public static GeneralResponseDto success(String rspMsg, @Nullable Object data) {
+        return new GeneralResponseDto(
+            "200",
+            rspMsg,
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+            data
+        );
+    }
+
+    public static GeneralResponseDto fail(String rspMsg, @Nullable Object data) {
+        return new GeneralResponseDto(
+            "500",
+            rspMsg,
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+            data
+        );
+    }
+
 }

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fixadate.domain.auth.dto.request.MemberRegisterRequest;
 import com.fixadate.domain.auth.service.AuthService;
-import com.fixadate.domain.dates.dto.TeamCreateRequest;
+import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.dates.service.TeamService;

@@ -1,11 +1,20 @@
 package com.fixadate.domain.dates.controller;
 
-import com.fixadate.domain.dates.dto.TeamCreateRequest;
+
+import com.fixadate.domain.dates.dto.DatesDto;
+import com.fixadate.domain.dates.dto.DatesRegisterDto;
+import com.fixadate.domain.dates.dto.DatesUpdateDto;
+import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
+import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
+import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
+import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Teams;
+import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.TeamService;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
-import lombok.Getter;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,19 +33,19 @@ public class TeamController {
     }
 
     @PostMapping
-    public ResponseEntity<Teams> createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+    public GeneralResponseDto createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
                                             @RequestBody TeamCreateRequest request) {
         final Member member = memberPrincipal.getMember();
         Teams createdTeam = teamService.createTeam(member, request);
-        return new ResponseEntity<>(createdTeam, HttpStatus.CREATED);
+        return GeneralResponseDto.success("", createdTeam);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-        @PathVariable Long id) {
+    public GeneralResponseDto deleteTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+                                              @PathVariable Long id) {
         final Member member = memberPrincipal.getMember();
         boolean result = teamService.deleteTeam(member, id);
-        return ResponseEntity.ok(result);
+        return GeneralResponseDto.success("", result);
     }
 }
 

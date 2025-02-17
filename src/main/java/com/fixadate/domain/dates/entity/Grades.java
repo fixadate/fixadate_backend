@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Grades {
     OWNER("OWNER"),
-    ADMIN("ADMIN"),
+    MANAGER("MANAGER"),
     MEMBER("MEMBER");
     private final String grades;
 
@@ -15,7 +15,7 @@ public enum Grades {
     public static Grades translateStringToGrades(String grades) {
         return switch (grades.toLowerCase()) {
             case "owner" -> Grades.OWNER;
-            case "admin" -> Grades.ADMIN;
+            case "manager" -> Grades.MANAGER;
             case "member" -> Grades.MEMBER;
             default -> throw new IllegalArgumentException();
         };

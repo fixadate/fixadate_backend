@@ -3,6 +3,7 @@ package com.fixadate.domain.member.controller.impl;
 import static com.fixadate.domain.member.mapper.MemberMapper.toInfoResponse;
 import static com.fixadate.domain.member.mapper.MemberMapper.toUpdateDto;
 
+import com.fixadate.global.dto.GeneralResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,23 +29,23 @@ public class MemberControllerImpl implements MemberController {
 
 	@Override
 	@PostMapping("/nickname")
-	public ResponseEntity<String> getRandomNickname() {
-		return ResponseEntity.ok(memberService.generateRandomNickname());
+	public GeneralResponseDto getRandomNickname() {
+		return GeneralResponseDto.success("", memberService.generateRandomNickname());
 	}
 
 	@Override
 	@GetMapping()
-	public ResponseEntity<MemberInfoResponse> getMemberInfo(
+	public GeneralResponseDto getMemberInfo(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
 		MemberInfoResponse response = toInfoResponse(memberService.getMemberInfo(memberPrincipal.getMemberId()));
 
-		return ResponseEntity.ok(response);
+		return GeneralResponseDto.success("", response);
 	}
 
 	@Override
 	@PatchMapping()
-	public ResponseEntity<MemberInfoResponse> updateMemberInfo(
+	public GeneralResponseDto updateMemberInfo(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@RequestBody final MemberInfoUpdateRequest memberInfoUpdateRequest
 	) {
@@ -54,6 +55,6 @@ public class MemberControllerImpl implements MemberController {
 		);
 		MemberInfoResponse response = toInfoResponse(memberService.updateMemberInfo(memberInfoUpdateDto));
 
-		return ResponseEntity.ok(response);
+		return GeneralResponseDto.success("", response);
 	}
 }
