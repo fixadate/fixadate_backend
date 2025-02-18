@@ -52,6 +52,7 @@ public class SecurityConfig {
 		/* etc */
 		"/v1/member/nickname",
 		"/v1/appVersion",
+		"/v1/key/test-image",
 		"/error",
 		"/v1/healthcheck",
 		"/v1/servertime",
