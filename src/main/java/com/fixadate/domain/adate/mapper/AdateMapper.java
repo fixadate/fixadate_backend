@@ -4,14 +4,17 @@ import static com.fixadate.domain.tag.mapper.TagMapper.toResponse;
 import static com.fixadate.global.util.EventTimeUtil.checkEventDateTimeIsNull;
 import static com.fixadate.global.util.EventTimeUtil.checkEventIsAllDayType;
 
-import com.fixadate.domain.adate.dto.AdateDto;
-import com.fixadate.domain.adate.dto.AdateRegisterDto;
-import com.fixadate.domain.adate.dto.AdateUpdateDto;
+import com.fixadate.domain.adate.dto.*;
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
+import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
+import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.dto.response.AdateViewResponse;
+import com.fixadate.domain.adate.dto.response.ToDoResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.entity.ToDo;
+import com.fixadate.domain.adate.entity.ToDoStatus;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
@@ -158,5 +161,31 @@ public class AdateMapper {
 		}
 
 		return toResponse(tag);
+	}
+
+	public static ToDoRegisterDto toToDoRegisterDto(final TodoRegisterRequest todoRegisterRequest) {
+		return new ToDoRegisterDto(
+				todoRegisterRequest.title(),
+				todoRegisterRequest.date(),
+				todoRegisterRequest.member()
+		);
+	}
+
+	public static ToDo toEntity(final ToDoRegisterDto todoRegisterDto) {
+		return ToDo.builder()
+				.title(todoRegisterDto.title())
+				.member(todoRegisterDto.member())
+				.date(todoRegisterDto.date())
+				.toDoStatus(ToDoStatus.SCHEDULED)
+				.build();
+	}
+
+	public static ToDoResponse toToDoResponse(ToDo toDo) {
+		return new ToDoResponse(
+				toDo.getTitle(),
+				toDo.getToDoStatus(),
+				toDo.getDate(),
+				toDo.getMember()
+		);
 	}
 }

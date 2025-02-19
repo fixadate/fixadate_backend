@@ -9,6 +9,13 @@ import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromLocalDate;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
 
+import com.fixadate.domain.adate.dto.ToDoRegisterDto;
+import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
+import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
+import com.fixadate.domain.adate.entity.ToDo;
+import com.fixadate.domain.adate.entity.ToDoStatus;
+import com.fixadate.domain.adate.repository.ToDoJpaRepository;
+import com.fixadate.domain.adate.service.repository.ToDoRepository;
 import com.fixadate.domain.member.entity.MemberPlans;
 import com.fixadate.domain.member.entity.MemberResources;
 import com.fixadate.domain.member.entity.Plans;
@@ -53,6 +60,8 @@ public class AdateService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final PlanResourcesRepository planResourcesRepository;
 	private final MemberResourcesRepository memberResourcesRepository;
+	private final ToDoRepository toDoRepository;
+
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateDto registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
@@ -245,5 +254,32 @@ public class AdateService {
 			throw new RuntimeException("adate resource limit exceeded");
 		}
 		return foundMemberResources;
+	}
+
+	@Transactional
+	public ToDo registerToDo(ToDoRegisterDto toDoRegisterDto, Member member) {
+		final ToDo toDo = toEntity(toDoRegisterDto);
+		final ToDo savedToDo = toDoRepository.save(toDo);
+		return savedToDo;
+	}
+
+	@Transactional
+	public ToDo updateToDoStatus(ToDoStatusUpdateRequest toDoStatusUpdateRequest) {
+		ToDoStatus toDoStatus = ToDoStatus.translateStringToStatus(toDoStatusUpdateRequest.getToDoStatus());
+		ToDo toDo = toDoRepository.findToDoByToDoId(toDoStatusUpdateRequest.getId()).orElseThrow();
+		toDo.updateToDoStatus(toDoStatus);
+		return toDo;
+	}
+
+	@Transactional
+	public void updateToDoTitle(ToDo toDo, String title) {
+		toDo.updateTitle(title);
+	}
+
+	@Transactional
+	public ToDo deleteToDo(String toDoId) {
+		ToDo toDo = toDoRepository.findToDoByToDoId(Long.parseLong(toDoId)).orElseThrow();
+		toDoRepository.delete(toDo);
+		return toDo;
 	}
 }

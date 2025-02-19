@@ -2,12 +2,17 @@ package com.fixadate.domain.adate.controller.impl;
 
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 
+import com.fixadate.domain.adate.dto.*;
+import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
+import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
+import com.fixadate.domain.adate.dto.response.ToDoResponse;
+import com.fixadate.domain.adate.entity.ToDo;
+import com.fixadate.domain.adate.entity.ToDoStatus;
 import com.fixadate.global.dto.GeneralResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fixadate.domain.adate.controller.AdateController;
-import com.fixadate.domain.adate.dto.AdateDto;
-import com.fixadate.domain.adate.dto.AdateRegisterDto;
-import com.fixadate.domain.adate.dto.AdateUpdateDto;
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
@@ -162,5 +164,37 @@ public class AdateControllerImpl implements AdateController {
 		adateService.removeAdateByCalendarId(calendarId);
 
 		return GeneralResponseDto.success("", "");
+	}
+
+	@Override
+	@PostMapping("/todo")
+	public GeneralResponseDto registerToDo(
+		@Valid @RequestBody final TodoRegisterRequest todoRegisterRequest,
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	) {
+			final Member member = memberPrincipal.getMember();
+			final ToDoRegisterDto toDoRegisterDto = AdateMapper.toToDoRegisterDto(todoRegisterRequest);
+			final ToDo toDo = adateService.registerToDo(toDoRegisterDto, member);
+			final ToDoResponse toDoResponse = AdateMapper.toToDoResponse(toDo);
+			return GeneralResponseDto.success("", toDoResponse);
+	}
+
+	@Override
+	@PostMapping("/todo/status")
+	public GeneralResponseDto updateToDoStatus(
+			@Valid @RequestBody final ToDoStatusUpdateRequest toDoStatusUpdateRequest,
+			@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	) {
+
+
+		final ToDo toDo = adateService.updateToDoStatus(toDoStatusUpdateRequest);
+		return GeneralResponseDto.success("", toDo);
+	}
+
+	@Override
+	@GetMapping("/todo/{toDoId}")
+	public GeneralResponseDto deleteToDo(@PathVariable final String toDoId, MemberPrincipal memberPrincipal) {
+		ToDo toDo = adateService.deleteToDo(toDoId);
+		return GeneralResponseDto.success("", toDo);
 	}
 }
