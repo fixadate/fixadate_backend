@@ -55,3 +55,4 @@ out/
 
 # VS Code
 .vscode/
+src/main/resources/fixadate_firebase_service_key.json
