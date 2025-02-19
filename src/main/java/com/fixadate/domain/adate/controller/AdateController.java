@@ -1,5 +1,7 @@
 package com.fixadate.domain.adate.controller;
 
+import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
+import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
 import com.fixadate.global.dto.GeneralResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,6 +10,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -139,4 +142,49 @@ public interface AdateController {
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})
 	GeneralResponseDto removeAdate(@PathVariable final String calendarId);
+
+	@Operation(summary = "ToDo 등록", description = "ToDo를 등록합니다.")
+	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", description = "created",
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "jwt 만료되었을 때 생기는 예외", //401
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "name를 tag에서 찾을 수 없을 때 생기는 예외", //404
+					content = @Content(schema = @Schema(implementation = Void.class)))
+	})
+	GeneralResponseDto registerToDo(
+			@Valid @RequestBody final TodoRegisterRequest todoRegisterRequest,
+			@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	);
+
+	@Operation(summary = "ToDoStatus 변경", description = "ToDoStatus를 변경합니다.")
+	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", description = "created",
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "jwt 만료되었을 때 생기는 예외", //401
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "name를 tag에서 찾을 수 없을 때 생기는 예외", //404
+					content = @Content(schema = @Schema(implementation = Void.class)))
+	})
+	GeneralResponseDto updateToDoStatus(
+			@Valid @RequestBody final ToDoStatusUpdateRequest toDoStatusUpdateRequest,
+			@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	);
+
+	@Operation(summary = "ToDo 삭제", description = "ToDo를 삭제합니다.")
+	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", description = "created",
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "jwt 만료되었을 때 생기는 예외", //401
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "name를 tag에서 찾을 수 없을 때 생기는 예외", //404
+					content = @Content(schema = @Schema(implementation = Void.class)))
+	})
+	GeneralResponseDto deleteToDo(
+			@PathVariable final String toDoId,
+			@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	);
 }
