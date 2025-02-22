@@ -12,7 +12,7 @@ public class DatesCoordinationService {
     private final DatesCoordinationsRepository datesCoordinationsRepository;
 
     // push 알림을 통해서
-    public void getDatesCoordination(){
+    public void getDatesCollectionList(){
         if(checkValidations()){
 
         }
@@ -21,7 +21,7 @@ public class DatesCoordinationService {
         }
     }
 
-    public void setDatesCoordination(){
+    public void setDatesCollection(){
         if(checkValidations()){
 
         }
@@ -39,28 +39,54 @@ public class DatesCoordinationService {
 
         }
 
+
+        boolean isCreated = true;
+
+        if(isCreated){
+            // 미팅 참석 예정자들에게 노티 알림
+            sendDatesConfirmation();
+
+            // 해당 워크스페이스에 스케쥴로 등록
+        }
+
+    }
+
+    public void getDatesCollectionsResult(){
         if(isTeamsOwner()){
 
         }
+
+        if(isAlreadyConfirmed()){
+
+        }
+
     }
 
-    public boolean checkValidations(){
+
+    private void sendDatesConfirmation(){
+
+
+    }
+
+
+
+    private boolean checkValidations(){
         return isTeamMember() && isAlreadyConfirmed();
     }
 
-    public boolean isTeamMember(){
+    private boolean isTeamMember(){
         return true;
     }
 
-    public boolean isAlreadyConfirmed(){
+    private boolean isAlreadyConfirmed(){
         return true;
     }
 
-    public boolean checkHasAdate(){
+    private boolean checkHasAdate(){
         return true;
     }
 
-    public boolean isTeamsOwner(){
+    private boolean isTeamsOwner(){
         return true;
     }
 
