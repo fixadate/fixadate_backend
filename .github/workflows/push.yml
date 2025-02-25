@@ -33,13 +33,20 @@ jobs:
           echo "${{ secrets.FIXADATE_CREDENTIALS }}" | base64 --decode > src/main/resources/application.yml
           find src
 
-      - name: SET Credentials
+      - name: SET YML Credentials
         uses: jsdaniell/create-json@1.1.2
         with:
           name: "credentials.json"
           json: ${{ secrets.FIXADATE_CREDENTIALS_JSON }}
           dir: './src/main/resources/'
-
+          
+      - name: SET Firebase credentials
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "fixadate-f9e59-firebase-adminsdk-fbsvc-0a93fd7e26.json"
+          json: ${{ secrets.FIREBASE_ADMIN_SECRET_JSON }}
+          dir: './src/main/resources/'
+          
       - name: Build with Gradle
         run: ./gradlew build
 
