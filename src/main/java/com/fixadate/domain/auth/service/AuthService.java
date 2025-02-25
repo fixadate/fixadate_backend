@@ -87,12 +87,12 @@ public class AuthService {
 		Member member = toEntity(memberRegisterRequest, encodedOauthId);
 		memberRepository.save(member);
 
-		Plans freePlan = plansRepository.findPlansByName(PlanType.FREE).orElseThrow(
-			() -> new RuntimeException("")
-		);
-
-		MemberPlans memberPlans = toMemberPlansEntity(member, freePlan);
-		memberPlansRepository.save(memberPlans);
+//		Plans freePlan = plansRepository.findPlansByName(PlanType.FREE).orElseThrow(
+//			() -> new RuntimeException("")
+//		);
+//
+//		MemberPlans memberPlans = toMemberPlansEntity(member, freePlan);
+//		memberPlansRepository.save(memberPlans);
 
 		registerExternalCalendarTag(member);
 
