@@ -41,7 +41,7 @@ public interface AuthController {
 		@ApiResponse(responseCode = "401", description = "로그인 실패",
 			content = @Content(schema = @Schema(implementation = Void.class)))
 	})
-	GeneralResponseDto signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest, @RequestHeader HttpHeaders headers);
+	ResponseEntity<GeneralResponseDto> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest, @RequestHeader HttpHeaders headers);
 
 	@Operation(summary = "회원가입", description = "회원가입을 합니다.")
 	@ApiResponses({
