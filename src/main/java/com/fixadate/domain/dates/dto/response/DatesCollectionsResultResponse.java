@@ -3,7 +3,8 @@ package com.fixadate.domain.dates.dto.response;
 import java.util.List;
 
 public record DatesCollectionsResultResponse(
-    boolean isUserParticipated,
+    String title,
+    boolean isOwnerConfirmed,
     List<DatesCollectionResponse.Time> times
 ){
     public record Time(
