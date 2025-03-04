@@ -34,7 +34,7 @@ public class DatesCoordinations extends BaseEntity {
 
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_dates_team_id"))
+	@JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_coordination_dates_team_id"))
 	private Teams team;
 
 	@Column(nullable = false)
