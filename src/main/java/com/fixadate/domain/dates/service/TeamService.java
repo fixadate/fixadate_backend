@@ -7,6 +7,7 @@ import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
+import com.fixadate.domain.dates.dto.response.TeamListResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -275,5 +276,13 @@ public class TeamService {
         if(!isAuthorized){
             throw new RuntimeException("invalid access");
         }
+    }
+
+    public TeamListResponse getTeams(Member member) {
+        // 참여하고 있는 팀 목록 조회
+        // for문 돌면서
+            // 팀 목록에 대한 권한 체크, 소유주라면 isOwner true
+            // 팀 목록에 대한 멤버 목록 조회
+        return null;
     }
 }
