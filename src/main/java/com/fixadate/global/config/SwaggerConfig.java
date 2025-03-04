@@ -2,6 +2,7 @@ package com.fixadate.global.config;
 
 import static io.swagger.v3.oas.models.security.SecurityScheme.*;
 
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,7 +25,41 @@ public class SwaggerConfig {
 					new io.swagger.v3.oas.models.security.SecurityScheme()
 						.type(Type.HTTP)
 						.scheme("bearer")
-						.bearerFormat("JWT")));
+						.bearerFormat("JWT"))
+				.addSecuritySchemes("content-type",
+					new io.swagger.v3.oas.models.security.SecurityScheme()
+						.type(Type.APIKEY)
+						.in(In.HEADER)
+						.name("content-type"))
+				.addSecuritySchemes("Fix_Version",
+					new io.swagger.v3.oas.models.security.SecurityScheme()
+						.type(Type.APIKEY)
+						.in(In.HEADER)
+						.name("Fix_Version"))
+				.addSecuritySchemes("tccmobdvcd",
+					new io.swagger.v3.oas.models.security.SecurityScheme()
+						.type(Type.APIKEY)
+						.in(In.HEADER)
+						.name("tccmobdvcd"))
+				.addSecuritySchemes("celno",
+					new io.swagger.v3.oas.models.security.SecurityScheme()
+						.type(Type.APIKEY)
+						.in(In.HEADER)
+						.name("celno"))
+				.addSecuritySchemes("cache-control",
+					new io.swagger.v3.oas.models.security.SecurityScheme()
+						.type(Type.APIKEY)
+						.in(In.HEADER)
+						.name("cache-control"))
+			)
+			.addSecurityItem(new SecurityRequirement()
+				.addList("bearer-key")
+				.addList("content-type")
+				.addList("Fix_Version")
+				.addList("tccmobdvcd")
+				.addList("celno")
+				.addList("cache-control")
+			);
 
 	}
 
