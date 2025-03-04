@@ -3,12 +3,6 @@ package com.fixadate.domain.dates.entity;
 import com.fixadate.domain.auth.entity.BaseEntity;
 import com.fixadate.domain.member.entity.Member;
 
-import jakarta.persistence.*;
-
-import com.fixadate.domain.member.entity.Permissions;
-import com.fixadate.domain.member.entity.Plans;
-import com.fixadate.domain.member.entity.Plans.PlanType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
