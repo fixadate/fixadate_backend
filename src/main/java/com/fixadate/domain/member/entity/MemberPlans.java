@@ -46,6 +46,7 @@ public class MemberPlans extends BaseEntity {
     private LocalDateTime endAt;
 
     @Column(name = "valid_yn")
+    @Builder.Default
     private boolean validYn = true;
 
     public boolean isValid(){
