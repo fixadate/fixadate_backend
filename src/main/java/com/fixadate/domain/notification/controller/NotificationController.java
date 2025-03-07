@@ -1,5 +1,6 @@
 package com.fixadate.domain.notification.controller;
 
+import com.fixadate.domain.common.dto.SseEventResponse;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.service.NotificationService;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -103,10 +105,12 @@ public class NotificationController {
     @Operation(summary = "실시간 알림 체크 구독", description = "실시간으로 확인할 알람이 있는지 체크할 수 있도록 SSE emitter를 반환합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200", description = "ok",
-            content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
+            responseCode = "200",
+            description = "SSE 연결 성공",
+            content = @Content(mediaType = "text/event-stream",
+                schema = @Schema(implementation = SseEventResponse.class)))
     })
-    @GetMapping("/subscribe")
+    @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public GeneralResponseDto checkHasAliveNotification(@Parameter(description = "회원 정보") @AuthenticationPrincipal final MemberPrincipal memberPrincipal) {
         // 서비스를 통해 생성된 SseEmitter를 반환
         return GeneralResponseDto.create("200", "subscribe success", notificationService.connectNotification(memberPrincipal.getMember().getId()));
