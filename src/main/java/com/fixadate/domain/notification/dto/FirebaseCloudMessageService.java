@@ -3,6 +3,8 @@ package com.fixadate.domain.notification.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.notification.dto.FcmMessage.Notification;
+import com.fixadate.domain.notification.service.NotificationService;
 import com.fixadate.domain.pushkey.entity.PushKey;
 import com.fixadate.domain.pushkey.repository.PushKeyRepository;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -42,6 +44,7 @@ public class FirebaseCloudMessageService {
     OkHttpClient httpClient = new OkHttpClient();
 
     private final PushKeyRepository pushKeyRepository;
+    private final NotificationService notificationService;
 
     public Optional<PushKey> findPushKey(Member member) {
         return pushKeyRepository.findByMemberId(member.getId());
@@ -97,7 +100,14 @@ public class FirebaseCloudMessageService {
             .addHeader(HttpHeaders.CONTENT_TYPE, UTF_8)
             .build();
         Response response = httpClient.newCall(request).execute();
-        System.out.println(Objects.requireNonNull(response.body()).string());
+        log.info(response.body().string());
+
+        // 실시간 알림 체크 확인
+        PushKey pushKey = pushKeyRepository.findPushKeyByPushKey(targetToken).orElse(null);
+        if(pushKey == null){
+            throw new RuntimeException("");
+        }
+        notificationService.sendEvent(pushKey.getMemberId());
     }
 
     public void sendMessageToWithData(String targetToken, String title, String body,
@@ -114,6 +124,13 @@ public class FirebaseCloudMessageService {
             .build();
         Response response = httpClient.newCall(request).execute();
         log.info(response.body().string());
+
+        // 실시간 알림 체크 확인
+        PushKey pushKey = pushKeyRepository.findPushKeyByPushKey(targetToken).orElse(null);
+        if(pushKey == null){
+            throw new RuntimeException("");
+        }
+        notificationService.sendEvent(pushKey.getMemberId());
     }
 
     private String makeMessage(String targetToken, String title, String body) throws
