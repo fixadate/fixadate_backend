@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RestControllerWithMapping("/v1/invitation")
 public class InvitationControllerImpl implements InvitationController {
 	private final InvitationService invitationService;
+	private final String action = "invitation";
 
 	@Override
 	@PostMapping()
@@ -35,7 +36,8 @@ public class InvitationControllerImpl implements InvitationController {
 		@Valid @RequestBody InvitationLinkRequest invitationLinkRequest) {
 		final Member member = memberPrincipal.getMember();
 		String invitationId = invitationService.registInvitation(member, invitationLinkRequest);
-		return GeneralResponseDto.success("", invitationId);
+		String urlSchema = "://fixadate?action="+action+"&id="+invitationId;
+		return GeneralResponseDto.success("", urlSchema);
 	}
 
 	@Override
