@@ -47,5 +47,11 @@ public class TeamController {
         boolean result = teamService.deleteTeam(member, id);
         return GeneralResponseDto.success("", result);
     }
+
+    @GetMapping
+    public GeneralResponseDto getTeams(@AuthenticationPrincipal final MemberPrincipal memberPrincipal) {
+        final Member member = memberPrincipal.getMember();
+        return GeneralResponseDto.success("", teamService.getTeams(member));
+    }
 }
 

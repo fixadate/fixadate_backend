@@ -105,4 +105,11 @@ public class InvitationControllerImpl implements InvitationController {
 		final Member member = memberPrincipal.getMember();
 		return GeneralResponseDto.success("", invitationService.deactivateInvitationLink(member, inviteCode));
 	}
+
+	@Override
+	@GetMapping("/member/list")
+	public GeneralResponseDto getInviteableTeamMemberList(MemberPrincipal memberPrincipal) {
+		final Member member = memberPrincipal.getMember();
+		return GeneralResponseDto.success("", invitationService.getInviteableTeamMemberList(member));
+	}
 }

@@ -4,6 +4,7 @@ import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.repository.TeamRepository;
+import com.fixadate.domain.invitation.dto.response.InvitationMemberList;
 import com.fixadate.domain.invitation.entity.Invitation.InviteStatus;
 import com.fixadate.domain.invitation.entity.InvitationHistory;
 import com.fixadate.domain.invitation.entity.InvitationLink;
@@ -12,6 +13,7 @@ import com.fixadate.domain.invitation.repository.InvitationLinkRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
@@ -170,5 +172,10 @@ public class InvitationService {
 			.role(role)
 			.build();
 		invitationHistoryRepository.save(invitationHistory);
+	}
+
+	public List<InvitationMemberList> getInviteableTeamMemberList(Member teamCreator) {
+		// todo: 친구 목록 불러오기
+		return new ArrayList<>();
 	}
 }

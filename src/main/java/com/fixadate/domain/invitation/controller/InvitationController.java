@@ -61,4 +61,8 @@ public interface InvitationController {
 	GeneralResponseDto deactivateInvitationLink(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@PathVariable String inviteCode);
+
+	@Operation(summary = "초대가능한 팀원 목록", description = "팀 생성 시, 초대가능한 팀원 목록을 조회합니다.", deprecated = true)
+	GeneralResponseDto getInviteableTeamMemberList(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal);
 }

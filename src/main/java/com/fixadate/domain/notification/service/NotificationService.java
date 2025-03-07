@@ -6,7 +6,9 @@ import com.fixadate.domain.notification.dto.NotificationListResponse;
 import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.entity.Notification;
 import com.fixadate.domain.notification.enumerations.PushNotificationType;
+import com.fixadate.domain.notification.repository.EmitterRepository;
 import com.fixadate.domain.notification.repository.NotificationRepository;
+import com.fixadate.global.exception.ExceptionCode;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -14,13 +16,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -28,6 +33,9 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
+    private final EmitterRepository emitterRepository;
+    private final static Long SSE_DEFAULT_TIMEOUT = 3600000L; //1시간
+    private final String NOTIFICATION_NAME = "alive_notification";
 
     public NotificationPageResponse getNotificationList(Member member,
         Pageable pageable) {
@@ -62,7 +70,7 @@ public class NotificationService {
         return foundNotification;
     }
 
-    @Scheduled(fixedRate = 600000) // 10분마다 실행
+    @Scheduled(fixedRate = 60000) // 1분마다 실행
     public void resendUnconfirmedNotifications() throws IOException {
         List<PushNotificationType> eventTypes = Arrays.asList(
             PushNotificationType.DATES_MARK_REQUEST,
@@ -83,5 +91,42 @@ public class NotificationService {
             );
             firebaseCloudMessageService.sendMessageToWithData(targetToken, title, content, data);
         }
+    }
+
+    public SseEmitter connectNotification(String userId) {
+        // 새로운 SseEmitter를 만든다
+        SseEmitter sseEmitter = new SseEmitter(SSE_DEFAULT_TIMEOUT);
+
+        // 유저 ID로 SseEmitter를 저장한다.
+        emitterRepository.save(userId, sseEmitter);
+
+        // 세션이 종료될 경우 저장한 SseEmitter를 삭제한다.
+        sseEmitter.onCompletion(() -> emitterRepository.delete(userId));
+        sseEmitter.onTimeout(() -> emitterRepository.delete(userId));
+
+        // 503 Service Unavailable 오류가 발생하지 않도록 첫 데이터를 보낸다.
+        // 새로운 연결을 생성할 때에는 유저의 ID를 받아 SSE Emitter를 리포지토리에 저장.
+        // 이후, SSE 응답을 할 때 아무런 이벤트도 보내지 않으면 재연결 요청을 보낼때나, 아니면 연결 요청 자체에서 오류가 발생하기 때문에, 첫 응답을 보내야한다.
+        try {
+            sseEmitter.send(SseEmitter.event().id("").name(NOTIFICATION_NAME).data("Connection completed"));
+        } catch (IOException exception) {
+            throw new RuntimeException(ExceptionCode.NOTIFICATION_CONNECTION_ERROR.getMessage());
+        }
+        return sseEmitter;
+    }
+
+    // 알림이 발생할 때마다 아래 메서드를 호출하도록 구현했다.
+    public void sendEvent(String userId) {
+        // 유저 ID로 SseEmitter를 찾아 이벤트를 발생 시킨다.
+        emitterRepository.get(userId).ifPresentOrElse(sseEmitter -> {
+            try {
+                // SseEmitter에 이벤트를 발생시킨다. 다만, 실시간으로 확인만 하라고하면 되니 데이터 최소화
+                sseEmitter.send(SseEmitter.event().id("").name(NOTIFICATION_NAME).data("New notification"));
+            } catch (IOException exception) {
+                // IOException이 발생하면 저장된 SseEmitter를 삭제하고 예외를 발생시킨다.
+                emitterRepository.delete(userId);
+                throw new RuntimeException(ExceptionCode.NOTIFICATION_CONNECTION_ERROR.getMessage());
+            }
+        }, () -> log.info("No emitter found"));
     }
 }

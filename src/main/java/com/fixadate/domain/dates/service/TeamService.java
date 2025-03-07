@@ -7,6 +7,7 @@ import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
+import com.fixadate.domain.dates.dto.response.TeamListResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -23,11 +24,14 @@ import com.fixadate.domain.member.entity.MemberResources;
 import com.fixadate.domain.member.entity.Plans;
 import com.fixadate.domain.member.entity.ResourceType;
 import com.fixadate.domain.member.service.repository.MemberPlansRepository;
+import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlansRepository;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
+import com.fixadate.global.exception.ExceptionCode;
+import com.fixadate.global.exception.notfound.NotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TeamService {
-
+    private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final TeamMembersRepository teamMembersRepository;
     private final DatesRepository datesRepository;
@@ -67,9 +71,7 @@ public class TeamService {
             throw new RuntimeException("team resource limit exceeded");
         }
 
-        Teams team = new Teams();
-        team.setName(requestDto.name());
-        team.setDescription(requestDto.description());
+        Teams team = new Teams(requestDto.name());
         Teams createdTeam = teamRepository.save(team);
 
         TeamMembers owner = TeamMembers.builder()
@@ -79,6 +81,18 @@ public class TeamService {
             .build();
 
         teamMembersRepository.save(owner);
+
+        for(String memberId : requestDto.inviteMemberIdList()){
+            Member inviteMember = memberRepository.findMemberById(memberId).orElseThrow(
+                () -> new NotFoundException(ExceptionCode.NOT_FOUND_MEMBER_ID)
+            );
+            TeamMembers teamMember = TeamMembers.builder()
+                .member(inviteMember)
+                .team(createdTeam)
+                .grades(Grades.MEMBER)
+                .build();
+            teamMembersRepository.save(teamMember);
+        }
 
         foundMemberResources.plusResources(ResourceType.TEAM, 1);
 
@@ -262,5 +276,13 @@ public class TeamService {
         if(!isAuthorized){
             throw new RuntimeException("invalid access");
         }
+    }
+
+    public TeamListResponse getTeams(Member member) {
+        // 참여하고 있는 팀 목록 조회
+        // for문 돌면서
+            // 팀 목록에 대한 권한 체크, 소유주라면 isOwner true
+            // 팀 목록에 대한 멤버 목록 조회
+        return null;
     }
 }
