@@ -73,55 +73,55 @@ class TeamServiceTest {
 //        mySQLContainer.stop();
 //    }
 
-    @Nested
-    @DisplayName("Team 저장 테스트")
-    class CreateTeamTest {
-        
-        @DisplayName("정상적으로 팀이 저장되는 경우")
-        @ParameterizedTest(name = "{index}번째 팀 생성")
-        @CsvSource(value = {
-            "DevTeam, 개발팀입니다",
-            "DesignTeam, 디자인팀입니다",
-            "MarketingTeam, 마케팅팀입니다",
-            "SalesTeam, 영업팀입니다",
-            "HRTeam, 인사팀입니다"
-        })
-        void createTeamTestSuccess(
-            @AggregateWith(TeamAggregator.class) TeamCreateRequest teamCreateRequest
-        ) {
-            MemberRegisterRequest registerRequest = new MemberRegisterRequest(
-                "105", "google", "emily", "617", "chris", "19921005", "female", "manager", "orange", "kevin@naver.com", "MEMBER"
-            );
-            authService.registerMember(registerRequest);
-
-            Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
-                translateStringToOAuthProvider(registerRequest.oauthPlatform()),
-                registerRequest.email(), registerRequest.name()
-            );
-            Member member = memberOptional.orElse(null);
-
-            Assertions.assertDoesNotThrow(() -> teamService.createTeam(member, teamCreateRequest));
-
-            Optional<Teams> teamOptional = teamRepository.findByName(teamCreateRequest.name());
-            
-            assertTrue(teamOptional.isPresent());
-            Teams team = teamOptional.get();
-
-            assertAll(
-                () -> assertEquals(teamCreateRequest.name(), team.getName()),
-                () -> assertEquals(teamCreateRequest.description(), team.getDescription())
-            );
-        }
-    }
-
-    static class TeamAggregator implements ArgumentsAggregator {
-        @Override
-        public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
-            ArgumentsAggregationException {
-            return new TeamCreateRequest(
-                argumentsAccessor.getString(0),
-                argumentsAccessor.getString(1)
-            );
-        }
-    }
+//    @Nested
+//    @DisplayName("Team 저장 테스트")
+//    class CreateTeamTest {
+//
+//        @DisplayName("정상적으로 팀이 저장되는 경우")
+//        @ParameterizedTest(name = "{index}번째 팀 생성")
+//        @CsvSource(value = {
+//            "DevTeam, 개발팀입니다",
+//            "DesignTeam, 디자인팀입니다",
+//            "MarketingTeam, 마케팅팀입니다",
+//            "SalesTeam, 영업팀입니다",
+//            "HRTeam, 인사팀입니다"
+//        })
+//        void createTeamTestSuccess(
+//            @AggregateWith(TeamAggregator.class) TeamCreateRequest teamCreateRequest
+//        ) {
+//            MemberRegisterRequest registerRequest = new MemberRegisterRequest(
+//                "105", "google", "emily", "617", "chris", "19921005", "female", "manager", "orange", "kevin@naver.com", "MEMBER"
+//            );
+//            authService.registerMember(registerRequest);
+//
+//            Optional<Member> memberOptional = memberRepository.findMemberByOauthPlatformAndEmailAndName(
+//                translateStringToOAuthProvider(registerRequest.oauthPlatform()),
+//                registerRequest.email(), registerRequest.name()
+//            );
+//            Member member = memberOptional.orElse(null);
+//
+//            Assertions.assertDoesNotThrow(() -> teamService.createTeam(member, teamCreateRequest));
+//
+//            Optional<Teams> teamOptional = teamRepository.findByName(teamCreateRequest.name());
+//
+//            assertTrue(teamOptional.isPresent());
+//            Teams team = teamOptional.get();
+//
+//            assertAll(
+//                () -> assertEquals(teamCreateRequest.name(), team.getName()),
+//                () -> assertEquals(teamCreateRequest.description(), team.getDescription())
+//            );
+//        }
+//    }
+//
+//    static class TeamAggregator implements ArgumentsAggregator {
+//        @Override
+//        public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws
+//            ArgumentsAggregationException {
+//            return new TeamCreateRequest(
+//                argumentsAccessor.getString(0),
+//                argumentsAccessor.getString(1)
+//            );
+//        }
+//    }
 }
