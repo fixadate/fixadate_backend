@@ -104,7 +104,7 @@ public class NotificationController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200", description = "ok",
-            content = @Content(schema = @Schema(implementation = MemberInfoResponse.class)))
+            content = @Content(schema = @Schema(implementation = SseEmitter.class)))
     })
     @GetMapping("/subscribe")
     public GeneralResponseDto checkHasAliveNotification(@Parameter(description = "회원 정보") @AuthenticationPrincipal final MemberPrincipal memberPrincipal) {
