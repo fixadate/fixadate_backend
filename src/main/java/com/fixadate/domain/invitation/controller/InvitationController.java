@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(name = "InvitationController", description = "InvitationController 입니다.")
 public interface InvitationController {
 
-	@Operation(summary = "초대 링크 생성", description = "링크를 생성합니다.")
+	@Operation(summary = "초대 링크 생성", description = "://fixadate?action=invitation&id=${초대링크ID 20자리} 형태의 URL을 반환합니다.")
 	GeneralResponseDto registInvitationLink(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@Valid InvitationLinkRequest invitationLinkRequest);

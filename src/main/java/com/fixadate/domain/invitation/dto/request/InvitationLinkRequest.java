@@ -1,5 +1,6 @@
 package com.fixadate.domain.invitation.dto.request;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.invitation.entity.InvitationLink;
 import com.fixadate.domain.member.entity.Member;
@@ -10,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record InvitationLinkRequest(
-	@NotBlank int remainCnt,
+	int remainCnt,
 	@NotNull long teamId) {
 
 	public InvitationLink toEntity(Teams team, Member creator){
@@ -24,7 +25,7 @@ public record InvitationLinkRequest(
 	}
 
 	public String generateInvitationCode(){
-		return UUID.randomUUID().toString().replace("-", "").substring(0, 10); // 10자리 랜덤 문자열
+		return NanoIdUtils.randomNanoId(NanoIdUtils.DEFAULT_NUMBER_GENERATOR, NanoIdUtils.DEFAULT_ALPHABET, 20); // 20자리 랜덤 문자열
 	}
 
 	private LocalDateTime getExpiration() {
