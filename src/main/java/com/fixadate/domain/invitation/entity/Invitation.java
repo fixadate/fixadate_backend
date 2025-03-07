@@ -47,6 +47,7 @@ public class Invitation {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
+	@Builder.Default
 	private InviteStatus status = InviteStatus.PENDING;
 
 	public enum InviteStatus {
