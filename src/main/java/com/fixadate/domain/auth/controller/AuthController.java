@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 @Tag(name = "AuthController", description = "AuthController 입니다.")
 public interface AuthController {
 
-	@Operation(summary = "로그인", description = "OAuth 대조를 통해 로그인을 합니다.")
+	@Operation(summary = "로그인", description = "OAuth 대조를 통해 로그인을 합니다. hasPushKey가 false라면 pushKey 등록 필욘")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "로그인 성공",
 			content = @Content(schema = @Schema(implementation = MemberSigninResponse.class)),

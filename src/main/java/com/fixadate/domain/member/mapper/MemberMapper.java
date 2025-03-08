@@ -36,7 +36,7 @@ public class MemberMapper {
 
 	}
 
-	public static MemberSigninResponse toResponse(final Member member) {
+	public static MemberSigninResponse toResponse(final Member member, boolean hasPushKey) {
 		return new MemberSigninResponse(
 			member.getId(),
 			member.getName(),
@@ -45,7 +45,8 @@ public class MemberMapper {
 			member.getGender(),
 			member.getProfession(),
 			member.getSignatureColor(),
-			member.getEmail()
+			member.getEmail(),
+			hasPushKey
 		);
 	}
 
