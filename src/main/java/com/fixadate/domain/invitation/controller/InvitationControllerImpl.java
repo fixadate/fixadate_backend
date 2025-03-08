@@ -5,7 +5,6 @@ import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -110,8 +109,11 @@ public class InvitationControllerImpl implements InvitationController {
 
 	@Override
 	@GetMapping("/member/list")
-	public GeneralResponseDto getInviteableTeamMemberList(MemberPrincipal memberPrincipal) {
+	public GeneralResponseDto getInvitableTeamMemberList(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@RequestParam Long teamId,
+		@RequestParam String email) {
 		final Member member = memberPrincipal.getMember();
-		return GeneralResponseDto.success("", invitationService.getInviteableTeamMemberList(member));
+		return GeneralResponseDto.success("", invitationService.getInvitableTeamMemberList(member, teamId, email));
 	}
 }

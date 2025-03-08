@@ -61,4 +61,12 @@ public class TeamMembers extends BaseEntity {
         this.grades = grades;
         this.updatedBy = updatedBy;
     }
+
+    public boolean isOwner() {
+        return Grades.OWNER.equals(grades);
+    }
+
+    public boolean isManager() {
+        return Grades.MANAGER.equals(grades);
+    }
 }
