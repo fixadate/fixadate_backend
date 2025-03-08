@@ -8,6 +8,7 @@ public record MemberSigninResponse(
 	String gender,
 	String profession,
 	String signatureColor,
-	String email
+	String email,
+	boolean hasPushKey
 ) {
 }
