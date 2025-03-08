@@ -1,5 +1,6 @@
 package com.fixadate.domain.member.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -44,5 +45,11 @@ public class MemberRepositoryImpl implements MemberRepository {
 	@Override
 	public void delete(final Member member) {
 		memberJpaRepository.delete(member);
+	}
+
+	@Override
+	public List<Member> findMembersByEmailContainingAndExcludingIds(String email,
+		List<String> memberIds) {
+		return memberQueryRepository.findMembersByEmailContainAndExcludingIds(email, memberIds);
 	}
 }

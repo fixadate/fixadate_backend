@@ -2,9 +2,12 @@ package com.fixadate.domain.invitation.service;
 
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
+import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
+import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
+import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
-import com.fixadate.domain.invitation.dto.response.InvitationMemberList;
+import com.fixadate.domain.invitation.dto.response.InvitableMemberListResponse;
 import com.fixadate.domain.invitation.entity.Invitation.InviteStatus;
 import com.fixadate.domain.invitation.entity.InvitationHistory;
 import com.fixadate.domain.invitation.entity.InvitationLink;
@@ -39,6 +42,7 @@ public class InvitationService {
 	private final InvitationLinkRepository invitationLinkRepository;
 	private final MemberRepository memberRepository;
 	private final TeamRepository teamRepository;
+	private final TeamMembersRepository teamMembersRepository;
 	private final InvitationHistoryRepository invitationHistoryRepository;
 	private final ApplicationEventPublisher eventPublisher;
 
@@ -174,8 +178,24 @@ public class InvitationService {
 		invitationHistoryRepository.save(invitationHistory);
 	}
 
-	public List<InvitationMemberList> getInviteableTeamMemberList(Member teamCreator) {
-		// todo: 친구 목록 불러오기
-		return new ArrayList<>();
+	public List<InvitableMemberListResponse> getInvitableTeamMemberList(Member teamCreator, Long teamId, String email) {
+
+		// 팀 초대 가능한 사람인지 확인
+		TeamMembers teamMembers = teamMembersRepository.findByTeam_IdAndMember_Id(teamId, teamCreator.getId())
+			.orElseThrow(() -> new RuntimeException(""));
+		if(!(teamMembers.isOwner() || teamMembers.isManager())){
+			throw new RuntimeException("");
+		}
+		List<TeamMembers> teamMembersList = teamMembersRepository.findAllByTeamAndStatusIs(teamMembers.getTeam(), DataStatus.ACTIVE);
+		List<String> memberIds = teamMembersList.stream()
+			.map(TeamMembers::getMember)
+			.map(Member::getId)
+			.toList();
+
+		// 초대가능한 사람 목록 불러오기
+		// 팀 member가 아닌 사람으로 filter위
+		List<Member> invitableMembers = memberRepository.findMembersByEmailContainingAndExcludingIds(email, memberIds);
+
+		return invitableMembers.stream().map(InvitableMemberListResponse::of).toList();
 	}
 }

@@ -5,7 +5,6 @@ import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestControllerWithMapping("/v1/invitation")
 public class InvitationControllerImpl implements InvitationController {
 	private final InvitationService invitationService;
+	private final String action = "invitation";
 
 	@Override
 	@PostMapping()
@@ -35,7 +35,8 @@ public class InvitationControllerImpl implements InvitationController {
 		@Valid @RequestBody InvitationLinkRequest invitationLinkRequest) {
 		final Member member = memberPrincipal.getMember();
 		String invitationId = invitationService.registInvitation(member, invitationLinkRequest);
-		return GeneralResponseDto.success("", invitationId);
+		String urlSchema = "://fixadate?action="+action+"&id="+invitationId;
+		return GeneralResponseDto.success("", urlSchema);
 	}
 
 	@Override
@@ -108,8 +109,11 @@ public class InvitationControllerImpl implements InvitationController {
 
 	@Override
 	@GetMapping("/member/list")
-	public GeneralResponseDto getInviteableTeamMemberList(MemberPrincipal memberPrincipal) {
+	public GeneralResponseDto getInvitableTeamMemberList(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@RequestParam Long teamId,
+		@RequestParam String email) {
 		final Member member = memberPrincipal.getMember();
-		return GeneralResponseDto.success("", invitationService.getInviteableTeamMemberList(member));
+		return GeneralResponseDto.success("", invitationService.getInvitableTeamMemberList(member, teamId, email));
 	}
 }
