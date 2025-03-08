@@ -2,6 +2,9 @@ package com.fixadate.domain.member.repository;
 
 import static com.fixadate.domain.member.entity.QMember.member;
 
+import com.fixadate.domain.member.entity.QMember;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -50,4 +53,23 @@ public class MemberQueryRepository {
 				.fetchOne()
 		);
 	}
+
+	public List<Member> findMembersByEmailContainAndExcludingIds(String email, List<String> memberIds){
+		QMember member = QMember.member;
+
+		return jpaQueryFactory
+			.selectFrom(member)
+			.where(
+				member.email.contains(email)
+					.and(member.id.notIn(memberIds))
+			)
+			.orderBy(
+				new CaseBuilder()
+					.when(member.email.startsWith(email)).then(1)
+					.otherwise(2).asc(),
+				member.email.asc()
+			)
+			.fetch();
+	}
+
 }
