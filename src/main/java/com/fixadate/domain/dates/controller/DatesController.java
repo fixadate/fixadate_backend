@@ -4,6 +4,7 @@ package com.fixadate.domain.dates.controller;
 import com.fixadate.domain.dates.dto.*;
 import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
+import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.DatesService;
@@ -12,7 +13,6 @@ import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,6 +57,15 @@ public class DatesController {
         @PathVariable Long id){
         final Member member = memberPrincipal.getMember();
         boolean result = datesService.deleteDates(id, member);
+        return GeneralResponseDto.success("", result);
+    }
+
+    @GetMapping("/dates/{id}")
+    public GeneralResponseDto getDatesDetail(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @PathVariable Long id){
+        final Member member = memberPrincipal.getMember();
+        DatesDetailResponse result = datesService.getDatesDetail(id, member);
         return GeneralResponseDto.success("", result);
     }
 }
