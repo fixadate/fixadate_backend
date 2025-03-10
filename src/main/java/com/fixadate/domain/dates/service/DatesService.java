@@ -4,6 +4,7 @@ import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
+import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -163,4 +164,13 @@ public class DatesService {
             throw new RuntimeException("invalid access");
         }
     }
+
+    public DatesDetailResponse getDatesDetail(Long id, Member member) {
+        // teamMember인가
+        // Dates 불러오기
+        // Owner인가
+        // DatesParticipants 불러오기
+        return null;
+    }
+
 }

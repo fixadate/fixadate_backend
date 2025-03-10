@@ -20,4 +20,6 @@ public interface AdateRepository {
 		final LocalDateTime startDateTime,
 		final LocalDateTime endDateTime
 	);
+
+    List<Adate> findByMemberAndBetweenDates(Member member, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime);
 }
