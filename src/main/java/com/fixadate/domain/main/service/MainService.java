@@ -12,6 +12,7 @@ import com.fixadate.domain.dates.repository.DatesRepository;
 import com.fixadate.domain.main.dto.AdateInfo;
 import com.fixadate.domain.main.dto.DatesInfo;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
+import com.fixadate.domain.main.dto.Schedule;
 import com.fixadate.domain.main.dto.TodoInfo;
 import com.fixadate.domain.main.dto.response.MainInfoResponse;
 import com.fixadate.domain.main.dto.response.MainInfoResponse.DateInfo;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,7 @@ public class MainService {
 	public MainInfoResponse getMainInfo(Member member, String yyyyMM, int weekNum) {
 		MainInfoResponse dateInfos = new MainInfoResponse();
 
-		// todo: yyyyMM와 weekNum을 통해 날짜 생성
+		// yyyyMM와 weekNum을 통해 날짜 생성
 		LocalDateTime firstDayDateTime = getLocalDateTimeFromYyyyMMAndWeek(yyyyMM, weekNum);
 		LocalDateTime lastDayDateTime = firstDayDateTime.plusWeeks(1); // 00:00 이전이어야하기에
 		dateInfos.setDateInfos(yyyyMM, weekNum, firstDayDateTime, lastDayDateTime);
@@ -66,6 +68,7 @@ public class MainService {
 				}
 			}
 			dateInfo.setAdateInfoList(adateInfosByDate);
+			dateInfo.getScheduleList().addAll(adateInfosByDate.stream().map(Schedule::of).toList());
 
 			List<TodoInfo> todoInfosByDate = new ArrayList<>();
 			for(TodoInfo todoInfo : todoInfos) {
@@ -82,11 +85,17 @@ public class MainService {
 				}
 			}
 			dateInfo.setDatesInfoList(datesInfosByDate);
+			dateInfo.getScheduleList().addAll(datesInfosByDate.stream().map(Schedule::of).toList());
+
+			// 오늘의 Schedule로 묶인거 정렬
+			dateInfo.getScheduleList().sort(Comparator.comparing(schedule -> {
+				String startsWhen = schedule.startsWhen();
+				return LocalDateTime.parse(startsWhen, DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+			}));
 		}
 
 		// todo: 부가적인 부분
-		// 날짜마자 갯수 세팅
-		// 오늘의 Schedule로 묶기
+
 
 		return dateInfos;
 	}

@@ -2,6 +2,7 @@ package com.fixadate.domain.main.dto.response;
 
 import com.fixadate.domain.main.dto.AdateInfo;
 import com.fixadate.domain.main.dto.DatesInfo;
+import com.fixadate.domain.main.dto.Schedule;
 import com.fixadate.domain.main.dto.TodoInfo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +29,7 @@ public class MainInfoResponse{
         List<AdateInfo> adateInfoList;
         List<TodoInfo> todoInfoList;
         List<DatesInfo> datesInfoList;
+        List<Schedule> scheduleList;
     }
 
     public void setDateInfos(String yyyyMM, int weekNum, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime){
