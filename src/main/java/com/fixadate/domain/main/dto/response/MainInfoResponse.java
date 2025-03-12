@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MainInfoResponse{
 
-    List<DateInfo> dateList;
+    List<DateInfo> dateList = new ArrayList<>();
 
     @Data
     public static class DateInfo{
@@ -29,7 +29,7 @@ public class MainInfoResponse{
         List<AdateInfo> adateInfoList;
         List<TodoInfo> todoInfoList;
         List<DatesInfo> datesInfoList;
-        List<Schedule> scheduleList;
+        List<Schedule> scheduleList = new ArrayList<>();
     }
 
     public void setDateInfos(String yyyyMM, int weekNum, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime){
