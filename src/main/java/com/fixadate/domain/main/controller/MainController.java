@@ -4,6 +4,7 @@ import com.fixadate.domain.invitation.dto.response.InvitableMemberListResponse;
 import com.fixadate.domain.main.dto.response.MainInfoResponse;
 import com.fixadate.domain.main.service.MainService;
 import com.fixadate.domain.member.dto.response.MemberInfoResponse;
+import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@RestControllerWithMapping("/v1/main")
 @RestController
 @RequiredArgsConstructor
 public class MainController {
