@@ -179,4 +179,13 @@ public class Adate extends BaseEntity {
 
 		return tag.getColor();
 	}
+
+	@JsonIgnore
+	public String getTagName() {
+		if (tag == null) {
+			return null;
+		}
+
+		return tag.getName();
+	}
 }

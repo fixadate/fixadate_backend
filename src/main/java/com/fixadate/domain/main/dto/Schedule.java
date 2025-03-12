@@ -1,6 +1,8 @@
 package com.fixadate.domain.main.dto;
 
+import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.main.dto.response.MainInfoResponse.DateInfo;
 import java.time.format.DateTimeFormatter;
@@ -8,10 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record Schedule(
-	Long id,
+	String calendarId,
 	String title,
 	String note,
-	TagInfo tag,
+	String tagName,
+	String tagColor,
 	String startDate,
 	String startsWhen,
 	String endsWhen,
@@ -19,12 +22,13 @@ public record Schedule(
 	boolean isAdate
 	// todo: 반복여부
 	){
-	public static Schedule of(AdateInfo adateInfo) {
+	public static Schedule of(AdateResponse adateInfo) {
 		return new Schedule(
-			adateInfo.id(),
+			adateInfo.calendarId(),
 			adateInfo.title(),
-			adateInfo.note(),
-			adateInfo.tag(),
+			adateInfo.notes(),
+			adateInfo.tagName(),
+			adateInfo.tagColor(),
 			adateInfo.startDate(),
 			adateInfo.startsWhen(),
 			adateInfo.endsWhen(),
@@ -32,12 +36,13 @@ public record Schedule(
 			true
 		);
 	}
-		public static Schedule of(DatesInfo datesInfo) {
+		public static Schedule of(DatesResponse datesInfo) {
 			return new Schedule(
-				datesInfo.id(),
+				datesInfo.calendarId(),
 				datesInfo.title(),
-				datesInfo.note(),
-				datesInfo.tag(),
+				datesInfo.notes(),
+				datesInfo.tagName(),
+				datesInfo.tagColor(),
 				datesInfo.startDate(),
 				datesInfo.startsWhen(),
 				datesInfo.endsWhen(),

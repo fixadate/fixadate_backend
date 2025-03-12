@@ -1,5 +1,7 @@
 package com.fixadate.domain.main.dto.response;
 
+import com.fixadate.domain.adate.dto.response.AdateResponse;
+import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.main.dto.AdateInfo;
 import com.fixadate.domain.main.dto.DatesInfo;
 import com.fixadate.domain.main.dto.Schedule;
@@ -26,9 +28,9 @@ public class MainInfoResponse{
         private int weekNum;
         private String date;
         private String day;
-        List<AdateInfo> adateInfoList;
+        List<AdateResponse> adateInfoList;
         List<TodoInfo> todoInfoList;
-        List<DatesInfo> datesInfoList;
+        List<DatesResponse> datesInfoList;
         List<Schedule> scheduleList = new ArrayList<>();
     }
 

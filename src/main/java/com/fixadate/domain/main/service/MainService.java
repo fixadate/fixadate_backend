@@ -1,10 +1,12 @@
 package com.fixadate.domain.main.service;
 
+import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.adate.service.repository.ToDoRepository;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
+import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesMembers;
 import com.fixadate.domain.dates.repository.DatesMembersRepository;
@@ -46,23 +48,23 @@ public class MainService {
 		dateInfos.setDateInfos(yyyyMM, weekNum, firstDayDateTime, lastDayDateTime);
 
 		List<Adate> adateList = adateRepository.findByMemberAndBetweenDates(member, firstDayDateTime, lastDayDateTime);
-		List<AdateInfo> adateInfos = adateList.stream().map(AdateInfo::of).toList();
+		List<AdateResponse> adateInfos = adateList.stream().map(AdateResponse::of).toList();
 
 		List<ToDo> todoList = toDoRepository.findByMemberAndBetweenDates(member, firstDayDateTime.toLocalDate(), lastDayDateTime.toLocalDate());
 		List<TodoInfo> todoInfos = todoList.stream().map(TodoInfo::of).toList();
 
 		List<Dates> datesList = datesRepository.findByMemberAndStartsWhenBetween(member, firstDayDateTime, lastDayDateTime);
-		List<DatesInfo> dateInfosList = new ArrayList<>();
+		List<DatesResponse> dateInfosList = new ArrayList<>();
 		for(Dates dates : datesList){
 			List<DatesMembers> datesMembers = datesMembersRepository.findAllByDatesAndStatusIs(dates, DataStatus.ACTIVE);
 			List<DatesMemberInfo> datesMemberList = datesMembers.stream().map(DatesMemberInfo::of).toList();
-			DatesInfo datesInfo = DatesInfo.of(dates, datesMemberList);
+			DatesResponse datesInfo = DatesResponse.of(dates, datesMemberList);
 			dateInfosList.add(datesInfo);
 		}
 
 		for(DateInfo dateInfo : dateInfos.getDateList()) {
-			List<AdateInfo> adateInfosByDate = new ArrayList<>();
-			for(AdateInfo adateInfo : adateInfos) {
+			List<AdateResponse> adateInfosByDate = new ArrayList<>();
+			for(AdateResponse adateInfo : adateInfos) {
 				if(adateInfo.startDate().equals(dateInfo.getDate())) {
 					adateInfosByDate.add(adateInfo);
 				}
@@ -78,8 +80,8 @@ public class MainService {
 			}
 			dateInfo.setTodoInfoList(todoInfosByDate);
 
-			List<DatesInfo> datesInfosByDate = new ArrayList<>();
-			for(DatesInfo datesInfo : dateInfosList) {
+			List<DatesResponse> datesInfosByDate = new ArrayList<>();
+			for(DatesResponse datesInfo : dateInfosList) {
 				if(datesInfo.startDate().equals(dateInfo.getDate())) {
 					datesInfosByDate.add(datesInfo);
 				}
