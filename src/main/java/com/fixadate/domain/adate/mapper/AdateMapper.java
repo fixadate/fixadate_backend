@@ -20,6 +20,7 @@ import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
+import java.time.format.DateTimeFormatter;
 
 public class AdateMapper {
 
@@ -126,10 +127,12 @@ public class AdateMapper {
 			adate.location(),
 			adate.alertWhen(),
 			adate.repeatFreq(),
+			getTagName(adate.tag()),
 			getColor(adate.tag()),
 			adate.ifAllDay(),
-			adate.startsWhen(),
-			adate.endsWhen(),
+			adate.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+			adate.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
+			adate.endsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
 			adate.calendarId(),
 			adate.reminders()
 		);
@@ -141,6 +144,14 @@ public class AdateMapper {
 		}
 
 		return tag.color();
+	}
+
+	private static String getTagName(final TagResponse tag) {
+		if (tag == null) {
+			return null;
+		}
+
+		return tag.name();
 	}
 
 	public static AdateViewResponse toAdateViewResponse(final AdateDto adate) {

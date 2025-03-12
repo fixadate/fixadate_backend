@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public record AdateInfo(
-	Long id,
+	String calendarId,
 	String title,
 	String note,
 	TagInfo tag,
@@ -16,7 +16,7 @@ public record AdateInfo(
 	){
 		public static AdateInfo of(Adate adate) {
 			return new AdateInfo(
-				adate.getId(),
+				adate.getCalendarId(),
 				adate.getTitle(),
 				adate.getNotes(),
 				new TagInfo(

@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public record DatesInfo(
-	Long id,
+	String calendarId,
 	String title,
 	String note,
 	TagInfo tag,
@@ -17,7 +17,7 @@ public record DatesInfo(
 	){
 		public static DatesInfo of(Dates dates, List<DatesMemberInfo> teamMemberList) {
 			return new DatesInfo(
-				dates.getId(),
+				dates.getCalendarId(),
 				dates.getTitle(),
 				dates.getNotes(),
 				new TagInfo(
