@@ -8,10 +8,13 @@ import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.DatesService;
+import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +37,7 @@ public class DatesController {
         final Member member = memberPrincipal.getMember();
         final DatesRegisterDto datesRegisterDto = DatesMapper.toDatesRegisterDto(request);
         DatesDto datesDto = datesService.createDates(datesRegisterDto, member);
-        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto);
+        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto, new ArrayList<>());
         return GeneralResponseDto.success("", datesResponse);
     }
 
@@ -47,7 +50,9 @@ public class DatesController {
         final Member member = memberPrincipal.getMember();
         final DatesUpdateDto datesUpdateDto = DatesMapper.toDatesUpdateDto(request);
         DatesDto datesDto = datesService.updateDates(datesUpdateDto, id, member);
-        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto);
+        List<DatesMemberInfo> datesMemberList = new ArrayList<>();
+        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto, datesMemberList);
+
         return GeneralResponseDto.success("", datesResponse);
     }
 

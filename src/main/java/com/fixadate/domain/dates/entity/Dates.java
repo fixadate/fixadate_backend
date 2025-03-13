@@ -34,6 +34,9 @@ public class Dates extends Calendar {
 
 	private String etag;
 
+	@Column(unique = true)
+	private String calendarId;
+
 	// TODO: [추후] 불필요, 삭제 필요
 	private boolean reminders;
 
@@ -59,7 +62,8 @@ public class Dates extends Calendar {
 		final String etag,
 		final boolean reminders,
 		final Member member,
-		final Tag tag
+		final Tag tag,
+		final String calendarId
 	) {
 		super.title = title;
 		this.notes = notes;
@@ -73,6 +77,7 @@ public class Dates extends Calendar {
 		this.reminders = reminders;
 		this.member = member;
 		this.tag = tag;
+		this.calendarId = calendarId;
 	}
 
 	public boolean isOwner(final Member member) {
@@ -109,5 +114,14 @@ public class Dates extends Calendar {
 		}
 
 		return tag.getColor();
+	}
+
+	@JsonIgnore
+	public String getTagName() {
+		if (tag == null) {
+			return null;
+		}
+
+		return tag.getName();
 	}
 }
