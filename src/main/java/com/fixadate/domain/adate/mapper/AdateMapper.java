@@ -20,6 +20,7 @@ import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AdateMapper {
@@ -27,17 +28,19 @@ public class AdateMapper {
 	private AdateMapper() {
 	}
 
+	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
 	public static AdateRegisterDto toAdateRegisterDto(final AdateRegisterRequest request) {
 		return new AdateRegisterDto(
 			request.title(),
 			request.notes(),
 			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
+			LocalDateTime.parse(request.alertWhen(), formatter),
+			LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter),
 			request.reminders()
 		);
 	}
@@ -47,12 +50,12 @@ public class AdateMapper {
 			request.title(),
 			request.notes(),
 			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
+			LocalDateTime.parse(request.alertWhen(), formatter),
+			LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter),
 			request.reminders()
 		);
 	}
