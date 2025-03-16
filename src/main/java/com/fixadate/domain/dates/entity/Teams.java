@@ -40,7 +40,7 @@ public class Teams extends BaseEntity {
 
     @Column
     private String updatedBy;
-
+    protected Teams () {}
     public Teams(String name) {
         this.name = name;
     }
