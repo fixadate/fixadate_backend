@@ -75,9 +75,9 @@ public class AuthService {
 	}
 
 	private void authenticateMember(MemberOAuthRequest memberOAuthRequest, Member member) {
-		if (!passwordEncoder.matches(memberOAuthRequest.oauthId(), member.getOauthId())) {
-			throw new AuthException(FAIL_TO_SIGNIN);
-		}
+//		if (!passwordEncoder.matches(memberOAuthRequest.oauthId(), member.getOauthId())) {
+//			throw new AuthException(FAIL_TO_SIGNIN);
+//		}
 	}
 
 	@Transactional

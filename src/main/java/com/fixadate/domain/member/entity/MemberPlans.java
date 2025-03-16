@@ -47,10 +47,10 @@ public class MemberPlans extends BaseEntity {
 
     @Column(name = "valid_yn")
     @Builder.Default
-    private boolean validYn = true;
+    private Boolean validYn = true;
 
     public boolean isValid(){
-        return validYn;
+        return this.validYn;
     }
 
 }

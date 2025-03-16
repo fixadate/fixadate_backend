@@ -8,8 +8,6 @@ import java.time.LocalDate;
 public record TodoRegisterRequest(
     @NotBlank(message = "ToDo title cannot be blank")
     String title,
-    LocalDate date,
-    @NotBlank(message = "Member cannot be blank")
-    Member member
+    LocalDate date
 ) {
 }
