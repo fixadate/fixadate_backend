@@ -19,11 +19,14 @@ import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatesMapper {
+
+	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
 	private DatesMapper() {
 	}
@@ -34,12 +37,12 @@ public class DatesMapper {
 			request.title(),
 			request.notes(),
 			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
+			LocalDateTime.parse(request.alertWhen(), formatter),
+			LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter),
 			request.reminders()
 		);
 	}
@@ -49,12 +52,12 @@ public class DatesMapper {
 			request.title(),
 			request.notes(),
 			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
+			LocalDateTime.parse(request.alertWhen(), formatter),
+			LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter),
 			request.reminders()
 		);
 	}
