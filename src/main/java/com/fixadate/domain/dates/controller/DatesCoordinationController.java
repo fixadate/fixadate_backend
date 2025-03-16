@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/teams/coordinations")
+@RequestMapping("/v1/teams/coordinations")
 public class DatesCoordinationController {
 
     private final DatesCoordinationService datesCoordinationService;
