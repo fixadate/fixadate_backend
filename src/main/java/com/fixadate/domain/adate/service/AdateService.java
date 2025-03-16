@@ -11,10 +11,8 @@ import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
 
 import com.fixadate.domain.adate.dto.ToDoRegisterDto;
 import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
-import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
 import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.adate.entity.ToDoStatus;
-import com.fixadate.domain.adate.repository.ToDoJpaRepository;
 import com.fixadate.domain.adate.service.repository.ToDoRepository;
 import com.fixadate.domain.member.entity.MemberPlans;
 import com.fixadate.domain.member.entity.MemberResources;
@@ -65,7 +63,7 @@ public class AdateService {
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateDto registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
-		MemberResources foundMemberResources = checkAdateResourceCntExceedAndGetMemberResources(member);
+//		MemberResources foundMemberResources = checkAdateResourceCntExceedAndGetMemberResources(member);
 
 		final Adate adate = toEntity(adateRegisterDto, member);
 		final Adate savedAdate = adateRepository.save(adate);
@@ -74,7 +72,7 @@ public class AdateService {
 		if (tagName != null && !tagName.isEmpty()) {
 			applicationEventPublisher.publishEvent(new TagSettingEvent(adate, tagName));
 		}
-		foundMemberResources.plusResources(ResourceType.ADATE, 1);
+//		foundMemberResources.plusResources(ResourceType.ADATE, 1);
 		return AdateMapper.toAdateDto(savedAdate);
 	}
 
@@ -234,7 +232,7 @@ public class AdateService {
 
 	private void minusAdateResource(Member member) {
 		MemberPlans memberPlan = member.getMemberPlan();
-		if(!memberPlan.isValid()){
+		if(memberPlan.isValid()){
 			throw new RuntimeException("member plan invalid");
 		}
 		MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
@@ -243,7 +241,7 @@ public class AdateService {
 
 	private MemberResources checkAdateResourceCntExceedAndGetMemberResources(Member member) {
 		MemberPlans memberPlan = member.getMemberPlan();
-		if(!memberPlan.isValid()){
+		if(memberPlan.isValid()){
 			throw new RuntimeException("member plan invalid");
 		}
 		Plans foundPlan = memberPlan.getPlan();
@@ -257,7 +255,7 @@ public class AdateService {
 	}
 
 	@Transactional
-	public ToDo registerToDo(ToDoRegisterDto toDoRegisterDto, Member member) {
+	public ToDo registerToDo(ToDoRegisterDto toDoRegisterDto) {
 		final ToDo toDo = toEntity(toDoRegisterDto);
 		final ToDo savedToDo = toDoRepository.save(toDo);
 		return savedToDo;
