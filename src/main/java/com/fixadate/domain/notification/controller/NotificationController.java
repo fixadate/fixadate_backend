@@ -33,7 +33,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "NotificationController", description = "푸시 알림 API")
-@RequestMapping("/alarm")
+@RequestMapping("/v1/alarm")
 public class NotificationController {
     private final NotificationService notificationService;
 
@@ -58,7 +58,7 @@ public class NotificationController {
         @RequestParam("page") int page,
         @RequestParam("size") int size
     ) {
-        Pageable newPageable = PageFactory.getPageableSortBy(page, size, "createdDate", false);
+        Pageable newPageable = PageFactory.getPageableSortBy(page, size, "createDate", false);
         return GeneralResponseDto.create("200", "read success", notificationService.getNotificationList(memberPrincipal.getMember(), newPageable));
     }
 
