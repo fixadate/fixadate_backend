@@ -18,10 +18,10 @@ public record AdateUpdateRequest(
 	@NotNull
 	boolean ifAllDay,
 	@NotNull(message = "Adate startsWhen cannot be null")
-	@Schema(description = "시작일", example = "yyyyMMddHHmmss")
+	@Schema(description = "시작일시", example = "yyyyMMddHHmmss")
 	String startsWhen,
 	@NotNull(message = "Adate endsWhen cannot be null")
-	@Schema(description = "종료", example = "yyyyMMddHHmmss")
+	@Schema(description = "종료일시", example = "yyyyMMddHHmmss")
 	String endsWhen,
 	@NotNull
 	boolean reminders
