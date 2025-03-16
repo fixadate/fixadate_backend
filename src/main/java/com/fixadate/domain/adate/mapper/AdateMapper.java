@@ -174,18 +174,17 @@ public class AdateMapper {
 		return toResponse(tag);
 	}
 
-	public static ToDoRegisterDto toToDoRegisterDto(final TodoRegisterRequest todoRegisterRequest) {
+	public static ToDoRegisterDto toToDoRegisterDto(final TodoRegisterRequest todoRegisterRequest, final Member member) {
 		return new ToDoRegisterDto(
 				todoRegisterRequest.title(),
 				todoRegisterRequest.date(),
-				todoRegisterRequest.member()
+				member
 		);
 	}
 
 	public static ToDo toEntity(final ToDoRegisterDto todoRegisterDto) {
 		return ToDo.builder()
 				.title(todoRegisterDto.title())
-				.member(todoRegisterDto.member())
 				.date(todoRegisterDto.date())
 				.toDoStatus(ToDoStatus.SCHEDULED)
 				.build();
