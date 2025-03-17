@@ -22,6 +22,7 @@ import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.apache.commons.lang3.StringUtils;
 
 public class AdateMapper {
 
@@ -35,8 +36,8 @@ public class AdateMapper {
 			request.title(),
 			request.notes(),
 			request.location(),
-			LocalDateTime.parse(request.alertWhen(), formatter),
-			LocalDateTime.parse(request.repeatFreq(), formatter),
+			StringUtils.isBlank(request.alertWhen()) ?  null :LocalDateTime.parse(request.alertWhen(), formatter),
+			StringUtils.isBlank(request.repeatFreq()) ?  null : LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
 			LocalDateTime.parse(request.startsWhen(), formatter),
@@ -50,8 +51,8 @@ public class AdateMapper {
 			request.title(),
 			request.notes(),
 			request.location(),
-			LocalDateTime.parse(request.alertWhen(), formatter),
-			LocalDateTime.parse(request.repeatFreq(), formatter),
+			StringUtils.isBlank(request.alertWhen()) ?  null :LocalDateTime.parse(request.alertWhen(), formatter),
+			StringUtils.isBlank(request.repeatFreq()) ?  null : LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
 			LocalDateTime.parse(request.startsWhen(), formatter),

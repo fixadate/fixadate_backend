@@ -32,9 +32,6 @@ public class Dates extends Calendar {
 	@JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_dates_team_id"))
 	private Teams team;
 
-	@Column(unique = true)
-	private String calendarId;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_dates_member_id"))
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -50,11 +47,11 @@ public class Dates extends Calendar {
 		final String calendarId
 	) {
 		super.title = title;
+		super.calendarId = calendarId;
 		this.notes = notes;
 		this.startsWhen = startsWhen;
 		this.endsWhen = endsWhen;
 		this.member = member;
-		this.calendarId = calendarId;
 	}
 
 	public boolean isOwner(final Member member) {
