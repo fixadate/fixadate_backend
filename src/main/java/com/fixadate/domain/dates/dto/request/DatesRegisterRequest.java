@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record DatesRegisterRequest(
-	@NotBlank(message = "Dates team cannot be blank")
+	@NotNull(message = "Dates team cannot be blank")
 	Long teamId,
 	@NotBlank(message = "Dates title cannot be blank")
 	String title,
