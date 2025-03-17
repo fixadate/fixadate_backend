@@ -97,9 +97,6 @@ public class MainService {
 			}));
 		}
 
-		// todo: 부가적인 부분
-
-
 		return dateInfos;
 	}
 

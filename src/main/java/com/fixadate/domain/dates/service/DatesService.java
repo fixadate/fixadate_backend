@@ -98,29 +98,15 @@ public class DatesService {
     }
 
     private void updateIfNotNull(final Dates dates, final DatesUpdateDto datesUpdateDto) {
-        if (datesUpdateDto.tagName() != null) {
-//            applicationEventPublisher.publishEvent(new TagSettingEvent(dates, datesUpdateDto.tagName()));
-        }
         if (datesUpdateDto.title() != null) {
             dates.updateTitle(datesUpdateDto.title());
         }
         if (datesUpdateDto.notes() != null) {
             dates.updateNotes(datesUpdateDto.notes());
         }
-        if (datesUpdateDto.location() != null) {
-            dates.updateLocation(datesUpdateDto.location());
-        }
-        if (datesUpdateDto.alertWhen() != null) {
-            dates.updateAlertWhen(datesUpdateDto.alertWhen());
-        }
-        if (datesUpdateDto.repeatFreq() != null) {
-            dates.updateRepeatFreq(datesUpdateDto.repeatFreq());
-        }
 
-        dates.updateIfAllDay(datesUpdateDto.ifAllDay());
         dates.updateStartsWhen(datesUpdateDto.startsWhen());
         dates.updateEndsWhen(datesUpdateDto.endsWhen());
-        dates.updateReminders(datesUpdateDto.reminders());
     }
 
     private void validateCreateDatesPossible(Member member, List<TeamMembers> teamMembers) {
