@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -96,9 +97,6 @@ public class MainService {
 			}));
 		}
 
-		// todo: 부가적인 부분
-
-
 		return dateInfos;
 	}
 
@@ -122,5 +120,14 @@ public class MainService {
 			date = date.plusDays(1);
 		}
 		return date;
+	}
+
+    public String getStoryBoard(Member member) {
+		return StringUtils.defaultString(member.getStoryBoard());
+    }
+
+	public String updateStoryBoard(Member member, String storyBoard) {
+		member.updateStoryBoard(storyBoard);
+		return StringUtils.defaultString(member.getStoryBoard());
 	}
 }

@@ -6,9 +6,8 @@ import java.time.LocalDateTime;
 public record DatesViewResponse(
 	String title,
 	String notes,
-	boolean ifAllDay,
-	LocalDateTime startsWhen,
-	LocalDateTime endsWhen,
-	TagResponse tagResponse
+	String startsWhen,
+	String endsWhen,
+	String calendarId
 ) {
 }

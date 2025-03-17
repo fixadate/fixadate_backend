@@ -20,11 +20,7 @@ public record DatesInfo(
 				dates.getCalendarId(),
 				dates.getTitle(),
 				dates.getNotes(),
-				new TagInfo(
-					dates.getTag().getId(),
-					dates.getTag().getColor(),
-					dates.getTag().getName()
-				),
+				null,
 				dates.getStartsWhen().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
 				dates.getStartsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
 				dates.getEndsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
