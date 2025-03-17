@@ -55,6 +55,7 @@ public class DatesMapper {
 		return Dates.builder()
 					.title(datesRegisterDto.title())
 					.notes(datesRegisterDto.notes())
+					.startsWhen(datesRegisterDto.startsWhen())
 					.endsWhen(datesRegisterDto.endsWhen())
 					.member(member)
 					.calendarId(RandomValueUtil.createRandomString(10))

@@ -13,7 +13,6 @@ public record DatesInfo(
 	String startsWhen,
 	String endsWhen,
 	List<DatesMemberInfo> teamMemberList
-	// todo: 반복여부
 	){
 		public static DatesInfo of(Dates dates, List<DatesMemberInfo> teamMemberList) {
 			return new DatesInfo(
