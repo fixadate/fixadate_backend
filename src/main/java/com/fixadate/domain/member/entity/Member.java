@@ -92,6 +92,9 @@ public class Member extends BaseEntity implements UserDetails {
 	@OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 	private MemberPlans memberPlan;
 
+	@Column
+	private String storyBoard;
+
 	@Builder
 	private Member(
 		final String oauthId,
@@ -181,5 +184,12 @@ public class Member extends BaseEntity implements UserDetails {
 
 	public void updateProfession(final String profession) {
 		this.profession = profession;
+	}
+
+	public void updateStoryBoard(final String storyBoard) {
+		if(storyBoard != null && storyBoard.length() > 30) {
+			throw new IllegalArgumentException("storyBoard length must be less than 30");
+		}
+		this.storyBoard = storyBoard;
 	}
 }
