@@ -6,13 +6,7 @@ public record DatesRegisterDto(
 	Long teamId,
 	String title,
 	String notes,
-	String location,
-	LocalDateTime alertWhen,
-	LocalDateTime repeatFreq,
-	String tagName,
-	boolean ifAllDay,
 	LocalDateTime startsWhen,
-	LocalDateTime endsWhen,
-	boolean reminders
+	LocalDateTime endsWhen
 ) {
 }

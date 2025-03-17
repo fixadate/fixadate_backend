@@ -8,14 +8,6 @@ public record DatesDto(
 	String calendarId,
 	String title,
 	String notes,
-	String location,
-	LocalDateTime alertWhen,
-	LocalDateTime repeatFreq,
-	boolean ifAllDay,
 	LocalDateTime startsWhen,
-	LocalDateTime endsWhen,
-	String etag,
-	boolean reminders,
-	TagResponse tag
-) {
+	LocalDateTime endsWhen){
 }
