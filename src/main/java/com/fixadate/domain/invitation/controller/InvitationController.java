@@ -36,7 +36,7 @@ public interface InvitationController {
 		@Valid InvitationLinkRequest invitationLinkRequest);
 
 	@Operation(summary = "멤버 초대", description = "특정 멤버를 팀에 초대합니다.")
-	GeneralResponseDto inviteMemberToTeams(
+	GeneralResponseDto inviteMembersToTeams(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@Valid InvitationSpecifyRequest requestDto);
 

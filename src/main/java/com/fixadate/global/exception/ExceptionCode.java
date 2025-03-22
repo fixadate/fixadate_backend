@@ -49,6 +49,7 @@ public enum ExceptionCode {
 
 	NOT_FOUND_MEMBER_ID(4001, "요청한 id에 해당하는 member가 없습니다."),
 	NOT_FOUND_MEMBER_EMAIL(4002, "요청한 email에 해당하는 member가 없습니다."),
+	NOT_FOUND_TEAM_ID(4003, "요청한 id에 해당하는 team이 없습니다."),
 
 	NOTIFICATION_CONNECTION_ERROR(5001, "알림 서버와 연결하는데 실패했습니다."),
 
