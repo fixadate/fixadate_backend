@@ -7,6 +7,7 @@ import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
+import com.fixadate.domain.dates.dto.response.TeamListPageResponse;
 import com.fixadate.domain.dates.dto.response.TeamListResponse;
 import com.fixadate.domain.dates.dto.response.TeamListResponse.Each;
 import com.fixadate.domain.dates.entity.Dates;
@@ -29,8 +30,10 @@ import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlansRepository;
+import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
+import com.fixadate.domain.notification.event.object.TeamMemberDeleteEvent;
 import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.notfound.NotFoundException;
 import java.util.ArrayList;
@@ -43,6 +46,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,7 +81,7 @@ public class TeamService {
             throw new RuntimeException("team resource limit exceeded");
         }
 
-        Teams team = new Teams(requestDto.name());
+        Teams team = new Teams(requestDto.name(), requestDto.profile());
         Teams createdTeam = teamRepository.save(team);
 
         TeamMembers owner = TeamMembers.builder()
@@ -268,9 +274,9 @@ public class TeamService {
         }
     }
 
-    public TeamListResponse getTeams(Member member) {
+    public TeamListPageResponse getTeams(Member member, Pageable pageable) {
         // 참여하고 있는 팀 목록 조회
-        List<TeamMembers> myTeamMemberInfos = teamMembersRepository.findAllByMemberAndStatusIs(member, DataStatus.ACTIVE);
+        Page<TeamMembers> myTeamMemberInfos = teamMembersRepository.findAllByMemberAndStatusIs(member, DataStatus.ACTIVE, pageable);
 
         List<Each> teamList = new ArrayList<>();
         // for문 돌면서
@@ -311,6 +317,33 @@ public class TeamService {
             ));
         }
 
-        return new TeamListResponse(teamList);
+        return new TeamListPageResponse(new PageImpl<>(teamList, pageable, myTeamMemberInfos.getTotalElements()));
+    }
+
+    public boolean deleteTeamMember(Member member, Long teamMemberId) {
+        TeamMembers targetTeamMember = teamMembersRepository.findByIdAndStatusIs(teamMemberId, DataStatus.ACTIVE).orElseThrow(
+            () -> new NotFoundException(ExceptionCode.NOT_FOUND_MEMBER_ID)
+        );
+        Teams team = targetTeamMember.getTeam();
+        Optional<TeamMembers> foundMemberOptional = teamMembersRepository.findByTeam_IdAndMember_Id(team.getId(), member.getId());
+        if(foundMemberOptional.isEmpty() || !DataStatus.ACTIVE.equals(foundMemberOptional.get().getStatus())){
+            throw new RuntimeException("not team member");
+        }
+        TeamMembers foundMember = foundMemberOptional.get();
+        Grades memberGrade = foundMember.getGrades();
+        boolean isAuthorized = Grades.OWNER.equals(memberGrade) || Grades.MANAGER.equals(memberGrade);
+        if(!isAuthorized){
+            throw new RuntimeException("invalid access");
+        }
+
+        targetTeamMember.delete();
+        boolean isDeleted = DataStatus.DELETED.equals(targetTeamMember.getStatus());
+
+        // 팀 멤버 추방 알림
+        if(isDeleted){
+            applicationEventPublisher.publishEvent(new TeamMemberDeleteEvent(targetTeamMember.getMember(), team.getName()));
+        }
+
+        return isDeleted;
     }
 }

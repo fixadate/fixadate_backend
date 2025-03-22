@@ -5,5 +5,6 @@ import lombok.Data;
 
 public record TeamCreateRequest (
     String name,
+    String profile,
     List<String> inviteMemberIdList){
 }

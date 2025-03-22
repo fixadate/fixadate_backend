@@ -7,6 +7,8 @@ import com.fixadate.domain.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +17,6 @@ public interface TeamMembersRepository extends JpaRepository<TeamMembers, Long> 
     List<TeamMembers> findAllByTeamAndStatusIs(Teams team, DataStatus status);
     void deleteAllByTeam(Teams team);
     Optional<TeamMembers> findByTeam_IdAndMember_Id(Long teamId, String memberId);
-
-    List<TeamMembers> findAllByMemberAndStatusIs(Member member, DataStatus dataStatus);
+    Page<TeamMembers> findAllByMemberAndStatusIs(Member member, DataStatus dataStatus, Pageable pageable);
+    Optional<TeamMembers> findByIdAndStatusIs(Long teamMemberId, DataStatus dataStatus);
 }
