@@ -38,14 +38,25 @@ public class TeamController {
         this.teamService = teamService;
     }
 
-    @PostMapping
+    @Operation(summary = "Team 생성", description = "성공시 true, 실패시 false")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200", description = "ok",
+            content = @Content(schema = @Schema(implementation = Boolean.class)))
+    })
     public GeneralResponseDto createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
                                             @RequestBody TeamCreateRequest request) {
         final Member member = memberPrincipal.getMember();
         Teams createdTeam = teamService.createTeam(member, request);
-        return GeneralResponseDto.success("", createdTeam);
+        return GeneralResponseDto.success("", createdTeam!=null);
     }
 
+    @Operation(summary = "Team 삭제", description = "성공시 true, 실패시 false")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200", description = "ok",
+            content = @Content(schema = @Schema(implementation = Boolean.class)))
+    })
     @DeleteMapping("/{id}")
     public GeneralResponseDto deleteTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
                                               @PathVariable Long id) {
