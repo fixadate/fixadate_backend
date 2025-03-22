@@ -9,7 +9,7 @@ import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
 import com.fixadate.domain.dates.dto.response.TeamListPageResponse;
 import com.fixadate.domain.dates.dto.response.TeamListResponse;
-import com.fixadate.domain.dates.dto.response.TeamListResponse.Each;
+import com.fixadate.domain.dates.dto.response.TeamListResponse.TeamListEach;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -30,7 +30,6 @@ import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlansRepository;
-import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.domain.notification.event.object.TeamMemberDeleteEvent;
@@ -278,7 +277,7 @@ public class TeamService {
         // 참여하고 있는 팀 목록 조회
         Page<TeamMembers> myTeamMemberInfos = teamMembersRepository.findAllByMemberAndStatusIs(member, DataStatus.ACTIVE, pageable);
 
-        List<Each> teamList = new ArrayList<>();
+        List<TeamListEach> teamList = new ArrayList<>();
         // for문 돌면서
         for(TeamMembers teamMember : myTeamMemberInfos){
             Teams team = teamMember.getTeam();
@@ -307,7 +306,7 @@ public class TeamService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("owner not found"));
 
-            teamList.add(new Each(
+            teamList.add(new TeamListEach(
                 team.getId(),
                 team.getName(),
                 Grades.OWNER.equals(teamMember.getGrades()),

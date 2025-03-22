@@ -5,14 +5,14 @@ import com.fixadate.domain.member.entity.Member;
 import java.util.List;
 
 public record TeamListResponse(
-    List<Each> teamList){
+    List<TeamListEach> teamList){
 
-    public record Each(Long teamId,
-                       String teamName,
-                       boolean isOwner,
-                       String ownerName,
-                       int teamMemberCnt,
-                       List<TeamMemberList> teamMemberList){}
+    public record TeamListEach(Long teamId,
+                               String teamName,
+                               boolean isOwner,
+                               String ownerName,
+                               int teamMemberCnt,
+                               List<TeamMemberList> teamMemberList){}
 
 
     public record TeamMemberList(

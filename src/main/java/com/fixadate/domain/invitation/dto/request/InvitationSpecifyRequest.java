@@ -13,9 +13,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record InvitationSpecifyRequest(
 	@NotNull long teamId,
-	List<Each> each) {
+	List<InvitationEach> each) {
 
-	public record Each(
+	public record InvitationEach(
 		@NotBlank String receiverId,
 		@NotBlank String memberName
 	){
