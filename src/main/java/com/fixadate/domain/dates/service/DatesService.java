@@ -48,11 +48,6 @@ public class DatesService {
 
         List<Member> memberList = teamMembers.stream().map(TeamMembers::getMember).toList();
 
-//        final String tagName = requestDto.tagName();
-//        if (tagName != null && !tagName.isEmpty()) {
-//            applicationEventPublisher.publishEvent(new TagSettingEvent(dates, tagName));
-//        }
-
         // 팀 일정 새로고침 필요 알림
         if(savedDates.getId() != null){
             applicationEventPublisher.publishEvent(new DatesCreateEvent(memberList, foundTeam));

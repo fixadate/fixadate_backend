@@ -3,6 +3,7 @@ package com.fixadate.domain.dates.repository;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
+import com.fixadate.domain.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +16,5 @@ public interface TeamMembersRepository extends JpaRepository<TeamMembers, Long> 
     void deleteAllByTeam(Teams team);
     Optional<TeamMembers> findByTeam_IdAndMember_Id(Long teamId, String memberId);
 
+    List<TeamMembers> findAllByMemberAndStatusIs(Member member, DataStatus dataStatus);
 }

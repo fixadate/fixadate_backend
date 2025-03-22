@@ -13,10 +13,10 @@ public record DatesRegisterRequest(
 	String title,
 	String notes,
 	@NotNull(message = "Dates startsWhen cannot be null")
-	@Schema(description = "시작일", example = "yyyyMMddHHmmss")
+	@Schema(description = "투표 시작일", example = "yyyyMMddHHmmss")
 	String startsWhen,
 	@NotNull(message = "Dates endsWhen cannot be null")
-	@Schema(description = "종료", example = "yyyyMMddHHmmss")
+	@Schema(description = "투표 종료", example = "yyyyMMddHHmmss")
 	String endsWhen,
 	List<String> memberIdList
 ) {
