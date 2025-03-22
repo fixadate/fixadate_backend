@@ -110,12 +110,23 @@ public class TeamService {
 
     public boolean deleteTeam(Member member, Long id) {
         Teams foundTeam = teamRepository.findById(id).orElseThrow(
-            () -> new RuntimeException("")
+            () -> new NotFoundException(ExceptionCode.NOT_FOUND_TEAM_ID)
         );
+
+        // 팀 멤버인지 확인
+        Optional<TeamMembers> foundMemberOptional = teamMembersRepository.findByTeam_IdAndMember_Id(foundTeam.getId(), member.getId());
+        if(foundMemberOptional.isEmpty() || !DataStatus.ACTIVE.equals(foundMemberOptional.get().getStatus())){
+            throw new RuntimeException("not team member");
+        }
+        // 권한 확인
+        TeamMembers foundMember = foundMemberOptional.get();
+        Grades memberGrade = foundMember.getGrades();
+        boolean isAuthorized = Grades.OWNER.equals(memberGrade) || Grades.MANAGER.equals(memberGrade);
+        if(!isAuthorized){
+            throw new RuntimeException("invalid access");
+        }
+
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
-
-        validateDeleteTeamPossible(member, teamMembers);
-
         String teamName = foundTeam.getName();
         List<Member> memberList = teamMembers.stream().map(TeamMembers::getMember).toList();
 
@@ -130,8 +141,9 @@ public class TeamService {
         boolean isDeleted = teamRepository.existsByIdAndStatusIs(id, BaseEntity.DataStatus.DELETED);
 
         if(isDeleted) {
-            MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
-            foundMemberResources.minusResources(ResourceType.TEAM, 1);
+            // 팀 삭제에 따라 리소스 관리
+//            MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
+//            foundMemberResources.minusResources(ResourceType.TEAM, 1);
 
             memberList.forEach(teamMember -> {
                 applicationEventPublisher.publishEvent(new TeamDeleteEvent(teamMember, teamName));
