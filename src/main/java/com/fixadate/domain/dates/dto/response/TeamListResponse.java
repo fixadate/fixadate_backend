@@ -16,14 +16,14 @@ public record TeamListResponse(
 
 
     public record TeamMemberList(
-//        String memberId,
+        Long teamMemberId,
         String memberName,
         String memberProfile
     ){
         public static TeamMemberList of(TeamMembers teamMembers){
             Member member = teamMembers.getMember();
             return new TeamMemberList(
-//                member.getId(),
+                teamMembers.getId(),
                 member.getName(),
                 member.getProfileImg());
         }

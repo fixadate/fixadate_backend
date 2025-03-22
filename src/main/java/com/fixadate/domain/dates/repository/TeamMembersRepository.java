@@ -18,4 +18,5 @@ public interface TeamMembersRepository extends JpaRepository<TeamMembers, Long> 
     void deleteAllByTeam(Teams team);
     Optional<TeamMembers> findByTeam_IdAndMember_Id(Long teamId, String memberId);
     Page<TeamMembers> findAllByMemberAndStatusIs(Member member, DataStatus dataStatus, Pageable pageable);
+    Optional<TeamMembers> findByIdAndStatusIs(Long teamMemberId, DataStatus dataStatus);
 }
