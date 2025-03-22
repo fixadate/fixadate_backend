@@ -8,6 +8,7 @@ import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
 import com.fixadate.domain.dates.dto.response.TeamListResponse;
+import com.fixadate.domain.dates.dto.response.TeamListResponse.Each;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -32,10 +33,13 @@ import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.notfound.NotFoundException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import com.fixadate.domain.notification.event.object.TeamDeleteEvent;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -266,9 +270,47 @@ public class TeamService {
 
     public TeamListResponse getTeams(Member member) {
         // 참여하고 있는 팀 목록 조회
+        List<TeamMembers> myTeamMemberInfos = teamMembersRepository.findAllByMemberAndStatusIs(member, DataStatus.ACTIVE);
+
+        List<Each> teamList = new ArrayList<>();
         // for문 돌면서
-            // 팀 목록에 대한 권한 체크, 소유주라면 isOwner true
-            // 팀 목록에 대한 멤버 목록 조회
-        return null;
+        for(TeamMembers teamMember : myTeamMemberInfos){
+            Teams team = teamMember.getTeam();
+            List<TeamMembers> teamMemberList = teamMembersRepository.findAllByTeamAndStatusIs(team, DataStatus.ACTIVE);
+
+            // 정렬하고나서
+            teamMemberList = teamMemberList.stream()
+                .sorted(Comparator.comparingInt(tm -> {
+                    return switch (tm.getGrades()) {
+                        case OWNER -> 0;
+                        case MANAGER -> 1;
+                        case MEMBER -> 2;
+                        default -> 3; // 예외적인 경우
+                    };
+                }))
+                .collect(Collectors.toList());
+
+            List<TeamListResponse.TeamMemberList> teamMemberResponseList = new ArrayList<>();
+            for(TeamMembers memberInfo : teamMemberList){
+                teamMemberResponseList.add(TeamListResponse.TeamMemberList.of(memberInfo));
+            }
+
+            // 해당 팀에서 owner 찾기
+            TeamMembers owner = teamMemberList.stream()
+                .filter(memberInfo -> memberInfo.getGrades().equals(Grades.OWNER))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("owner not found"));
+
+            teamList.add(new Each(
+                team.getId(),
+                team.getName(),
+                Grades.OWNER.equals(teamMember.getGrades()),
+                owner.getMember().getNickname(),
+                teamMemberList.size(),
+                teamMemberResponseList
+            ));
+        }
+
+        return new TeamListResponse(teamList);
     }
 }
