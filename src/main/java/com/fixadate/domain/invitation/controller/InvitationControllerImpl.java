@@ -54,12 +54,12 @@ public class InvitationControllerImpl implements InvitationController {
 
 	@Override
 	@PostMapping("/specify")
-	public GeneralResponseDto inviteMemberToTeams(
+	public GeneralResponseDto inviteMembersToTeams(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@Valid @RequestBody InvitationSpecifyRequest requestDto) {
 		final Member member = memberPrincipal.getMember();
 		boolean result = invitationService.inviteSpecifyMember(member, requestDto);
-		return GeneralResponseDto.success("", "");
+		return GeneralResponseDto.success("", result);
 	}
 
 	@Override
