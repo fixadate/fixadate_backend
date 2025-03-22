@@ -8,12 +8,14 @@ import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
+import com.fixadate.domain.dates.dto.response.TeamListPageResponse;
 import com.fixadate.domain.dates.dto.response.TeamListResponse;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.TeamService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.dto.GeneralResponseDto;
+import com.fixadate.global.factory.PageFactory;
 import com.fixadate.global.jwt.MemberPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,6 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,12 +72,15 @@ public class TeamController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200", description = "ok",
-            content = @Content(schema = @Schema(implementation = TeamListResponse.class)))
+            content = @Content(schema = @Schema(implementation = TeamListPageResponse.class)))
     })
     @GetMapping
-    public GeneralResponseDto getTeams(@AuthenticationPrincipal final MemberPrincipal memberPrincipal) {
+    public GeneralResponseDto getTeams(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam("page") int page,
+        @RequestParam("size") int size) {
         final Member member = memberPrincipal.getMember();
-        return GeneralResponseDto.success("", teamService.getTeams(member));
+        Pageable newPageable = PageFactory.getPageableSortBy(page, size, "createDate", false);
+        return GeneralResponseDto.success("", teamService.getTeams(member, newPageable));
     }
 }
 

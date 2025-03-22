@@ -7,6 +7,7 @@ import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
+import com.fixadate.domain.dates.dto.response.TeamListPageResponse;
 import com.fixadate.domain.dates.dto.response.TeamListResponse;
 import com.fixadate.domain.dates.dto.response.TeamListResponse.Each;
 import com.fixadate.domain.dates.entity.Dates;
@@ -29,6 +30,7 @@ import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlansRepository;
+import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.exception.ExceptionCode;
@@ -43,6 +45,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -268,9 +273,9 @@ public class TeamService {
         }
     }
 
-    public TeamListResponse getTeams(Member member) {
+    public TeamListPageResponse getTeams(Member member, Pageable pageable) {
         // 참여하고 있는 팀 목록 조회
-        List<TeamMembers> myTeamMemberInfos = teamMembersRepository.findAllByMemberAndStatusIs(member, DataStatus.ACTIVE);
+        Page<TeamMembers> myTeamMemberInfos = teamMembersRepository.findAllByMemberAndStatusIs(member, DataStatus.ACTIVE, pageable);
 
         List<Each> teamList = new ArrayList<>();
         // for문 돌면서
@@ -311,6 +316,6 @@ public class TeamService {
             ));
         }
 
-        return new TeamListResponse(teamList);
+        return new TeamListPageResponse(new PageImpl<>(teamList, pageable, myTeamMemberInfos.getTotalElements()));
     }
 }
