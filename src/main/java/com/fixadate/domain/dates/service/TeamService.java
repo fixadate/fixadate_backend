@@ -33,6 +33,7 @@ import com.fixadate.domain.member.service.repository.PlansRepository;
 import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
+import com.fixadate.domain.notification.event.object.TeamMemberDeleteEvent;
 import com.fixadate.global.exception.ExceptionCode;
 import com.fixadate.global.exception.notfound.NotFoundException;
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class TeamService {
             throw new RuntimeException("team resource limit exceeded");
         }
 
-        Teams team = new Teams(requestDto.name());
+        Teams team = new Teams(requestDto.name(), requestDto.profile());
         Teams createdTeam = teamRepository.save(team);
 
         TeamMembers owner = TeamMembers.builder()
@@ -317,5 +318,32 @@ public class TeamService {
         }
 
         return new TeamListPageResponse(new PageImpl<>(teamList, pageable, myTeamMemberInfos.getTotalElements()));
+    }
+
+    public boolean deleteTeamMember(Member member, Long teamMemberId) {
+        TeamMembers targetTeamMember = teamMembersRepository.findByIdAndStatusIs(teamMemberId, DataStatus.ACTIVE).orElseThrow(
+            () -> new NotFoundException(ExceptionCode.NOT_FOUND_MEMBER_ID)
+        );
+        Teams team = targetTeamMember.getTeam();
+        Optional<TeamMembers> foundMemberOptional = teamMembersRepository.findByTeam_IdAndMember_Id(team.getId(), member.getId());
+        if(foundMemberOptional.isEmpty() || !DataStatus.ACTIVE.equals(foundMemberOptional.get().getStatus())){
+            throw new RuntimeException("not team member");
+        }
+        TeamMembers foundMember = foundMemberOptional.get();
+        Grades memberGrade = foundMember.getGrades();
+        boolean isAuthorized = Grades.OWNER.equals(memberGrade) || Grades.MANAGER.equals(memberGrade);
+        if(!isAuthorized){
+            throw new RuntimeException("invalid access");
+        }
+
+        targetTeamMember.delete();
+        boolean isDeleted = DataStatus.DELETED.equals(targetTeamMember.getStatus());
+
+        // 팀 멤버 추방 알림
+        if(isDeleted){
+            applicationEventPublisher.publishEvent(new TeamMemberDeleteEvent(targetTeamMember.getMember(), team.getName()));
+        }
+
+        return isDeleted;
     }
 }

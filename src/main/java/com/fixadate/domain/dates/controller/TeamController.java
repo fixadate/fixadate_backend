@@ -47,6 +47,7 @@ public class TeamController {
             responseCode = "200", description = "ok",
             content = @Content(schema = @Schema(implementation = Boolean.class)))
     })
+    @PostMapping
     public GeneralResponseDto createTeam(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
                                             @RequestBody TeamCreateRequest request) {
         final Member member = memberPrincipal.getMember();
@@ -81,6 +82,20 @@ public class TeamController {
         final Member member = memberPrincipal.getMember();
         Pageable newPageable = PageFactory.getPageableSortBy(page, size, "createDate", false);
         return GeneralResponseDto.success("", teamService.getTeams(member, newPageable));
+    }
+
+    @Operation(summary = "팀원 추방", description = "성공시 true, 실패시 false")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200", description = "ok",
+            content = @Content(schema = @Schema(implementation = Boolean.class)))
+    })
+    @DeleteMapping("/members/{teamMemberId}")
+    public GeneralResponseDto deleteTeamMember(@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @PathVariable Long teamMemberId) {
+        final Member member = memberPrincipal.getMember();
+        boolean result = teamService.deleteTeamMember(member, teamMemberId);
+        return GeneralResponseDto.success("", result);
     }
 }
 
