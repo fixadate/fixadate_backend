@@ -5,26 +5,27 @@ import com.fixadate.domain.member.entity.Member;
 import java.util.List;
 
 public record TeamListResponse(
-    Long teamId,
-    String teamName,
-    boolean isOwner,
-    List<TeamMemberList> teamMemberList){
+    List<Each> teamList){
+
+    public record Each(Long teamId,
+                       String teamName,
+                       boolean isOwner,
+                       String ownerName,
+                       int teamMemberCnt,
+                       List<TeamMemberList> teamMemberList){}
 
 
     public record TeamMemberList(
         String memberId,
         String memberName,
-        String memberProfile,
-        String oauthId
+        String memberProfile
     ){
-        public TeamMemberList of(TeamMembers teamMembers){
+        public static TeamMemberList of(TeamMembers teamMembers){
             Member member = teamMembers.getMember();
             return new TeamMemberList(
                 member.getId(),
                 member.getName(),
-                member.getProfileImg(),
-                member.getOauthId()
-            );
+                member.getProfileImg());
         }
     }
 }
