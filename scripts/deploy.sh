@@ -44,7 +44,7 @@ then
   done
 
   #Port forwarding
-  sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
+  sudo sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
   echo "Modifing Nginx Configuration"
 
   sudo nginx -t
@@ -70,7 +70,7 @@ then
     sleep 10
   done
 
-  sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
+  sudo sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
   echo "Modifing Nginx Configuration"
 
   sudo nginx -t
@@ -98,7 +98,7 @@ then
     sleep 10
   done
 
-  sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
+  sudo sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
   echo "Modifing Nginx Configuration"
 
   sudo nginx -t
