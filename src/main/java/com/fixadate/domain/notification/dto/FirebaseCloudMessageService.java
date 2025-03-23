@@ -3,13 +3,13 @@ package com.fixadate.domain.notification.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.notification.event.object.AliveAlarmEvent;
 import com.fixadate.domain.pushkey.entity.PushKey;
 import com.fixadate.domain.pushkey.repository.PushKeyRepository;
 import com.google.auth.oauth2.GoogleCredentials;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +19,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class FirebaseCloudMessageService {
     OkHttpClient httpClient = new OkHttpClient();
 
     private final PushKeyRepository pushKeyRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public Optional<PushKey> findPushKey(Member member) {
         return pushKeyRepository.findByMemberId(member.getId());
@@ -97,7 +99,14 @@ public class FirebaseCloudMessageService {
             .addHeader(HttpHeaders.CONTENT_TYPE, UTF_8)
             .build();
         Response response = httpClient.newCall(request).execute();
-        System.out.println(Objects.requireNonNull(response.body()).string());
+        log.info(response.body().string());
+
+        // 실시간 알림 체크 확인
+        PushKey pushKey = pushKeyRepository.findPushKeyByPushKey(targetToken).orElse(null);
+        if(pushKey == null){
+            throw new RuntimeException("");
+        }
+        applicationEventPublisher.publishEvent(new AliveAlarmEvent(pushKey.getMemberId()));
     }
 
     public void sendMessageToWithData(String targetToken, String title, String body,
@@ -114,6 +123,13 @@ public class FirebaseCloudMessageService {
             .build();
         Response response = httpClient.newCall(request).execute();
         log.info(response.body().string());
+
+        // 실시간 알림 체크 확인
+        PushKey pushKey = pushKeyRepository.findPushKeyByPushKey(targetToken).orElse(null);
+        if(pushKey == null){
+            throw new RuntimeException("");
+        }
+        applicationEventPublisher.publishEvent(new AliveAlarmEvent(pushKey.getMemberId()));
     }
 
     private String makeMessage(String targetToken, String title, String body) throws

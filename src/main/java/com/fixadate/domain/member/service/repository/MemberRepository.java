@@ -1,9 +1,12 @@
 package com.fixadate.domain.member.service.repository;
 
+import io.lettuce.core.dynamic.annotation.Param;
+import java.util.List;
 import java.util.Optional;
 
 import com.fixadate.domain.auth.entity.OAuthProvider;
 import com.fixadate.domain.member.entity.Member;
+import org.springframework.data.jpa.repository.Query;
 
 public interface MemberRepository {
 
@@ -20,4 +23,9 @@ public interface MemberRepository {
 	Member save(final Member member);
 
 	void delete(final Member member);
+
+	List<Member> findMembersByEmailContainingAndExcludingIds(
+		@Param("email") String email,
+		@Param("memberIds") List<String> memberIds);
+
 }

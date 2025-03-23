@@ -1,9 +1,15 @@
 package com.fixadate.domain.invitation.service;
 
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
 
+import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
+import com.fixadate.domain.dates.entity.Grades;
+import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
+import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
+import com.fixadate.domain.invitation.dto.response.InvitableMemberListResponse;
 import com.fixadate.domain.invitation.entity.Invitation.InviteStatus;
 import com.fixadate.domain.invitation.entity.InvitationHistory;
 import com.fixadate.domain.invitation.entity.InvitationLink;
@@ -11,7 +17,13 @@ import com.fixadate.domain.invitation.repository.InvitationHistoryRepository;
 import com.fixadate.domain.invitation.repository.InvitationLinkRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
+import com.fixadate.domain.notification.entity.Notification;
+import com.fixadate.domain.notification.enumerations.PushNotificationType;
+import com.fixadate.domain.notification.event.object.TeamInvitationEvent;
+import com.fixadate.domain.notification.repository.NotificationRepository;
 import com.fixadate.global.exception.notfound.MemberNotFoundException;
+import com.fixadate.global.exception.notfound.NotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
@@ -37,17 +49,29 @@ public class InvitationService {
 	private final InvitationLinkRepository invitationLinkRepository;
 	private final MemberRepository memberRepository;
 	private final TeamRepository teamRepository;
+	private final TeamMembersRepository teamMembersRepository;
 	private final InvitationHistoryRepository invitationHistoryRepository;
+	private final NotificationRepository notificationRepository;
 	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
 	public String registInvitation(Member member, InvitationLinkRequest invitationLinkRequest) {
-		// todo: 팀 초대 권한 검증 로직
-		// todo: 팀 초대 인원 가능여부 확인 로직
-
+		//팀 초대 권한 검증 로직
 		Teams foundTeam = teamRepository.findById(invitationLinkRequest.teamId()).orElseThrow(
-			() -> new RuntimeException("")
-		);
+			() -> new NotFoundException(NOT_FOUND_TEAM_ID));
+
+		Optional<TeamMembers> foundMemberOptional = teamMembersRepository.findByTeam_IdAndMember_Id(foundTeam.getId(), member.getId());
+		if(foundMemberOptional.isEmpty() || !DataStatus.ACTIVE.equals(foundMemberOptional.get().getStatus())){
+			throw new RuntimeException("not team member");
+		}
+		TeamMembers foundMember = foundMemberOptional.get();
+		Grades memberGrade = foundMember.getGrades();
+		boolean isAuthorized = Grades.OWNER.equals(memberGrade) || Grades.MANAGER.equals(memberGrade);
+		if(!isAuthorized){
+			throw new RuntimeException("invalid access");
+		}
+
+		// todo: 팀 초대 인원 가능여부 확인 로직
 
 		InvitationLink invitationLink = invitationLinkRequest.toEntity(foundTeam, member);
 		InvitationLink createLink = invitationLinkRepository.save(invitationLink);
@@ -66,24 +90,53 @@ public class InvitationService {
 		return InvitationResponse.of(invitation);
 	}
 
+	@Transactional
 	public boolean inviteSpecifyMember(Member member, InvitationSpecifyRequest invitationSpecifyRequest) {
 
-		// todo: 팀 초대 권한 검증 로직
+		//팀 초대 권한 검증 로직
+		Teams foundTeam = teamRepository.findById(invitationSpecifyRequest.teamId()).orElseThrow(
+				() -> new NotFoundException(NOT_FOUND_TEAM_ID));
+
+		Optional<TeamMembers> foundMemberOptional = teamMembersRepository.findByTeam_IdAndMember_Id(foundTeam.getId(), member.getId());
+		if(foundMemberOptional.isEmpty() || !DataStatus.ACTIVE.equals(foundMemberOptional.get().getStatus())){
+			throw new RuntimeException("not team member");
+		}
+		TeamMembers foundMember = foundMemberOptional.get();
+		Grades memberGrade = foundMember.getGrades();
+		boolean isAuthorized = Grades.OWNER.equals(memberGrade) || Grades.MANAGER.equals(memberGrade);
+		if(!isAuthorized){
+			throw new RuntimeException("invalid access");
+		}
+
 		// todo: 팀 초대 인원 가능여부 확인 로직
 
-		Teams foundTeam = teamRepository.findById(invitationSpecifyRequest.teamId()).orElseThrow(
-			() -> new RuntimeException("")
-		);
+		boolean result = false;
 
-		Member receiver = memberRepository.findMemberById(invitationSpecifyRequest.receiverId()).orElseThrow(
-			() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
-		);
-		Invitation invitation = invitationSpecifyRequest.toEntity(member, receiver);
-		Invitation createdInvitation = invitationRepository.save(invitation);
+		for(InvitationSpecifyRequest.Each each : invitationSpecifyRequest.each()) {
 
-		// todo: push alarm
+			Member receiver = memberRepository.findMemberById(each.receiverId())
+				.orElseThrow(
+					() -> new MemberNotFoundException(NOT_FOUND_MEMBER_ID)
+				);
+			Invitation invitation = each.toEntity(member, receiver, foundTeam.getId());
+			Invitation createdInvitation = invitationRepository.save(invitation);
 
-		return invitationRepository.existsById(createdInvitation.getId());
+			result = invitationRepository.existsById(createdInvitation.getId());
+
+			Notification notification = Notification.builder()
+				.member(receiver)
+				.eventType(PushNotificationType.WORKSPACE_INVITATION)
+				.pushKey(receiver.getPushKey().getPushKey())
+				.title(foundTeam.getName() + " " + "팀 초대 요청이 왔습니다.")
+				.value(createdInvitation.getId())
+				.build();
+			notificationRepository.save(notification);
+
+			// push alarm
+			eventPublisher.publishEvent(new TeamInvitationEvent(invitation, receiver, foundTeam.getName()));
+		}
+
+		return result;
 	}
 
 	public List<InvitationResponse> getInvitationResponseFromTeamId(Long teamId) {
@@ -170,5 +223,26 @@ public class InvitationService {
 			.role(role)
 			.build();
 		invitationHistoryRepository.save(invitationHistory);
+	}
+
+	public List<InvitableMemberListResponse> getInvitableTeamMemberList(Member teamCreator, Long teamId, String email) {
+
+		// 팀 초대 가능한 사람인지 확인
+		TeamMembers teamMembers = teamMembersRepository.findByTeam_IdAndMember_Id(teamId, teamCreator.getId())
+			.orElseThrow(() -> new RuntimeException(""));
+		if(!(teamMembers.isOwner() || teamMembers.isManager())){
+			throw new RuntimeException("");
+		}
+		List<TeamMembers> teamMembersList = teamMembersRepository.findAllByTeamAndStatusIs(teamMembers.getTeam(), DataStatus.ACTIVE);
+		List<String> memberIds = teamMembersList.stream()
+			.map(TeamMembers::getMember)
+			.map(Member::getId)
+			.toList();
+
+		// 초대가능한 사람 목록 불러오기
+		// 팀 member가 아닌 사람으로 filter위
+		List<Member> invitableMembers = memberRepository.findMembersByEmailContainingAndExcludingIds(email, memberIds);
+
+		return invitableMembers.stream().map(InvitableMemberListResponse::of).toList();
 	}
 }

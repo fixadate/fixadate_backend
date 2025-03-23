@@ -46,10 +46,11 @@ public class MemberPlans extends BaseEntity {
     private LocalDateTime endAt;
 
     @Column(name = "valid_yn")
-    private boolean validYn = true;
+    @Builder.Default
+    private Boolean validYn = true;
 
     public boolean isValid(){
-        return validYn;
+        return this.validYn;
     }
 
 }

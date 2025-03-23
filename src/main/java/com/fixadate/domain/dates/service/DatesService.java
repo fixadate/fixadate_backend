@@ -4,6 +4,7 @@ import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
+import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -46,11 +47,6 @@ public class DatesService {
         final Dates savedDates = datesRepository.save(dates);
 
         List<Member> memberList = teamMembers.stream().map(TeamMembers::getMember).toList();
-
-//        final String tagName = requestDto.tagName();
-//        if (tagName != null && !tagName.isEmpty()) {
-//            applicationEventPublisher.publishEvent(new TagSettingEvent(dates, tagName));
-//        }
 
         // 팀 일정 새로고침 필요 알림
         if(savedDates.getId() != null){
@@ -97,29 +93,15 @@ public class DatesService {
     }
 
     private void updateIfNotNull(final Dates dates, final DatesUpdateDto datesUpdateDto) {
-        if (datesUpdateDto.tagName() != null) {
-//            applicationEventPublisher.publishEvent(new TagSettingEvent(dates, datesUpdateDto.tagName()));
-        }
         if (datesUpdateDto.title() != null) {
             dates.updateTitle(datesUpdateDto.title());
         }
         if (datesUpdateDto.notes() != null) {
             dates.updateNotes(datesUpdateDto.notes());
         }
-        if (datesUpdateDto.location() != null) {
-            dates.updateLocation(datesUpdateDto.location());
-        }
-        if (datesUpdateDto.alertWhen() != null) {
-            dates.updateAlertWhen(datesUpdateDto.alertWhen());
-        }
-        if (datesUpdateDto.repeatFreq() != null) {
-            dates.updateRepeatFreq(datesUpdateDto.repeatFreq());
-        }
 
-        dates.updateIfAllDay(datesUpdateDto.ifAllDay());
         dates.updateStartsWhen(datesUpdateDto.startsWhen());
         dates.updateEndsWhen(datesUpdateDto.endsWhen());
-        dates.updateReminders(datesUpdateDto.reminders());
     }
 
     private void validateCreateDatesPossible(Member member, List<TeamMembers> teamMembers) {
@@ -163,4 +145,13 @@ public class DatesService {
             throw new RuntimeException("invalid access");
         }
     }
+
+    public DatesDetailResponse getDatesDetail(Long id, Member member) {
+        // teamMember인가
+        // Dates 불러오기
+        // Owner인가
+        // DatesParticipants 불러오기
+        return null;
+    }
+
 }

@@ -20,23 +20,28 @@ import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
 import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import org.apache.commons.lang3.StringUtils;
 
 public class AdateMapper {
 
 	private AdateMapper() {
 	}
 
+	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
 	public static AdateRegisterDto toAdateRegisterDto(final AdateRegisterRequest request) {
 		return new AdateRegisterDto(
 			request.title(),
 			request.notes(),
 			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
+			StringUtils.isBlank(request.alertWhen()) ?  null :LocalDateTime.parse(request.alertWhen(), formatter),
+			StringUtils.isBlank(request.repeatFreq()) ?  null : LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter),
 			request.reminders()
 		);
 	}
@@ -46,12 +51,12 @@ public class AdateMapper {
 			request.title(),
 			request.notes(),
 			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
+			StringUtils.isBlank(request.alertWhen()) ?  null :LocalDateTime.parse(request.alertWhen(), formatter),
+			StringUtils.isBlank(request.repeatFreq()) ?  null : LocalDateTime.parse(request.repeatFreq(), formatter),
 			request.tagName(),
 			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter),
 			request.reminders()
 		);
 	}
@@ -126,10 +131,12 @@ public class AdateMapper {
 			adate.location(),
 			adate.alertWhen(),
 			adate.repeatFreq(),
+			getTagName(adate.tag()),
 			getColor(adate.tag()),
 			adate.ifAllDay(),
-			adate.startsWhen(),
-			adate.endsWhen(),
+			adate.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+			adate.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
+			adate.endsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
 			adate.calendarId(),
 			adate.reminders()
 		);
@@ -141,6 +148,14 @@ public class AdateMapper {
 		}
 
 		return tag.color();
+	}
+
+	private static String getTagName(final TagResponse tag) {
+		if (tag == null) {
+			return null;
+		}
+
+		return tag.name();
 	}
 
 	public static AdateViewResponse toAdateViewResponse(final AdateDto adate) {
@@ -163,18 +178,17 @@ public class AdateMapper {
 		return toResponse(tag);
 	}
 
-	public static ToDoRegisterDto toToDoRegisterDto(final TodoRegisterRequest todoRegisterRequest) {
+	public static ToDoRegisterDto toToDoRegisterDto(final TodoRegisterRequest todoRegisterRequest, final Member member) {
 		return new ToDoRegisterDto(
 				todoRegisterRequest.title(),
 				todoRegisterRequest.date(),
-				todoRegisterRequest.member()
+				member
 		);
 	}
 
 	public static ToDo toEntity(final ToDoRegisterDto todoRegisterDto) {
 		return ToDo.builder()
 				.title(todoRegisterDto.title())
-				.member(todoRegisterDto.member())
 				.date(todoRegisterDto.date())
 				.toDoStatus(ToDoStatus.SCHEDULED)
 				.build();

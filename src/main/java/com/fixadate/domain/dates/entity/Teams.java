@@ -32,6 +32,9 @@ public class Teams extends BaseEntity {
     private String name;
 
     @Column
+    private String profileImage;
+
+    @Column
     private String description;
 
     @JsonManagedReference
@@ -40,5 +43,9 @@ public class Teams extends BaseEntity {
 
     @Column
     private String updatedBy;
-
+    protected Teams () {}
+    public Teams(String name, String profileImage) {
+        this.name = name;
+        this.profileImage = profileImage;
+    }
 }

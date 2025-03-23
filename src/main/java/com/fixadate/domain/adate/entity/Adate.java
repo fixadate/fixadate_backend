@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.entity;
 
+import com.fixadate.domain.common.entity.Calendar;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.OnDelete;
@@ -37,16 +38,11 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString(exclude = {"member", "tag"})
-public class Adate extends BaseEntity {
+public class Adate extends Calendar {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	private String title;
-
-	@Column(length = 500)
-	private String notes;
 
 	@Column(length = 300)
 	private String location;
@@ -57,13 +53,6 @@ public class Adate extends BaseEntity {
 
 	// TODO: [추후] if 대신 is로 수정 & 불필요한 필드 삭제
 	private boolean ifAllDay;
-
-	private LocalDateTime startsWhen;
-
-	private LocalDateTime endsWhen;
-
-	@Column(unique = true)
-	private String calendarId;
 
 	private String etag;
 
@@ -95,16 +84,16 @@ public class Adate extends BaseEntity {
 		final Member member,
 		final Tag tag
 	) {
-		this.title = title;
-		this.notes = notes;
+		super.title = title;
+		super.notes = notes;
 		this.location = location;
 		this.alertWhen = alertWhen;
 		this.repeatFreq = repeatFreq;
 		this.ifAllDay = ifAllDay;
-		this.startsWhen = startsWhen;
-		this.endsWhen = endsWhen;
-		this.calendarId = calendarId;
-		this.etag = etag;
+		super.startsWhen = startsWhen;
+		super.endsWhen = endsWhen;
+		super.calendarId = calendarId;
+		super.etag = etag;
 		this.reminders = reminders;
 		this.member = member;
 		this.tag = tag;
@@ -178,5 +167,14 @@ public class Adate extends BaseEntity {
 		}
 
 		return tag.getColor();
+	}
+
+	@JsonIgnore
+	public String getTagName() {
+		if (tag == null) {
+			return null;
+		}
+
+		return tag.getName();
 	}
 }

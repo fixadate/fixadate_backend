@@ -13,12 +13,20 @@ import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
 import com.fixadate.domain.dates.dto.response.DatesViewResponse;
 import com.fixadate.domain.dates.entity.Dates;
+import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
+import com.fixadate.global.util.RandomValueUtil;
 import com.google.api.services.calendar.model.Event;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatesMapper {
+
+	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
 	private DatesMapper() {
 	}
@@ -28,29 +36,18 @@ public class DatesMapper {
 			request.teamId(),
 			request.title(),
 			request.notes(),
-			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
-			request.tagName(),
-			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
-			request.reminders()
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter)
 		);
 	}
 
 	public static DatesUpdateDto toDatesUpdateDto(final DatesUpdateRequest request) {
 		return new DatesUpdateDto(
+			request.datesId(),
 			request.title(),
 			request.notes(),
-			request.location(),
-			request.alertWhen(),
-			request.repeatFreq(),
-			request.tagName(),
-			request.ifAllDay(),
-			request.startsWhen(),
-			request.endsWhen(),
-			request.reminders()
+			LocalDateTime.parse(request.startsWhen(), formatter),
+			LocalDateTime.parse(request.endsWhen(), formatter)
 		);
 	}
 
@@ -58,14 +55,10 @@ public class DatesMapper {
 		return Dates.builder()
 					.title(datesRegisterDto.title())
 					.notes(datesRegisterDto.notes())
-					.location(datesRegisterDto.location())
-					.alertWhen(datesRegisterDto.alertWhen())
-					.repeatFreq(datesRegisterDto.repeatFreq())
-					.ifAllDay(datesRegisterDto.ifAllDay())
 					.startsWhen(datesRegisterDto.startsWhen())
 					.endsWhen(datesRegisterDto.endsWhen())
-					.reminders(datesRegisterDto.reminders())
 					.member(member)
+					.calendarId(RandomValueUtil.createRandomString(10))
 					.build();
 	}
 
@@ -87,72 +80,41 @@ public class DatesMapper {
 		return Dates.builder()
 					.title(event.getSummary())
 					.notes(event.getDescription())
-					.location(event.getLocation())
 					.startsWhen(checkEventDateTimeIsNull(event.getStart()))
 					.endsWhen(checkEventDateTimeIsNull(event.getEnd()))
-					.ifAllDay(checkEventIsAllDayType(event.getStart()))
-					.etag(event.getEtag())
-					.reminders(event.getReminders().getUseDefault())
 					.member(member)
+					.calendarId(RandomValueUtil.createRandomString(10))
 					.build();
 	}
 
 	public static DatesDto toDatesDto(final Dates dates) {
 		return new DatesDto(
-			dates.getId(),
+			dates.getCalendarId(),
 			dates.getTitle(),
 			dates.getNotes(),
-			dates.getLocation(),
-			dates.getAlertWhen(),
-			dates.getRepeatFreq(),
-			dates.isIfAllDay(),
 			dates.getStartsWhen(),
-			dates.getEndsWhen(),
-			dates.getEtag(),
-			dates.isReminders(),
-			getTagResponse(dates.getTag())
+			dates.getEndsWhen()
 		);
 	}
 
-	public static DatesResponse toDatesResponse(final DatesDto datesDto) {
+	public static DatesResponse toDatesResponse(final DatesDto datesDto, List<DatesMemberInfo> datesMemberList) {
 		return new DatesResponse(
 			datesDto.title(),
 			datesDto.notes(),
-			datesDto.location(),
-			datesDto.alertWhen(),
-			datesDto.repeatFreq(),
-			getColor(datesDto.tag()),
-			datesDto.ifAllDay(),
-			datesDto.startsWhen(),
-			datesDto.endsWhen(),
-			datesDto.reminders()
+			datesDto.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+			datesDto.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
+			datesDto.endsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
+			datesDto.calendarId(),
+			datesMemberList
 		);
 	}
-
-	private static String getColor(final TagResponse tag) {
-		if (tag == null) {
-			return null;
-		}
-
-		return tag.color();
-	}
-
 	public static DatesViewResponse toDatesViewResponse(final DatesDto datesDto) {
 		return new DatesViewResponse(
 			datesDto.title(),
 			datesDto.notes(),
-			datesDto.ifAllDay(),
-			datesDto.startsWhen(),
-			datesDto.endsWhen(),
-			datesDto.tag()
-		);
+			datesDto.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
+			datesDto.endsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
+			datesDto.calendarId());
 	}
 
-	private static TagResponse getTagResponse(final Tag tag) {
-		if (tag == null) {
-			return null;
-		}
-
-		return toResponse(tag);
-	}
 }

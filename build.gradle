@@ -110,6 +110,9 @@ dependencies {
 
     // okhttp
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+
+    // jnanoid
+    implementation 'com.aventrix.jnanoid:jnanoid:2.0.0'
 }
 
 checkstyle {

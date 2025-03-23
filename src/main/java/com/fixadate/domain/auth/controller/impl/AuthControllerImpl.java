@@ -39,7 +39,7 @@ public class AuthControllerImpl implements AuthController {
 
 	@Override
 	@PostMapping("/signin")
-	public GeneralResponseDto signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest,
+	public ResponseEntity<GeneralResponseDto> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest,
 									 @RequestHeader HttpHeaders headers) {
 		MemberSigninResponse response = authService.memberSignIn(memberOAuthRequest);
 
@@ -50,7 +50,10 @@ public class AuthControllerImpl implements AuthController {
 		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
 		headers.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
-		return GeneralResponseDto.success("", response);
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.headers(headers)
+			.body(GeneralResponseDto.success("", response));
 	}
 
 	@Override

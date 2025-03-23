@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 })
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
-@ToString(exclude = {"member", "tag"})
+@ToString(exclude = {"member"})
 public class Dates extends Calendar {
 
 	@Id
@@ -32,82 +32,37 @@ public class Dates extends Calendar {
 	@JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_dates_team_id"))
 	private Teams team;
 
-	private String etag;
-
-	// TODO: [추후] 불필요, 삭제 필요
-	private boolean reminders;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_dates_member_id"))
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "fk_dates_tag_id"))
-	private Tag tag;
-
 	@Builder
 	private Dates(
 		final String title,
 		final String notes,
-		final String location,
-		final LocalDateTime alertWhen,
-		final LocalDateTime repeatFreq,
-		final boolean ifAllDay,
 		final LocalDateTime startsWhen,
 		final LocalDateTime endsWhen,
-		final String etag,
-		final boolean reminders,
 		final Member member,
-		final Tag tag
+		final String calendarId
 	) {
 		super.title = title;
+		super.calendarId = calendarId;
 		this.notes = notes;
-		this.location = location;
-		this.alertWhen = alertWhen;
-		this.repeatFreq = repeatFreq;
-		this.ifAllDay = ifAllDay;
 		this.startsWhen = startsWhen;
 		this.endsWhen = endsWhen;
-		this.etag = etag;
-		this.reminders = reminders;
 		this.member = member;
-		this.tag = tag;
 	}
 
 	public boolean isOwner(final Member member) {
 		return this.member.equals(member);
 	}
 
-	public void removeTag() {
-		this.tag = null;
-	}
 
 	public void updateFrom(final Dates adate) {
 		this.title = adate.title;
 		this.notes = adate.notes;
-		this.location = adate.location;
-		this.ifAllDay = adate.ifAllDay;
 		this.startsWhen = adate.startsWhen;
 		this.endsWhen = adate.endsWhen;
-		this.etag = adate.etag;
-		this.reminders = adate.reminders;
-	}
-
-
-	public void updateTag(final Tag tag) {
-		this.tag = tag;
-	}
-	public void updateReminders(final boolean reminders) {
-		this.reminders = reminders;
-	}
-
-	@JsonIgnore
-	public String getColor() {
-		if (tag == null) {
-			return null;
-		}
-
-		return tag.getColor();
 	}
 }

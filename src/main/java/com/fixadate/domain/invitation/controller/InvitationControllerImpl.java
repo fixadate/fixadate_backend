@@ -5,7 +5,6 @@ import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestControllerWithMapping("/v1/invitation")
 public class InvitationControllerImpl implements InvitationController {
 	private final InvitationService invitationService;
+	private final String action = "invitation";
 
 	@Override
 	@PostMapping()
@@ -35,7 +35,8 @@ public class InvitationControllerImpl implements InvitationController {
 		@Valid @RequestBody InvitationLinkRequest invitationLinkRequest) {
 		final Member member = memberPrincipal.getMember();
 		String invitationId = invitationService.registInvitation(member, invitationLinkRequest);
-		return GeneralResponseDto.success("", invitationId);
+		String urlSchema = "://fixadate?action="+action+"&id="+invitationId;
+		return GeneralResponseDto.success("", urlSchema);
 	}
 
 	@Override
@@ -53,12 +54,12 @@ public class InvitationControllerImpl implements InvitationController {
 
 	@Override
 	@PostMapping("/specify")
-	public GeneralResponseDto inviteMemberToTeams(
+	public GeneralResponseDto inviteMembersToTeams(
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 		@Valid @RequestBody InvitationSpecifyRequest requestDto) {
 		final Member member = memberPrincipal.getMember();
 		boolean result = invitationService.inviteSpecifyMember(member, requestDto);
-		return GeneralResponseDto.success("", "");
+		return GeneralResponseDto.success("", result);
 	}
 
 	@Override
@@ -104,5 +105,15 @@ public class InvitationControllerImpl implements InvitationController {
 		@PathVariable String inviteCode) {
 		final Member member = memberPrincipal.getMember();
 		return GeneralResponseDto.success("", invitationService.deactivateInvitationLink(member, inviteCode));
+	}
+
+	@Override
+	@GetMapping("/member/list")
+	public GeneralResponseDto getInvitableTeamMemberList(
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+		@RequestParam Long teamId,
+		@RequestParam String email) {
+		final Member member = memberPrincipal.getMember();
+		return GeneralResponseDto.success("", invitationService.getInvitableTeamMemberList(member, teamId, email));
 	}
 }

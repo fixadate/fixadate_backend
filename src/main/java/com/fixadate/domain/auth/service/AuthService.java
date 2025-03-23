@@ -16,6 +16,8 @@ import com.fixadate.domain.member.entity.Plans;
 import com.fixadate.domain.member.entity.Plans.PlanType;
 import com.fixadate.domain.member.service.repository.MemberPlansRepository;
 import com.fixadate.domain.member.service.repository.PlansRepository;
+import com.fixadate.domain.pushkey.entity.PushKey;
+import com.fixadate.domain.pushkey.repository.PushKeyRepository;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -51,6 +53,7 @@ public class AuthService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final PasswordEncoder passwordEncoder;
 	private final S3Util s3Util;
+	private final PushKeyRepository pushKeyRepository;
 
 	public MemberSigninResponse memberSignIn(MemberOAuthRequest memberOAuthRequest) {
 		Member member = findMemberByOAuthProviderAndEmailAndName(
@@ -58,7 +61,10 @@ public class AuthService {
 			memberOAuthRequest.email(), memberOAuthRequest.memberName()
 		).orElseThrow(() -> new AuthException(NOT_FOUND_MEMBER_OAUTHPLATFORM_EMAIL_NAME));
 		authenticateMember(memberOAuthRequest, member);
-		return toResponse(member);
+
+		Optional<PushKey> pushKeyOptional = pushKeyRepository.findByMemberId(member.getId());
+
+		return toResponse(member, pushKeyOptional.isPresent());
 	}
 
 	private Optional<Member> findMemberByOAuthProviderAndEmailAndName(
@@ -69,9 +75,9 @@ public class AuthService {
 	}
 
 	private void authenticateMember(MemberOAuthRequest memberOAuthRequest, Member member) {
-		if (!passwordEncoder.matches(memberOAuthRequest.oauthId(), member.getOauthId())) {
-			throw new AuthException(FAIL_TO_SIGNIN);
-		}
+//		if (!passwordEncoder.matches(memberOAuthRequest.oauthId(), member.getOauthId())) {
+//			throw new AuthException(FAIL_TO_SIGNIN);
+//		}
 	}
 
 	@Transactional

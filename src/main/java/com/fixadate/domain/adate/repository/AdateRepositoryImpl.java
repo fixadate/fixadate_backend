@@ -42,4 +42,10 @@ public class AdateRepositoryImpl implements AdateRepository {
 	) {
 		return adateQueryRepository.findByDateRange(member, startDateTime, endDateTime);
 	}
+
+	@Override
+	public List<Adate> findByMemberAndBetweenDates(Member member, LocalDateTime firstDayDateTime,
+		LocalDateTime lastDayDateTime) {
+		return adateJpaRepository.findByMemberAndStartsWhenBetween(member, firstDayDateTime, lastDayDateTime);
+	}
 }
