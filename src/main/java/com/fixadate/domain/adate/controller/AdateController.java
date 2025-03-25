@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.controller;
 
 import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
 import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
+import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
 import com.fixadate.global.dto.GeneralResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -65,7 +66,7 @@ public interface AdateController {
 	})
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "OK",
-			content = @Content(schema = @Schema(implementation = AdateResponse.class))),
+			content = @Content(schema = @Schema(implementation = AdateInfoResponse.class))),
 		@ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
 			content = @Content(schema = @Schema(implementation = Void.class))),
 	})

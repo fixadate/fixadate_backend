@@ -113,10 +113,6 @@ public class AdateControllerImpl implements AdateController {
 	) {
 		final Member member = memberPrincipal.getMember();
 		final AdateInfoResponse response = adateService.getAdatesByMonth(member, year, month);
-//		final List<AdateViewResponse> responses = adates.stream()
-//														.map(AdateMapper::toAdateViewResponse)
-//														.toList();
-
 		return GeneralResponseDto.success("", response);
 	}
 
