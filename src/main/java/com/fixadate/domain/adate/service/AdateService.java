@@ -27,6 +27,7 @@ import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +65,7 @@ public class AdateService {
 	private final PlanResourcesRepository planResourcesRepository;
 	private final MemberResourcesRepository memberResourcesRepository;
 	private final ToDoRepository toDoRepository;
-
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateDto registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
@@ -123,6 +124,7 @@ public class AdateService {
 		return toAdateDto(adate);
 	}
 
+	// todo: 날짜별로 Adate 세팅하도록 변경 필요. 너무 많은 데이터 조회
 	@Transactional(readOnly = true)
 	public AdateInfoResponse getAdateByStartAndEndTime(
 		final Member member,
@@ -138,6 +140,8 @@ public class AdateService {
 		AdateInfoResponse dateInfos = new AdateInfoResponse();
 		dateInfos.setDateInfos(startDateTime, endDateTime);
 
+		LocalDateTime now = LocalDateTime.now();
+
 		for(DailyAdateInfo dateInfo : dateInfos.getDateList()) {
 			List<AdateResponse> adateInfosByDate = new ArrayList<>();
 			for(AdateResponse adateInfo : adateInfos) {
@@ -145,7 +149,14 @@ public class AdateService {
 					adateInfosByDate.add(adateInfo);
 				}
 			}
-			dateInfo.setAdateInfoList(adateInfosByDate);
+			// 이미 진행된 건은 제외
+			if(dateInfo.isToday()){
+				List<AdateResponse> todayAdateInfos = new ArrayList<>(adateInfosByDate);
+				todayAdateInfos.removeIf(adateResponse -> LocalDateTime.parse(adateResponse.endsWhen(), formatter).isBefore(now));
+				dateInfo.setAdateInfoList(todayAdateInfos);
+			}else {
+				dateInfo.setAdateInfoList(adateInfosByDate);
+			}
 
 			List<TodoInfo> todoInfosByDate = new ArrayList<>();
 			for(TodoInfo todoInfo : todoInfos) {
@@ -154,12 +165,8 @@ public class AdateService {
 				}
 			}
 			dateInfo.setTodoInfoList(todoInfosByDate);
-			dateInfo.setTotalCnt();
-
+			dateInfo.setTotalCnt(); // todo: 오늘 날짜로 이미 지난 일정도 포함해야하는가?
 		}
-
-		// todo: 이미 진행된 건은 제외
-
 
 		return dateInfos;
 	}
