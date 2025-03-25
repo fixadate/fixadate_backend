@@ -28,6 +28,7 @@ public class AdateInfoResponse {
         List<AdateResponse> adateInfoList = new ArrayList<>();
         List<TodoInfo> todoInfoList = new ArrayList<>();
         private int totalADateAndTodoCnt;
+        private boolean isToday = false;
 
         public void setTotalCnt(){
             this.totalADateAndTodoCnt = this.adateInfoList.size() + this.todoInfoList.size();
@@ -35,6 +36,7 @@ public class AdateInfoResponse {
     }
 
     public void setDateInfos(LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime){
+        LocalDate today = LocalDate.now();
         while (firstDayDateTime.isBefore(lastDayDateTime)) {
             DailyAdateInfo dateInfo = new DailyAdateInfo();
             dateInfo.setYyyyMm(firstDayDateTime.format(DateTimeFormatter.ofPattern("yyyyMM")));
@@ -46,6 +48,14 @@ public class AdateInfoResponse {
             dateInfo.setWeekNum(weekOfMonth);
             dateInfo.setDate(firstDayDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
             dateInfo.setDay(firstDayDateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()));
+
+            // yyyyMMdd 형식의 문자열을 LocalDate로 변환
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            LocalDate inputDate = LocalDate.parse(dateInfo.date, formatter);
+
+            if(inputDate.equals(today)){
+                dateInfo.setToday(true);
+            }
 
             this.dateList.add(dateInfo);
 
