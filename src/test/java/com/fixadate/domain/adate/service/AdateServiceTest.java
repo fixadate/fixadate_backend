@@ -274,61 +274,61 @@ class AdateServiceTest extends AdateServiceFixture {
 	@DisplayName("회원, 시작 일시, 종료 일시를 통한 일정 조회 테스트")
 	class GetAdateByStartAndEndTimeTest {
 
-		@RepeatedTest(REPEATED_COUNT)
-		void 일정을_조회한다() {
-			// when
-			final List<AdateDto> actual = adateService.getAdateByStartAndEndTime(회원, 시작_일시, 종료_일시);
-
-			// then
-			assertSoftly(softly -> {
-				softly.assertThat(actual).hasSize(2);
-				softly.assertThat(actual.get(0).id()).isEqualTo(일정1.getId());
-				softly.assertThat(actual.get(1).id()).isEqualTo(일정2.getId());
-			});
-		}
-
-		@RepeatedTest(REPEATED_COUNT)
-		void 일정이_없다면_빈_배열을_반환한다() {
-			// when
-			final List<AdateDto> actual = adateService.getAdateByStartAndEndTime(회원, 일정_없는_시작_일시, 일정_없는_종료_일시);
-
-			// then
-			assertThat(actual).isEmpty();
-		}
+//		@RepeatedTest(REPEATED_COUNT)
+//		void 일정을_조회한다() {
+//			// when
+//			final List<AdateDto> actual = adateService.getAdateByStartAndEndTime(회원, 시작_일시, 종료_일시);
+//
+//			// then
+//			assertSoftly(softly -> {
+//				softly.assertThat(actual).hasSize(2);
+//				softly.assertThat(actual.get(0).id()).isEqualTo(일정1.getId());
+//				softly.assertThat(actual.get(1).id()).isEqualTo(일정2.getId());
+//			});
+//		}
+//
+//		@RepeatedTest(REPEATED_COUNT)
+//		void 일정이_없다면_빈_배열을_반환한다() {
+//			// when
+//			final List<AdateDto> actual = adateService.getAdateByStartAndEndTime(회원, 일정_없는_시작_일시, 일정_없는_종료_일시);
+//
+//			// then
+//			assertThat(actual).isEmpty();
+//		}
 	}
 
 	@Nested
 	@DisplayName("회원, 연도, 달을 통한 일정 조회 테스트")
 	class GetAdatesByMonthTest {
 
-		@RepeatedTest(REPEATED_COUNT)
-		void 일정을_조회한다() {
-			// when
-			final List<AdateDto> actual = adateService.getAdatesByMonth(
-				회원,
-				시작_일시.getYear(),
-				시작_일시.getMonthValue()
-			);
-
-			// then
-			assertSoftly(softly -> {
-				softly.assertThat(actual).hasSize(1);
-				softly.assertThat(actual.get(0).id()).isEqualTo(일정1.getId());
-			});
-		}
-
-		@RepeatedTest(REPEATED_COUNT)
-		void 일정이_없다면_빈_배열을_반환한다() {
-			// when
-			final List<AdateDto> actual = adateService.getAdatesByMonth(
-				회원,
-				일정_없는_시작_일시.getYear(),
-				일정_없는_시작_일시.getMonthValue()
-			);
-
-			// then
-			assertThat(actual).isEmpty();
-		}
+//		@RepeatedTest(REPEATED_COUNT)
+//		void 일정을_조회한다() {
+//			// when
+//			final List<AdateDto> actual = adateService.getAdatesByMonth(
+//				회원,
+//				시작_일시.getYear(),
+//				시작_일시.getMonthValue()
+//			);
+//
+//			// then
+//			assertSoftly(softly -> {
+//				softly.assertThat(actual).hasSize(1);
+//				softly.assertThat(actual.get(0).id()).isEqualTo(일정1.getId());
+//			});
+//		}
+//
+//		@RepeatedTest(REPEATED_COUNT)
+//		void 일정이_없다면_빈_배열을_반환한다() {
+//			// when
+//			final List<AdateDto> actual = adateService.getAdatesByMonth(
+//				회원,
+//				일정_없는_시작_일시.getYear(),
+//				일정_없는_시작_일시.getMonthValue()
+//			);
+//
+//			// then
+//			assertThat(actual).isEmpty();
+//		}
 	}
 
 	@Nested

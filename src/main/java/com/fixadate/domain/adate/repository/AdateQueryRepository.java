@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.repository;
 
 import static com.fixadate.domain.adate.entity.QAdate.adate;
 
+import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,7 @@ public class AdateQueryRepository {
 				adate.member.eq(member)
 							.and(adate.startsWhen.loe(endDateTime))
 							.and(adate.endsWhen.goe(startDateTime))
+							.and(adate.status.eq(DataStatus.ACTIVE))
 			)
 			.leftJoin(adate.tag).fetchJoin()
 			.orderBy(adate.startsWhen.asc())
