@@ -43,12 +43,15 @@ then
     sleep 10 # wait 10 seconds and retry
   done
 
-  #Port forwarding
-  sudo sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
-  echo "Modifing Nginx Configuration"
+  # remove previous iptables PREROUTING rule
+  sudo iptables -t nat -L PREROUTING -v -n --line-numbers
+  sudo iptables -t nat -D PREROUTING 1
 
-  sudo nginx -t
-	sudo systemctl reload nginx
+  # new PREROUTING rule 8080 -> 8081
+  sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 8081
+
+  # kill previously running 8082 server
+  sudo kill -9 $P8082_PID
 
 elif [ -z "$P8082_PID" ] # if only 8082 is missing = just 8081 is running
 then
@@ -70,11 +73,10 @@ then
     sleep 10
   done
 
-  sudo sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
-  echo "Modifing Nginx Configuration"
+  sudo iptables -t nat -L PREROUTING -v -n --line-numbers
+  sudo iptables -t nat -D PREROUTING 1
 
-  sudo nginx -t
-  sudo systemctl reload nginx
+  sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 8082
 
   sudo kill -9 $P8081_PID
 
@@ -98,11 +100,10 @@ then
     sleep 10
   done
 
-  sudo sed -i "s/server 127\.0\.0\.1:[0-9]\+/server 127\.0\.0\.1:$NEW_PID/" /etc/nginx/nginx.conf
-  echo "Modifing Nginx Configuration"
+  sudo iptables -t nat -L PREROUTING -v -n --line-numbers
+  sudo iptables -t nat -D PREROUTING 1
 
-  sudo nginx -t
-  sudo systemctl reload nginx
+  sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 8081
 
   sudo kill -9 $P8082_PID
 fi
