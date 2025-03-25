@@ -2,6 +2,7 @@ package com.fixadate.domain.adate.repository;
 
 import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.adate.service.repository.ToDoRepository;
+import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.member.entity.Member;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ public class ToDoRepositoryImpl implements ToDoRepository {
     @Override
     public List<ToDo> findByMemberAndBetweenDates(Member member, LocalDate firstDayDate,
         LocalDate lastDayDateTime) {
-        return toDoJpaRepository.findByMemberAndDateBetween(member, firstDayDate, lastDayDateTime);
+        return toDoJpaRepository.findByMemberAndDateBetweenAndStatusIs(member, firstDayDate, lastDayDateTime,
+            DataStatus.ACTIVE);
     }
 }
