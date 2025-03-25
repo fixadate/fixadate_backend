@@ -11,9 +11,13 @@ import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
 
 import com.fixadate.domain.adate.dto.ToDoRegisterDto;
 import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
+import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
+import com.fixadate.domain.adate.dto.response.AdateInfoResponse.DailyAdateInfo;
+import com.fixadate.domain.adate.dto.response.AdateResponse;
 import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.adate.entity.ToDoStatus;
 import com.fixadate.domain.adate.service.repository.ToDoRepository;
+import com.fixadate.domain.main.dto.TodoInfo;
 import com.fixadate.domain.member.entity.MemberPlans;
 import com.fixadate.domain.member.entity.MemberResources;
 import com.fixadate.domain.member.entity.Plans;
@@ -23,6 +27,8 @@ import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +65,7 @@ public class AdateService {
 	private final PlanResourcesRepository planResourcesRepository;
 	private final MemberResourcesRepository memberResourcesRepository;
 	private final ToDoRepository toDoRepository;
-
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateDto registerAdate(final AdateRegisterDto adateRegisterDto, final Member member) {
@@ -118,18 +124,51 @@ public class AdateService {
 		return toAdateDto(adate);
 	}
 
+	// todo: 날짜별로 Adate 세팅하도록 변경 필요. 너무 많은 데이터 조회
 	@Transactional(readOnly = true)
-	public List<AdateDto> getAdateByStartAndEndTime(
+	public AdateInfoResponse getAdateByStartAndEndTime(
 		final Member member,
 		final LocalDateTime startDateTime,
 		final LocalDateTime endDateTime
 	) {
 		checkStartAndEndTime(startDateTime, endDateTime);
-		final List<Adate> adates = adateRepository.findByDateRange(member, startDateTime, endDateTime);
+		final List<Adate> adateList = adateRepository.findByDateRange(member, startDateTime, endDateTime);
+		List<AdateResponse> adateInfos = adateList.stream().map(AdateResponse::of).toList();
+		final List<ToDo> todoList = toDoRepository.findByMemberAndBetweenDates(member, startDateTime.toLocalDate(), endDateTime.toLocalDate());
+		List<TodoInfo> todoInfos = todoList.stream().map(TodoInfo::of).toList();
 
-		return adates.stream()
-					 .map(AdateMapper::toAdateDto)
-					 .toList();
+		AdateInfoResponse dateInfos = new AdateInfoResponse();
+		dateInfos.setDateInfos(startDateTime, endDateTime);
+
+		LocalDateTime now = LocalDateTime.now();
+
+		for(DailyAdateInfo dateInfo : dateInfos.getDateList()) {
+			List<AdateResponse> adateInfosByDate = new ArrayList<>();
+			for(AdateResponse adateInfo : adateInfos) {
+				if(adateInfo.startDate().equals(dateInfo.getDate())) {
+					adateInfosByDate.add(adateInfo);
+				}
+			}
+			// 이미 진행된 건은 제외
+			if(dateInfo.isToday()){
+				List<AdateResponse> todayAdateInfos = new ArrayList<>(adateInfosByDate);
+				todayAdateInfos.removeIf(adateResponse -> LocalDateTime.parse(adateResponse.endsWhen(), formatter).isBefore(now));
+				dateInfo.setAdateInfoList(todayAdateInfos);
+			}else {
+				dateInfo.setAdateInfoList(adateInfosByDate);
+			}
+
+			List<TodoInfo> todoInfosByDate = new ArrayList<>();
+			for(TodoInfo todoInfo : todoInfos) {
+				if(todoInfo.date().equals(dateInfo.getDate())) {
+					todoInfosByDate.add(todoInfo);
+				}
+			}
+			dateInfo.setTodoInfoList(todoInfosByDate);
+			dateInfo.setTotalCnt(); // todo: 오늘 날짜로 이미 지난 일정도 포함해야하는가?
+		}
+
+		return dateInfos;
 	}
 
 	private void checkStartAndEndTime(final LocalDateTime startTime, final LocalDateTime endTime) {
@@ -139,7 +178,7 @@ public class AdateService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdateDto> getAdatesByMonth(final Member member, final int year, final int month) {
+	public AdateInfoResponse getAdatesByMonth(final Member member, final int year, final int month) {
 		final LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
 		final LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
 
@@ -155,8 +194,10 @@ public class AdateService {
 		final LocalDateTime startTime = getLocalDateTimeFromLocalDate(firstDay, true);
 		final LocalDateTime endTime = getLocalDateTimeFromLocalDate(lastDay, false);
 
-		return getAdateByStartAndEndTime(member, startTime, endTime);
+//		return getAdateByStartAndEndTime(member, startTime, endTime);
+		return new ArrayList<>();
 	}
+
 
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateDto updateAdate(

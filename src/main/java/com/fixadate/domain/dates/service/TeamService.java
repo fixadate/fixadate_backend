@@ -9,7 +9,7 @@ import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
 import com.fixadate.domain.dates.dto.response.TeamListPageResponse;
 import com.fixadate.domain.dates.dto.response.TeamListResponse;
-import com.fixadate.domain.dates.dto.response.TeamListResponse.Each;
+import com.fixadate.domain.dates.dto.response.TeamListResponse.TeamListEach;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -30,7 +30,6 @@ import com.fixadate.domain.member.service.repository.MemberRepository;
 import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlansRepository;
-import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.domain.notification.event.object.TeamMemberDeleteEvent;
@@ -111,12 +110,23 @@ public class TeamService {
 
     public boolean deleteTeam(Member member, Long id) {
         Teams foundTeam = teamRepository.findById(id).orElseThrow(
-            () -> new RuntimeException("")
+            () -> new NotFoundException(ExceptionCode.NOT_FOUND_TEAM_ID)
         );
+
+        // 팀 멤버인지 확인
+        Optional<TeamMembers> foundMemberOptional = teamMembersRepository.findByTeam_IdAndMember_Id(foundTeam.getId(), member.getId());
+        if(foundMemberOptional.isEmpty() || !DataStatus.ACTIVE.equals(foundMemberOptional.get().getStatus())){
+            throw new RuntimeException("not team member");
+        }
+        // 권한 확인
+        TeamMembers foundMember = foundMemberOptional.get();
+        Grades memberGrade = foundMember.getGrades();
+        boolean isAuthorized = Grades.OWNER.equals(memberGrade) || Grades.MANAGER.equals(memberGrade);
+        if(!isAuthorized){
+            throw new RuntimeException("invalid access");
+        }
+
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
-
-        validateDeleteTeamPossible(member, teamMembers);
-
         String teamName = foundTeam.getName();
         List<Member> memberList = teamMembers.stream().map(TeamMembers::getMember).toList();
 
@@ -131,8 +141,9 @@ public class TeamService {
         boolean isDeleted = teamRepository.existsByIdAndStatusIs(id, BaseEntity.DataStatus.DELETED);
 
         if(isDeleted) {
-            MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
-            foundMemberResources.minusResources(ResourceType.TEAM, 1);
+            // 팀 삭제에 따라 리소스 관리
+//            MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
+//            foundMemberResources.minusResources(ResourceType.TEAM, 1);
 
             memberList.forEach(teamMember -> {
                 applicationEventPublisher.publishEvent(new TeamDeleteEvent(teamMember, teamName));
@@ -278,7 +289,7 @@ public class TeamService {
         // 참여하고 있는 팀 목록 조회
         Page<TeamMembers> myTeamMemberInfos = teamMembersRepository.findAllByMemberAndStatusIs(member, DataStatus.ACTIVE, pageable);
 
-        List<Each> teamList = new ArrayList<>();
+        List<TeamListEach> teamList = new ArrayList<>();
         // for문 돌면서
         for(TeamMembers teamMember : myTeamMemberInfos){
             Teams team = teamMember.getTeam();
@@ -307,7 +318,7 @@ public class TeamService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("owner not found"));
 
-            teamList.add(new Each(
+            teamList.add(new TeamListEach(
                 team.getId(),
                 team.getName(),
                 Grades.OWNER.equals(teamMember.getGrades()),

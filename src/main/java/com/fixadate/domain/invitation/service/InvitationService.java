@@ -112,7 +112,7 @@ public class InvitationService {
 
 		boolean result = false;
 
-		for(InvitationSpecifyRequest.Each each : invitationSpecifyRequest.each()) {
+		for(InvitationSpecifyRequest.InvitationEach each : invitationSpecifyRequest.each()) {
 
 			Member receiver = memberRepository.findMemberById(each.receiverId())
 				.orElseThrow(

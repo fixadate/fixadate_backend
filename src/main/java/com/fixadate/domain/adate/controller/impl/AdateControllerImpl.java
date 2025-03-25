@@ -5,6 +5,7 @@ import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME
 import com.fixadate.domain.adate.dto.*;
 import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
 import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
+import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
 import com.fixadate.domain.adate.dto.response.ToDoResponse;
 import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.adate.entity.ToDoStatus;
@@ -79,23 +80,23 @@ public class AdateControllerImpl implements AdateController {
 		return GeneralResponseDto.success("", response);
 	}
 
-	@Override
-	@GetMapping
-	public GeneralResponseDto getAdatesBy(
-		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-		@RequestParam final LocalDateTime startDateTime,
-		@RequestParam final LocalDateTime endDateTime
-	) {
-		checkDateTime(startDateTime, endDateTime);
-
-		final Member member = memberPrincipal.getMember();
-		final List<AdateDto> adates = adateService.getAdateByStartAndEndTime(member, startDateTime, endDateTime);
-		final List<AdateViewResponse> responses = adates.stream()
-														.map(AdateMapper::toAdateViewResponse)
-														.toList();
-
-		return GeneralResponseDto.success("", responses);
-	}
+//	@Override
+//	@GetMapping
+//	public GeneralResponseDto getAdatesBy(
+//		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+//		@RequestParam final LocalDateTime startDateTime,
+//		@RequestParam final LocalDateTime endDateTime
+//	) {
+//		checkDateTime(startDateTime, endDateTime);
+//
+//		final Member member = memberPrincipal.getMember();
+//		final List<AdateDto> adates = adateService.getAdateByStartAndEndTime(member, startDateTime, endDateTime);
+//		final List<AdateViewResponse> responses = adates.stream()
+//														.map(AdateMapper::toAdateViewResponse)
+//														.toList();
+//
+//		return GeneralResponseDto.success("", responses);
+//	}
 
 	private void checkDateTime(final LocalDateTime startDateTime, final LocalDateTime endDateTime) {
 		if (startDateTime.isAfter(endDateTime)) {
@@ -111,31 +112,27 @@ public class AdateControllerImpl implements AdateController {
 		@RequestParam @Min(1) @Max(12) final int month
 	) {
 		final Member member = memberPrincipal.getMember();
-		final List<AdateDto> adates = adateService.getAdatesByMonth(member, year, month);
-		final List<AdateViewResponse> responses = adates.stream()
-														.map(AdateMapper::toAdateViewResponse)
-														.toList();
-
-		return GeneralResponseDto.success("", responses);
+		final AdateInfoResponse response = adateService.getAdatesByMonth(member, year, month);
+		return GeneralResponseDto.success("", response);
 	}
 
-	@Override
-	@GetMapping("/day")
-	public GeneralResponseDto getAdatesBy(
-		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-		@RequestParam final LocalDate firstDay,
-		@RequestParam final LocalDate lastDay
-	) {
-		checkDate(firstDay, lastDay);
-
-		final Member member = memberPrincipal.getMember();
-		final List<AdateDto> adates = adateService.getAdatesByDate(member, firstDay, lastDay);
-		final List<AdateViewResponse> responses = adates.stream()
-														.map(AdateMapper::toAdateViewResponse)
-														.toList();
-
-		return GeneralResponseDto.success("", responses);
-	}
+//	@Override
+//	@GetMapping("/day")
+//	public GeneralResponseDto getAdatesBy(
+//		@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+//		@RequestParam final LocalDate firstDay,
+//		@RequestParam final LocalDate lastDay
+//	) {
+//		checkDate(firstDay, lastDay);
+//
+//		final Member member = memberPrincipal.getMember();
+//		final List<AdateDto> adates = adateService.getAdatesByDate(member, firstDay, lastDay);
+//		final List<AdateViewResponse> responses = adates.stream()
+//														.map(AdateMapper::toAdateViewResponse)
+//														.toList();
+//
+//		return GeneralResponseDto.success("", responses);
+//	}
 
 	private void checkDate(final LocalDate firstDay, final LocalDate lastDay) {
 		if (firstDay.isAfter(lastDay)) {
