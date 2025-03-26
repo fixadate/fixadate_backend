@@ -24,12 +24,13 @@ public class DatesInfoResponse {
         private int weekNum;
         private String date;
         private String day;
-        List<DatesResponse> datesResponseList = new ArrayList<>();
-        private int totalADateAndTodoCnt;
+        List<DatesResponse> myScheduleList = new ArrayList<>();
+        List<DatesResponse> otherScheduleList = new ArrayList<>();
+        private int totalDatesCnt;
         private boolean isToday = false;
 
         public void setTotalCnt(){
-            this.totalADateAndTodoCnt = this.datesResponseList.size();
+            this.totalDatesCnt = this.myScheduleList.size() + this.otherScheduleList.size();
         }
     }
 
