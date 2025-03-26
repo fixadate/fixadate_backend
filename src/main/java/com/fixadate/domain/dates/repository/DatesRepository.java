@@ -1,5 +1,6 @@
 package com.fixadate.domain.dates.repository;
 
+import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.TeamMembers;
@@ -17,4 +18,5 @@ public interface DatesRepository extends JpaRepository<Dates, Long> {
     List<Dates> findAllByTeam_IdAndStatusIs(Long teamId, DataStatus dataStatus);
 
     List<Dates> findByMemberAndStartsWhenBetween(Member member, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime);
+
 }

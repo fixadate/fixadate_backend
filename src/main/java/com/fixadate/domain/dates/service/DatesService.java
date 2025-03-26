@@ -1,21 +1,37 @@
 package com.fixadate.domain.dates.service;
 
+import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
+import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
+
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
+import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
+import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
+import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
+import com.fixadate.domain.dates.entity.DatesMembers;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.mapper.DatesMapper;
+import com.fixadate.domain.dates.repository.DatesMembersRepository;
+import com.fixadate.domain.dates.repository.DatesQueryRepository;
 import com.fixadate.domain.dates.repository.DatesRepository;
 import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
+import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
+import com.fixadate.global.exception.badrequest.InvalidTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -32,6 +48,11 @@ public class DatesService {
     private final TeamMembersRepository teamMembersRepository;
     private final DatesRepository datesRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final DatesQueryRepository datesQueryRepository;
+    private final DatesMembersRepository datesMembersRepository;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public DatesDto createDates(DatesRegisterDto requestDto, Member member) {
         final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
@@ -154,4 +175,88 @@ public class DatesService {
         return null;
     }
 
+    public DatesInfoResponse getDatesByWeek(Member member, int year, int month, int weekNum) {
+        // 주의 첫째 날(일요일) 구하기
+        LocalDate firstDay = LocalDate.of(year, month, 1)
+            .with(WeekFields.ISO.weekOfWeekBasedYear(), weekNum)
+            .with(WeekFields.ISO.dayOfWeek(), 7); // 일요일은 7
+
+        // 주의 마지막 날(토요일) 구하기
+        LocalDate lastDay = firstDay.plusDays(6);
+
+        // LocalDateTime으로 변환
+        LocalDateTime firstDateTime = firstDay.atStartOfDay();
+        LocalDateTime lastDateTime = lastDay.atStartOfDay();
+
+        return getDatesByStartAndEndTime(member, firstDateTime, lastDateTime);
+    }
+
+    public DatesInfoResponse getDatesByMonth(Member member, int year, int month) {
+        final LocalDateTime startTime = getLocalDateTimeFromYearAndMonth(year, month, true);
+        final LocalDateTime endTime = getLocalDateTimeFromYearAndMonth(year, month, false);
+
+        return getDatesByStartAndEndTime(member, startTime, endTime);
+    }
+
+    private void checkStartAndEndTime(final LocalDateTime startTime, final LocalDateTime endTime) {
+        if (startTime.isAfter(endTime)) {
+            throw new InvalidTimeException(INVALID_START_END_TIME);
+        }
+    }
+
+    // 너무 많은 데이터 조회
+    public DatesInfoResponse getDatesByStartAndEndTime(
+        final Member member,
+        final LocalDateTime startDateTime,
+        final LocalDateTime endDateTime
+    ) {
+        checkStartAndEndTime(startDateTime, endDateTime);
+        final List<Dates> datesList = findByDateRange(member, startDateTime, endDateTime);
+        List<DatesResponse> datesInfos = new ArrayList<>();
+        String myMemberId = member.getId();
+
+        // datesMember 세팅
+        for(Dates dates : datesList) {
+            List<DatesMembers> datesMembers = datesMembersRepository.findAllByDatesAndStatusIs(dates, DataStatus.ACTIVE);
+            List<DatesMemberInfo> datesMemberInfos = datesMembers.stream().map(each -> DatesMemberInfo.of(each, myMemberId)).toList();
+            datesInfos.add(DatesResponse.of(dates, datesMemberInfos));
+        }
+
+        DatesInfoResponse dateInfos = new DatesInfoResponse();
+        dateInfos.setDateInfos(startDateTime, endDateTime);
+
+        for(DailyDatesInfo dateInfo : dateInfos.getDateList()) {
+            List<DatesResponse> myScheduleInfosByDate = new ArrayList<>();
+            List<DatesResponse> otherScheduleInfosByDate = new ArrayList<>();
+            for(DatesResponse datesInfo : datesInfos) {
+                if(datesInfo.startDate().equals(dateInfo.getDate()) ||
+                    (LocalDate.parse(dateInfo.getDate(), dateFormatter).atStartOfDay().isAfter(LocalDateTime.parse(datesInfo.startsWhen(), formatter)))
+                        && LocalDateTime.parse(datesInfo.endsWhen(), formatter).isAfter(LocalDate.parse(dateInfo.getDate(), dateFormatter).atStartOfDay())) {
+
+                    if(datesInfo.datesMemberList().stream().anyMatch(DatesMemberInfo::isMe)) {
+                        myScheduleInfosByDate.add(datesInfo);
+                    } else {
+                        otherScheduleInfosByDate.add(datesInfo);
+                    }
+                    myScheduleInfosByDate.add(datesInfo);
+                    otherScheduleInfosByDate.add(datesInfo);
+                }
+            }
+
+            dateInfo.setMyScheduleList(myScheduleInfosByDate);
+            dateInfo.setOtherScheduleList(otherScheduleInfosByDate);
+
+            dateInfo.setTotalCnt();
+        }
+
+        return dateInfos;
+    }
+
+    List<Dates> findByDateRange(
+        final Member member,
+        final LocalDateTime startDateTime,
+        final LocalDateTime endDateTime
+    ){
+        return datesQueryRepository.findByDateRange(member, startDateTime, endDateTime);
+    };
 }

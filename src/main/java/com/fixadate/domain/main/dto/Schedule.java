@@ -1,11 +1,7 @@
 package com.fixadate.domain.main.dto;
 
 import com.fixadate.domain.adate.dto.response.AdateResponse;
-import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
-import com.fixadate.domain.dates.entity.Dates;
-import com.fixadate.domain.main.dto.response.MainInfoResponse.DateInfo;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +42,7 @@ public record Schedule(
 				datesInfo.startDate(),
 				datesInfo.startsWhen(),
 				datesInfo.endsWhen(),
-				datesInfo.teamMemberList(),
+				datesInfo.datesMemberList(),
 				false
 			);
 		}
