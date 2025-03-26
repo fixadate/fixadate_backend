@@ -206,7 +206,7 @@ public class DatesService {
         }
     }
 
-    // todo: 날짜별로 Adate 세팅하도록 변경 필요. 너무 많은 데이터 조회
+    // todo: 날짜별로 Dates 세팅하도록 변경 필요. 너무 많은 데이터 조회
     public DatesInfoResponse getDatesByStartAndEndTime(
         final Member member,
         final LocalDateTime startDateTime,
@@ -228,16 +228,16 @@ public class DatesService {
                     datesInfosByDate.add(datesInfo);
                 }
             }
-            // 이미 진행된 건은 제외
-            if(dateInfo.isToday()){
-                List<DatesResponse> todayAdateInfos = new ArrayList<>(datesInfosByDate);
-                todayAdateInfos.removeIf(datesResponse -> LocalDateTime.parse(datesResponse.endsWhen(), formatter).isBefore(now));
-                dateInfo.setDatesResponseList(todayAdateInfos);
-            }else {
-                dateInfo.setDatesResponseList(datesInfosByDate);
-            }
+//            // 이미 진행된 건은 제외
+//            if(dateInfo.isToday()){
+//                List<DatesResponse> todayAdateInfos = new ArrayList<>(datesInfosByDate);
+//                todayAdateInfos.removeIf(datesResponse -> LocalDateTime.parse(datesResponse.endsWhen(), formatter).isBefore(now));
+//                dateInfo.setDatesResponseList(todayAdateInfos);
+//            }else {
+            dateInfo.setDatesResponseList(datesInfosByDate);
+//            }
 
-            dateInfo.setTotalCnt(); // todo: 오늘 날짜로 이미 지난 일정도 포함해야하는가?
+            dateInfo.setTotalCnt();
         }
 
         return dateInfos;
