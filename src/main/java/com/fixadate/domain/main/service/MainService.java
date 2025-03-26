@@ -56,9 +56,11 @@ public class MainService {
 
 		List<Dates> datesList = datesRepository.findByMemberAndStartsWhenBetween(member, firstDayDateTime, lastDayDateTime);
 		List<DatesResponse> dateInfosList = new ArrayList<>();
+		String myMemberId = member.getId();
+
 		for(Dates dates : datesList){
 			List<DatesMembers> datesMembers = datesMembersRepository.findAllByDatesAndStatusIs(dates, DataStatus.ACTIVE);
-			List<DatesMemberInfo> datesMemberList = datesMembers.stream().map(DatesMemberInfo::of).toList();
+			List<DatesMemberInfo> datesMemberList = datesMembers.stream().map(each -> DatesMemberInfo.of(each, myMemberId)).toList();
 			DatesResponse datesInfo = DatesResponse.of(dates, datesMemberList);
 			dateInfosList.add(datesInfo);
 		}

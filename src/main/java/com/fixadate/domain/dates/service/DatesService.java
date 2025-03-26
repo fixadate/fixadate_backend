@@ -3,11 +3,6 @@ package com.fixadate.domain.dates.service;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 
-import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
-import com.fixadate.domain.adate.dto.response.AdateInfoResponse.DailyAdateInfo;
-import com.fixadate.domain.adate.dto.response.AdateResponse;
-import com.fixadate.domain.adate.entity.Adate;
-import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
@@ -17,15 +12,17 @@ import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
+import com.fixadate.domain.dates.entity.DatesMembers;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.mapper.DatesMapper;
+import com.fixadate.domain.dates.repository.DatesMembersRepository;
 import com.fixadate.domain.dates.repository.DatesQueryRepository;
 import com.fixadate.domain.dates.repository.DatesRepository;
 import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
-import com.fixadate.domain.main.dto.TodoInfo;
+import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
@@ -41,7 +38,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -53,8 +49,10 @@ public class DatesService {
     private final DatesRepository datesRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final DatesQueryRepository datesQueryRepository;
+    private final DatesMembersRepository datesMembersRepository;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public DatesDto createDates(DatesRegisterDto requestDto, Member member) {
         final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
@@ -206,7 +204,7 @@ public class DatesService {
         }
     }
 
-    // todo: 날짜별로 Dates 세팅하도록 변경 필요. 너무 많은 데이터 조회
+    // 너무 많은 데이터 조회
     public DatesInfoResponse getDatesByStartAndEndTime(
         final Member member,
         final LocalDateTime startDateTime,
@@ -214,28 +212,39 @@ public class DatesService {
     ) {
         checkStartAndEndTime(startDateTime, endDateTime);
         final List<Dates> datesList = findByDateRange(member, startDateTime, endDateTime);
-        List<DatesResponse> datesInfos = datesList.stream().map(dates -> DatesResponse.of(dates, new ArrayList<>())).toList();
+        List<DatesResponse> datesInfos = new ArrayList<>();
+        String myMemberId = member.getId();
+
+        // datesMember 세팅
+        for(Dates dates : datesList) {
+            List<DatesMembers> datesMembers = datesMembersRepository.findAllByDatesAndStatusIs(dates, DataStatus.ACTIVE);
+            List<DatesMemberInfo> datesMemberInfos = datesMembers.stream().map(each -> DatesMemberInfo.of(each, myMemberId)).toList();
+            datesInfos.add(DatesResponse.of(dates, datesMemberInfos));
+        }
 
         DatesInfoResponse dateInfos = new DatesInfoResponse();
         dateInfos.setDateInfos(startDateTime, endDateTime);
 
-        LocalDateTime now = LocalDateTime.now();
-
         for(DailyDatesInfo dateInfo : dateInfos.getDateList()) {
-            List<DatesResponse> datesInfosByDate = new ArrayList<>();
+            List<DatesResponse> myScheduleInfosByDate = new ArrayList<>();
+            List<DatesResponse> otherScheduleInfosByDate = new ArrayList<>();
             for(DatesResponse datesInfo : datesInfos) {
-                if(datesInfo.startDate().equals(dateInfo.getDate())) {
-                    datesInfosByDate.add(datesInfo);
+                if(datesInfo.startDate().equals(dateInfo.getDate()) ||
+                    (LocalDate.parse(dateInfo.getDate(), dateFormatter).atStartOfDay().isAfter(LocalDateTime.parse(datesInfo.startsWhen(), formatter)))
+                        && LocalDateTime.parse(datesInfo.endsWhen(), formatter).isAfter(LocalDate.parse(dateInfo.getDate(), dateFormatter).atStartOfDay())) {
+
+                    if(datesInfo.datesMemberList().stream().anyMatch(DatesMemberInfo::isMe)) {
+                        myScheduleInfosByDate.add(datesInfo);
+                    } else {
+                        otherScheduleInfosByDate.add(datesInfo);
+                    }
+                    myScheduleInfosByDate.add(datesInfo);
+                    otherScheduleInfosByDate.add(datesInfo);
                 }
             }
-//            // 이미 진행된 건은 제외
-//            if(dateInfo.isToday()){
-//                List<DatesResponse> todayAdateInfos = new ArrayList<>(datesInfosByDate);
-//                todayAdateInfos.removeIf(datesResponse -> LocalDateTime.parse(datesResponse.endsWhen(), formatter).isBefore(now));
-//                dateInfo.setDatesResponseList(todayAdateInfos);
-//            }else {
-            dateInfo.setDatesResponseList(datesInfosByDate);
-//            }
+
+            dateInfo.setMyScheduleList(myScheduleInfosByDate);
+            dateInfo.setOtherScheduleList(otherScheduleInfosByDate);
 
             dateInfo.setTotalCnt();
         }

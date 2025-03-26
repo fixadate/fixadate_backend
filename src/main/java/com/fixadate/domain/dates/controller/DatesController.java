@@ -87,31 +87,31 @@ public class DatesController {
         return GeneralResponseDto.success("", result);
     }
 
-    @Operation(summary = "Dates 메인 조회(주별)", description = "Dates 메인 조회를 등록합니다.")
-    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "success",
-            content = @Content(schema = @Schema(implementation = Void.class))),
-        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
-            content = @Content(schema = @Schema(implementation = Void.class))),
-    })
-    @GetMapping("/week")
-    public GeneralResponseDto getDatesBy(
-        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-        @RequestParam final int year,
-        @RequestParam @Min(1) @Max(12) final int month,
-        @RequestParam @Min(1) @Max(6) final int weekNum
-    ) {
-        final Member member = memberPrincipal.getMember();
-        final DatesInfoResponse response = datesService.getDatesByWeek(member, year, month, weekNum);
-        return GeneralResponseDto.success("", "");
-    }
+//    @Operation(summary = "Dates 메인 조회(주별)", description = "Dates 메인 조회를 등록합니다.")
+//    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+//    @ApiResponses({
+//        @ApiResponse(responseCode = "200", description = "success",
+//            content = @Content(schema = @Schema(implementation = Void.class))),
+//        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+//            content = @Content(schema = @Schema(implementation = Void.class))),
+//    })
+//    @GetMapping("/week")
+//    public GeneralResponseDto getDatesBy(
+//        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+//        @RequestParam final int year,
+//        @RequestParam @Min(1) @Max(12) final int month,
+//        @RequestParam @Min(1) @Max(6) final int weekNum
+//    ) {
+//        final Member member = memberPrincipal.getMember();
+//        final DatesInfoResponse response = datesService.getDatesByWeek(member, year, month, weekNum);
+//        return GeneralResponseDto.success("", "");
+//    }
 
     @Operation(summary = "Dates 메인 조회(월별)", description = "Dates 메인 조회를 등록합니다.")
     @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "success",
-            content = @Content(schema = @Schema(implementation = Void.class))),
+            content = @Content(schema = @Schema(implementation = DatesInfoResponse.class))),
         @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
             content = @Content(schema = @Schema(implementation = Void.class))),
     })
@@ -123,7 +123,7 @@ public class DatesController {
     ) {
         final Member member = memberPrincipal.getMember();
         final DatesInfoResponse response = datesService.getDatesByMonth(member, year, month);
-        return GeneralResponseDto.success("", "");
+        return GeneralResponseDto.success("", response);
     }
 }
 

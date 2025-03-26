@@ -11,9 +11,10 @@ public record DatesMemberInfo(
 		String name,
 		String nickname,
 		String email,
-		Grades grades
+		Grades grades,
+		boolean isMe
 	){
-		public static DatesMemberInfo of(DatesMembers datesMembers) {
+		public static DatesMemberInfo of(DatesMembers datesMembers, String memberId) {
 			Member member = datesMembers.getMember();
 			return new DatesMemberInfo(
 				datesMembers.getId(),
@@ -21,7 +22,8 @@ public record DatesMemberInfo(
 				member.getName(),
 				member.getNickname(),
 				member.getEmail(),
-				datesMembers.getGrades()
+				datesMembers.getGrades(),
+				datesMembers.getMember().getId().equals(memberId)
 			);
 		}
 }
