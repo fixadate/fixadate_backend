@@ -4,6 +4,8 @@ import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
+import com.fixadate.domain.dates.dto.DatesCoordinationDto;
+import com.fixadate.domain.dates.dto.DatesCoordinationRegisterDto;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
@@ -12,11 +14,13 @@ import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
+import com.fixadate.domain.dates.entity.DatesCoordinations;
 import com.fixadate.domain.dates.entity.DatesMembers;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.mapper.DatesMapper;
+import com.fixadate.domain.dates.repository.DatesCoordinationsRepository;
 import com.fixadate.domain.dates.repository.DatesMembersRepository;
 import com.fixadate.domain.dates.repository.DatesQueryRepository;
 import com.fixadate.domain.dates.repository.DatesRepository;
@@ -24,6 +28,7 @@ import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
@@ -50,9 +55,34 @@ public class DatesService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final DatesQueryRepository datesQueryRepository;
     private final DatesMembersRepository datesMembersRepository;
+    private final DatesCoordinationsRepository datesCoordinationsRepository;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+    public DatesCoordinationDto createDatesCoordination(DatesCoordinationRegisterDto requestDto, Member member) {
+        final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
+            () -> new RuntimeException("")
+        );
+        List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
+
+        validateCreateDatesPossible(member, teamMembers);
+
+        final DatesCoordinations createdDatesCoordinations = DatesMapper.toDatesCoordinationEntity(requestDto, member, foundTeam);
+
+        final DatesCoordinations savedDatesCoordinations = datesCoordinationsRepository.save(createdDatesCoordinations);
+
+        List<Member> memberList = teamMembers.stream().map(TeamMembers::getMember).toList();
+
+        DatesCoordinationDto datesCoordinationDto = DatesMapper.toDatesCoordinationDto(savedDatesCoordinations);
+
+        // 팀 일정 새로고침 필요 알림
+        if(savedDatesCoordinations.getId() != null){
+            applicationEventPublisher.publishEvent(new DatesCoordinationCreateEvent(memberList, datesCoordinationDto));
+        }
+
+        return datesCoordinationDto;
+    }
 
     public DatesDto createDates(DatesRegisterDto requestDto, Member member) {
         final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(

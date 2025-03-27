@@ -1,10 +1,10 @@
 package com.fixadate.domain.dates.controller;
 
 
-import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
 import com.fixadate.domain.dates.dto.*;
-import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
+import com.fixadate.domain.dates.dto.request.DatesCoordinationRegisterRequest;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
+import com.fixadate.domain.dates.dto.response.DatesCoordinationResponse;
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
@@ -44,14 +44,14 @@ public class DatesController {
     }
 
     @PostMapping("/dates")
-    public GeneralResponseDto createDates(@Valid @RequestBody final DatesRegisterRequest request,
+    public GeneralResponseDto createDatesCoordination(@Valid @RequestBody final DatesCoordinationRegisterRequest request,
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal){
 
         final Member member = memberPrincipal.getMember();
-        final DatesRegisterDto datesRegisterDto = DatesMapper.toDatesRegisterDto(request);
-        DatesDto datesDto = datesService.createDates(datesRegisterDto, member);
-        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto, new ArrayList<>());
-        return GeneralResponseDto.success("", datesResponse);
+        final DatesCoordinationRegisterDto datesCoordinationRegisterDto = DatesMapper.toDatesCoordinationRegisterDto(request);
+        DatesCoordinationDto datesCoordinationDto = datesService.createDatesCoordination(datesCoordinationRegisterDto, member);
+        DatesCoordinationResponse datesCoordinationResponse = DatesMapper.toDatesCoordinationResponse(datesCoordinationDto);
+        return GeneralResponseDto.success("", datesCoordinationResponse);
     }
 
     @PatchMapping("/dates/{id}")

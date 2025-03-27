@@ -14,7 +14,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,16 +34,42 @@ public class DatesCoordinations extends BaseEntity {
 	@Column(name = "dates_coordination_id")
 	private Long id;
 
+	@Column(nullable = false)
+	private String title;
+
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_coordination_dates_team_id"))
 	private Teams team;
 
 	@Column(nullable = false)
+	private String ownerId;
+
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private CollectStatus collectStatus;
 
+	@Column(nullable = false)
+	private int minutes;
+
+	@Column(nullable = false)
+	protected LocalDateTime startsWhen;
+
+	@Column(nullable = false)
+	protected LocalDateTime endsWhen;
+
 	public enum CollectStatus {
 		COLLECTING, CONFIRMED
+	}
+
+	@Builder
+	public DatesCoordinations(Teams team, String title, String ownerId, int minutes, LocalDateTime startsWhen, LocalDateTime endsWhen) {
+		this.team = team;
+		this.title = title;
+		this.ownerId = ownerId;
+		this.collectStatus = CollectStatus.COLLECTING;
+		this.minutes = minutes;
+		this.startsWhen = startsWhen;
+		this.endsWhen = endsWhen;
 	}
 }

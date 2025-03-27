@@ -1,17 +1,9 @@
 package com.fixadate.domain.dates.controller;
 
 
-import com.fixadate.domain.dates.dto.DatesDto;
-import com.fixadate.domain.dates.dto.DatesRegisterDto;
-import com.fixadate.domain.dates.dto.DatesUpdateDto;
-import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
-import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
 import com.fixadate.domain.dates.dto.request.TeamCreateRequest;
-import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.dto.response.TeamListPageResponse;
-import com.fixadate.domain.dates.dto.response.TeamListResponse;
 import com.fixadate.domain.dates.entity.Teams;
-import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.TeamService;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.dto.GeneralResponseDto;
@@ -22,11 +14,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
