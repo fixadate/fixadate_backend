@@ -1,10 +1,10 @@
 package com.fixadate.domain.dates.controller;
 
 
-import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
 import com.fixadate.domain.dates.dto.*;
-import com.fixadate.domain.dates.dto.request.DatesRegisterRequest;
+import com.fixadate.domain.dates.dto.request.DatesCoordinationRegisterRequest;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
+import com.fixadate.domain.dates.dto.response.DatesCoordinationResponse;
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +44,31 @@ public class DatesController {
         this.datesService = datesService;
     }
 
+    @Operation(summary = "Dates 생성(=일정취합)", description = "일정취합을 생성합니다.")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "success",
+            content = @Content(schema = @Schema(implementation = DatesCoordinationResponse.class))),
+        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4000", description = "투표 종료일이 현재 시간과 같거나 이전인 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+    })
     @PostMapping("/dates")
-    public GeneralResponseDto createDates(@Valid @RequestBody final DatesRegisterRequest request,
+    public GeneralResponseDto createDatesCoordination(@Valid @RequestBody final DatesCoordinationRegisterRequest request,
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal){
-
         final Member member = memberPrincipal.getMember();
-        final DatesRegisterDto datesRegisterDto = DatesMapper.toDatesRegisterDto(request);
-        DatesDto datesDto = datesService.createDates(datesRegisterDto, member);
-        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto, new ArrayList<>());
-        return GeneralResponseDto.success("", datesResponse);
+        final DatesCoordinationRegisterDto datesCoordinationRegisterDto = DatesMapper.toDatesCoordinationRegisterDto(request);
+
+        // 투표 종료일에 대한 유효성 검사는 필요
+        LocalDateTime now = LocalDateTime.now();
+        if(datesCoordinationRegisterDto.endsWhen().isBefore(now)){
+            return GeneralResponseDto.create("4000", "투표 종료일은 현재 시간 이후여야 합니다.", null);
+        }
+
+        DatesCoordinationDto datesCoordinationDto = datesService.createDatesCoordination(datesCoordinationRegisterDto, member);
+        DatesCoordinationResponse datesCoordinationResponse = DatesMapper.toDatesCoordinationResponse(datesCoordinationDto);
+        return GeneralResponseDto.success("", datesCoordinationResponse);
     }
 
     @PatchMapping("/dates/{id}")

@@ -1,5 +1,8 @@
 package com.fixadate.domain.notification.service;
 
+import com.fixadate.domain.dates.dto.DatesCoordinationDto;
+import com.fixadate.domain.dates.entity.DatesCoordinations;
+import com.fixadate.domain.dates.repository.DatesCoordinationsRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.notification.dto.FirebaseCloudMessageService;
 import com.fixadate.domain.notification.dto.NotificationListResponse;
@@ -9,6 +12,7 @@ import com.fixadate.domain.notification.enumerations.PushNotificationType;
 import com.fixadate.domain.notification.repository.EmitterRepository;
 import com.fixadate.domain.notification.repository.NotificationRepository;
 import com.fixadate.global.exception.ExceptionCode;
+import com.fixadate.global.util.TimeUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -35,6 +39,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
     private final EmitterRepository emitterRepository;
+    private final DatesCoordinationsRepository datesCoordinationsRepository;
     private final static Long SSE_DEFAULT_TIMEOUT = 3600000L; //1시간
     private final String NOTIFICATION_NAME = "alive_notification";
 
@@ -129,5 +134,32 @@ public class NotificationService {
                 throw new RuntimeException(ExceptionCode.NOTIFICATION_CONNECTION_ERROR.getMessage());
             }
         }, () -> log.info("No emitter found"));
+    }
+
+    @Transactional
+    public void sendDatesCoordinationCreateEvent(List<Member> members, DatesCoordinationDto datesCoordinationDto) {
+        for (Member member : members) {
+            Notification notification = Notification.builder()
+                .member(member)
+                .pushKey(member.getPushKey().getPushKey())
+                .title("팀 일정 가능 시간 표기 요청")
+                .content(datesCoordinationDto.title()+"("+ TimeUtil.convertMinutesToTime(datesCoordinationDto.minutes()) + "소요)")
+                .eventType(PushNotificationType.DATES_MARK_REQUEST)
+                .value(String.valueOf(datesCoordinationDto.id()))
+                .image("")
+                .build();
+            notificationRepository.save(notification);
+            Map<String, Object> data = Map.of(
+                "id", notification.getValue()
+            );
+            try {
+                firebaseCloudMessageService.sendMessageToWithData(member.getPushKey().getPushKey(),
+                    notification.getTitle(), notification.getContent(), data);
+            } catch (IOException exception) {
+                throw new RuntimeException("Failed to send notification");
+            }
+        }
+        datesCoordinationsRepository.findById(datesCoordinationDto.id()).ifPresent(
+            DatesCoordinations::completeAlarm);
     }
 }

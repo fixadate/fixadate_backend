@@ -86,4 +86,11 @@ public class TimeUtil {
 			return ChronoUnit.YEARS.between(dateTime, now) + "년 전";
 		}
 	}
+
+	public static String convertMinutesToTime(int minutes){
+		int hours = minutes / 60;
+		int mins = minutes % 60;
+
+		return String.format("%02d:%02d", hours, mins);
+	}
 }

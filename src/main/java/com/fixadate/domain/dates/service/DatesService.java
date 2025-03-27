@@ -1,9 +1,12 @@
 package com.fixadate.domain.dates.service;
 
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
+import com.fixadate.domain.dates.dto.DatesCoordinationDto;
+import com.fixadate.domain.dates.dto.DatesCoordinationRegisterDto;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
@@ -12,11 +15,15 @@ import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
+import com.fixadate.domain.dates.entity.DatesCoordinationMembers;
+import com.fixadate.domain.dates.entity.DatesCoordinations;
 import com.fixadate.domain.dates.entity.DatesMembers;
 import com.fixadate.domain.dates.entity.Grades;
 import com.fixadate.domain.dates.entity.TeamMembers;
 import com.fixadate.domain.dates.entity.Teams;
 import com.fixadate.domain.dates.mapper.DatesMapper;
+import com.fixadate.domain.dates.repository.DatesCoordinationMembersRepository;
+import com.fixadate.domain.dates.repository.DatesCoordinationsRepository;
 import com.fixadate.domain.dates.repository.DatesMembersRepository;
 import com.fixadate.domain.dates.repository.DatesQueryRepository;
 import com.fixadate.domain.dates.repository.DatesRepository;
@@ -24,9 +31,11 @@ import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
+import com.fixadate.global.exception.notfound.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +47,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -50,9 +60,64 @@ public class DatesService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final DatesQueryRepository datesQueryRepository;
     private final DatesMembersRepository datesMembersRepository;
+    private final DatesCoordinationsRepository datesCoordinationsRepository;
+    private final DatesCoordinationMembersRepository datesCoordinationMembersRepository;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+    @Transactional
+    public DatesCoordinationDto createDatesCoordination(DatesCoordinationRegisterDto requestDto, Member member) {
+        checkStartAndEndTime(requestDto.startsWhen(), requestDto.endsWhen());
+        final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
+            () -> new NotFoundException(NOT_FOUND_TEAM_ID)
+        );
+        List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
+        TeamMembers proponent = validateCreateDatesPossible(member, teamMembers);
+
+        final DatesCoordinations createdDatesCoordinations = DatesMapper.toDatesCoordinationEntity(requestDto, member, foundTeam);
+
+        final DatesCoordinations savedDatesCoordinations = datesCoordinationsRepository.save(createdDatesCoordinations);
+
+        // 제안자 먼저 저장
+        DatesCoordinationMembers datesCoordinationProponent = DatesCoordinationMembers
+            .builder()
+            .member(proponent)
+            .datesCoordinations(savedDatesCoordinations)
+            .grades(proponent.getGrades())
+            .build();
+        datesCoordinationMembersRepository.save(datesCoordinationProponent);
+
+        for(String datesMemberId : requestDto.memberIdList()){
+            Optional<TeamMembers> foundMember = teamMembers.stream()
+                .filter(teamMember -> teamMember.getMember().getId().equals(datesMemberId))
+                .findFirst();
+            if(foundMember.isEmpty()){
+                throw new RuntimeException("not team member");
+            }
+
+            DatesCoordinationMembers datesCoordinationMembers = DatesCoordinationMembers
+                .builder()
+                .member(foundMember.get())
+                .datesCoordinations(savedDatesCoordinations)
+                .grades(foundMember.get().getGrades())
+                .build();
+            datesCoordinationMembersRepository.save(datesCoordinationMembers);
+        }
+
+        List<Member> memberList = teamMembers.stream().map(TeamMembers::getMember).toList();
+
+        DatesCoordinationDto datesCoordinationDto = DatesMapper.toDatesCoordinationDto(savedDatesCoordinations);
+
+        // 투표 시작일이 현재 시간 이전인 경우
+        if(savedDatesCoordinations.getStartsWhen().isBefore(LocalDateTime.now())){
+            if(savedDatesCoordinations.getId() != null){
+                applicationEventPublisher.publishEvent(new DatesCoordinationCreateEvent(memberList, datesCoordinationDto));
+            }
+        }
+
+        return datesCoordinationDto;
+    }
 
     public DatesDto createDates(DatesRegisterDto requestDto, Member member) {
         final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
@@ -60,7 +125,7 @@ public class DatesService {
         );
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
 
-        validateCreateDatesPossible(member, teamMembers);
+//        validateCreateDatesPossible(member, teamMembers);
 
         final Dates dates = DatesMapper.toEntity(requestDto, member);
 
@@ -125,18 +190,15 @@ public class DatesService {
         dates.updateEndsWhen(datesUpdateDto.endsWhen());
     }
 
-    private void validateCreateDatesPossible(Member member, List<TeamMembers> teamMembers) {
+    private TeamMembers validateCreateDatesPossible(Member member, List<TeamMembers> teamMembers) {
         Optional<TeamMembers> foundMember = teamMembers.stream()
                 .filter(teamMember -> teamMember.getMember().equals(member))
                 .findFirst();
         if(foundMember.isEmpty()){
             throw new RuntimeException("not team member");
         }
-        Grades memberGrade = foundMember.get().getGrades();
-        boolean isAuthorized = Grades.OWNER.equals(memberGrade) || Grades.MANAGER.equals(memberGrade);
-        if(!isAuthorized){
-            throw new RuntimeException("invalid access");
-        }
+
+        return foundMember.get();
     }
 
     private void validateUpdateDatesPossible(Member member, List<TeamMembers> teamMembers) {
