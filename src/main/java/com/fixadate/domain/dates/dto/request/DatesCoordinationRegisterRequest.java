@@ -15,10 +15,10 @@ public record DatesCoordinationRegisterRequest(
 	@Schema(description = "소요시간", example = "00:30, 01:00")
 	String time,
 	@NotNull(message = "startsWhen cannot be null")
-	@Schema(description = "투표 시작일", example = "yyyyMMddHHmmss")
+	@Schema(description = "투표 시작일", example = "yyyyMMddHHmm")
 	String startsWhen,
 	@NotNull(message = "endsWhen cannot be null")
-	@Schema(description = "투표 종료", example = "yyyyMMddHHmmss")
+	@Schema(description = "투표 종료", example = "yyyyMMddHHmm")
 	String endsWhen,
 	List<String> memberIdList
 ) {

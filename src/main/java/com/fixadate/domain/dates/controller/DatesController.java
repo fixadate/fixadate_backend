@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +47,15 @@ public class DatesController {
     @PostMapping("/dates")
     public GeneralResponseDto createDatesCoordination(@Valid @RequestBody final DatesCoordinationRegisterRequest request,
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal){
-
         final Member member = memberPrincipal.getMember();
         final DatesCoordinationRegisterDto datesCoordinationRegisterDto = DatesMapper.toDatesCoordinationRegisterDto(request);
+
+        // 투표 종료일에 대한 유효성 검사는 필요
+        LocalDateTime now = LocalDateTime.now();
+        if(datesCoordinationRegisterDto.endsWhen().isBefore(now)){
+            return GeneralResponseDto.create("400", "투표 종료일은 현재 시간 이후여야 합니다.", null);
+        }
+
         DatesCoordinationDto datesCoordinationDto = datesService.createDatesCoordination(datesCoordinationRegisterDto, member);
         DatesCoordinationResponse datesCoordinationResponse = DatesMapper.toDatesCoordinationResponse(datesCoordinationDto);
         return GeneralResponseDto.success("", datesCoordinationResponse);

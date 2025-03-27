@@ -32,6 +32,7 @@ import java.util.List;
 public class DatesMapper {
 
 	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	static DateTimeFormatter minuteformatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 	static DateTimeFormatter minutesFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
 	private DatesMapper() {
@@ -130,8 +131,8 @@ public class DatesMapper {
 		return new DatesCoordinationRegisterDto(
 			request.teamId(),
 			request.title(),
-			LocalDateTime.parse(request.startsWhen(), formatter),
-			LocalDateTime.parse(request.endsWhen(), formatter),
+			LocalDateTime.parse(request.startsWhen(), minuteformatter),
+			LocalDateTime.parse(request.endsWhen(), minuteformatter),
 	localTime.getHour() * 60 + localTime.getMinute(),
 			request.memberIdList()
 		);

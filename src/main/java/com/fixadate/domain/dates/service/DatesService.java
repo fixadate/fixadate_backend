@@ -1,6 +1,7 @@
 package com.fixadate.domain.dates.service;
 
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
@@ -32,6 +33,7 @@ import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEven
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
+import com.fixadate.global.exception.notfound.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -61,8 +63,9 @@ public class DatesService {
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public DatesCoordinationDto createDatesCoordination(DatesCoordinationRegisterDto requestDto, Member member) {
+        checkStartAndEndTime(requestDto.startsWhen(), requestDto.endsWhen());
         final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
-            () -> new RuntimeException("")
+            () -> new NotFoundException(NOT_FOUND_TEAM_ID)
         );
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
 
@@ -76,7 +79,6 @@ public class DatesService {
 
         DatesCoordinationDto datesCoordinationDto = DatesMapper.toDatesCoordinationDto(savedDatesCoordinations);
 
-        // 팀 일정 새로고침 필요 알림
         if(savedDatesCoordinations.getId() != null){
             applicationEventPublisher.publishEvent(new DatesCoordinationCreateEvent(memberList, datesCoordinationDto));
         }
