@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,21 +40,29 @@ public class DatesCoordinationMembers extends BaseEntity {
     private DatesCoordinations datesCoordinations;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "team_member_id", foreignKey = @ForeignKey(name = "fk_dates_coordination_members_team_member_id"))
+    private TeamMembers member;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Grades grades;
 
+    protected String startsWhen;    // yyyyMMddHHmm
+    protected String endsWhen;      // yyyyMMddHHmm
+
     @Builder
     private DatesCoordinationMembers(
             final DatesCoordinations datesCoordinations,
-            final Member member,
+            final TeamMembers member,
             final Grades grades
     ) {
         this.datesCoordinations = datesCoordinations;
         this.member = member;
         this.grades = grades;
+    }
+
+    public void choiceDates(String startsWhen, String endsWhen) {
+        this.startsWhen = startsWhen;
+        this.endsWhen = endsWhen;
     }
 }

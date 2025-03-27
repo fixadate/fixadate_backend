@@ -82,7 +82,7 @@ public class DatesService {
         // 제안자 먼저 저장
         DatesCoordinationMembers datesCoordinationProponent = DatesCoordinationMembers
             .builder()
-            .member(member)
+            .member(proponent)
             .datesCoordinations(savedDatesCoordinations)
             .grades(proponent.getGrades())
             .build();
@@ -98,7 +98,7 @@ public class DatesService {
 
             DatesCoordinationMembers datesCoordinationMembers = DatesCoordinationMembers
                 .builder()
-                .member(foundMember.get().getMember())
+                .member(foundMember.get())
                 .datesCoordinations(savedDatesCoordinations)
                 .grades(foundMember.get().getGrades())
                 .build();
