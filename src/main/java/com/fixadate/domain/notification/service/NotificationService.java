@@ -1,6 +1,8 @@
 package com.fixadate.domain.notification.service;
 
 import com.fixadate.domain.dates.dto.DatesCoordinationDto;
+import com.fixadate.domain.dates.entity.DatesCoordinations;
+import com.fixadate.domain.dates.repository.DatesCoordinationsRepository;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.notification.dto.FirebaseCloudMessageService;
 import com.fixadate.domain.notification.dto.NotificationListResponse;
@@ -37,6 +39,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
     private final EmitterRepository emitterRepository;
+    private final DatesCoordinationsRepository datesCoordinationsRepository;
     private final static Long SSE_DEFAULT_TIMEOUT = 3600000L; //1시간
     private final String NOTIFICATION_NAME = "alive_notification";
 
@@ -133,6 +136,7 @@ public class NotificationService {
         }, () -> log.info("No emitter found"));
     }
 
+    @Transactional
     public void sendDatesCoordinationCreateEvent(List<Member> members, DatesCoordinationDto datesCoordinationDto) {
         for (Member member : members) {
             Notification notification = Notification.builder()
@@ -155,5 +159,7 @@ public class NotificationService {
                 throw new RuntimeException("Failed to send notification");
             }
         }
+        datesCoordinationsRepository.findById(datesCoordinationDto.id()).ifPresent(
+            DatesCoordinations::completeAlarm);
     }
 }

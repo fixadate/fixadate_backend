@@ -44,6 +44,16 @@ public class DatesController {
         this.datesService = datesService;
     }
 
+    @Operation(summary = "Dates 생성(=일정취합)", description = "일정취합을 생성합니다.")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "success",
+            content = @Content(schema = @Schema(implementation = DatesCoordinationResponse.class))),
+        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4000", description = "투표 종료일이 현재 시간과 같거나 이전인 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+    })
     @PostMapping("/dates")
     public GeneralResponseDto createDatesCoordination(@Valid @RequestBody final DatesCoordinationRegisterRequest request,
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal){
@@ -53,7 +63,7 @@ public class DatesController {
         // 투표 종료일에 대한 유효성 검사는 필요
         LocalDateTime now = LocalDateTime.now();
         if(datesCoordinationRegisterDto.endsWhen().isBefore(now)){
-            return GeneralResponseDto.create("400", "투표 종료일은 현재 시간 이후여야 합니다.", null);
+            return GeneralResponseDto.create("4000", "투표 종료일은 현재 시간 이후여야 합니다.", null);
         }
 
         DatesCoordinationDto datesCoordinationDto = datesService.createDatesCoordination(datesCoordinationRegisterDto, member);

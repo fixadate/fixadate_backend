@@ -58,6 +58,8 @@ public class DatesCoordinations extends BaseEntity {
 	@Column(nullable = false)
 	protected LocalDateTime endsWhen;
 
+	private boolean alarmSent;
+
 	public enum CollectStatus {
 		COLLECTING, CONFIRMED
 	}
@@ -71,5 +73,14 @@ public class DatesCoordinations extends BaseEntity {
 		this.minutes = minutes;
 		this.startsWhen = startsWhen;
 		this.endsWhen = endsWhen;
+		this.alarmSent = false;
+	}
+
+	public void completeAlarm() {
+		this.alarmSent = true;
+	}
+
+	public void confirm() {
+		this.collectStatus = CollectStatus.CONFIRMED;
 	}
 }
