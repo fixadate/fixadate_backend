@@ -13,6 +13,7 @@ import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
+import com.fixadate.domain.dates.dto.response.DatesMonthlyViewResponse.Day;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesCoordinationMembers;
@@ -36,6 +37,7 @@ import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.fixadate.global.exception.notfound.NotFoundException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -121,7 +123,7 @@ public class DatesService {
 
     public DatesDto createDates(DatesRegisterDto requestDto, Member member) {
         final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
-                () -> new RuntimeException("")
+            () -> new RuntimeException("")
         );
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
 
@@ -158,7 +160,7 @@ public class DatesService {
 
     public boolean deleteDates(Long id, Member member) {
         final Dates dates = datesRepository.findByIdAndStatusIs(id, DataStatus.ACTIVE).orElseThrow(
-                () -> new RuntimeException("")
+            () -> new RuntimeException("")
         );
 
         final Teams foundTeam = dates.getTeam();
@@ -192,8 +194,8 @@ public class DatesService {
 
     private TeamMembers validateCreateDatesPossible(Member member, List<TeamMembers> teamMembers) {
         Optional<TeamMembers> foundMember = teamMembers.stream()
-                .filter(teamMember -> teamMember.getMember().equals(member))
-                .findFirst();
+            .filter(teamMember -> teamMember.getMember().equals(member))
+            .findFirst();
         if(foundMember.isEmpty()){
             throw new RuntimeException("not team member");
         }
@@ -203,8 +205,8 @@ public class DatesService {
 
     private void validateUpdateDatesPossible(Member member, List<TeamMembers> teamMembers) {
         Optional<TeamMembers> foundMember = teamMembers.stream()
-                .filter(teamMember -> teamMember.getMember().equals(member))
-                .findFirst();
+            .filter(teamMember -> teamMember.getMember().equals(member))
+            .findFirst();
         if(foundMember.isEmpty()){
             throw new RuntimeException("not team member");
         }
@@ -217,8 +219,8 @@ public class DatesService {
 
     private void validateDeleteDatesPossible(Member member, List<TeamMembers> teamMembers) {
         Optional<TeamMembers> foundMember = teamMembers.stream()
-                .filter(teamMember -> teamMember.getMember().equals(member))
-                .findFirst();
+            .filter(teamMember -> teamMember.getMember().equals(member))
+            .findFirst();
         if(foundMember.isEmpty()){
             throw new RuntimeException("not team member");
         }
@@ -321,4 +323,11 @@ public class DatesService {
     ){
         return datesQueryRepository.findByDateRange(member, startDateTime, endDateTime);
     };
+
+    public DatesInfoResponse getDatesCollections(Member member, Long id) {
+
+
+
+        return null;
+    }
 }

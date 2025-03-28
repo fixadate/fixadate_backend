@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "DatesController", description = "DatesController 입니다.")
 @RestController
-@RequestMapping("/v1/teams")
+@RequestMapping("/v1/dates")
 public class DatesController {
 
     private final DatesService datesService;
@@ -54,7 +54,7 @@ public class DatesController {
         @ApiResponse(responseCode = "4000", description = "투표 종료일이 현재 시간과 같거나 이전인 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    @PostMapping("/dates")
+    @PostMapping
     public GeneralResponseDto createDatesCoordination(@Valid @RequestBody final DatesCoordinationRegisterRequest request,
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal){
         final Member member = memberPrincipal.getMember();
@@ -71,7 +71,7 @@ public class DatesController {
         return GeneralResponseDto.success("", datesCoordinationResponse);
     }
 
-    @PatchMapping("/dates/{id}")
+    @PatchMapping("/{id}")
     public GeneralResponseDto updateDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id,
@@ -86,7 +86,7 @@ public class DatesController {
         return GeneralResponseDto.success("", datesResponse);
     }
 
-    @DeleteMapping("/dates/{id}")
+    @DeleteMapping("/{id}")
     public GeneralResponseDto deleteDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id){
@@ -95,7 +95,7 @@ public class DatesController {
         return GeneralResponseDto.success("", result);
     }
 
-    @GetMapping("/dates/{id}")
+    @GetMapping("/{id}")
     public GeneralResponseDto getDatesDetail(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id){
@@ -140,6 +140,24 @@ public class DatesController {
     ) {
         final Member member = memberPrincipal.getMember();
         final DatesInfoResponse response = datesService.getDatesByMonth(member, year, month);
+        return GeneralResponseDto.success("", response);
+    }
+
+    @Operation(summary = "일정취합 조회", description = "일정취합 페이지에 필요한 data입니다.")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "success",
+            content = @Content(schema = @Schema(implementation = DatesInfoResponse.class))),
+        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    @GetMapping("/datesCoordination/{id}")
+    public GeneralResponseDto getDatesCollections(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam final Long id
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final DatesInfoResponse response = datesService.getDatesCollections(member, id);
         return GeneralResponseDto.success("", response);
     }
 }

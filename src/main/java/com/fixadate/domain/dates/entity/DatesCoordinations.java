@@ -43,7 +43,7 @@ public class DatesCoordinations extends BaseEntity {
 	private Teams team;
 
 	@Column(nullable = false)
-	private String ownerId;
+	private String proponentId;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -65,10 +65,10 @@ public class DatesCoordinations extends BaseEntity {
 	}
 
 	@Builder
-	public DatesCoordinations(Teams team, String title, String ownerId, int minutes, LocalDateTime startsWhen, LocalDateTime endsWhen) {
+	public DatesCoordinations(Teams team, String title, String proponentId, int minutes, LocalDateTime startsWhen, LocalDateTime endsWhen) {
 		this.team = team;
 		this.title = title;
-		this.ownerId = ownerId;
+		this.proponentId = proponentId;
 		this.collectStatus = CollectStatus.COLLECTING;
 		this.minutes = minutes;
 		this.startsWhen = startsWhen;
