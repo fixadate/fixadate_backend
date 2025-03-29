@@ -11,6 +11,8 @@ import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
+import com.fixadate.domain.common.entity.Calendar;
+import com.fixadate.domain.dates.dto.CalendarDto;
 import com.fixadate.domain.dates.dto.DatesCoordinationDto;
 import com.fixadate.domain.dates.dto.DatesCoordinationRegisterDto;
 import com.fixadate.domain.dates.dto.DatesDto;
@@ -363,8 +365,8 @@ public class DatesService {
 
 
         List<DatesCollectionDateInfo> myDateInfos = new ArrayList<>();
-        List<Adate> myAdates = adateRepository.findOverlappingAdates(datesCoordinations.getStartsWhen(), datesCoordinations.getEndsWhen());
-        List<Dates> myDates = datesQueryRepository.findOverlappingDates(datesCoordinations.getStartsWhen(), datesCoordinations.getEndsWhen());
+        List<Adate> myAdates = adateRepository.findOverlappingAdates(member, datesCoordinations.getStartsWhen(), datesCoordinations.getEndsWhen());
+        List<Dates> myDates = datesQueryRepository.findOverlappingDates(member, datesCoordinations.getStartsWhen(), datesCoordinations.getEndsWhen());
 
         for(Adate adate : myAdates){
             myDateInfos.add(new DatesCollectionDateInfo(adate));
@@ -403,15 +405,19 @@ public class DatesService {
         // 충돌하는 일정이 있는지 확인
         LocalDateTime startsWhen = LocalDateTime.parse(choiceDatesRequest.startsWhen(), formatter);
         LocalDateTime endsWhen = LocalDateTime.parse(choiceDatesRequest.endsWhen(), formatter);
-        List<Adate> myAdates = adateRepository.findOverlappingAdates(startsWhen, endsWhen);
-        List<Dates> myDates = datesQueryRepository.findOverlappingDates(startsWhen, endsWhen);
+        List<Adate> myAdates = adateRepository.findOverlappingAdates(member, startsWhen, endsWhen);
+        List<Dates> myDates = datesQueryRepository.findOverlappingDates(member, startsWhen, endsWhen);
 
         if(myAdates.size() > 0){
-            return GeneralResponseDto.fail(String.valueOf(CONFLICT_DATES_COLLECTION_WITH_ADATE.getCode()), CONFLICT_DATES_COLLECTION_WITH_ADATE.getMessage(), null);
+            Adate firstAdate = myAdates.get(0);
+            CalendarDto calendar = new CalendarDto(firstAdate.getTitle(), firstAdate.getStartsWhen().format(formatter), firstAdate.getEndsWhen().format(formatter), true);
+            return GeneralResponseDto.fail(String.valueOf(CONFLICT_DATES_COLLECTION_WITH_ADATE.getCode()), CONFLICT_DATES_COLLECTION_WITH_ADATE.getMessage(), calendar);
         }
 
         if(myDates.size() > 0){
-            return GeneralResponseDto.fail(String.valueOf(CONFLICT_DATES_COLLECTION_WITH_DATES.getCode()), CONFLICT_DATES_COLLECTION_WITH_DATES.getMessage(), null);
+            Dates firstDates = myDates.get(0);
+            CalendarDto calendar = new CalendarDto(firstDates.getTitle(), firstDates.getStartsWhen().format(formatter), firstDates.getEndsWhen().format(formatter), false);
+            return GeneralResponseDto.fail(String.valueOf(CONFLICT_DATES_COLLECTION_WITH_DATES.getCode()), CONFLICT_DATES_COLLECTION_WITH_DATES.getMessage(), calendar);
         }
 
         // 일정 선택
@@ -419,6 +425,6 @@ public class DatesService {
 
         // todo: 어느정도 기준이 충족되면 일정 조율 알림 발송
 
-        return GeneralResponseDto.success("", null);
+        return GeneralResponseDto.success("", true);
     }
 }

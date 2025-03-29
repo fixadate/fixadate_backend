@@ -51,7 +51,7 @@ public class AdateRepositoryImpl implements AdateRepository {
 	}
 
 	@Override
-	public List<Adate> findOverlappingAdates(LocalDateTime targetStart, LocalDateTime targetEnd) {
-		return adateQueryRepository.findOverlappingAdates(targetStart, targetEnd);
+	public List<Adate> findOverlappingAdates(Member member, LocalDateTime targetStart, LocalDateTime targetEnd) {
+		return adateQueryRepository.findOverlappingAdates(member, targetStart, targetEnd);
 	}
 }

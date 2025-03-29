@@ -1,8 +1,8 @@
 package com.fixadate.domain.dates.repository;
 
 import static com.fixadate.domain.dates.entity.QDates.dates;
+import static com.fixadate.domain.dates.entity.QDatesMembers.datesMembers;
 
-import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.member.entity.Member;
@@ -37,15 +37,18 @@ public class DatesQueryRepository {
 			.fetch();
 	}
 
-	public List<Dates> findOverlappingDates(LocalDateTime targetStart, LocalDateTime targetEnd) {
-		BooleanExpression condition = dates.startsWhen.between(targetStart, targetEnd)
-			.or(dates.endsWhen.between(targetStart, targetEnd))
-			.or(dates.startsWhen.loe(targetStart).and(dates.endsWhen.goe(targetEnd)))
-			.and(dates.status.eq(DataStatus.ACTIVE));
+	public List<Dates> findOverlappingDates(Member member, LocalDateTime targetStart, LocalDateTime targetEnd) {
+		BooleanExpression overlapsCondition =
+			dates.startsWhen.between(targetStart, targetEnd)
+				.or(dates.endsWhen.between(targetStart, targetEnd))
+				.or(dates.startsWhen.loe(targetStart).and(dates.endsWhen.goe(targetEnd)));
 
 		return jpaQueryFactory
 			.selectFrom(dates)
-			.where(condition)
+			.join(datesMembers).on(dates.eq(datesMembers.dates)) // 직접 조인
+			.where(datesMembers.member.eq(member)) // 특정 사용자가 참여한 일정만 필터링
+			.where(overlapsCondition) // 일정이 겹치는 경우 필터링
+			.where(dates.status.eq(DataStatus.ACTIVE)) // 활성화된 일정만 조회
 			.fetch();
 	}
 }
