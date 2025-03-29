@@ -1,7 +1,6 @@
 package com.fixadate.domain.notification.controller;
 
 import com.fixadate.domain.common.dto.SseEventResponse;
-import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.notification.dto.NotificationPageResponse;
 import com.fixadate.domain.notification.service.NotificationService;
 import com.fixadate.global.dto.GeneralResponseDto;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
 @RestController

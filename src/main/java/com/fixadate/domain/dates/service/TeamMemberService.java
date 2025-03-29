@@ -8,7 +8,6 @@ import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,7 +21,7 @@ public class TeamMemberService {
         try {
             Grades grades = Grades.translateStringToGrades(gradeStr);
         } catch (Exception e) {
-            GeneralResponseDto.create(CustomException.TeamMemberRoleError001.getCustomCode(), CustomException.TeamMemberRoleError001.getErrorMsg(), null);
+            GeneralResponseDto.fail(CustomException.TeamMemberRoleError001.getCustomCode(), CustomException.TeamMemberRoleError001.getErrorMsg(), null);
         }
 
         try {
@@ -36,7 +35,7 @@ public class TeamMemberService {
 
             return GeneralResponseDto.create("200", "successfully joined team", teamMembers);
         } catch (Exception e) {
-            return GeneralResponseDto.create(CustomException.TeamMemberInfoError001.getCustomCode(), CustomException.TeamMemberInfoError001.getErrorMsg(), null);
+            return GeneralResponseDto.fail(CustomException.TeamMemberInfoError001.getCustomCode(), CustomException.TeamMemberInfoError001.getErrorMsg(), null);
         }
     }
 }

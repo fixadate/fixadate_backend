@@ -1,5 +1,8 @@
 package com.fixadate.domain.dates.service;
 
+import static com.fixadate.global.exception.ExceptionCode.CONFLICT_DATES_COLLECTION_WITH_ADATE;
+import static com.fixadate.global.exception.ExceptionCode.CONFLICT_DATES_COLLECTION_WITH_DATES;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COLLECTION;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COORDINATION_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
@@ -13,6 +16,7 @@ import com.fixadate.domain.dates.dto.DatesCoordinationRegisterDto;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
+import com.fixadate.domain.dates.dto.request.ChoiceDatesRequest;
 import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse;
 import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse.DatesCollectionDateInfo;
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
@@ -35,11 +39,11 @@ import com.fixadate.domain.dates.repository.DatesRepository;
 import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
-import com.fixadate.domain.main.dto.response.MainInfoResponse.DateInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
+import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.fixadate.global.exception.notfound.NotFoundException;
 import com.fixadate.global.util.TimeUtil;
@@ -49,7 +53,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -385,4 +388,37 @@ public class DatesService {
             .build();
     }
 
+    public GeneralResponseDto choiceDates(Member member, DatesCoordinations datesCoordinations, ChoiceDatesRequest choiceDatesRequest) {
+
+        List<DatesCoordinationMembers> datesCoordinationMembers = datesCoordinationMembersRepository.findAllByDatesCoordinationsAndStatusIs(datesCoordinations, DataStatus.ACTIVE);
+
+        // 참여자인지 확인
+        Optional<DatesCoordinationMembers> foundMember = datesCoordinationMembers.stream()
+            .filter(datesCoordinationMember -> datesCoordinationMember.getMember().getMember().getId().equals(member.getId()))
+            .findFirst();
+        if(foundMember.isEmpty()){
+            return GeneralResponseDto.fail(NOT_FOUND_DATES_COLLECTION);
+        }
+
+        // 충돌하는 일정이 있는지 확인
+        LocalDateTime startsWhen = LocalDateTime.parse(choiceDatesRequest.startsWhen(), formatter);
+        LocalDateTime endsWhen = LocalDateTime.parse(choiceDatesRequest.endsWhen(), formatter);
+        List<Adate> myAdates = adateRepository.findOverlappingAdates(startsWhen, endsWhen);
+        List<Dates> myDates = datesQueryRepository.findOverlappingDates(startsWhen, endsWhen);
+
+        if(myAdates.size() > 0){
+            return GeneralResponseDto.fail(String.valueOf(CONFLICT_DATES_COLLECTION_WITH_ADATE.getCode()), CONFLICT_DATES_COLLECTION_WITH_ADATE.getMessage(), null);
+        }
+
+        if(myDates.size() > 0){
+            return GeneralResponseDto.fail(String.valueOf(CONFLICT_DATES_COLLECTION_WITH_DATES.getCode()), CONFLICT_DATES_COLLECTION_WITH_DATES.getMessage(), null);
+        }
+
+        // 일정 선택
+        foundMember.get().choiceDates(choiceDatesRequest.startsWhen(), choiceDatesRequest.endsWhen());
+
+        // todo: 어느정도 기준이 충족되면 일정 조율 알림 발송
+
+        return GeneralResponseDto.success("", null);
+    }
 }

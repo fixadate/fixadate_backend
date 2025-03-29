@@ -2,6 +2,7 @@ package com.fixadate.domain.dates.controller;
 
 
 import com.fixadate.domain.dates.dto.*;
+import com.fixadate.domain.dates.dto.request.ChoiceDatesRequest;
 import com.fixadate.domain.dates.dto.request.DatesCoordinationRegisterRequest;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
 import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse;
@@ -67,10 +68,10 @@ public class DatesController {
         // 투표 종료일에 대한 유효성 검사는 필요
         LocalDateTime now = LocalDateTime.now();
         if(datesCoordinationRegisterDto.startsWhen().isBefore(now)){
-            return GeneralResponseDto.create("4000", "투표 시작일은 현재 시간 이후여야 합니다.", null);
+            return GeneralResponseDto.fail("4000", "투표 시작일은 현재 시간 이후여야 합니다.", null);
         }
         if(datesCoordinationRegisterDto.endsWhen().isBefore(now)){
-            return GeneralResponseDto.create("4001", "투표 종료일은 현재 시간 이후여야 합니다.", null);
+            return GeneralResponseDto.fail("4001", "투표 종료일은 현재 시간 이후여야 합니다.", null);
         }
 
         DatesCoordinationDto datesCoordinationDto = datesService.createDatesCoordination(datesCoordinationRegisterDto, member);
@@ -168,10 +169,39 @@ public class DatesController {
         final Member member = memberPrincipal.getMember();
         final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
         if(datesCoordinations == null){
-            return GeneralResponseDto.create("4000", "해당 일정취합이 존재하지 않습니다.", null);
+            return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
         }
         final DatesCollectionsResponse response = datesService.getDatesCollections(member, datesCoordinations);
         return GeneralResponseDto.success("", response);
+    }
+
+    @Operation(summary = "일정 선택", description = "원하는 일정을 선택합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "success",
+            content = @Content(schema = @Schema(implementation = DatesCollectionsResponse.class))),
+        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4000", description = "해당 일정취합이 존재하지 않는 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4007", description = "해당 일정취합 대상자가 아닌 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4011", description = "해당 일정에 adate 일정이 존재하는 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4012", description = "해당 일정에 dates 일정이 존재하는 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    @PostMapping("/datesCoordination/{id}")
+    public GeneralResponseDto choiceDates(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam final Long id,
+        @RequestParam final ChoiceDatesRequest choiceDatesRequest
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
+        if(datesCoordinations == null){
+            return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
+        }
+        return datesService.choiceDates(member, datesCoordinations, choiceDatesRequest);
     }
 }
 
