@@ -142,7 +142,7 @@ public class DatesMapper {
 		Teams team) {
 		return DatesCoordinations.builder()
 			.title(datesCoordinationRegisterDto.title())
-			.ownerId(member.getId())
+			.proponentId(member.getId())
 			.team(team)
 			.startsWhen(datesCoordinationRegisterDto.startsWhen())
 			.endsWhen(datesCoordinationRegisterDto.endsWhen())

@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.repository;
 
+import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.member.entity.Member;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,5 +12,5 @@ import com.fixadate.domain.adate.entity.Adate;
 @Repository
 public interface AdateJpaRepository extends JpaRepository<Adate, Long> {
 
-    List<Adate> findByMemberAndStartsWhenBetween(Member member, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime);
+    List<Adate> findByMemberAndStartsWhenBetweenAndStatusIs(Member member, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime, DataStatus status);
 }

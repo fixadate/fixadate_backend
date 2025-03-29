@@ -18,5 +18,4 @@ public interface DatesRepository extends JpaRepository<Dates, Long> {
     List<Dates> findAllByTeam_IdAndStatusIs(Long teamId, DataStatus dataStatus);
 
     List<Dates> findByMemberAndStartsWhenBetween(Member member, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime);
-
 }
