@@ -3,6 +3,7 @@ package com.fixadate.domain.adate.repository;
 import static com.fixadate.domain.adate.entity.QAdate.adate;
 
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,18 @@ public class AdateQueryRepository {
 			)
 			.leftJoin(adate.tag).fetchJoin()
 			.orderBy(adate.startsWhen.asc())
+			.fetch();
+	}
+
+	public List<Adate> findOverlappingAdates(LocalDateTime targetStart, LocalDateTime targetEnd) {
+		BooleanExpression condition = adate.startsWhen.between(targetStart, targetEnd)
+			.or(adate.endsWhen.between(targetStart, targetEnd))
+			.or(adate.startsWhen.loe(targetStart).and(adate.endsWhen.goe(targetEnd)))
+			.and(adate.status.eq(DataStatus.ACTIVE));
+
+		return jpaQueryFactory
+			.selectFrom(adate)
+			.where(condition)
 			.fetch();
 	}
 }

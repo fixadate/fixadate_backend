@@ -1,5 +1,6 @@
 package com.fixadate.domain.adate.repository;
 
+import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,11 @@ public class AdateRepositoryImpl implements AdateRepository {
 	@Override
 	public List<Adate> findByMemberAndBetweenDates(Member member, LocalDateTime firstDayDateTime,
 		LocalDateTime lastDayDateTime) {
-		return adateJpaRepository.findByMemberAndStartsWhenBetween(member, firstDayDateTime, lastDayDateTime);
+		return adateJpaRepository.findByMemberAndStartsWhenBetweenAndStatusIs(member, firstDayDateTime, lastDayDateTime, DataStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Adate> findOverlappingAdates(LocalDateTime targetStart, LocalDateTime targetEnd) {
+		return adateQueryRepository.findOverlappingAdates(targetStart, targetEnd);
 	}
 }

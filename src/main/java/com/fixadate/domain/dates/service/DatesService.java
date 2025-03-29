@@ -1,15 +1,20 @@
 package com.fixadate.domain.dates.service;
 
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COORDINATION_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 
+import com.fixadate.domain.adate.entity.Adate;
+import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
 import com.fixadate.domain.dates.dto.DatesCoordinationDto;
 import com.fixadate.domain.dates.dto.DatesCoordinationRegisterDto;
 import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
+import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse;
+import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse.DatesCollectionDateInfo;
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
@@ -30,17 +35,21 @@ import com.fixadate.domain.dates.repository.DatesRepository;
 import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
+import com.fixadate.domain.main.dto.response.MainInfoResponse.DateInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
 import com.fixadate.global.exception.notfound.NotFoundException;
+import com.fixadate.global.util.TimeUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -62,6 +71,7 @@ public class DatesService {
     private final DatesMembersRepository datesMembersRepository;
     private final DatesCoordinationsRepository datesCoordinationsRepository;
     private final DatesCoordinationMembersRepository datesCoordinationMembersRepository;
+    private final AdateRepository adateRepository;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -109,11 +119,8 @@ public class DatesService {
 
         DatesCoordinationDto datesCoordinationDto = DatesMapper.toDatesCoordinationDto(savedDatesCoordinations);
 
-        // 투표 시작일이 현재 시간 이전인 경우
-        if(savedDatesCoordinations.getStartsWhen().isBefore(LocalDateTime.now())){
-            if(savedDatesCoordinations.getId() != null){
-                applicationEventPublisher.publishEvent(new DatesCoordinationCreateEvent(memberList, datesCoordinationDto));
-            }
+        if(savedDatesCoordinations.getId() != null){
+            applicationEventPublisher.publishEvent(new DatesCoordinationCreateEvent(memberList, datesCoordinationDto));
         }
 
         return datesCoordinationDto;
@@ -121,7 +128,7 @@ public class DatesService {
 
     public DatesDto createDates(DatesRegisterDto requestDto, Member member) {
         final Teams foundTeam = teamRepository.findById(requestDto.teamId()).orElseThrow(
-                () -> new RuntimeException("")
+            () -> new RuntimeException("")
         );
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
 
@@ -158,7 +165,7 @@ public class DatesService {
 
     public boolean deleteDates(Long id, Member member) {
         final Dates dates = datesRepository.findByIdAndStatusIs(id, DataStatus.ACTIVE).orElseThrow(
-                () -> new RuntimeException("")
+            () -> new RuntimeException("")
         );
 
         final Teams foundTeam = dates.getTeam();
@@ -192,8 +199,8 @@ public class DatesService {
 
     private TeamMembers validateCreateDatesPossible(Member member, List<TeamMembers> teamMembers) {
         Optional<TeamMembers> foundMember = teamMembers.stream()
-                .filter(teamMember -> teamMember.getMember().equals(member))
-                .findFirst();
+            .filter(teamMember -> teamMember.getMember().equals(member))
+            .findFirst();
         if(foundMember.isEmpty()){
             throw new RuntimeException("not team member");
         }
@@ -203,8 +210,8 @@ public class DatesService {
 
     private void validateUpdateDatesPossible(Member member, List<TeamMembers> teamMembers) {
         Optional<TeamMembers> foundMember = teamMembers.stream()
-                .filter(teamMember -> teamMember.getMember().equals(member))
-                .findFirst();
+            .filter(teamMember -> teamMember.getMember().equals(member))
+            .findFirst();
         if(foundMember.isEmpty()){
             throw new RuntimeException("not team member");
         }
@@ -217,8 +224,8 @@ public class DatesService {
 
     private void validateDeleteDatesPossible(Member member, List<TeamMembers> teamMembers) {
         Optional<TeamMembers> foundMember = teamMembers.stream()
-                .filter(teamMember -> teamMember.getMember().equals(member))
-                .findFirst();
+            .filter(teamMember -> teamMember.getMember().equals(member))
+            .findFirst();
         if(foundMember.isEmpty()){
             throw new RuntimeException("not team member");
         }
@@ -321,4 +328,61 @@ public class DatesService {
     ){
         return datesQueryRepository.findByDateRange(member, startDateTime, endDateTime);
     };
+
+    public DatesCoordinations getDatesCoordination(Member member, Long id) {
+        DatesCoordinations datesCoordinations = datesCoordinationsRepository.findById(id).orElseThrow(
+            () -> new NotFoundException(NOT_FOUND_DATES_COORDINATION_ID)
+        );
+
+        if(DataStatus.DELETED.equals(datesCoordinations.getStatus())){
+            return null;
+        }
+
+        return datesCoordinations;
+    }
+
+    public DatesCollectionsResponse getDatesCollections(Member member, DatesCoordinations datesCoordinations) {
+        List<DatesCoordinationMembers> datesCoordinationMembers = datesCoordinationMembersRepository.findAllByDatesCoordinationsAndStatusIs(datesCoordinations, DataStatus.ACTIVE);
+
+        // 참여자인지 확인
+        Optional<DatesCoordinationMembers> foundMember = datesCoordinationMembers.stream()
+            .filter(datesCoordinationMember -> datesCoordinationMember.getMember().getMember().getId().equals(member.getId()))
+            .findFirst();
+        if(foundMember.isEmpty()){
+            throw new RuntimeException("not dates collection member");
+        }
+
+        List<DatesCollectionDateInfo> dateInfos = datesCoordinationMembers.stream()
+            .map(datesCoordinationMember -> {
+                return new DatesCollectionDateInfo(datesCoordinationMember, member.getId().equals(datesCoordinationMember.getMember().getMember().getId()));
+            })
+            .collect(Collectors.toList());
+
+
+        List<DatesCollectionDateInfo> myDateInfos = new ArrayList<>();
+        List<Adate> myAdates = adateRepository.findOverlappingAdates(datesCoordinations.getStartsWhen(), datesCoordinations.getEndsWhen());
+        List<Dates> myDates = datesQueryRepository.findOverlappingDates(datesCoordinations.getStartsWhen(), datesCoordinations.getEndsWhen());
+
+        for(Adate adate : myAdates){
+            myDateInfos.add(new DatesCollectionDateInfo(adate));
+        }
+
+        for(Dates date : myDates){
+            myDateInfos.add(new DatesCollectionDateInfo(date));
+        }
+
+        int totalMemberCnt = datesCoordinationMembersRepository.countAllByDatesCoordinationsAndStatusIs(datesCoordinations, DataStatus.ACTIVE);
+
+        return DatesCollectionsResponse.builder()
+            .datesCoordinationId(datesCoordinations.getId())
+            .title(datesCoordinations.getTitle())
+            .time(TimeUtil.convertMinutesToTime(datesCoordinations.getMinutes()))
+            .totalMemberCnt(totalMemberCnt)
+            .startsWhen(datesCoordinations.getStartsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")))
+            .endWhen(datesCoordinations.getEndsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")))
+            .collectionChoiceInfos(dateInfos)
+            .myDateInfos(myDateInfos)
+            .build();
+    }
+
 }
