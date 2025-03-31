@@ -1,6 +1,7 @@
 package com.fixadate.global.dto;
 
 
+import com.fixadate.global.exception.ExceptionCode;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,24 @@ public record GeneralResponseDto(
     Object data
 ) {
     public static GeneralResponseDto create(String rspCd, String rspMsg, @Nullable Object data) {
+        return new GeneralResponseDto(
+            rspCd,
+            rspMsg,
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+            data
+        );
+    }
+
+    public static GeneralResponseDto fail(ExceptionCode exceptionCode) {
+        return new GeneralResponseDto(
+            String.valueOf(exceptionCode.getCode()),
+            exceptionCode.getMessage(),
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+            null
+        );
+    }
+
+    public static GeneralResponseDto fail(String rspCd, String rspMsg, @Nullable Object data) {
         return new GeneralResponseDto(
                 rspCd,
                 rspMsg,

@@ -65,4 +65,8 @@ public class DatesCoordinationMembers extends BaseEntity {
         this.startsWhen = startsWhen;
         this.endsWhen = endsWhen;
     }
+
+    public boolean isChosen(){
+        return startsWhen != null && endsWhen != null;
+    }
 }

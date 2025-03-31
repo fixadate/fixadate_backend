@@ -61,7 +61,7 @@ public class DatesCoordinations extends BaseEntity {
 	private boolean alarmSent;
 
 	public enum CollectStatus {
-		COLLECTING, CONFIRMED
+		COLLECTING, CHOOSING, CONFIRMED
 	}
 
 	@Builder
@@ -78,6 +78,10 @@ public class DatesCoordinations extends BaseEntity {
 
 	public void completeAlarm() {
 		this.alarmSent = true;
+	}
+
+	public void choose() {
+		this.collectStatus = CollectStatus.CHOOSING;
 	}
 
 	public void confirm() {

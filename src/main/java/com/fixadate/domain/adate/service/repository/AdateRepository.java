@@ -23,5 +23,5 @@ public interface AdateRepository {
 
     List<Adate> findByMemberAndBetweenDates(Member member, LocalDateTime firstDayDateTime, LocalDateTime lastDayDateTime);
 
-	List<Adate> findOverlappingAdates(LocalDateTime targetStart, LocalDateTime targetEnd);
+	List<Adate> findOverlappingAdates(Member member, LocalDateTime targetStart, LocalDateTime targetEnd);
 }

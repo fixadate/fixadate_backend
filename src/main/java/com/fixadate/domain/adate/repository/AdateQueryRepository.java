@@ -50,10 +50,14 @@ public class AdateQueryRepository {
 			.fetch();
 	}
 
-	public List<Adate> findOverlappingAdates(LocalDateTime targetStart, LocalDateTime targetEnd) {
-		BooleanExpression condition = adate.startsWhen.between(targetStart, targetEnd)
-			.or(adate.endsWhen.between(targetStart, targetEnd))
-			.or(adate.startsWhen.loe(targetStart).and(adate.endsWhen.goe(targetEnd)))
+	public List<Adate> findOverlappingAdates(Member member, LocalDateTime targetStart, LocalDateTime targetEnd) {
+		BooleanExpression overlapsCondition =
+			adate.startsWhen.between(targetStart, targetEnd)
+				.or(adate.endsWhen.between(targetStart, targetEnd))
+				.or(adate.startsWhen.loe(targetStart).and(adate.endsWhen.goe(targetEnd)));
+
+		BooleanExpression condition = adate.member.eq(member)
+			.and(overlapsCondition)
 			.and(adate.status.eq(DataStatus.ACTIVE));
 
 		return jpaQueryFactory
