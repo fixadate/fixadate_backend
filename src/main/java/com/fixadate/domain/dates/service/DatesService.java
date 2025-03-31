@@ -5,6 +5,7 @@ import static com.fixadate.global.exception.ExceptionCode.CONFLICT_DATES_COLLECT
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COLLECTION;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COORDINATION_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 
@@ -42,6 +43,8 @@ import com.fixadate.domain.dates.repository.TeamMembersRepository;
 import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
+import com.fixadate.domain.member.service.repository.MemberRepository;
+import com.fixadate.domain.notification.event.object.DatesCoordinationChoiceEvent;
 import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
@@ -77,6 +80,7 @@ public class DatesService {
     private final DatesCoordinationsRepository datesCoordinationsRepository;
     private final DatesCoordinationMembersRepository datesCoordinationMembersRepository;
     private final AdateRepository adateRepository;
+    private final MemberRepository memberRepository;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -93,15 +97,6 @@ public class DatesService {
         final DatesCoordinations createdDatesCoordinations = DatesMapper.toDatesCoordinationEntity(requestDto, member, foundTeam);
 
         final DatesCoordinations savedDatesCoordinations = datesCoordinationsRepository.save(createdDatesCoordinations);
-
-        // 제안자 먼저 저장
-        DatesCoordinationMembers datesCoordinationProponent = DatesCoordinationMembers
-            .builder()
-            .member(proponent)
-            .datesCoordinations(savedDatesCoordinations)
-            .grades(proponent.getGrades())
-            .build();
-        datesCoordinationMembersRepository.save(datesCoordinationProponent);
 
         for(String datesMemberId : requestDto.memberIdList()){
             Optional<TeamMembers> foundMember = teamMembers.stream()
@@ -424,7 +419,16 @@ public class DatesService {
         foundMember.get().choiceDates(choiceDatesRequest.startsWhen(), choiceDatesRequest.endsWhen());
 
         // todo: 어느정도 기준이 충족되면 일정 조율 알림 발송
+        List<DatesCoordinationMembers> updatedDatesCoordinationMembers = datesCoordinationMembersRepository.findAllByDatesCoordinationsAndStatusIs(datesCoordinations, DataStatus.ACTIVE);
 
+        if(updatedDatesCoordinationMembers.stream().allMatch(DatesCoordinationMembers::isChosen)){
+            Member proponent = memberRepository.findMemberById(datesCoordinations.getProponentId()).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_MEMBER_ID)
+            );
+            datesCoordinations.choose();
+            // 일정 조율 알림 발송
+            applicationEventPublisher.publishEvent(new DatesCoordinationChoiceEvent(proponent, DatesMapper.toDatesCoordinationDto(datesCoordinations)));
+        }
         return GeneralResponseDto.success("", true);
     }
 }

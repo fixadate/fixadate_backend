@@ -162,4 +162,27 @@ public class NotificationService {
         datesCoordinationsRepository.findById(datesCoordinationDto.id()).ifPresent(
             DatesCoordinations::completeAlarm);
     }
+
+    @Transactional
+    public void sendDatesCoordinationChoiceEvent(Member proponent, DatesCoordinationDto datesCoordinationDto) {
+        Notification notification = Notification.builder()
+            .member(proponent)
+            .pushKey(proponent.getPushKey().getPushKey())
+            .title("팀 일정 결정 알람")
+            .content("모든 인원이 일정을 선택했습니다.")
+            .eventType(PushNotificationType.DATES_CHOICE)
+            .value(String.valueOf(datesCoordinationDto.id()))
+            .image("")
+            .build();
+        notificationRepository.save(notification);
+        Map<String, Object> data = Map.of(
+            "id", notification.getValue()
+        );
+        try {
+            firebaseCloudMessageService.sendMessageToWithData(proponent.getPushKey().getPushKey(),
+                notification.getTitle(), notification.getContent(), data);
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to send notification");
+        }
+    }
 }

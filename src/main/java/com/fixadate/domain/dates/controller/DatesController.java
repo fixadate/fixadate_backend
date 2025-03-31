@@ -183,6 +183,8 @@ public class DatesController {
             content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4000", description = "해당 일정취합이 존재하지 않는 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4001", description = "제안자가 존재하지않는 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4007", description = "해당 일정취합 대상자가 아닌 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4011", description = "해당 일정에 adate 일정이 존재하는 경우",
