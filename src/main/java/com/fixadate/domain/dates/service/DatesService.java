@@ -20,12 +20,9 @@ import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.ChoiceDatesRequest;
-import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse;
+import com.fixadate.domain.dates.dto.response.*;
 import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse.DatesCollectionDateInfo;
-import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
-import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
-import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesCoordinationMembers;
 import com.fixadate.domain.dates.entity.DatesCoordinations;
@@ -430,5 +427,17 @@ public class DatesService {
             applicationEventPublisher.publishEvent(new DatesCoordinationChoiceEvent(proponent, DatesMapper.toDatesCoordinationDto(datesCoordinations)));
         }
         return GeneralResponseDto.success("", true);
+    }
+
+    public List<TeamListResponse.TeamMemberList> getInvitableMemberByTeam(Member member, Long teamId) {
+        final Teams foundTeam = teamRepository.findById(teamId).orElseThrow(
+            () -> new NotFoundException(NOT_FOUND_TEAM_ID)
+        );
+        List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
+
+        return teamMembers.stream()
+            .filter(teamMember -> !teamMember.getMember().getId().equals(member.getId()))
+            .map(TeamListResponse.TeamMemberList::of)
+            .collect(Collectors.toList());
     }
 }
