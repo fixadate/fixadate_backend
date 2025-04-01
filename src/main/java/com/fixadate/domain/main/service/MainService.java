@@ -11,8 +11,6 @@ import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesMembers;
 import com.fixadate.domain.dates.repository.DatesMembersRepository;
 import com.fixadate.domain.dates.repository.DatesRepository;
-import com.fixadate.domain.main.dto.AdateInfo;
-import com.fixadate.domain.main.dto.DatesInfo;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.main.dto.Schedule;
 import com.fixadate.domain.main.dto.TodoInfo;
@@ -54,14 +52,14 @@ public class MainService {
 		List<ToDo> todoList = toDoRepository.findByMemberAndBetweenDates(member, firstDayDateTime.toLocalDate(), lastDayDateTime.toLocalDate());
 		List<TodoInfo> todoInfos = todoList.stream().map(TodoInfo::of).toList();
 
-		List<Dates> datesList = datesRepository.findByMemberAndStartsWhenBetween(member, firstDayDateTime, lastDayDateTime);
+		List<Dates> datesList = datesRepository.findByProponentAndStartsWhenBetween(member, firstDayDateTime, lastDayDateTime);
 		List<DatesResponse> dateInfosList = new ArrayList<>();
 		String myMemberId = member.getId();
 
 		for(Dates dates : datesList){
 			List<DatesMembers> datesMembers = datesMembersRepository.findAllByDatesAndStatusIs(dates, DataStatus.ACTIVE);
 			List<DatesMemberInfo> datesMemberList = datesMembers.stream().map(each -> DatesMemberInfo.of(each, myMemberId)).toList();
-			DatesResponse datesInfo = DatesResponse.of(dates, datesMemberList);
+			DatesResponse datesInfo = DatesResponse.of(member, dates, datesMemberList);
 			dateInfosList.add(datesInfo);
 		}
 

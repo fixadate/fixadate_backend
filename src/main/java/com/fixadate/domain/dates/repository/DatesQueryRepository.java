@@ -27,7 +27,7 @@ public class DatesQueryRepository {
 		return jpaQueryFactory
 			.selectFrom(dates)
 			.where(
-				dates.member.eq(member)
+				dates.proponent.eq(member)
 							.and(dates.startsWhen.loe(endDateTime))
 							.and(dates.endsWhen.goe(startDateTime))
 							.and(dates.status.eq(DataStatus.ACTIVE))

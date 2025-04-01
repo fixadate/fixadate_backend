@@ -11,7 +11,6 @@ import com.fixadate.domain.dates.dto.DatesRegisterDto;
 import com.fixadate.domain.dates.dto.TeamInfo;
 import com.fixadate.domain.dates.dto.request.DatesCoordinationRegisterRequest;
 import com.fixadate.domain.dates.dto.response.DatesCoordinationResponse;
-import com.fixadate.domain.dates.dto.response.DatesMonthlyViewResponse.Team;
 import com.fixadate.domain.dates.dto.response.DatesResponse;
 import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
@@ -64,7 +63,7 @@ public class DatesMapper {
 					.notes(datesRegisterDto.notes())
 					.startsWhen(datesRegisterDto.startsWhen())
 					.endsWhen(datesRegisterDto.endsWhen())
-					.member(member)
+					.proponent(member)
 					.calendarId(RandomValueUtil.createRandomString(10))
 					.build();
 	}
@@ -89,13 +88,14 @@ public class DatesMapper {
 					.notes(event.getDescription())
 					.startsWhen(checkEventDateTimeIsNull(event.getStart()))
 					.endsWhen(checkEventDateTimeIsNull(event.getEnd()))
-					.member(member)
+					.proponent(member)
 					.calendarId(RandomValueUtil.createRandomString(10))
 					.build();
 	}
 
 	public static DatesDto toDatesDto(final Dates dates) {
 		return new DatesDto(
+			dates.getProponent().getId(),
 			dates.getCalendarId(),
 			dates.getTitle(),
 			dates.getNotes(),
@@ -104,8 +104,9 @@ public class DatesMapper {
 		);
 	}
 
-	public static DatesResponse toDatesResponse(final DatesDto datesDto, List<DatesMemberInfo> datesMemberList) {
+	public static DatesResponse toDatesResponse(Member member, final DatesDto datesDto, List<DatesMemberInfo> datesMemberList) {
 		return new DatesResponse(
+			datesDto.proponentId().equals(member.getId()),
 			datesDto.title(),
 			datesDto.notes(),
 			datesDto.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMdd")),

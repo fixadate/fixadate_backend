@@ -1,5 +1,9 @@
 package com.fixadate.domain.main.dto.request;
 
-public record StoryBoardUpdate(String storyBoard) {
+import org.hibernate.validator.constraints.Length;
+
+public record StoryBoardUpdate(
+    @Length(min = 0, max = 30)
+    String storyBoard) {
 
 }

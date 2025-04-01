@@ -5,14 +5,12 @@ import com.fixadate.domain.dates.dto.*;
 import com.fixadate.domain.dates.dto.request.ChoiceDatesRequest;
 import com.fixadate.domain.dates.dto.request.DatesCoordinationRegisterRequest;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
-import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse;
-import com.fixadate.domain.dates.dto.response.DatesCoordinationResponse;
-import com.fixadate.domain.dates.dto.response.DatesDetailResponse;
-import com.fixadate.domain.dates.dto.response.DatesInfoResponse;
-import com.fixadate.domain.dates.dto.response.DatesResponse;
+import com.fixadate.domain.dates.dto.response.*;
+import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesCoordinations;
 import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.DatesService;
+import com.fixadate.domain.invitation.dto.response.InvitableMemberListResponse;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.dto.GeneralResponseDto;
@@ -20,6 +18,7 @@ import com.fixadate.global.jwt.MemberPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,6 +44,24 @@ public class DatesController {
     @Autowired
     public DatesController(DatesService datesService) {
         this.datesService = datesService;
+    }
+
+    @Operation(summary = "팀별 참여가능한 사람 조회", description = "Dates 생성시, 참여가능한 사람 조회")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "success",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TeamListResponse.TeamMemberList.class)))),
+            @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    @GetMapping("/team/{teamId}")
+    public GeneralResponseDto getInvitableMemberByTeam(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @PathVariable Long teamId
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final List<TeamListResponse.TeamMemberList> response = datesService.getInvitableMemberByTeam(member, teamId);
+        return GeneralResponseDto.success("", response);
     }
 
     @Operation(summary = "Dates 생성(=일정취합)", description = "일정취합을 생성합니다.")
@@ -89,7 +106,7 @@ public class DatesController {
         final DatesUpdateDto datesUpdateDto = DatesMapper.toDatesUpdateDto(request);
         DatesDto datesDto = datesService.updateDates(datesUpdateDto, id, member);
         List<DatesMemberInfo> datesMemberList = new ArrayList<>();
-        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto, datesMemberList);
+        DatesResponse datesResponse = DatesMapper.toDatesResponse(member, datesDto, datesMemberList);
 
         return GeneralResponseDto.success("", datesResponse);
     }
@@ -103,12 +120,25 @@ public class DatesController {
         return GeneralResponseDto.success("", result);
     }
 
+    @Operation(summary = "Dates 상세 조회", description = "알람 클릭 시, 해당 일정 상세 조회")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "success",
+            content = @Content(schema = @Schema(implementation = DatesCoordinationResponse.class))),
+        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4004", description = "해당 일정이 존재하지않는 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4008", description = "일정 참여자가 아닌 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+    })
     @GetMapping("/{id}")
     public GeneralResponseDto getDatesDetail(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id){
         final Member member = memberPrincipal.getMember();
-        DatesDetailResponse result = datesService.getDatesDetail(id, member);
+        final Dates dates = datesService.getDates(id);
+        DatesDetailResponse result = datesService.getDatesDetail(dates, member);
         return GeneralResponseDto.success("", result);
     }
 
@@ -183,7 +213,7 @@ public class DatesController {
             content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4000", description = "해당 일정취합이 존재하지 않는 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
-        @ApiResponse(responseCode = "4001", description = "제안자가 존재하지않는 경우",
+        @ApiResponse(responseCode = "4001", description = "제안자가 존재하지않는 경새",
             content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4007", description = "해당 일정취합 대상자가 아닌 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
@@ -205,5 +235,7 @@ public class DatesController {
         }
         return datesService.choiceDates(member, datesCoordinations, choiceDatesRequest);
     }
+
+    // todo: 일정 결정
 }
 
