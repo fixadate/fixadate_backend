@@ -16,6 +16,7 @@ import com.fixadate.global.util.TimeUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,7 +77,7 @@ public class NotificationService {
         return foundNotification;
     }
 
-    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    @Scheduled(fixedDelay = 300000) // 5분마다 실행
     public void resendUnconfirmedNotifications() throws IOException {
         List<PushNotificationType> eventTypes = Arrays.asList(
             PushNotificationType.DATES_MARK_REQUEST,
@@ -90,12 +91,12 @@ public class NotificationService {
             String title = notification.getTitle();
             String content = notification.getContent();
 
-            Map<String, Object> data = Map.of(
-                "eventType", notification.getEventType().name(),
-                "valueObject", notification.createValueObj(),
-                "image", notification.getImage()
-            );
+            Map<String, Object> data = new HashMap<>();
+            data.put("eventType", notification.getEventType().name());
+            data.put("valueObject", notification.createValueObj());
+            data.put("image", notification.getImage());
             firebaseCloudMessageService.sendMessageToWithData(targetToken, title, content, data);
+            notification.reSend();
         }
     }
 
@@ -149,9 +150,9 @@ public class NotificationService {
                 .image("")
                 .build();
             notificationRepository.save(notification);
-            Map<String, Object> data = Map.of(
-                "id", notification.getValue()
-            );
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", notification.getValue());
+
             try {
                 firebaseCloudMessageService.sendMessageToWithData(member.getPushKey().getPushKey(),
                     notification.getTitle(), notification.getContent(), data);
@@ -175,9 +176,8 @@ public class NotificationService {
             .image("")
             .build();
         notificationRepository.save(notification);
-        Map<String, Object> data = Map.of(
-            "id", notification.getValue()
-        );
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", notification.getValue());
         try {
             firebaseCloudMessageService.sendMessageToWithData(proponent.getPushKey().getPushKey(),
                 notification.getTitle(), notification.getContent(), data);

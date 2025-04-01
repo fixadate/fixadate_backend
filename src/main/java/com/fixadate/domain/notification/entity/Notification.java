@@ -46,7 +46,9 @@ public class Notification extends BaseEntity {
     private String value;
 
     @Column(nullable = false)
-    private boolean isRead = false;
+    private boolean isRead;
+
+    private boolean isReSend;
 
     @Builder
     public Notification(Member member, PushNotificationType eventType, String title, String content, String value, String image, String pushKey) {
@@ -57,10 +59,12 @@ public class Notification extends BaseEntity {
         this.value = value;
         this.image = image;
         this.pushKey = pushKey;
+        this.isRead = false;
+        this.isReSend = false;
     }
 
-    public void setIsRead(boolean isRead) {
-        this.isRead = isRead;
+    public void reSend() {
+        this.isReSend = true;
     }
 
     public void read() {

@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     Page<Notification> findAllByMemberId(String memberId, Pageable pageable);
-    @Query("SELECT n FROM Notification n WHERE n.isRead = false AND n.eventType IN :eventTypes AND n.createDate < :time")
+    @Query("SELECT n FROM Notification n WHERE n.isRead = false AND n.isReSend = false AND n.eventType IN :eventTypes AND n.createDate < :time")
     List<Notification> findUnReadNotificationsBeforeWithEventTypes(@Param("time") LocalDateTime time,
         @Param("eventTypes") List<PushNotificationType> eventTypes);
 
