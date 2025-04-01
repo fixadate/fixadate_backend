@@ -53,7 +53,7 @@ public class MainController {
 	){
 		return GeneralResponseDto.success("", mainService.getStoryBoard(memberPrincipal.getMember()));
 	}
-
+	
 	@Operation(summary = "스토리보드 등록/수정", description = "")
 	@ApiResponses({
 		@ApiResponse(

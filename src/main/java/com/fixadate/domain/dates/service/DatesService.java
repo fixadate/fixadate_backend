@@ -2,9 +2,11 @@ package com.fixadate.domain.dates.service;
 
 import static com.fixadate.global.exception.ExceptionCode.CONFLICT_DATES_COLLECTION_WITH_ADATE;
 import static com.fixadate.global.exception.ExceptionCode.CONFLICT_DATES_COLLECTION_WITH_DATES;
-import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COLLECTION;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_ACCESS_DATES;
+import static com.fixadate.global.exception.ExceptionCode.INVALID_ACCESS_DATES_COLLECTION;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COORDINATION_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
@@ -12,7 +14,6 @@ import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.service.repository.AdateRepository;
 import com.fixadate.domain.auth.entity.BaseEntity.DataStatus;
-import com.fixadate.domain.common.entity.Calendar;
 import com.fixadate.domain.dates.dto.CalendarDto;
 import com.fixadate.domain.dates.dto.DatesCoordinationDto;
 import com.fixadate.domain.dates.dto.DatesCoordinationRegisterDto;
@@ -22,6 +23,8 @@ import com.fixadate.domain.dates.dto.DatesUpdateDto;
 import com.fixadate.domain.dates.dto.request.ChoiceDatesRequest;
 import com.fixadate.domain.dates.dto.response.*;
 import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse.DatesCollectionDateInfo;
+import com.fixadate.domain.dates.dto.response.DatesDetailResponse.DatesParticipants;
+import com.fixadate.domain.dates.dto.response.DatesDetailResponse.Proponent;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesCoordinationMembers;
@@ -47,6 +50,7 @@ import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
 import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.exception.badrequest.InvalidTimeException;
+import com.fixadate.global.exception.forbidden.ForbiddenException;
 import com.fixadate.global.exception.notfound.NotFoundException;
 import com.fixadate.global.util.TimeUtil;
 import java.time.LocalDate;
@@ -233,12 +237,30 @@ public class DatesService {
         }
     }
 
-    public DatesDetailResponse getDatesDetail(Long id, Member member) {
-        // teamMember인가
-        // Dates 불러오기
-        // Owner인가
-        // DatesParticipants 불러오기
-        return null;
+    public Dates getDates(Long id) {
+        return datesRepository.findByIdAndStatusIs(id, DataStatus.ACTIVE).orElseThrow(
+            () -> new NotFoundException(NOT_FOUND_DATES_ID)
+        );
+    }
+
+    public DatesDetailResponse getDatesDetail(final Dates dates, Member member) {
+        // datesParticipants 불러오기
+        List<DatesMembers> datesMembers = datesMembersRepository.findAllByDatesAndStatusIs(dates, DataStatus.ACTIVE);
+
+        // datesMember인가
+        boolean isParticipant = datesMembers.stream()
+            .anyMatch(datesMember -> datesMember.getMember().getId().equals(member.getId()));
+        if(!isParticipant){
+            throw new ForbiddenException(INVALID_ACCESS_DATES);
+        }
+        // 제안자인가
+        boolean isProponent = dates.getProponent().getId().equals(member.getId());
+
+        List<DatesParticipants> datesParticipants = datesMembers.stream()
+            .map(DatesParticipants::of)
+            .toList();
+
+        return DatesDetailResponse.of(dates, datesParticipants, isProponent);
     }
 
     public DatesInfoResponse getDatesByWeek(Member member, int year, int month, int weekNum) {
@@ -391,7 +413,7 @@ public class DatesService {
             .filter(datesCoordinationMember -> datesCoordinationMember.getMember().getMember().getId().equals(member.getId()))
             .findFirst();
         if(foundMember.isEmpty()){
-            return GeneralResponseDto.fail(NOT_FOUND_DATES_COLLECTION);
+            return GeneralResponseDto.fail(INVALID_ACCESS_DATES_COLLECTION);
         }
 
         // 충돌하는 일정이 있는지 확인

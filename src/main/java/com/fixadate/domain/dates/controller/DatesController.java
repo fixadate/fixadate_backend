@@ -6,6 +6,7 @@ import com.fixadate.domain.dates.dto.request.ChoiceDatesRequest;
 import com.fixadate.domain.dates.dto.request.DatesCoordinationRegisterRequest;
 import com.fixadate.domain.dates.dto.request.DatesUpdateRequest;
 import com.fixadate.domain.dates.dto.response.*;
+import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesCoordinations;
 import com.fixadate.domain.dates.mapper.DatesMapper;
 import com.fixadate.domain.dates.service.DatesService;
@@ -119,12 +120,25 @@ public class DatesController {
         return GeneralResponseDto.success("", result);
     }
 
+    @Operation(summary = "Dates 상세 조회", description = "알람 클릭 시, 해당 일정 상세 조회")
+    @Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "success",
+            content = @Content(schema = @Schema(implementation = DatesCoordinationResponse.class))),
+        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4004", description = "해당 일정이 존재하지않는 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4008", description = "일정 참여자가 아닌 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+    })
     @GetMapping("/{id}")
     public GeneralResponseDto getDatesDetail(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id){
         final Member member = memberPrincipal.getMember();
-        DatesDetailResponse result = datesService.getDatesDetail(id, member);
+        final Dates dates = datesService.getDates(id);
+        DatesDetailResponse result = datesService.getDatesDetail(dates, member);
         return GeneralResponseDto.success("", result);
     }
 
