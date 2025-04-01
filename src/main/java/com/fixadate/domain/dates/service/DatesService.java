@@ -285,7 +285,7 @@ public class DatesService {
         for(Dates dates : datesList) {
             List<DatesMembers> datesMembers = datesMembersRepository.findAllByDatesAndStatusIs(dates, DataStatus.ACTIVE);
             List<DatesMemberInfo> datesMemberInfos = datesMembers.stream().map(each -> DatesMemberInfo.of(each, myMemberId)).toList();
-            datesInfos.add(DatesResponse.of(dates, datesMemberInfos));
+            datesInfos.add(DatesResponse.of(member, dates, datesMemberInfos));
         }
 
         DatesInfoResponse dateInfos = new DatesInfoResponse();

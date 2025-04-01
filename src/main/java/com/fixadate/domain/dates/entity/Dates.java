@@ -1,10 +1,7 @@
 package com.fixadate.domain.dates.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fixadate.domain.auth.entity.BaseEntity;
 import com.fixadate.domain.common.entity.Calendar;
 import com.fixadate.domain.member.entity.Member;
-import com.fixadate.domain.tag.entity.Tag;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -35,7 +32,7 @@ public class Dates extends Calendar {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_dates_member_id"))
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private Member member;
+	private Member proponent;
 
 	@Builder
 	private Dates(
@@ -43,7 +40,7 @@ public class Dates extends Calendar {
 		final String notes,
 		final LocalDateTime startsWhen,
 		final LocalDateTime endsWhen,
-		final Member member,
+		final Member proponent,
 		final String calendarId
 	) {
 		super.title = title;
@@ -51,11 +48,11 @@ public class Dates extends Calendar {
 		this.notes = notes;
 		this.startsWhen = startsWhen;
 		this.endsWhen = endsWhen;
-		this.member = member;
+		this.proponent = proponent;
 	}
 
-	public boolean isOwner(final Member member) {
-		return this.member.equals(member);
+	public boolean isProponent(final Member member) {
+		return this.proponent.getId().equals(member.getId());
 	}
 
 

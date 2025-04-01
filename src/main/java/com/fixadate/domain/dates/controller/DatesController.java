@@ -105,7 +105,7 @@ public class DatesController {
         final DatesUpdateDto datesUpdateDto = DatesMapper.toDatesUpdateDto(request);
         DatesDto datesDto = datesService.updateDates(datesUpdateDto, id, member);
         List<DatesMemberInfo> datesMemberList = new ArrayList<>();
-        DatesResponse datesResponse = DatesMapper.toDatesResponse(datesDto, datesMemberList);
+        DatesResponse datesResponse = DatesMapper.toDatesResponse(member, datesDto, datesMemberList);
 
         return GeneralResponseDto.success("", datesResponse);
     }
@@ -199,7 +199,7 @@ public class DatesController {
             content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4000", description = "해당 일정취합이 존재하지 않는 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
-        @ApiResponse(responseCode = "4001", description = "제안자가 존재하지않는 경우",
+        @ApiResponse(responseCode = "4001", description = "제안자가 존재하지않는 경새",
             content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4007", description = "해당 일정취합 대상자가 아닌 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
@@ -221,5 +221,7 @@ public class DatesController {
         }
         return datesService.choiceDates(member, datesCoordinations, choiceDatesRequest);
     }
+
+    // todo: 일정 결정
 }
 
