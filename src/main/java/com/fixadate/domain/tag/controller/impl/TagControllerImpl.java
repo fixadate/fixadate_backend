@@ -3,6 +3,8 @@ package com.fixadate.domain.tag.controller.impl;
 import com.fixadate.global.dto.GeneralResponseDto;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,12 +26,14 @@ import com.fixadate.global.jwt.MemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Tag Controller", description = "Tag Controller 입니다.")
 @RestControllerWithMapping("/v1/tag")
 @RequiredArgsConstructor
 public class TagControllerImpl implements TagController {
 
 	private final TagService tagService;
 
+	@Operation(summary = "Tag 등록", description = "Tag를 등록합니다.")
 	@Override
 	@PostMapping()
 	public GeneralResponseDto createTag(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
@@ -38,6 +42,7 @@ public class TagControllerImpl implements TagController {
 		return GeneralResponseDto.success("created", "");
 	}
 
+	@Operation(summary = "내 Tag 조회", description = "내 Tag들을 조회합니다.")
 	@Override
 	@GetMapping()
 	public GeneralResponseDto findTags(
@@ -48,6 +53,7 @@ public class TagControllerImpl implements TagController {
 		return GeneralResponseDto.success("", tagResponses);
 	}
 
+	@Operation(summary = "Tag 수정", description = "Tag를 수정합니다.")
 	@Override
 	@PatchMapping()
 	public GeneralResponseDto updateTag(
@@ -58,6 +64,7 @@ public class TagControllerImpl implements TagController {
 		return GeneralResponseDto.success("", tagResponse);
 	}
 
+	@Operation(summary = "Tag 삭제", description = "이름 기반으로 Tag를 삭제합니다.")
 	@Override
 	@DeleteMapping("/{name}")
 	public GeneralResponseDto removeTag(@PathVariable String name,
