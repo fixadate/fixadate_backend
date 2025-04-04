@@ -237,5 +237,29 @@ public class DatesController {
     }
 
     // todo: 일정 결정
+    @Operation(summary = "일정 확정 조회", description = "일정 확정 페이지에 필요한 데이터입니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "success",
+            content = @Content(schema = @Schema(implementation = GetDatesConfirmResponse.class))),
+        @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4000", description = "해당 일정취합이 존재하지 않는 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4009", description = "일정 제안자가 아닌 경우",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    @GetMapping("/datesCoordination/{id}/confirm")
+    public GeneralResponseDto getDatesConfirmData(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam final Long id
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
+        if(datesCoordinations == null){
+            return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
+        }
+        final GetDatesConfirmResponse response = datesService.getDatesConfirm(member, datesCoordinations);
+        return GeneralResponseDto.success("", response);
+    }
 }
 

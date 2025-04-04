@@ -54,6 +54,7 @@ public enum ExceptionCode {
 	NOT_FOUND_DATES_COORDINATION_ID(4006, "요청한 id에 해당하는 dates coordination이 없습니다."),
 	INVALID_ACCESS_DATES_COLLECTION(4007, "일정 취합 대상자가 아닙니다."),
 	INVALID_ACCESS_DATES(4008, "일정 참여자가 아닙니다."),
+	NOT_PROPONENT(4009, "일정 제안자가 아닙니다."),
 
 	CONFLICT_DATES_COLLECTION_WITH_ADATE(4011, "해당 시간대에 adate 일정이 존재합니다."),
 	CONFLICT_DATES_COLLECTION_WITH_DATES(4012, "해당 시간대에 dates 일정이 존재합니다."),
