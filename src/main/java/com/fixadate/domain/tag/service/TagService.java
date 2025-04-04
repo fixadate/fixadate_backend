@@ -7,6 +7,7 @@ import static com.fixadate.global.exception.ExceptionCode.CAN_NOT_UPDATE_OR_REMO
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TAG_MEMBER_NAME;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,13 @@ public class TagService {
 	@Transactional
 	public void registerTag(Member member, TagRequest tagRequest) {
 		checkColor(tagRequest.name(), member);
+		
+		// 중복 체크
+		Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(tagRequest.name(), member);
+		if(tagOptional.isPresent()) {
+			throw new TagBadRequestException(ALREADY_EXISTS_TAG);
+		}
+		
 		Tag tag = toEntity(member, tagRequest);
 		tagRepository.save(tag);
 	}
@@ -61,11 +69,16 @@ public class TagService {
 			checkColor(tagUpdateRequest.newName(), member);
 		}
 
+		// todo: 중복 체크
+		// 중복 체크
+		Optional<Tag> tagOptional = tagRepository.findTagByNameAndMember(tagUpdateRequest.newName(), member);
+		if(tagOptional.isPresent()) {
+			throw new TagBadRequestException(ALREADY_EXISTS_TAG);
+		}
+
 		Tag tag = findTagByMemberAndColor(tagUpdateRequest.name(), member);
 
-		if (isValidString(tagUpdateRequest.newName())) {
-			isSystemDefinedTag(tag);
-		}
+		isSystemDefinedTag(tag);
 
 		tag.updateTag(tagUpdateRequest);
 
