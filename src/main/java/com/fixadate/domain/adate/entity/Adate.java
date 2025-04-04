@@ -64,7 +64,7 @@ public class Adate extends Calendar {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "fk_adate_tag_id"))
 	private Tag tag;
 

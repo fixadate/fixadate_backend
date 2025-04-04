@@ -9,6 +9,7 @@ import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_COORDI
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_DATES_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TEAM_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_PROPONENT;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 
 import com.fixadate.domain.adate.entity.Adate;
@@ -26,6 +27,7 @@ import com.fixadate.domain.dates.dto.response.DatesCollectionsResponse.DatesColl
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse.DatesParticipants;
 import com.fixadate.domain.dates.dto.response.DatesDetailResponse.Proponent;
 import com.fixadate.domain.dates.dto.response.DatesInfoResponse.DailyDatesInfo;
+import com.fixadate.domain.dates.dto.response.GetDatesConfirmResponse.DatesCollectionsInfo;
 import com.fixadate.domain.dates.entity.Dates;
 import com.fixadate.domain.dates.entity.DatesCoordinationMembers;
 import com.fixadate.domain.dates.entity.DatesCoordinations;
@@ -58,6 +60,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -461,5 +464,38 @@ public class DatesService {
             .filter(teamMember -> !teamMember.getMember().getId().equals(member.getId()))
             .map(TeamListResponse.TeamMemberList::of)
             .collect(Collectors.toList());
+    }
+
+    public GetDatesConfirmResponse getDatesConfirm(Member member, DatesCoordinations datesCoordinations) {
+        // 제안자인가
+        boolean isProponent = datesCoordinations.getProponentId().equals(member.getId());
+        if(!isProponent){
+            throw new ForbiddenException(NOT_PROPONENT);
+        }
+
+        List<DatesCoordinationMembers> datesCoordinationMembers = datesCoordinationMembersRepository.findAllByDatesCoordinationsAndStatusIs(datesCoordinations, DataStatus.ACTIVE);
+        int totalMemberCnt = datesCoordinationMembers.size();
+        int minutes = datesCoordinations.getMinutes();
+
+        // 그룹핑
+        Map<String, Long> grouped = datesCoordinationMembers.stream()
+            .collect(Collectors.groupingBy(
+                td -> td.getStartsWhen() + "::" + td.getEndsWhen(),
+                Collectors.counting()
+            ));
+
+        // 결과 리스트로 변환
+        List<DatesCollectionsInfo> datesCollectionsInfoList = grouped.entrySet().stream()
+            .map(entry -> {
+                String[] parts = entry.getKey().split("::");
+                return new DatesCollectionsInfo(parts[0], parts[1], entry.getValue().intValue());
+            })
+            .toList();
+
+        return new GetDatesConfirmResponse(
+            totalMemberCnt,
+            minutes,
+            datesCollectionsInfoList
+        );
     }
 }
