@@ -67,18 +67,18 @@ public class TeamService {
 
     @Transactional
     public Teams createTeam(Member member, TeamCreateRequest requestDto) {
-        MemberPlans memberPlan = member.getMemberPlan();
-        if(!memberPlan.isValid()){
-            throw new RuntimeException("member plan invalid");
-        }
-        Plans foundPlan = memberPlan.getPlan();
-        int teamResourceMaxCnt = planResourcesRepository.getResourceMaxCnt(ResourceType.TEAM, foundPlan);
-        MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
-        int currentTeamResourceCnt = foundMemberResources.getResourceCnt(ResourceType.TEAM);
-
-        if(currentTeamResourceCnt + 1 > teamResourceMaxCnt){
-            throw new RuntimeException("team resource limit exceeded");
-        }
+//        MemberPlans memberPlan = member.getMemberPlan();
+//        if(!memberPlan.isValid()){
+//            throw new RuntimeException("member plan invalid");
+//        }
+//        Plans foundPlan = memberPlan.getPlan();
+//        int teamResourceMaxCnt = planResourcesRepository.getResourceMaxCnt(ResourceType.TEAM, foundPlan);
+//        MemberResources foundMemberResources = memberResourcesRepository.getMemberResources(member);
+//        int currentTeamResourceCnt = foundMemberResources.getResourceCnt(ResourceType.TEAM);
+//
+//        if(currentTeamResourceCnt + 1 > teamResourceMaxCnt){
+//            throw new RuntimeException("team resource limit exceeded");
+//        }
 
         Teams team = new Teams(requestDto.name(), requestDto.profile());
         Teams createdTeam = teamRepository.save(team);
@@ -103,7 +103,7 @@ public class TeamService {
             teamMembersRepository.save(teamMember);
         }
 
-        foundMemberResources.plusResources(ResourceType.TEAM, 1);
+//        foundMemberResources.plusResources(ResourceType.TEAM, 1);
 
         return createdTeam;
     }
