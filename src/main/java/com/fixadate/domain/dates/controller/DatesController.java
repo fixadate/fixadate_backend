@@ -190,6 +190,10 @@ public class DatesController {
             content = @Content(schema = @Schema(implementation = Void.class))),
         @ApiResponse(responseCode = "4000", description = "해당 일정취합이 존재하지 않는 경우",
             content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4013", description = "해당 일정이 이미 결정된 경우",
+                content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(responseCode = "4014", description = "해당 일정이 취소된 경우",
+                content = @Content(schema = @Schema(implementation = Void.class))),
     })
     @GetMapping("/datesCoordination/{id}")
     public GeneralResponseDto getDatesCollections(
@@ -201,6 +205,19 @@ public class DatesController {
         if(datesCoordinations == null){
             return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
         }
+
+        DatesCoordinations.CollectStatus collectStatus = datesCoordinations.getCollectStatus();
+        switch (collectStatus) {
+            // todo: 상태 처리
+////            case COLLECTING -> datesCoordinations.setCollectStatus(DatesCoordinations.CollectStatus.COLLECTING);
+////            case CHOOSING -> datesCoordinations.setCollectStatus(DatesCoordinations.CollectStatus.COLLECTED);
+//            case CONFIRMED -> new GeneralResponseDto.fail("4013", "해당 일정은 확정되었습니다.", null);
+//            case CANCELLED -> datesCoordinations.setCollectStatus(DatesCoordinations.CollectStatus.CONFIRMED);
+//            default -> {
+//            }
+        }
+
+
         final DatesCollectionsResponse response = datesService.getDatesCollections(member, datesCoordinations);
         return GeneralResponseDto.success("", response);
     }
@@ -236,7 +253,6 @@ public class DatesController {
         return datesService.choiceDates(member, datesCoordinations, choiceDatesRequest);
     }
 
-    // todo: 일정 결정
     @Operation(summary = "일정 확정 조회", description = "일정 확정 페이지에 필요한 데이터입니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "success",
@@ -259,6 +275,36 @@ public class DatesController {
             return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
         }
         final GetDatesConfirmResponse response = datesService.getDatesConfirm(member, datesCoordinations);
+        return GeneralResponseDto.success("", response);
+    }
+
+    @Operation(summary = "일정 확정", description = "일정 확정을 합니다.")
+    @PostMapping("/datesCoordination/{id}/confirm")
+    public GeneralResponseDto confirmDatesCoordinations(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam final Long id
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
+        if(datesCoordinations == null){
+            return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
+        }
+        final boolean response = datesService.confirmDatesCoordinations(member, datesCoordinations);
+        return GeneralResponseDto.success("", response);
+    }
+
+    @Operation(summary = "일정 취소", description = "일정 취소를 합니다.")
+    @DeleteMapping("/datesCoordination/{id}/confirm")
+    public GeneralResponseDto cancelDatesCoordinations(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam final Long id
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
+        if(datesCoordinations == null){
+            return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
+        }
+        final boolean response = datesService.cancelDatesCoordinations(member, datesCoordinations);
         return GeneralResponseDto.success("", response);
     }
 }

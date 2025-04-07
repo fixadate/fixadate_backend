@@ -498,4 +498,30 @@ public class DatesService {
             datesCollectionsInfoList
         );
     }
+
+    public boolean confirmDatesCoordinations(Member member, DatesCoordinations datesCoordinations) {
+        // 제안자인가
+        boolean isProponent = datesCoordinations.getProponentId().equals(member.getId());
+        if(!isProponent){
+            throw new ForbiddenException(NOT_PROPONENT);
+        }
+
+        // 일정 조율 완료
+        datesCoordinations.confirm();
+
+        return true;
+    }
+
+    public boolean cancelDatesCoordinations(Member member, DatesCoordinations datesCoordinations) {
+        // 제안자인가
+        boolean isProponent = datesCoordinations.getProponentId().equals(member.getId());
+        if(!isProponent){
+            throw new ForbiddenException(NOT_PROPONENT);
+        }
+
+        // 일정 조율 완료
+        datesCoordinations.cancel();
+
+        return true;
+    }
 }
