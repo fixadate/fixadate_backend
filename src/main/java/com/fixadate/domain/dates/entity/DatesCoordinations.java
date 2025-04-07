@@ -60,8 +60,12 @@ public class DatesCoordinations extends BaseEntity {
 
 	private boolean alarmSent;
 
-	public enum CollectStatus {
-		COLLECTING, CHOOSING, CONFIRMED
+    public void cancel() {
+		this.collectStatus = CollectStatus.CANCELLED;
+    }
+
+    public enum CollectStatus {
+		COLLECTING, CHOOSING, CONFIRMED, CANCELLED
 	}
 
 	@Builder

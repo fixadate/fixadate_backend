@@ -58,6 +58,8 @@ public enum ExceptionCode {
 
 	CONFLICT_DATES_COLLECTION_WITH_ADATE(4011, "해당 시간대에 adate 일정이 존재합니다."),
 	CONFLICT_DATES_COLLECTION_WITH_DATES(4012, "해당 시간대에 dates 일정이 존재합니다."),
+	DATES_COORDINATION_CONFIRMED(4013, "해당 일정은 확정되었습니다."),
+	DATES_COORDINATION_CANCELLED(4014, "해당 일정은 취소되었습니다."),
 
 	NOTIFICATION_CONNECTION_ERROR(5001, "알림 서버와 연결하는데 실패했습니다."),
 
