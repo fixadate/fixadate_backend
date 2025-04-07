@@ -27,7 +27,7 @@ public class NativeAuthenticationFilter extends OncePerRequestFilter {
 		String celno = request.getHeader("celno");
 		String cacheControl = request.getHeader("cache-control");
 
-		if (true) {
+		if (false) {
 //		if (contentType == null || fixVersion == null || telephoneCarrier == null || celno == null
 //			|| cacheControl == null) {
 
