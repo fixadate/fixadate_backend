@@ -37,7 +37,7 @@ public class NotificationHandler {
 	@EventListener
 	public void sendDatesCoordinationConfirmEvent(final DatesCoordinationConfirmEvent event)
 		throws IOException {
-		notificationService.sendDatesCoordinationConfirmEvent(event.participant(), event.datesCoordinationDto());
+		notificationService.sendDatesCoordinationConfirmEvent(event.participant(), event.datesDto());
 	}
 
 	@EventListener

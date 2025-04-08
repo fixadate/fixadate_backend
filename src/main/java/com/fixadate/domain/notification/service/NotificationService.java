@@ -1,6 +1,7 @@
 package com.fixadate.domain.notification.service;
 
 import com.fixadate.domain.dates.dto.DatesCoordinationDto;
+import com.fixadate.domain.dates.dto.DatesDto;
 import com.fixadate.domain.dates.entity.DatesCoordinations;
 import com.fixadate.domain.dates.repository.DatesCoordinationsRepository;
 import com.fixadate.domain.member.entity.Member;
@@ -186,14 +187,14 @@ public class NotificationService {
         }
     }
 
-    public void sendDatesCoordinationConfirmEvent(Member proponent, DatesCoordinationDto datesCoordinationDto) {
+    public void sendDatesCoordinationConfirmEvent(Member proponent, DatesDto datesDto) {
         Notification notification = Notification.builder()
             .member(proponent)
             .pushKey(proponent.getPushKey().getPushKey())
             .title("팀 일정 확정 알람")
             .content("일정이 확정되었습니다.")
             .eventType(PushNotificationType.DATES_CONFIRMED)
-            .value(String.valueOf(datesCoordinationDto.id()))
+            .value(String.valueOf(datesDto.calendarId()))
             .image("")
             .build();
         notificationRepository.save(notification);

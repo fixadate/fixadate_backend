@@ -176,13 +176,14 @@ public class DatesMapper {
 		);
 	}
 
-//	public static Dates toMEntity(final DatesCoordinations datesCoordinations) {
-//		return Dates.builder()
-//					.title(datesCoordinations.getTitle())
-//					.startsWhen(datesCoordinations.getStartsWhen())
-//					.endsWhen(datesCoordinations.getEndsWhen())
-//					.proponentId(datesCoordinations.getProponentId())
-//					.calendarId(RandomValueUtil.createRandomString(10))
-//					.build();
-//	}
+	public static Dates toEntity(final DatesCoordinations datesCoordinations, final Member proponent) {
+		return Dates.builder()
+					.team(datesCoordinations.getTeam())
+					.title(datesCoordinations.getTitle())
+					.startsWhen(datesCoordinations.getStartsWhen())
+					.endsWhen(datesCoordinations.getEndsWhen())
+					.proponent(proponent)
+					.calendarId(RandomValueUtil.createRandomString(10))
+					.build();
+	}
 }

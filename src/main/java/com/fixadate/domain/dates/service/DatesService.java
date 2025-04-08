@@ -512,7 +512,8 @@ public class DatesService {
         datesCoordinations.confirm();
 
         // Dates 생성
-//        Dates dates = DatesMapper.toEntity(datesCoordinations);
+        Dates createdDates = DatesMapper.toEntity(datesCoordinations, member);
+        datesRepository.save(createdDates);
 
 
         // 일정 결정 알림 발송
@@ -520,7 +521,7 @@ public class DatesService {
         for(DatesCoordinationMembers datesCoordinationMember : datesCoordinationMembers) {
             applicationEventPublisher.publishEvent(
                 new DatesCoordinationConfirmEvent(datesCoordinationMember.getMember().getMember(),
-                    DatesMapper.toDatesCoordinationDto(datesCoordinations)));
+                    DatesMapper.toDatesDto(createdDates)));
         }
 
         return true;
