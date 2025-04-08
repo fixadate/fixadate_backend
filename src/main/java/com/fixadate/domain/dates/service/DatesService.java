@@ -98,7 +98,10 @@ public class DatesService {
             () -> new NotFoundException(NOT_FOUND_TEAM_ID)
         );
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
+
         TeamMembers proponent = validateCreateDatesPossible(member, teamMembers);
+
+        teamMembers = teamMembers.stream().filter(each -> requestDto.memberIdList().contains(String.valueOf(each.getId()))).toList();
 
         final DatesCoordinations createdDatesCoordinations = DatesMapper.toDatesCoordinationEntity(requestDto, member, foundTeam);
 
