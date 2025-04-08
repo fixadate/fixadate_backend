@@ -106,7 +106,7 @@ public class DatesService {
 
         for(String datesMemberId : requestDto.memberIdList()){
             Optional<TeamMembers> foundMember = teamMembers.stream()
-                .filter(teamMember -> teamMember.getMember().getId().equals(datesMemberId))
+                .filter(teamMember -> teamMember.getId().equals(Long.valueOf(datesMemberId)))
                 .findFirst();
             if(foundMember.isEmpty()){
                 throw new RuntimeException("not team member");
