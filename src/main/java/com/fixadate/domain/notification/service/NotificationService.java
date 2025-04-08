@@ -185,4 +185,46 @@ public class NotificationService {
             throw new RuntimeException("Failed to send notification");
         }
     }
+
+    public void sendDatesCoordinationConfirmEvent(Member proponent, DatesCoordinationDto datesCoordinationDto) {
+        Notification notification = Notification.builder()
+            .member(proponent)
+            .pushKey(proponent.getPushKey().getPushKey())
+            .title("팀 일정 확정 알람")
+            .content("일정이 확정되었습니다.")
+            .eventType(PushNotificationType.DATES_CONFIRMED)
+            .value(String.valueOf(datesCoordinationDto.id()))
+            .image("")
+            .build();
+        notificationRepository.save(notification);
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", notification.getValue());
+        try {
+            firebaseCloudMessageService.sendMessageToWithData(proponent.getPushKey().getPushKey(),
+                notification.getTitle(), notification.getContent(), data);
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to send notification");
+        }
+    }
+
+    public void sendDatesCoordinationCancelEvent(Member participant, DatesCoordinationDto datesCoordinationDto) {
+        Notification notification = Notification.builder()
+            .member(participant)
+            .pushKey(participant.getPushKey().getPushKey())
+            .title("팀 일정 취소 알람")
+            .content("일정이 취소되었습니다.")
+            .eventType(PushNotificationType.DATES_CANCEL)
+            .value(String.valueOf(datesCoordinationDto.id()))
+            .image("")
+            .build();
+        notificationRepository.save(notification);
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", notification.getValue());
+        try {
+            firebaseCloudMessageService.sendMessageToWithData(participant.getPushKey().getPushKey(),
+                notification.getTitle(), notification.getContent(), data);
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to send notification");
+        }
+    }
 }

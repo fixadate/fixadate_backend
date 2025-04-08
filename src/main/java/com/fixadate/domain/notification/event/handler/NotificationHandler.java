@@ -1,7 +1,9 @@
 package com.fixadate.domain.notification.event.handler;
 
 import com.fixadate.domain.notification.event.object.AliveAlarmEvent;
+import com.fixadate.domain.notification.event.object.DatesCoordinationCancelEvent;
 import com.fixadate.domain.notification.event.object.DatesCoordinationChoiceEvent;
+import com.fixadate.domain.notification.event.object.DatesCoordinationConfirmEvent;
 import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEvent;
 import com.fixadate.domain.notification.service.NotificationService;
 import java.io.IOException;
@@ -30,5 +32,17 @@ public class NotificationHandler {
 	public void sendDatesCoordinationChoiceEvent(final DatesCoordinationChoiceEvent event)
 		throws IOException {
 		notificationService.sendDatesCoordinationChoiceEvent(event.proponent(), event.datesCoordinationDto());
+	}
+
+	@EventListener
+	public void sendDatesCoordinationConfirmEvent(final DatesCoordinationConfirmEvent event)
+		throws IOException {
+		notificationService.sendDatesCoordinationConfirmEvent(event.participant(), event.datesCoordinationDto());
+	}
+
+	@EventListener
+	public void sendDatesCoordinationCancelEvent(final DatesCoordinationCancelEvent event)
+		throws IOException {
+		notificationService.sendDatesCoordinationCancelEvent(event.participant(), event.datesCoordinationDto());
 	}
 }

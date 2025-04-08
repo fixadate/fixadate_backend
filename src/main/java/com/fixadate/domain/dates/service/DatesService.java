@@ -46,7 +46,9 @@ import com.fixadate.domain.dates.repository.TeamRepository;
 import com.fixadate.domain.main.dto.DatesMemberInfo;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.member.service.repository.MemberRepository;
+import com.fixadate.domain.notification.event.object.DatesCoordinationCancelEvent;
 import com.fixadate.domain.notification.event.object.DatesCoordinationChoiceEvent;
+import com.fixadate.domain.notification.event.object.DatesCoordinationConfirmEvent;
 import com.fixadate.domain.notification.event.object.DatesCoordinationCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesCreateEvent;
 import com.fixadate.domain.notification.event.object.DatesDeleteEvent;
@@ -509,6 +511,18 @@ public class DatesService {
         // 일정 조율 완료
         datesCoordinations.confirm();
 
+        // Dates 생성
+//        Dates dates = DatesMapper.toEntity(datesCoordinations);
+
+
+        // 일정 결정 알림 발송
+        List<DatesCoordinationMembers> datesCoordinationMembers = datesCoordinationMembersRepository.findAllByDatesCoordinationsAndStatusIs(datesCoordinations, DataStatus.ACTIVE);
+        for(DatesCoordinationMembers datesCoordinationMember : datesCoordinationMembers) {
+            applicationEventPublisher.publishEvent(
+                new DatesCoordinationConfirmEvent(datesCoordinationMember.getMember().getMember(),
+                    DatesMapper.toDatesCoordinationDto(datesCoordinations)));
+        }
+
         return true;
     }
 
@@ -519,9 +533,14 @@ public class DatesService {
             throw new ForbiddenException(NOT_PROPONENT);
         }
 
-        // 일정 조율 완료
+        // 일정 취소
         datesCoordinations.cancel();
 
+        // 일정 취소 알림 발송
+        List<DatesCoordinationMembers> datesCoordinationMembers = datesCoordinationMembersRepository.findAllByDatesCoordinationsAndStatusIs(datesCoordinations, DataStatus.ACTIVE);
+        for(DatesCoordinationMembers datesCoordinationMember : datesCoordinationMembers){
+            applicationEventPublisher.publishEvent(new DatesCoordinationCancelEvent(datesCoordinationMember.getMember().getMember(), DatesMapper.toDatesCoordinationDto(datesCoordinations)));
+        }
         return true;
     }
 }

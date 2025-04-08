@@ -175,4 +175,14 @@ public class DatesMapper {
 			datesCoordinationDto.endsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
 		);
 	}
+
+//	public static Dates toMEntity(final DatesCoordinations datesCoordinations) {
+//		return Dates.builder()
+//					.title(datesCoordinations.getTitle())
+//					.startsWhen(datesCoordinations.getStartsWhen())
+//					.endsWhen(datesCoordinations.getEndsWhen())
+//					.proponentId(datesCoordinations.getProponentId())
+//					.calendarId(RandomValueUtil.createRandomString(10))
+//					.build();
+//	}
 }
