@@ -36,6 +36,7 @@ public class Dates extends Calendar {
 
 	@Builder
 	private Dates(
+		final Teams team,
 		final String title,
 		final String notes,
 		final LocalDateTime startsWhen,
@@ -43,6 +44,7 @@ public class Dates extends Calendar {
 		final Member proponent,
 		final String calendarId
 	) {
+		this.team = team;
 		super.title = title;
 		super.calendarId = calendarId;
 		this.notes = notes;

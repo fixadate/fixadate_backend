@@ -175,4 +175,15 @@ public class DatesMapper {
 			datesCoordinationDto.endsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
 		);
 	}
+
+	public static Dates toEntity(final DatesCoordinations datesCoordinations, final Member proponent) {
+		return Dates.builder()
+					.team(datesCoordinations.getTeam())
+					.title(datesCoordinations.getTitle())
+					.startsWhen(datesCoordinations.getStartsWhen())
+					.endsWhen(datesCoordinations.getEndsWhen())
+					.proponent(proponent)
+					.calendarId(RandomValueUtil.createRandomString(10))
+					.build();
+	}
 }
