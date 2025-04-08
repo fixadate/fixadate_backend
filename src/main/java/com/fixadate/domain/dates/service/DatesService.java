@@ -462,6 +462,10 @@ public class DatesService {
         );
         List<TeamMembers> teamMembers = teamMembersRepository.findAllByTeamAndStatusIs(foundTeam, DataStatus.ACTIVE);
 
+        teamMembers = teamMembers.stream()
+            .filter(teamMember -> !teamMember.getMember().getId().equals(member.getId()))
+            .toList();
+
         return teamMembers.stream()
             .filter(teamMember -> !teamMember.getMember().getId().equals(member.getId()))
             .map(TeamListResponse.TeamMemberList::of)
