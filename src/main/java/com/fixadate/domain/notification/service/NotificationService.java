@@ -158,7 +158,7 @@ public class NotificationService {
                 firebaseCloudMessageService.sendMessageToWithData(member.getPushKey().getPushKey(),
                     notification.getTitle(), notification.getContent(), data);
             } catch (IOException exception) {
-                throw new RuntimeException("Failed to send notification");
+                log.error("Failed to send notification");
             }
         }
         datesCoordinationsRepository.findById(datesCoordinationDto.id()).ifPresent(
@@ -183,7 +183,7 @@ public class NotificationService {
             firebaseCloudMessageService.sendMessageToWithData(proponent.getPushKey().getPushKey(),
                 notification.getTitle(), notification.getContent(), data);
         } catch (IOException exception) {
-            throw new RuntimeException("Failed to send notification");
+            log.error("Failed to send notification");
         }
     }
 
@@ -204,7 +204,7 @@ public class NotificationService {
             firebaseCloudMessageService.sendMessageToWithData(proponent.getPushKey().getPushKey(),
                 notification.getTitle(), notification.getContent(), data);
         } catch (IOException exception) {
-            throw new RuntimeException("Failed to send notification");
+            log.error("Failed to send notification");
         }
     }
 
@@ -225,7 +225,7 @@ public class NotificationService {
             firebaseCloudMessageService.sendMessageToWithData(participant.getPushKey().getPushKey(),
                 notification.getTitle(), notification.getContent(), data);
         } catch (IOException exception) {
-            throw new RuntimeException("Failed to send notification");
+            log.error("Failed to send notification");
         }
     }
 }
