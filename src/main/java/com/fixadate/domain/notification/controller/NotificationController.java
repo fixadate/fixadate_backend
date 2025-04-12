@@ -33,7 +33,7 @@ public interface NotificationController {
             @ApiResponse(responseCode = "404", description = "securityContext에 있는 값으로 member를 찾을 수 없는 경우",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    public GeneralResponseDto getNotificationList(
+    GeneralResponseDto getNotificationList(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam("page") int page,
             @RequestParam("size") int size
@@ -52,7 +52,7 @@ public interface NotificationController {
             @ApiResponse(responseCode = "404", description = "securityContext에 있는 값으로 member를 찾을 수 없는 경우",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    public GeneralResponseDto changeNotificationRead(
+    GeneralResponseDto changeNotificationRead(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @PathVariable("id") Long id);
 
@@ -69,7 +69,7 @@ public interface NotificationController {
             @ApiResponse(responseCode = "404", description = "securityContext에 있는 값으로 member를 찾을 수 없는 경우",
                     content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    public GeneralResponseDto deleteNotification(
+    GeneralResponseDto deleteNotification(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @PathVariable("id") Long id);
 

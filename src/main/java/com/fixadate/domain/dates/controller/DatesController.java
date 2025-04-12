@@ -31,7 +31,7 @@ public interface DatesController {
             @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    public GeneralResponseDto getInvitableMemberByTeam(
+    GeneralResponseDto getInvitableMemberByTeam(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @PathVariable Long teamId
     );
@@ -48,16 +48,16 @@ public interface DatesController {
             @ApiResponse(responseCode = "4001", description = "투표 종료일이 현재 시간과 같거나 이전인 경우",
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    public GeneralResponseDto createDatesCoordination(@Valid @RequestBody final DatesCoordinationRegisterRequest request,
+    GeneralResponseDto createDatesCoordination(@Valid @RequestBody final DatesCoordinationRegisterRequest request,
                                                       @AuthenticationPrincipal final MemberPrincipal memberPrincipal);
 
-    public GeneralResponseDto updateDates(
+    GeneralResponseDto updateDates(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @PathVariable Long id,
             @Valid @RequestBody final DatesUpdateRequest request
     );
 
-    public GeneralResponseDto deleteDates(
+    GeneralResponseDto deleteDates(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @PathVariable Long id);
 
@@ -73,7 +73,7 @@ public interface DatesController {
             @ApiResponse(responseCode = "4008", description = "일정 참여자가 아닌 경우",
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    public GeneralResponseDto getDatesDetail(
+    GeneralResponseDto getDatesDetail(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @PathVariable Long id);
 
@@ -105,7 +105,7 @@ public interface DatesController {
             @ApiResponse(responseCode = "401", description = "jwt 만료되었을 때 생기는 예외",
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    public GeneralResponseDto getDatesBy(
+    GeneralResponseDto getDatesBy(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam final int year,
             @RequestParam @Min(1) @Max(12) final int month
@@ -125,7 +125,7 @@ public interface DatesController {
             @ApiResponse(responseCode = "4014", description = "해당 일정이 취소된 경우",
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    public GeneralResponseDto getDatesCollections(
+    GeneralResponseDto getDatesCollections(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam final Long id
     );
@@ -147,7 +147,7 @@ public interface DatesController {
             @ApiResponse(responseCode = "4012", description = "해당 일정에 dates 일정이 존재하는 경우",
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    public GeneralResponseDto choiceDates(
+    GeneralResponseDto choiceDates(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam final Long id,
             @RequestParam final ChoiceDatesRequest choiceDatesRequest
@@ -164,19 +164,19 @@ public interface DatesController {
             @ApiResponse(responseCode = "4009", description = "일정 제안자가 아닌 경우",
                     content = @Content(schema = @Schema(implementation = Void.class))),
     })
-    public GeneralResponseDto getDatesConfirmData(
+    GeneralResponseDto getDatesConfirmData(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam final Long id
     );
 
     @Operation(summary = "일정 확정", description = "일정 확정을 합니다.")
-    public GeneralResponseDto confirmDatesCoordinations(
+    GeneralResponseDto confirmDatesCoordinations(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam final Long id
     );
 
     @Operation(summary = "일정 취소", description = "일정 취소를 합니다.")
-    public GeneralResponseDto cancelDatesCoordinations(
+    GeneralResponseDto cancelDatesCoordinations(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam final Long id
     );

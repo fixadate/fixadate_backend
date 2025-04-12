@@ -21,19 +21,23 @@ import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestControllerWithMapping("/v1/dates")
 public class DatesControllerImpl implements DatesController {
-
     private final DatesService datesService;
 
-    @Autowired
-    public DatesControllerImpl(DatesService datesService) {
-        this.datesService = datesService;
-    }
+// TODO: 4/14/25 remove under autowire if workes fine without it
+
+//    @Autowired
+//    public DatesControllerImpl(DatesService datesService) {
+//        this.datesService = datesService;
+//    }
 
     @Override
     @GetMapping("/team/{teamId}")
