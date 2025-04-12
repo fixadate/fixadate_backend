@@ -1,5 +1,6 @@
-package com.fixadate.domain.invitation.controller;
+package com.fixadate.domain.invitation.controller.impl;
 
+import com.fixadate.domain.invitation.controller.InvitationController;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
