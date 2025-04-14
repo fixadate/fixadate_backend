@@ -28,6 +28,7 @@ public class ToDo extends BaseEntity {
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(name = "fk_todo_member_id"))
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
+    boolean checked = false;
 
     @Builder
     private ToDo(
@@ -40,6 +41,7 @@ public class ToDo extends BaseEntity {
       this.toDoStatus = toDoStatus;
       this.date = date;
       this.member = member;
+      this.checked = false;
     }
 
     public void updateToDoStatus(final ToDoStatus toDoStatus) {
@@ -48,5 +50,9 @@ public class ToDo extends BaseEntity {
 
     public void updateTitle(final String title) {
         this.title = title;
+    }
+
+    public void updateChecked() {
+        this.checked = !this.checked;
     }
 }

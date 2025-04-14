@@ -9,14 +9,16 @@ public record TodoInfo(
 	Long id,
 	String title,
 	ToDoStatus toDoStatus,
-	String date
+	String date,
+	boolean checked
 	){
 		public static TodoInfo of(ToDo todo) {
 			return new TodoInfo(
 				todo.getId(),
 				todo.getTitle(),
 				todo.getToDoStatus(),
-				todo.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+				todo.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+				todo.isChecked()
 			);
 		}
 	}
