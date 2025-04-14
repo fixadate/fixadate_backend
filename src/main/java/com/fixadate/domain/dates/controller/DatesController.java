@@ -307,5 +307,27 @@ public class DatesController {
         final boolean response = datesService.cancelDatesCoordinations(member, datesCoordinations);
         return GeneralResponseDto.success("", response);
     }
+
+    @Operation(summary = "내 일정 더보기", description = "오늘로부터 1주일의 일정을 봅니다.")
+    @GetMapping("/mine/more")
+    public GeneralResponseDto getMoreMineDates(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam final String todayDate
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final MoreDatesInfoResponse response = datesService.getMoreMineDates(member, todayDate);
+        return GeneralResponseDto.success("", response);
+    }
+
+    @Operation(summary = "Others 일정 더보기", description = "오늘로부터 1주일의 일정을 봅니다.")
+    @GetMapping("/others/more")
+    public GeneralResponseDto getMoreOthersDates(
+        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+        @RequestParam final String todayDate
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final MoreDatesInfoResponse response = datesService.getMoreOthersDates(member, todayDate);
+        return GeneralResponseDto.success("", response);
+    }
 }
 

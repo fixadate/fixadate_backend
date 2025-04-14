@@ -551,4 +551,15 @@ public class DatesService {
         }
         return true;
     }
+
+    public MoreDatesInfoResponse getMoreMineDates(Member member, String todayDate) {
+
+
+
+        return null;
+    }
+
+    public MoreDatesInfoResponse getMoreOthersDates(Member member, String todayDate) {
+        return null;
+    }
 }
