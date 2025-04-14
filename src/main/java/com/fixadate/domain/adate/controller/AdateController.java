@@ -4,6 +4,7 @@ import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
 import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
 import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
 import com.fixadate.global.dto.GeneralResponseDto;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -187,5 +188,18 @@ public interface AdateController {
 	GeneralResponseDto deleteToDo(
 			@PathVariable final String toDoId,
 			@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	);
+
+	@Operation(summary = "ToDo check", description = "toggle 방식입니다. code값에 따라 체크 상태가 다릅니다.")
+	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "체크해제 성공",
+			content = @Content(schema = @Schema(implementation = Void.class))),
+		@ApiResponse(responseCode = "201", description = "체크 성공",
+			content = @Content(schema = @Schema(implementation = Void.class))),
+	})
+	GeneralResponseDto toggleTodoCheck(
+		@NotBlank final Long id,
+		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	);
 }

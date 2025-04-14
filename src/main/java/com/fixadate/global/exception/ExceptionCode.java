@@ -29,6 +29,7 @@ public enum ExceptionCode {
 	FAIL_TO_EXECUTE_REDIS_COMMAND(1008, "Redis 명령을 실행하는데 실패했습니다."),
 	UNKNOWN_REDIS_EXCEPTION(1009, "Redis 예외가 발생했습니다."),
 	FORBIDDEN_UPDATE_ADATE(1010, "해당 Adate를 수정할 권한이 없습니다."),
+	FORBIDDEN_UPDATE_TODO(1011, "해당 Todo를 수정할 권한이 없습니다."),
 
 	ALREADY_EXISTS_TAG(2001, "변경하려고 하는 이름이 이미 존재합니다."),
 	NOT_FOUND_TAG_MEMBER_NAME(2002, "요청한 member, name에 해당하는 tag가 없습니다."),
@@ -51,6 +52,7 @@ public enum ExceptionCode {
 	NOT_FOUND_MEMBER_EMAIL(4002, "요청한 email에 해당하는 member가 없습니다."),
 	NOT_FOUND_TEAM_ID(4003, "요청한 id에 해당하는 team이 없습니다."),
 	NOT_FOUND_DATES_ID(4004, "요청한 id에 해당하는 dates이 없습니다."),
+	NOT_FOUND_TO_DO_ID(4005, "요청한 id에 해당하는 todo가 없습니다."),
 	NOT_FOUND_DATES_COORDINATION_ID(4006, "요청한 id에 해당하는 dates coordination이 없습니다."),
 	INVALID_ACCESS_DATES_COLLECTION(4007, "일정 취합 대상자가 아닙니다."),
 	INVALID_ACCESS_DATES(4008, "일정 참여자가 아닙니다."),

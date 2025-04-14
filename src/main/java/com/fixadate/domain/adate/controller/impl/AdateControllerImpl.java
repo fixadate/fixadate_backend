@@ -182,8 +182,6 @@ public class AdateControllerImpl implements AdateController {
 			@Valid @RequestBody final ToDoStatusUpdateRequest toDoStatusUpdateRequest,
 			@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
-
-
 		final ToDo toDo = adateService.updateToDoStatus(toDoStatusUpdateRequest);
 		return GeneralResponseDto.success("", toDo);
 	}
@@ -193,5 +191,18 @@ public class AdateControllerImpl implements AdateController {
 	public GeneralResponseDto deleteToDo(@PathVariable final String toDoId, MemberPrincipal memberPrincipal) {
 		ToDo toDo = adateService.deleteToDo(toDoId);
 		return GeneralResponseDto.success("", toDo);
+	}
+
+	@Override
+	@PatchMapping("/todo/{toDoId}")
+	public GeneralResponseDto toggleTodoCheck(Long toDoId,
+		MemberPrincipal memberPrincipal) {
+		final Member member = memberPrincipal.getMember();
+		ToDo toDo = adateService.getTodo(toDoId, member);
+		toDo.updateChecked();
+		if(toDo.isChecked()){
+			return GeneralResponseDto.create("201", "check success", null);
+		}
+		return GeneralResponseDto.success("check release success", null);
 	}
 }
