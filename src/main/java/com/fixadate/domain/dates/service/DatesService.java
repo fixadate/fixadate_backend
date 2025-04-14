@@ -553,7 +553,10 @@ public class DatesService {
     }
 
     public MoreDatesInfoResponse getMoreMineDates(Member member, String todayDate) {
-
+        LocalDateTime todayDateTime = LocalDate.parse(todayDate, dateFormatter).atStartOfDay();
+        LocalDateTime twoWeeksBeforeDateTime = todayDateTime.minusDays(14);
+        LocalDateTime twoWeeksAfterDateTime = todayDateTime.plusDays(14);
+        List<Dates> datesList = datesQueryRepository.findByDateRange(member, twoWeeksBeforeDateTime, twoWeeksAfterDateTime);
 
 
         return null;
