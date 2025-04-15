@@ -50,7 +50,7 @@ public class MainService {
 		List<AdateResponse> adateInfos = adateList.stream().map(AdateResponse::of).toList();
 
 		List<ToDo> todoList = toDoRepository.findByMemberAndBetweenDates(member, firstDayDateTime.toLocalDate(), lastDayDateTime.toLocalDate());
-		List<TodoInfo> todoInfos = todoList.stream().map(TodoInfo::of).toList();
+		List<TodoInfo> todoInfos = todoList.stream().filter(toDo -> !toDo.isChecked()).map(TodoInfo::of).toList();
 
 		List<Dates> datesList = datesRepository.findByProponentAndStartsWhenBetween(member, firstDayDateTime, lastDayDateTime);
 		List<DatesResponse> dateInfosList = new ArrayList<>();

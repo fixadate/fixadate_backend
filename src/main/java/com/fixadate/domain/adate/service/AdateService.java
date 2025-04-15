@@ -3,8 +3,10 @@ package com.fixadate.domain.adate.service;
 import static com.fixadate.domain.adate.mapper.AdateMapper.toAdateDto;
 import static com.fixadate.domain.adate.mapper.AdateMapper.toEntity;
 import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_ADATE;
+import static com.fixadate.global.exception.ExceptionCode.FORBIDDEN_UPDATE_TODO;
 import static com.fixadate.global.exception.ExceptionCode.INVALID_START_END_TIME;
 import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_ADATE_CALENDAR_ID;
+import static com.fixadate.global.exception.ExceptionCode.NOT_FOUND_TO_DO_ID;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromLocalDate;
 import static com.fixadate.global.util.TimeUtil.getLocalDateTimeFromYearAndMonth;
 import static com.fixadate.global.util.constant.ConstantValue.ADATE_WITH_COLON;
@@ -24,6 +26,8 @@ import com.fixadate.domain.member.entity.Plans;
 import com.fixadate.domain.member.entity.ResourceType;
 import com.fixadate.domain.member.service.repository.MemberResourcesRepository;
 import com.fixadate.domain.member.service.repository.PlanResourcesRepository;
+import com.fixadate.global.exception.forbidden.ForbiddenException;
+import com.fixadate.global.exception.notfound.NotFoundException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -314,6 +318,16 @@ public class AdateService {
 	public ToDo deleteToDo(String toDoId) {
 		ToDo toDo = toDoRepository.findToDoByToDoId(Long.parseLong(toDoId)).orElseThrow();
 		toDoRepository.delete(toDo);
+		return toDo;
+	}
+
+	public ToDo getTodo(Long id, Member member) {
+		ToDo toDo = toDoRepository.findToDoByToDoId(id).orElseThrow(
+			() -> new NotFoundException(NOT_FOUND_TO_DO_ID)
+		);
+		if (!toDo.getMember().equals(member)) {
+			throw new ForbiddenException(FORBIDDEN_UPDATE_TODO);
+		}
 		return toDo;
 	}
 }
