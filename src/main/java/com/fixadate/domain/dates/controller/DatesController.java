@@ -176,46 +176,20 @@ public interface DatesController {
     );
 
     @Operation(summary = "일정 취소", description = "일정 취소를 합니다.")
-
     GeneralResponseDto cancelDatesCoordinations(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
             @RequestParam final Long id
     );
 
-//     @DeleteMapping("/datesCoordination/{id}/confirm")
-//     public GeneralResponseDto cancelDatesCoordinations(
-//         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-//         @RequestParam final Long id
-//     ) {
-//         final Member member = memberPrincipal.getMember();
-//         final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
-//         if(datesCoordinations == null){
-//             return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
-//         }
-//         final boolean response = datesService.cancelDatesCoordinations(member, datesCoordinations);
-//         return GeneralResponseDto.success("", response);
-//     }
+     @Operation(summary = "내 일정 더보기", description = "오늘로부터 1주일의 일정을 봅니다.")
+     GeneralResponseDto getMoreMineDates(
+         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+         @RequestParam final String todayDate
+     );
 
-//     @Operation(summary = "내 일정 더보기", description = "오늘로부터 1주일의 일정을 봅니다.")
-//     @GetMapping("/mine/more")
-//     public GeneralResponseDto getMoreMineDates(
-//         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-//         @RequestParam final String todayDate
-//     ) {
-//         final Member member = memberPrincipal.getMember();
-//         final MoreDatesInfoResponse response = datesService.getMoreMineDates(member, todayDate);
-//         return GeneralResponseDto.success("", response);
-//     }
-
-//     @Operation(summary = "Others 일정 더보기", description = "오늘로부터 1주일의 일정을 봅니다.")
-//     @GetMapping("/others/more")
-//     public GeneralResponseDto getMoreOthersDates(
-//         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-//         @RequestParam final String todayDate
-//     ) {
-//         final Member member = memberPrincipal.getMember();
-//         final MoreDatesInfoResponse response = datesService.getMoreOthersDates(member, todayDate);
-//         return GeneralResponseDto.success("", response);
-//     }
-// >>>>>>> main
+     @Operation(summary = "Others 일정 더보기", description = "오늘로부터 1주일의 일정을 봅니다.")
+     GeneralResponseDto getMoreOthersDates(
+         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+         @RequestParam final String todayDate
+     );
 }
