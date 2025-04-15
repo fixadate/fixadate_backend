@@ -15,6 +15,7 @@ import com.fixadate.domain.member.entity.Member;
 import com.fixadate.global.annotation.RestControllerWithMapping;
 import com.fixadate.global.dto.GeneralResponseDto;
 import com.fixadate.global.jwt.MemberPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -216,8 +217,8 @@ public class DatesControllerImpl implements DatesController {
     @Override
     @DeleteMapping("/datesCoordination/{id}/confirm")
     public GeneralResponseDto cancelDatesCoordinations(
-        @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-        @RequestParam final Long id
+            @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+            @RequestParam final Long id
     ) {
         final Member member = memberPrincipal.getMember();
         final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
@@ -225,6 +226,28 @@ public class DatesControllerImpl implements DatesController {
             return GeneralResponseDto.fail("4000", "해당 일정취합이 존재하지 않습니다.", null);
         }
         final boolean response = datesService.cancelDatesCoordinations(member, datesCoordinations);
+        return GeneralResponseDto.success("", response);
+    }
+
+    @Override
+    @GetMapping("/mine/more")
+    public GeneralResponseDto getMoreMineDates(
+            @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+            @RequestParam final String todayDate
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final MoreDatesInfoResponse response = datesService.getMoreMineDates(member, todayDate);
+        return GeneralResponseDto.success("", response);
+    }
+
+    @Override
+    @GetMapping("/others/more")
+    public GeneralResponseDto getMoreOthersDates(
+            @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+            @RequestParam final String todayDate
+    ) {
+        final Member member = memberPrincipal.getMember();
+        final MoreDatesInfoResponse response = datesService.getMoreOthersDates(member, todayDate);
         return GeneralResponseDto.success("", response);
     }
 }
