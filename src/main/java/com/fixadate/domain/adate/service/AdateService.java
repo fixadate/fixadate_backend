@@ -196,8 +196,7 @@ public class AdateService {
 //		return getAdateByStartAndEndTime(member, startTime, endTime);
 		return new ArrayList<>();
 	}
-
-
+	
 	@Transactional(noRollbackFor = TagNotFoundException.class)
 	public AdateDto updateAdate(
 		final Member member,
