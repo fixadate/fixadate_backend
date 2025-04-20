@@ -1,5 +1,6 @@
-package com.fixadate.domain.versioncheck.controller;
+package com.fixadate.domain.versioncheck.controller.impl;
 
+import com.fixadate.domain.versioncheck.controller.AppVersionCheckController;
 import com.fixadate.global.dto.GeneralResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
