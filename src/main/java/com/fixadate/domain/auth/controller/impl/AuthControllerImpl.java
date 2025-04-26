@@ -39,20 +39,23 @@ public class AuthControllerImpl implements AuthController {
 
 	@Override
 	@PostMapping("/signin")
-	public ResponseEntity<GeneralResponseDto> signin(@Valid @RequestBody MemberOAuthRequest memberOAuthRequest,
-									 @RequestHeader HttpHeaders headers) {
+	public ResponseEntity<GeneralResponseDto> signin(
+			@Valid @RequestBody MemberOAuthRequest memberOAuthRequest,
+			@RequestHeader HttpHeaders headers) {
 		MemberSigninResponse response = authService.memberSignIn(memberOAuthRequest);
 
 		TokenResponse tokenResponse = jwtProvider.getTokenResponse(response.id());
 
 		ResponseCookie cookie = authService.createHttpOnlyCooke(tokenResponse.getRefreshToken());
 
-		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
-		headers.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
+		HttpHeaders responseHeaders = new HttpHeaders();
+
+		responseHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
+		responseHeaders.add(ACCESS_TOKEN.getValue(), tokenResponse.getAccessToken());
 
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.headers(headers)
+			.headers(responseHeaders)
 			.body(GeneralResponseDto.success("", response));
 	}
 
