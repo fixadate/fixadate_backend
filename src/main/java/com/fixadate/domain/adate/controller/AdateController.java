@@ -11,10 +11,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
@@ -158,6 +155,21 @@ public interface AdateController {
 	GeneralResponseDto registerToDo(
 			@Valid @RequestBody final TodoRegisterRequest todoRegisterRequest,
 			@AuthenticationPrincipal final MemberPrincipal memberPrincipal
+	);
+
+	@Operation(summary = "일별 ToDo 조회", description = "요청 일자의 ToDo를 조회합니다")
+	@Parameter(name = "accessToken", description = "Authorization : Bearer + <jwt>", in = ParameterIn.HEADER)
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", description = "created",
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "jwt 만료되었을 때 생기는 예외", //401
+					content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "200", description = "name를 tag에서 찾을 수 없을 때 생기는 예외", //404
+					content = @Content(schema = @Schema(implementation = Void.class)))
+	})
+	GeneralResponseDto getToDoByDate (
+			@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+			@PathVariable("dateToRetrieve") String dateToRetrieve
 	);
 
 	@Operation(summary = "ToDoStatus 변경", description = "ToDoStatus를 변경합니다.")

@@ -8,11 +8,9 @@ import com.fixadate.domain.adate.dto.request.TodoRegisterRequest;
 import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
 import com.fixadate.domain.adate.dto.response.ToDoResponse;
 import com.fixadate.domain.adate.entity.ToDo;
-import com.fixadate.domain.adate.entity.ToDoStatus;
 import com.fixadate.global.dto.GeneralResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +26,6 @@ import com.fixadate.domain.adate.controller.AdateController;
 import com.fixadate.domain.adate.dto.request.AdateRegisterRequest;
 import com.fixadate.domain.adate.dto.request.AdateUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
-import com.fixadate.domain.adate.dto.response.AdateViewResponse;
 import com.fixadate.domain.adate.mapper.AdateMapper;
 import com.fixadate.domain.adate.service.AdateService;
 import com.fixadate.domain.member.entity.Member;
@@ -169,12 +166,24 @@ public class AdateControllerImpl implements AdateController {
 		@Valid @RequestBody final TodoRegisterRequest todoRegisterRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
-			final Member member = memberPrincipal.getMember();
-			final ToDoRegisterDto toDoRegisterDto = AdateMapper.toToDoRegisterDto(todoRegisterRequest, member);
-			final ToDo toDo = adateService.registerToDo(toDoRegisterDto);
-			final ToDoResponse toDoResponse = AdateMapper.toToDoResponse(toDo);
-			return GeneralResponseDto.success("", toDoResponse);
+		final Member member = memberPrincipal.getMember();
+		final ToDoRegisterDto toDoRegisterDto = AdateMapper.toToDoRegisterDto(todoRegisterRequest, member);
+		final ToDo toDo = adateService.registerToDo(toDoRegisterDto);
+		final ToDoResponse toDoResponse = AdateMapper.toToDoResponse(toDo);
+		return GeneralResponseDto.success("", toDoResponse);
 	}
+
+	@Override
+	@GetMapping("/todo/{dateToRetrieve}")
+	public GeneralResponseDto getToDoByDate(
+			@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
+			@PathVariable("dateToRetrieve") String dateToRetrieve
+	) {
+		final Member member = memberPrincipal.getMember();
+		adateService.getToDoByDate(dateToRetrieve, member);
+		return GeneralResponseDto.success("", "");
+	}
+
 
 	@Override
 	@PostMapping("/todo/status")

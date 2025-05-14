@@ -191,6 +191,7 @@ public class AdateMapper {
 				.title(todoRegisterDto.title())
 				.date(todoRegisterDto.date())
 				.toDoStatus(ToDoStatus.SCHEDULED)
+				.member(todoRegisterDto.member())
 				.build();
 	}
 

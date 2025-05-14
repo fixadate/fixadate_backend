@@ -329,4 +329,10 @@ public class AdateService {
 		}
 		return toDo;
 	}
+
+	public List<ToDo> getToDoByDate(String date, Member member) {
+		LocalDate dateToRetrieve = LocalDate.parse(date);
+		List<ToDo> ToDos = toDoRepository.findByMemberAndBetweenDates(member, dateToRetrieve, dateToRetrieve);
+		return ToDos;
+	}
 }
