@@ -11,6 +11,7 @@ import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.global.dto.GeneralResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -174,14 +175,14 @@ public class AdateControllerImpl implements AdateController {
 	}
 
 	@Override
-	@GetMapping("/todo/{dateToRetrieve}")
+	@GetMapping("/todo/date/{dateToRetrieve}")
 	public GeneralResponseDto getToDoByDate(
 			@AuthenticationPrincipal final MemberPrincipal memberPrincipal,
 			@PathVariable("dateToRetrieve") String dateToRetrieve
 	) {
 		final Member member = memberPrincipal.getMember();
-		adateService.getToDoByDate(dateToRetrieve, member);
-		return GeneralResponseDto.success("", "");
+		List<ToDo> toDoList = adateService.getToDoByDate(dateToRetrieve, member);
+		return GeneralResponseDto.success("", toDoList);
 	}
 
 
