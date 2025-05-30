@@ -169,11 +169,10 @@ public class AdateControllerImpl implements AdateController {
 		@Valid @RequestBody final TodoRegisterRequest todoRegisterRequest,
 		@AuthenticationPrincipal final MemberPrincipal memberPrincipal
 	) {
-			final Member member = memberPrincipal.getMember();
-			final ToDoRegisterDto toDoRegisterDto = AdateMapper.toToDoRegisterDto(todoRegisterRequest, member);
-			final ToDo toDo = adateService.registerToDo(toDoRegisterDto);
-			final ToDoResponse toDoResponse = AdateMapper.toToDoResponse(toDo);
-			return GeneralResponseDto.success("", toDoResponse);
+		final Member member = memberPrincipal.getMember();
+		final ToDoRegisterDto toDoRegisterDto = AdateMapper.toToDoRegisterDto(todoRegisterRequest, member);
+		final ToDoResponse toDoResponse = adateService.registerToDo(toDoRegisterDto);
+		return GeneralResponseDto.success("", toDoResponse);
 	}
 
 	@Override
