@@ -15,6 +15,7 @@ import com.fixadate.domain.adate.dto.response.ToDoResponse;
 import com.fixadate.domain.adate.entity.Adate;
 import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.adate.entity.ToDoStatus;
+import com.fixadate.domain.member.dto.response.MemberInfoResponse;
 import com.fixadate.domain.member.entity.Member;
 import com.fixadate.domain.tag.dto.response.TagResponse;
 import com.fixadate.domain.tag.entity.Tag;
@@ -196,11 +197,20 @@ public class AdateMapper {
 	}
 
 	public static ToDoResponse toToDoResponse(ToDo toDo) {
+		MemberInfoResponse memberInfoResponse = new MemberInfoResponse(
+				toDo.getMember().getName(),
+				toDo.getMember().getNickname(),
+				toDo.getMember().getBirth(),
+				toDo.getMember().getGender(),
+				toDo.getMember().getSignatureColor(),
+				toDo.getMember().getProfession(),
+				toDo.getMember().getProfileImg()
+		);
 		return new ToDoResponse(
 				toDo.getTitle(),
 				toDo.getToDoStatus(),
 				toDo.getDate(),
-				toDo.getMember()
+				memberInfoResponse
 		);
 	}
 }

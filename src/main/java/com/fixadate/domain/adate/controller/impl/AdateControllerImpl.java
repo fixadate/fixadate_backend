@@ -169,8 +169,7 @@ public class AdateControllerImpl implements AdateController {
 	) {
 		final Member member = memberPrincipal.getMember();
 		final ToDoRegisterDto toDoRegisterDto = AdateMapper.toToDoRegisterDto(todoRegisterRequest, member);
-		final ToDo toDo = adateService.registerToDo(toDoRegisterDto);
-		final ToDoResponse toDoResponse = AdateMapper.toToDoResponse(toDo);
+		final ToDoResponse toDoResponse = adateService.registerToDo(toDoRegisterDto);
 		return GeneralResponseDto.success("", toDoResponse);
 	}
 

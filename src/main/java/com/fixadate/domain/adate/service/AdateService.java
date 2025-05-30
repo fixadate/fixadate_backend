@@ -16,6 +16,7 @@ import com.fixadate.domain.adate.dto.request.ToDoStatusUpdateRequest;
 import com.fixadate.domain.adate.dto.response.AdateInfoResponse;
 import com.fixadate.domain.adate.dto.response.AdateInfoResponse.DailyAdateInfo;
 import com.fixadate.domain.adate.dto.response.AdateResponse;
+import com.fixadate.domain.adate.dto.response.ToDoResponse;
 import com.fixadate.domain.adate.entity.ToDo;
 import com.fixadate.domain.adate.entity.ToDoStatus;
 import com.fixadate.domain.adate.service.repository.ToDoRepository;
@@ -294,10 +295,11 @@ public class AdateService {
 	}
 
 	@Transactional
-	public ToDo registerToDo(ToDoRegisterDto toDoRegisterDto) {
+	public ToDoResponse registerToDo(ToDoRegisterDto toDoRegisterDto) {
 		final ToDo toDo = toEntity(toDoRegisterDto);
 		final ToDo savedToDo = toDoRepository.save(toDo);
-		return savedToDo;
+		final ToDoResponse toDoResponse = AdateMapper.toToDoResponse(savedToDo);
+		return toDoResponse;
 	}
 
 	@Transactional
@@ -330,6 +332,8 @@ public class AdateService {
 		return toDo;
 	}
 
+
+	@Transactional
 	public List<ToDo> getToDoByDate(String date, Member member) {
 		LocalDate dateToRetrieve = LocalDate.parse(date);
 		List<ToDo> ToDos = toDoRepository.findByMemberAndBetweenDates(member, dateToRetrieve, dateToRetrieve);
