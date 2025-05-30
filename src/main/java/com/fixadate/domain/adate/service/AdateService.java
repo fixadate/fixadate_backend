@@ -332,6 +332,7 @@ public class AdateService {
 		return toDo;
 	}
 
+
 	@Transactional
 	public List<ToDo> getToDoByDate(String date, Member member) {
 		LocalDate dateToRetrieve = LocalDate.parse(date);
