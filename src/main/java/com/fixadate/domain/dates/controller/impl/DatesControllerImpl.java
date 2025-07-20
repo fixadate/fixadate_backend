@@ -173,7 +173,7 @@ public class DatesControllerImpl implements DatesController {
     @PostMapping("/{id}/datesCoordination")
     public GeneralResponseDto choiceDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-        @RequestParam final Long id,
+        @PathVariable final Long id,
         @RequestBody final ChoiceDatesRequest choiceDatesRequest
     ) {
         final Member member = memberPrincipal.getMember();
