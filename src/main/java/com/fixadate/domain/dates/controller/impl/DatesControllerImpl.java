@@ -170,11 +170,11 @@ public class DatesControllerImpl implements DatesController {
     }
 
     @Override
-    @PostMapping("/datesCoordination/{id}")
+    @PostMapping("/{id}/datesCoordination")
     public GeneralResponseDto choiceDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @RequestParam final Long id,
-        @RequestParam final ChoiceDatesRequest choiceDatesRequest
+        @RequestBody final ChoiceDatesRequest choiceDatesRequest
     ) {
         final Member member = memberPrincipal.getMember();
         final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
