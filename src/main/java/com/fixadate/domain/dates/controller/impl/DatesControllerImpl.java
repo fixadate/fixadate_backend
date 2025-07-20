@@ -73,7 +73,7 @@ public class DatesControllerImpl implements DatesController {
     }
 
     @Override
-    @PatchMapping("/{id}")
+    @PatchMapping("/patch/{id}")
     public GeneralResponseDto updateDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id,
@@ -89,7 +89,7 @@ public class DatesControllerImpl implements DatesController {
     }
 
     @Override
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public GeneralResponseDto deleteDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id){
@@ -99,7 +99,7 @@ public class DatesControllerImpl implements DatesController {
     }
 
     @Override
-    @GetMapping("/{id}")
+    @GetMapping("/detail/{id}")
     public GeneralResponseDto getDatesDetail(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @PathVariable Long id){
@@ -170,10 +170,10 @@ public class DatesControllerImpl implements DatesController {
     }
 
     @Override
-    @PostMapping("/{id}/datesCoordination")
+    @PostMapping("/datesCoordination/{id}")
     public GeneralResponseDto choiceDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-        @PathVariable final Long id,
+        @PathVariable("id") final Long id,
         @RequestBody final ChoiceDatesRequest choiceDatesRequest
     ) {
         final Member member = memberPrincipal.getMember();
