@@ -200,10 +200,10 @@ public class DatesControllerImpl implements DatesController {
     }
 
     @Override
-    @PostMapping("/datesCoordination/{id}/confirm")
+    @PostMapping("/datesCoordination/confirm")
     public GeneralResponseDto confirmDatesCoordinations(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-        @RequestParam final Long id
+        @RequestParam("id") final Long id
     ) {
         final Member member = memberPrincipal.getMember();
         final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
