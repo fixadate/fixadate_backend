@@ -174,7 +174,7 @@ public class DatesControllerImpl implements DatesController {
     public GeneralResponseDto choiceDates(
         @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
         @RequestParam final Long id,
-        @RequestBody final ChoiceDatesRequest choiceDatesRequest
+        @RequestParam final ChoiceDatesRequest choiceDatesRequest
     ) {
         final Member member = memberPrincipal.getMember();
         final DatesCoordinations datesCoordinations = datesService.getDatesCoordination(member, id);
