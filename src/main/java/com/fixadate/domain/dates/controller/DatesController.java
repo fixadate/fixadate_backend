@@ -149,8 +149,8 @@ public interface DatesController {
     })
     GeneralResponseDto choiceDates(
             @AuthenticationPrincipal final MemberPrincipal memberPrincipal,
-            @RequestParam final Long id,
-            @RequestParam final ChoiceDatesRequest choiceDatesRequest
+            @RequestParam("id") final Long id,
+            @RequestBody final ChoiceDatesRequest choiceDatesRequest
     );
 
     @Operation(summary = "일정 확정 조회", description = "일정 확정 페이지에 필요한 데이터입니다.")
