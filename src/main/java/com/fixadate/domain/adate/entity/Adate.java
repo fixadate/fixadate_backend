@@ -52,7 +52,7 @@ public class Adate extends Calendar {
 	private LocalDateTime repeatFreq;
 
 	// TODO: [추후] if 대신 is로 수정 & 불필요한 필드 삭제
-	private boolean ifAllDay;
+	private boolean ifAllDay = false;
 
 	private String etag;
 
