@@ -16,6 +16,7 @@ public record DatesResponse(
 	String startsWhen,
 	String endsWhen,
 	String calendarId,
+	Long teamId,
 	List<DatesMemberInfo> datesMemberList
 ) {
 	public static DatesResponse of(Member member, Dates dates, List<DatesMemberInfo> datesMemberList) {
@@ -27,6 +28,7 @@ public record DatesResponse(
 			dates.getStartsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
 			dates.getEndsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
 			dates.getCalendarId(),
+			dates.getTeam().getId(),
 			datesMemberList
 		);
 	}

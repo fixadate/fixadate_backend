@@ -128,16 +128,20 @@ checkstyle {
 
 }
 
-test {
+//test {
 //    useJUnitPlatform()
 ////    dependsOn 'checkstyleMain'
 ////    dependsOn 'checkstyleTest'
-}
+//}
 
 
 def querydslSrcDir = 'src/main/generated'
 clean {
     delete file(querydslSrcDir)
+}
+
+ext {
+    querydslVersion = "5.0.0"
 }
 
 tasks.withType(JavaCompile).configureEach {
