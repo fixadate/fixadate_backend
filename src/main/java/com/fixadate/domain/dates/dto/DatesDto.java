@@ -8,6 +8,7 @@ public record DatesDto(
 	String calendarId,
 	String title,
 	String notes,
+	Long teamId,
 	LocalDateTime startsWhen,
 	LocalDateTime endsWhen){
 }

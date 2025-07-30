@@ -99,6 +99,7 @@ public class DatesMapper {
 			dates.getCalendarId(),
 			dates.getTitle(),
 			dates.getNotes(),
+			dates.getTeam().getId(),
 			dates.getStartsWhen(),
 			dates.getEndsWhen()
 		);
@@ -113,6 +114,7 @@ public class DatesMapper {
 			datesDto.startsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
 			datesDto.endsWhen().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")),
 			datesDto.calendarId(),
+			datesDto.teamId(),
 			datesMemberList
 		);
 	}
