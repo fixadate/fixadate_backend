@@ -128,11 +128,11 @@ checkstyle {
 
 }
 
-//test {
-//    useJUnitPlatform()
-////    dependsOn 'checkstyleMain'
-////    dependsOn 'checkstyleTest'
-//}
+test {
+    useJUnitPlatform()
+//    dependsOn 'checkstyleMain'
+//    dependsOn 'checkstyleTest'
+}
 
 
 def querydslSrcDir = 'src/main/generated'
